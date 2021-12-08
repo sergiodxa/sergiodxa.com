@@ -5,6 +5,7 @@ import {
   json,
   Link,
   LoaderFunction,
+  MetaFunction,
   NavLink,
   Outlet,
   useLoaderData,
@@ -17,6 +18,10 @@ type LoaderData = {
   locale: string;
   term: string;
   page: number;
+};
+
+export let meta: MetaFunction = () => {
+  return { title: "Articles of Sergio Xalambrí" };
 };
 
 export let loader: LoaderFunction = async ({ request }) => {

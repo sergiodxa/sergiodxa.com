@@ -5,6 +5,7 @@ import {
   json,
   LinksFunction,
   LoaderFunction,
+  MetaFunction,
   Outlet,
   useCatch,
   useLoaderData,
@@ -14,6 +15,10 @@ import { useRemixI18Next } from "remix-i18next";
 import { Document } from "~/components/document";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
+
+export let meta: MetaFunction = () => {
+  return { title: "Sergio Xalambrí" };
+};
 
 export let links: LinksFunction = () => {
   return [

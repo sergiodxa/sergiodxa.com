@@ -1,5 +1,11 @@
 import { HTML, Note } from "collected-notes";
-import { json, LinksFunction, LoaderFunction, useLoaderData } from "remix";
+import {
+  json,
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+  useLoaderData,
+} from "remix";
 import invariant from "tiny-invariant";
 import { cn, site } from "~/services/cn.server";
 import highlightStyles from "~/styles/highlight.css";
@@ -7,6 +13,11 @@ import highlightStyles from "~/styles/highlight.css";
 type LoaderData = {
   body: HTML;
   note: Note;
+};
+
+export let meta: MetaFunction = ({ data }) => {
+  let { note } = data as LoaderData;
+  return { title: note.title };
 };
 
 export let links: LinksFunction = () => {
