@@ -4,24 +4,31 @@
   "description": "",
   "license": "",
   "scripts": {
+    "dev:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --watch",
+    "build:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --minify",
+    "prebuild": "npm run build:css",
     "build": "remix build",
     "dev": "remix dev",
     "postinstall": "remix setup node"
   },
   "dependencies": {
+    "@headlessui/react": "^1.4.2",
+    "@heroicons/react": "^1.0.5",
     "@remix-run/react": "^1.0.6",
     "@remix-run/serve": "^1.0.6",
     "@remix-run/vercel": "^1.0.6",
+    "@tailwindcss/forms": "^0.3.4",
+    "@tailwindcss/typography": "^0.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "remix": "^1.0.6"
+    "remix": "^1.0.6",
+    "tailwindcss": "^2.2.19"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.0.6",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
-    "typescript": "^4.1.2",
-    "vercel": "^23.1.2"
+    "typescript": "^4.1.2"
   },
   "sideEffects": false
 }
