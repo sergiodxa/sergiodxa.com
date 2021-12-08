@@ -1,12 +1,42 @@
-import type { LinksFunction } from "remix";
-import { Outlet, useCatch } from "remix";
+import nProgress from "nprogress";
+import nProgressUrl from "nprogress/nprogress.css";
+import { useEffect } from "react";
+import {
+  json,
+  LinksFunction,
+  LoaderFunction,
+  Outlet,
+  useCatch,
+  useLoaderData,
+  useTransition,
+} from "remix";
+import { useRemixI18Next } from "remix-i18next";
 import { Document } from "~/components/document";
+import { i18n } from "~/services/i18n.server";
+import tailwindUrl from "~/styles/tailwind.css";
 
 export let links: LinksFunction = () => {
-  return [];
+  return [
+    { rel: "stylesheet", href: tailwindUrl },
+    { rel: "stylesheet", href: nProgressUrl },
+  ];
+};
+
+export let loader: LoaderFunction = async ({ request }) => {
+  let locale = await i18n.getLocale(request);
+  return json({ locale, i18n: await i18n.getTranslations(locale, "common") });
 };
 
 export default function App() {
+  let { locale } = useLoaderData();
+  useRemixI18Next(locale);
+
+  let transition = useTransition();
+  useEffect(() => {
+    if (transition.state === "idle") nProgress.done();
+    else nProgress.start();
+  }, [transition.state]);
+
   return (
     <Document>
       <Outlet />

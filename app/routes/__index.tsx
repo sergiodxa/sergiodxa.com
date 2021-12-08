@@ -1,0 +1,121 @@
+import {
+  BookmarkIcon,
+  DocumentTextIcon,
+  ExternalLinkIcon,
+  HomeIcon,
+} from "@heroicons/react/solid";
+import clsx from "clsx";
+import { ComponentProps } from "react";
+import { useTranslation } from "react-i18next";
+import { NavLink, Outlet } from "remix";
+import { GitHubIcon, TwitterIcon } from "~/components/icons";
+
+type Link = {
+  to: string;
+  label: string;
+  icon(props: ComponentProps<"svg">): JSX.Element;
+  external?: boolean;
+};
+
+export default function Screen() {
+  let { t } = useTranslation();
+
+  let primary: Link[] = [
+    { to: "/", label: t("Home"), icon: HomeIcon },
+    { to: "articles", label: t("Articles"), icon: DocumentTextIcon },
+  ];
+
+  let me: Link[] = [
+    { to: "bookmarks", label: t("Bookmarks"), icon: BookmarkIcon },
+  ];
+
+  let online: Link[] = [
+    {
+      to: "social/twitter",
+      label: t("Twitter"),
+      icon: TwitterIcon,
+      external: true,
+    },
+    {
+      to: "social/github",
+      label: t("GitHub"),
+      icon: GitHubIcon,
+      external: true,
+    },
+  ];
+
+  return (
+    <div className="flex h-full divide-x divide-gray-100">
+      <div className="flex-shrink-0 w-full max-w-xs px-2 py-4 space-y-6">
+        <header className="px-2">
+          <h1 className="font-extrabold text-xl">Sergio Xalambrí</h1>
+        </header>
+
+        <nav aria-label={t("Primary")}>
+          <ul className="flex flex-col gap-y-1.5">
+            {primary.map((link) => {
+              return (
+                <li key={link.to}>
+                  <LinkItem link={link} />
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <nav aria-label={t("Me")} className="space-y-2">
+          <h2 className="text-xs text-gray-500 font-medium px-2">{t("Me")}</h2>
+          <ul className="flex flex-col gap-y-1.5">
+            {me.map((link) => {
+              return (
+                <li key={link.to}>
+                  <LinkItem link={link} />
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <nav aria-label={t("Online")} className="space-y-2">
+          <h2 className="text-xs text-gray-500 font-medium px-2">
+            {t("Online")}
+          </h2>
+          <ul className="flex flex-col gap-y-1.5">
+            {online.map((link) => {
+              return (
+                <li key={link.to}>
+                  <LinkItem link={link} />
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </div>
+      <Outlet />
+    </div>
+  );
+}
+
+function LinkItem({ link }: { link: Link }) {
+  return (
+    <NavLink
+      to={link.to}
+      className={({ isActive }) =>
+        clsx(
+          "flex items-center gap-x-1",
+          "px-2 py-1.5 rounded-md",
+          "text-sm font-medium",
+          "focus:outline-none focus:bg-gray-100 focus:text-gray-900",
+          {
+            "bg-black text-white": isActive,
+            "text-gray-700 hover:text-gray-900 hover:bg-gray-100": !isActive,
+          }
+        )
+      }
+    >
+      <link.icon className="w-4 h-4 flex-shrink-0" />
+      <span className="flex-grow">{link.label}</span>
+      {link.external && <ExternalLinkIcon className="w-4 h-4 flex-shrink-0" />}
+    </NavLink>
+  );
+}
