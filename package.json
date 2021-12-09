@@ -9,7 +9,8 @@
     "prebuild": "npm run build:css",
     "build": "remix build",
     "dev": "remix dev",
-    "postinstall": "remix setup node"
+    "postinstall": "remix setup node",
+    "start": "remix-serve api/_build"
   },
   "dependencies": {
     "@headlessui/react": "^1.4.2",
