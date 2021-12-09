@@ -71,7 +71,7 @@ export default function Screen() {
 
   return (
     <Region className="flex h-full divide-x divide-gray-100">
-      <div className="flex-shrink-0 w-full max-w-xs px-2 py-4 space-y-6">
+      <nav className="flex-shrink-0 w-full max-w-xs px-2 py-4 space-y-6">
         <header className="px-2">
           <Heading className="font-extrabold text-xl">Sergio Xalambrí</Heading>
         </header>
@@ -80,7 +80,7 @@ export default function Screen() {
         <Navigation links={me} title={t("Me")} />
         <Navigation links={projects} title={t("Projects")} />
         <Navigation links={online} title={t("Online")} />
-      </div>
+      </nav>
       <Outlet />
     </Region>
   );
