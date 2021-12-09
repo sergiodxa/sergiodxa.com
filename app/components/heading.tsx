@@ -2,17 +2,21 @@
 import { useId } from "@react-aria/utils";
 import { createContext, HTMLAttributes, useContext } from "react";
 
-const HeadingLevelContext = createContext<number>(0);
-const HeadingIdContext = createContext<string | undefined>(void 0);
+let HeadingLevelContext = createContext<number>(0);
+let HeadingIdContext = createContext<string | undefined>(void 0);
+
+type RegionProps = HTMLAttributes<HTMLDivElement> & {
+  initialLevel?: number;
+};
 
 export function useHeadingID() {
   return useContext(HeadingIdContext);
 }
 
-export function Region({ id, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const internalId = useId(id); // We use the received ID to overwrite it
-  const headingLevel = useContext(HeadingLevelContext);
-  const nextLevel = headingLevel + 1;
+export function Region({ id, initialLevel = 0, ...props }: RegionProps) {
+  let internalId = useId(id); // We use the received ID to overwrite it
+  let headingLevel = useContext(HeadingLevelContext) || initialLevel;
+  let nextLevel = headingLevel + 1;
   return (
     <HeadingIdContext.Provider value={internalId}>
       <HeadingLevelContext.Provider value={nextLevel}>
@@ -27,8 +31,8 @@ type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
 };
 
 export function Heading({ level = "auto", ...props }: HeadingProps) {
-  const id = useHeadingID();
-  const headingLevel = useContext(HeadingLevelContext);
+  let id = useHeadingID();
+  let headingLevel = useContext(HeadingLevelContext);
 
   if (id !== undefined && props.id !== undefined && id !== props.id) {
     // We need to ensure if we pass an ID to the Heading we must pass the same
@@ -51,7 +55,7 @@ export function Heading({ level = "auto", ...props }: HeadingProps) {
     );
   }
 
-  const actualLevel = level === "auto" ? headingLevel : level;
+  let actualLevel = level === "auto" ? headingLevel : level;
 
   switch (actualLevel) {
     case 1: {
