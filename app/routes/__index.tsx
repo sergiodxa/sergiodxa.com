@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "remix";
+import { Heading, Region } from "~/components/heading";
 import { GitHubIcon, TwitterIcon } from "~/components/icons";
 
 type Link = {
@@ -69,69 +70,19 @@ export default function Screen() {
   ];
 
   return (
-    <div className="flex h-full divide-x divide-gray-100">
+    <Region className="flex h-full divide-x divide-gray-100">
       <div className="flex-shrink-0 w-full max-w-xs px-2 py-4 space-y-6">
         <header className="px-2">
-          <h1 className="font-extrabold text-xl">Sergio Xalambrí</h1>
+          <Heading className="font-extrabold text-xl">Sergio Xalambrí</Heading>
         </header>
 
-        <nav aria-label={t("Primary")}>
-          <ul className="flex flex-col gap-y-1.5">
-            {primary.map((link) => {
-              return (
-                <li key={link.to}>
-                  <LinkItem link={link} />
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <nav aria-label={t("Me")} className="space-y-2">
-          <h2 className="text-xs text-gray-500 font-medium px-2">{t("Me")}</h2>
-          <ul className="flex flex-col gap-y-1.5">
-            {me.map((link) => {
-              return (
-                <li key={link.to}>
-                  <LinkItem link={link} />
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <nav aria-label={t("Projects")} className="space-y-2">
-          <h2 className="text-xs text-gray-500 font-medium px-2">
-            {t("Projects")}
-          </h2>
-          <ul className="flex flex-col gap-y-1.5">
-            {projects.map((link) => {
-              return (
-                <li key={link.to}>
-                  <LinkItem link={link} />
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <nav aria-label={t("Online")} className="space-y-2">
-          <h2 className="text-xs text-gray-500 font-medium px-2">
-            {t("Online")}
-          </h2>
-          <ul className="flex flex-col gap-y-1.5">
-            {online.map((link) => {
-              return (
-                <li key={link.to}>
-                  <LinkItem link={link} />
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+        <Navigation links={primary} title={t("Primary")} hideTitle />
+        <Navigation links={me} title={t("Me")} />
+        <Navigation links={projects} title={t("Projects")} />
+        <Navigation links={online} title={t("Online")} />
       </div>
       <Outlet />
-    </div>
+    </Region>
   );
 }
 
@@ -156,5 +107,36 @@ function LinkItem({ link }: { link: Link }) {
       <span className="flex-grow">{link.label}</span>
       {link.external && <ExternalLinkIcon className="w-4 h-4 flex-shrink-0" />}
     </NavLink>
+  );
+}
+
+type NavigationProps = {
+  links: Link[];
+  title: string;
+  hideTitle?: boolean;
+};
+
+function Navigation({ links, title, hideTitle = false }: NavigationProps) {
+  return (
+    <Region className="space-y-2">
+      <Heading
+        className={clsx("text-xs text-gray-500 font-medium px-2", {
+          "sr-only": hideTitle,
+        })}
+      >
+        {title}
+      </Heading>
+      <nav>
+        <ul className="flex flex-col gap-y-1.5">
+          {links.map((link) => {
+            return (
+              <li key={link.to}>
+                <LinkItem link={link} />
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </Region>
   );
 }

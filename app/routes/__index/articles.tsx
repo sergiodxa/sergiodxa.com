@@ -10,6 +10,7 @@ import {
   Outlet,
   useLoaderData,
 } from "remix";
+import { Region } from "~/components/heading";
 import { cn, site } from "~/services/cn.server";
 import { i18n } from "~/services/i18n.server";
 
@@ -44,7 +45,7 @@ export default function Screen() {
 
   return (
     <>
-      <section
+      <Region
         className="flex flex-col flex-shrink-0 gap-y-1.5 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
         aria-label={t("Articles")}
       >
@@ -75,7 +76,7 @@ export default function Screen() {
         </section>
 
         <Pagination />
-      </section>
+      </Region>
       <Outlet />
     </>
   );
