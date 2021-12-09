@@ -3,6 +3,9 @@ import {
   DocumentTextIcon,
   ExternalLinkIcon,
   HomeIcon,
+  LockClosedIcon,
+  PuzzleIcon,
+  TranslateIcon,
 } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { ComponentProps } from "react";
@@ -13,7 +16,7 @@ import { GitHubIcon, TwitterIcon } from "~/components/icons";
 type Link = {
   to: string;
   label: string;
-  icon(props: ComponentProps<"svg">): JSX.Element;
+  icon?(props: ComponentProps<"svg">): JSX.Element;
   external?: boolean;
 };
 
@@ -27,6 +30,27 @@ export default function Screen() {
 
   let me: Link[] = [
     { to: "bookmarks", label: t("Bookmarks"), icon: BookmarkIcon },
+  ];
+
+  let projects: Link[] = [
+    {
+      to: "projects/remix-auth",
+      label: t("Remix Auth"),
+      icon: LockClosedIcon,
+      external: true,
+    },
+    {
+      to: "projects/remix-i18next",
+      label: t("Remix i18next"),
+      icon: TranslateIcon,
+      external: true,
+    },
+    {
+      to: "projects/remix-utils",
+      label: t("Remix Utils"),
+      icon: PuzzleIcon,
+      external: true,
+    },
   ];
 
   let online: Link[] = [
@@ -76,6 +100,21 @@ export default function Screen() {
           </ul>
         </nav>
 
+        <nav aria-label={t("Projects")} className="space-y-2">
+          <h2 className="text-xs text-gray-500 font-medium px-2">
+            {t("Projects")}
+          </h2>
+          <ul className="flex flex-col gap-y-1.5">
+            {projects.map((link) => {
+              return (
+                <li key={link.to}>
+                  <LinkItem link={link} />
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
         <nav aria-label={t("Online")} className="space-y-2">
           <h2 className="text-xs text-gray-500 font-medium px-2">
             {t("Online")}
@@ -113,7 +152,7 @@ function LinkItem({ link }: { link: Link }) {
         )
       }
     >
-      <link.icon className="w-4 h-4 flex-shrink-0" />
+      {link.icon && <link.icon className="w-4 h-4 flex-shrink-0" />}
       <span className="flex-grow">{link.label}</span>
       {link.external && <ExternalLinkIcon className="w-4 h-4 flex-shrink-0" />}
     </NavLink>
