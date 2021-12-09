@@ -1,3 +1,4 @@
+import clsx, { ClassValue } from "clsx";
 import {
   AriaAttributes,
   HTMLAttributes,
@@ -23,6 +24,8 @@ type FeedArticleProps = Omit<
 
 export type FeedListProps<Item = unknown> = AriaAttributes &
   IntersectionObserverInit & {
+    className?: ClassValue;
+    heading?: ReactNode;
     data: Item[];
     renderItem(item: Item, index: number): ReactNode;
     isLoadingMore?: boolean;
@@ -86,11 +89,13 @@ function getAncestor(
   return ancestor;
 }
 
-export function FeedList({
+export function FeedList<Item = unknown>({
   data,
   root,
+  heading,
   shortcuts = DEFAULT_SHORTCUTS,
   threshold,
+  className,
   rootMargin,
   renderItem,
   keyExtractor = defaultKeyExtractor,
@@ -98,7 +103,7 @@ export function FeedList({
   isLoadingMore = false,
   onReachingEnd,
   ...props
-}: FeedListProps) {
+}: FeedListProps<Item>) {
   if (!props["aria-labelledby"] && !props["aria-label"]) {
     throw new Error(
       "A Feed component must have a label. This can be defined using the `aria-labelledby` or `aria-label` props."
@@ -183,7 +188,14 @@ export function FeedList({
 
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-    <div {...props} onKeyDown={onKeyDown} role="feed" aria-busy={isLoadingMore}>
+    <div
+      {...props}
+      className={clsx(className)}
+      onKeyDown={onKeyDown}
+      role="feed"
+      aria-busy={isLoadingMore}
+    >
+      {heading}
       {data.map(function mapItemInFeed(item, index) {
         let key = keyExtractor(item, index);
         let child = renderItem(item, index);

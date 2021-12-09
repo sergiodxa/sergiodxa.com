@@ -1,24 +1,22 @@
+import { useId } from "@react-aria/utils";
 import { Note } from "collected-notes";
 import { useTranslation } from "react-i18next";
 import {
-  Form,
   json,
-  Link,
   LoaderFunction,
   MetaFunction,
   NavLink,
   Outlet,
   useLoaderData,
 } from "remix";
-import { Region } from "~/components/heading";
+import { FeedList } from "~/components/feed-list";
+import { Heading } from "~/components/heading";
 import { cn, site } from "~/services/cn.server";
 import { i18n } from "~/services/i18n.server";
 
 type LoaderData = {
   notes: Note[];
   locale: string;
-  term: string;
-  page: number;
 };
 
 export let meta: MetaFunction = () => {
@@ -36,47 +34,32 @@ export let loader: LoaderFunction = async ({ request }) => {
 
   let locale = await i18n.getLocale(request);
 
-  return json({ notes, locale, term, page });
+  return json({ notes, locale });
 };
 
 export default function Screen() {
   let { t } = useTranslation();
-  let { notes, term } = useLoaderData<LoaderData>();
+  let id = useId();
+  let { notes } = useLoaderData<LoaderData>();
 
   return (
     <>
-      <Region
-        className="flex flex-col flex-shrink-0 gap-y-1.5 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
-        aria-label={t("Articles")}
-      >
-        <Form role="search">
-          <div>
-            <label htmlFor="term" className="sr-only">
-              {t("Search")}
-            </label>
-            <input
-              type="search"
-              name="term"
-              id="term"
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              placeholder={t("Remix, React, Next...")}
-              defaultValue={term}
-            />
-          </div>
-        </Form>
-
-        <section>
-          {notes.map((note) => {
-            return (
-              <article>
-                <NoteItem note={note} key={note.id} />
-              </article>
-            );
-          })}
-        </section>
-
-        <Pagination />
-      </Region>
+      <FeedList<Note>
+        className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
+        heading={
+          <header className="px-4">
+            <Heading level={2} id={id} className="font-medium">
+              {t("Articles")}
+            </Heading>
+          </header>
+        }
+        aria-labelledby={id}
+        data={notes}
+        keyExtractor={(note) => note.id}
+        renderItem={(note) => {
+          return <NoteItem note={note} />;
+        }}
+      />
       <Outlet />
     </>
   );
@@ -102,31 +85,5 @@ function NoteItem({ note }: { note: Note }) {
         })}
       </time>
     </NavLink>
-  );
-}
-
-function Pagination() {
-  let { t } = useTranslation();
-  let { page } = useLoaderData<LoaderData>();
-  return (
-    <nav
-      className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
-      aria-label={"Pagination"}
-    >
-      <div className="flex-1 flex justify-between sm:justify-end">
-        <Link
-          to={`?page=${page - 1 > 0 ? page - 1 : 1}`}
-          className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 w-full justify-center"
-        >
-          {t("Previous")}
-        </Link>
-        <Link
-          to={`?page=${page + 1}`}
-          className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 w-full justify-center"
-        >
-          {t("Next")}
-        </Link>
-      </div>
-    </nav>
   );
 }

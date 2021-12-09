@@ -7,7 +7,6 @@ import {
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import { Region } from "~/components/heading";
 import { cn, site } from "~/services/cn.server";
 import highlightStyles from "~/styles/highlight.css";
 
@@ -35,11 +34,10 @@ export let loader: LoaderFunction = async ({ params }) => {
 export default function Screen() {
   let { body } = useLoaderData<LoaderData>();
   return (
-    <Region className="h-full overflow-y-auto w-full">
-      <article
-        className="prose mx-auto my-8"
-        dangerouslySetInnerHTML={{ __html: body }}
-      />
-    </Region>
+    <main className="h-full overflow-y-auto w-full">
+      <article className="prose mx-auto my-8">
+        <div className="contents" dangerouslySetInnerHTML={{ __html: body }} />
+      </article>
+    </main>
   );
 }

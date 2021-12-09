@@ -70,19 +70,19 @@ export default function Screen() {
   ];
 
   return (
-    <Region className="flex h-full divide-x divide-gray-100">
-      <nav className="flex-shrink-0 w-full max-w-xs px-2 py-4 space-y-6">
-        <header className="px-2">
-          <Heading className="font-extrabold text-xl">Sergio Xalambrí</Heading>
-        </header>
+    <div className="flex h-full divide-x divide-gray-100">
+      <header className="flex-shrink-0 flex flex-col w-full max-w-xs px-2 py-4 gap-y-6">
+        <p className="font-extrabold text-xl px-2">Sergio Xalambrí</p>
 
-        <Navigation links={primary} title={t("Primary")} hideTitle />
-        <Navigation links={me} title={t("Me")} />
-        <Navigation links={projects} title={t("Projects")} />
-        <Navigation links={online} title={t("Online")} />
-      </nav>
+        <nav className="contents">
+          <Navigation links={primary} title={t("Primary")} hideTitle />
+          <Navigation links={me} title={t("Me")} />
+          <Navigation links={projects} title={t("Projects")} />
+          <Navigation links={online} title={t("Online")} />
+        </nav>
+      </header>
       <Outlet />
-    </Region>
+    </div>
   );
 }
 
@@ -126,17 +126,16 @@ function Navigation({ links, title, hideTitle = false }: NavigationProps) {
       >
         {title}
       </Heading>
-      <nav>
-        <ul className="flex flex-col gap-y-1.5">
-          {links.map((link) => {
-            return (
-              <li key={link.to}>
-                <LinkItem link={link} />
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+
+      <ul className="flex flex-col gap-y-1.5">
+        {links.map((link) => {
+          return (
+            <li key={link.to}>
+              <LinkItem link={link} />
+            </li>
+          );
+        })}
+      </ul>
     </Region>
   );
 }
