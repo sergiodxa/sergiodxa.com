@@ -8,3 +8,4 @@ public/build
 api/_build
 
 .env
+app/styles/tailwind.css
