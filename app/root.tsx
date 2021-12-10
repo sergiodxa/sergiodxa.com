@@ -17,7 +17,7 @@ import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
 
 export let meta: MetaFunction = () => {
-  return { title: "Sergio Xalambrí" };
+  return { robots: "noindex", title: "Sergio Xalambrí" };
 };
 
 export let links: LinksFunction = () => {
