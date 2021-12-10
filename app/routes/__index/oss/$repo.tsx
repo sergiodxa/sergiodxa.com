@@ -31,7 +31,7 @@ export default function Screen() {
   let { body } = useLoaderData<LoaderData>();
   return (
     <main className="h-full overflow-y-auto w-full">
-      <article className="prose mx-auto my-8">
+      <article className="prose prose-lg mx-auto my-8">
         <div className="contents" dangerouslySetInnerHTML={{ __html: body }} />
       </article>
     </main>

@@ -1,6 +1,4 @@
-import nProgress from "nprogress";
 import nProgressUrl from "nprogress/nprogress.css";
-import { useEffect } from "react";
 import {
   json,
   LinksFunction,
@@ -9,12 +7,12 @@ import {
   Outlet,
   useCatch,
   useLoaderData,
-  useTransition,
 } from "remix";
 import { useRemixI18Next } from "remix-i18next";
 import { Document } from "~/components/document";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
+import { useNProgress } from "./hooks/use-nprogress";
 
 export let meta: MetaFunction = () => {
   return { robots: "noindex", title: "Sergio Xalambrí" };
@@ -36,11 +34,7 @@ export default function App() {
   let { locale } = useLoaderData();
   useRemixI18Next(locale);
 
-  let transition = useTransition();
-  useEffect(() => {
-    if (transition.state === "idle") nProgress.done();
-    else nProgress.start();
-  }, [transition.state]);
+  useNProgress();
 
   return (
     <Document>

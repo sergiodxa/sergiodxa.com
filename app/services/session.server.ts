@@ -1,4 +1,4 @@
-import { createCookieSessionStorage } from "@remix-run/server-runtime";
+import { createCookieSessionStorage } from "remix";
 import { requireEnv } from "~/utils/environment";
 
 export let sessionStorage = createCookieSessionStorage({

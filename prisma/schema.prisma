@@ -27,12 +27,14 @@ model User {
 }
 
 model Post {
-  id        String   @id @unique @default(cuid())
-  slug      String   @unique
-  title     String
-  body      String
-  headline  String
-  author    User     @relation(fields: [userId], references: [id])
-  userId    String
-  updatedAt DateTime @updatedAt
+  id           String   @id @unique @default(cuid())
+  slug         String   @unique
+  title        String
+  body         String
+  headline     String
+  author       User     @relation(fields: [userId], references: [id])
+  userId       String
+  updatedAt    DateTime @updatedAt
+  canonicalUrl String   @default("")
+  lang         String   @default("en")
 }

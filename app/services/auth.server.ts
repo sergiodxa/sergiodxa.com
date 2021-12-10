@@ -1,5 +1,5 @@
-import type { User } from "@prisma/client";
-import { Authenticator, GitHubStrategy } from "remix-auth";
+import { Role, User } from "@prisma/client";
+import { Authenticator, Authorizer, GitHubStrategy } from "remix-auth";
 import { db } from "~/services/db.server";
 import { sessionStorage } from "~/services/session.server";
 import { requireEnv } from "~/utils/environment";
@@ -31,3 +31,9 @@ let gitHubStrategy = new GitHubStrategy<User>(
 export let authenticator = new Authenticator<User>(sessionStorage);
 
 authenticator.use(gitHubStrategy);
+
+export let adminAuthorizer = new Authorizer(authenticator, [
+  async function isAdmin({ user }) {
+    return user.role === Role.ADMIN;
+  },
+]);

@@ -29,22 +29,16 @@ export let loader: LoaderFunction = async ({ request }) => {
   let term = url.searchParams.get("term") || "";
 
   let posts = await db.post.findMany({
+    select: { title: true, slug: true, headline: true, updatedAt: true },
     where: {
       author: { email: "hello@sergiodxa.com" },
-      body: {
-        contains: term,
-        mode: "insensitive",
-      },
-      headline: {
-        contains: term,
-        mode: "insensitive",
-      },
+      body: { contains: term, mode: "insensitive" },
+      headline: { contains: term, mode: "insensitive" },
     },
     skip: (page - 1) * 10,
-    take: 10,
+    take: await db.post.count(),
+    orderBy: { updatedAt: "desc" },
   });
-
-  console.log(posts);
 
   let locale = await i18n.getLocale(request);
 
@@ -82,18 +76,18 @@ export default function Screen() {
 function NoteItem({ post }: { post: Post }) {
   let { locale } = useLoaderData<LoaderData>();
 
+  let updatedAt = new Date(post.updatedAt);
+
   return (
     <NavLink
       to={post.slug}
       className="flex flex-col gap-y-1.5 text-sm py-2 px-4 hover:bg-gray-200 rounded-md"
+      prefetch="intent"
     >
       <h2 className="font-medium text-black">{post.title}</h2>
-      <p className="text-gray-500">{post.headline}</p>
-      <time
-        dateTime={post.updatedAt.toJSON()}
-        className="text-gray-400 text-xs"
-      >
-        {post.updatedAt.toLocaleDateString(locale, {
+      <p className="text-gray-500 line-clamp-3">{post.headline}</p>
+      <time dateTime={updatedAt.toJSON()} className="text-gray-400 text-xs">
+        {updatedAt.toLocaleDateString(locale, {
           day: "2-digit",
           month: "long",
           year: "numeric",

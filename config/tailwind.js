@@ -4,5 +4,9 @@ module.exports = {
   darkMode: "media",
   theme: { extend: {} },
   variants: {},
-  plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/line-clamp"),
+  ],
 };

@@ -1,42 +1,107 @@
-import { HTML, Note } from "collected-notes";
+import { Role } from "@prisma/client";
+import { useTranslation } from "react-i18next";
 import {
-  json,
+  ActionFunction,
+  Form,
   LinksFunction,
   LoaderFunction,
   MetaFunction,
+  redirect,
   useLoaderData,
+  useLocation,
 } from "remix";
+import { json, notFound, redirectBack } from "remix-utils";
 import invariant from "tiny-invariant";
-import { cn, site } from "~/services/cn.server";
+import { adminAuthorizer, authenticator } from "~/services/auth.server";
+import { db } from "~/services/db.server";
+import { render } from "~/services/md.server";
 import highlightStyles from "~/styles/highlight.css";
 
 type LoaderData = {
-  body: HTML;
-  note: Note;
+  isAdmin: boolean;
+  title: string;
+  html: string;
+  id: string;
 };
 
 export let meta: MetaFunction = ({ data }) => {
-  let { note } = data as LoaderData;
-  return { title: note.title };
+  let { title } = data as LoaderData;
+  return { title };
 };
 
 export let links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: highlightStyles }];
 };
 
-export let loader: LoaderFunction = async ({ params }) => {
+export let action: ActionFunction = async (args) => {
+  await adminAuthorizer.authorize(args, {
+    failureRedirect: "/articles",
+    raise: "redirect",
+  });
+
+  let formData = await args.request.formData();
+  let action = formData.get("_action");
+
+  switch (action) {
+    case "delete": {
+      let id = formData.get("id");
+      invariant(typeof id === "string", "id must be a string");
+      await db.post.delete({ where: { id } });
+      return redirect("/articles");
+    }
+    default: {
+      return redirectBack(args.request, { fallback: "/articles" });
+    }
+  }
+};
+
+export let loader: LoaderFunction = async ({ request, params }) => {
+  let user = await authenticator.isAuthenticated(request);
+
+  let isAdmin = user?.role === Role.ADMIN;
+
   let slug = params["*"];
   invariant(slug, "Article slug is required");
-  let { body, note } = await cn.body(site, slug);
-  return json({ body, note });
+
+  let article = await db.post.findFirst({
+    select: { id: true, title: true, body: true },
+    where: { slug },
+  });
+
+  if (!article) throw notFound({ message: "Article not found" });
+
+  let html = render(article.body);
+
+  let headers = new Headers();
+  headers.set("Cache-Control", "private, max-age=60");
+
+  return json<LoaderData>(
+    { isAdmin, id: article.id, title: article.title, html },
+    { headers }
+  );
 };
 
 export default function Screen() {
-  let { body } = useLoaderData<LoaderData>();
+  let { isAdmin, title, html, id } = useLoaderData<LoaderData>();
+  let { t } = useTranslation();
+  let location = useLocation();
   return (
     <main className="h-full overflow-y-auto w-full">
-      <article className="prose mx-auto my-8">
-        <div className="contents" dangerouslySetInnerHTML={{ __html: body }} />
+      {isAdmin && (
+        <aside className="border-b border-gray-100 py-2 flex justify-end px-4">
+          <Form action={location.pathname} method="post">
+            <input type="hidden" name="_action" value="delete" />
+            <input type="hidden" name="id" value={id} />
+            <button className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              {t("Delete")}
+            </button>
+          </Form>
+        </aside>
+      )}
+
+      <article className="prose prose-lg text-gray-500 mx-auto py-8 space-y-6">
+        <h1>{title}</h1>
+        <div className="contents" dangerouslySetInnerHTML={{ __html: html }} />
       </article>
     </main>
   );
