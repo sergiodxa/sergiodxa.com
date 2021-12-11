@@ -1,4 +1,5 @@
 import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from "remix";
+import { useShouldHydrate } from "remix-utils";
 
 export function Document({
   children,
@@ -7,6 +8,7 @@ export function Document({
   children: React.ReactNode;
   title?: string;
 }) {
+  let shouldHydrate = useShouldHydrate();
   return (
     <html lang="en" className="h-full">
       <head>
@@ -19,7 +21,7 @@ export function Document({
       <body className="h-full">
         {children}
         <ScrollRestoration />
-        <Scripts />
+        {shouldHydrate && <Scripts />}
         {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
