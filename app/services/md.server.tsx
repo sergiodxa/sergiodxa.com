@@ -14,6 +14,72 @@ export class GitHubRenderer extends Renderer {
   }
 }
 
+export class TextRenderer extends Renderer {
+  image() {
+    return "[image]";
+  }
+
+  br() {
+    return "\n";
+  }
+
+  hr() {
+    return "[hr]";
+  }
+
+  checkbox() {
+    return "[checkbox]";
+  }
+
+  del(text: string) {
+    return `~${text}~`;
+  }
+
+  em(text: string) {
+    return `_${text}_`;
+  }
+
+  strong(text: string) {
+    return `**${text}**`;
+  }
+
+  table() {
+    return "[table]";
+  }
+
+  list(body: string, _ordered: boolean) {
+    return body;
+  }
+
+  listitem(text: string) {
+    return `* ${text}`;
+  }
+
+  link(_href: string, _title: string, text: string) {
+    return text;
+  }
+
+  paragraph(text: string) {
+    return text;
+  }
+
+  heading(text: string, _level: number) {
+    return text;
+  }
+
+  codespan(text: string) {
+    return text;
+  }
+
+  code(_code: string, _lang: string) {
+    return "[code]";
+  }
+
+  blockquote(quote: string) {
+    return quote;
+  }
+}
+
 export function render(
   markdown: string,
   options: marked.MarkedOptions = {}

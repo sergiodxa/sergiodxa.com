@@ -1,32 +1,44 @@
-import { Role } from "@prisma/client";
+import { Post, PostVisibility } from "@prisma/client";
 import { parameterize } from "inflected";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import {
   ActionFunction,
   Form,
   LoaderFunction,
   redirect,
   useActionData,
+  useLoaderData,
 } from "remix";
 import { json } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";
 import { Field } from "~/components/field";
 import { Heading, Region } from "~/components/heading";
-import { authenticator } from "~/services/auth.server";
+import { adminAuthorizer } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 
-export let action: ActionFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request, {
+type LoaderData = {
+  article: Post | null;
+};
+
+export let action: ActionFunction = async (args) => {
+  let user = await adminAuthorizer.authorize(args, {
     failureRedirect: "/articles",
+    raise: "redirect",
   });
 
-  let isAdmin = user.role === Role.ADMIN;
-  if (!isAdmin) return redirect("/articles");
+  let formData = await args.request.formData();
 
-  let formData = await request.formData();
+  let url = new URL(args.request.url);
+  let id = url.searchParams.get("id");
 
   try {
+    let action = formData.get("action");
+    invariant(action === "upsert" || action === "publish", "Invalid action");
+
+    let visibility =
+      action === "publish" ? PostVisibility.PUBLIC : PostVisibility.DRAFT;
+
     let title = formData.get("title");
     invariant(typeof title === "string", "title must be a string");
     invariant(title.trim().length > 0, "title can't be empty");
@@ -40,8 +52,10 @@ export let action: ActionFunction = async ({ request }) => {
 
     let slug = parameterize(title);
 
-    await db.post.create({
-      data: { slug, title, body, headline, userId: user.id },
+    await db.post.upsert({
+      where: { id: id ?? undefined, slug },
+      create: { slug, title, body, headline, userId: user.id, visibility },
+      update: { title, body, headline, visibility },
     });
 
     return redirect(`/articles/${slug}`);
@@ -51,28 +65,58 @@ export let action: ActionFunction = async ({ request }) => {
   }
 };
 
-export let loader: LoaderFunction = async ({ request }) => {
-  let user = await authenticator.isAuthenticated(request);
-  let isAdmin = user?.role === Role.ADMIN;
-  if (!isAdmin) return redirect("/articles");
-  return json({});
+export let loader: LoaderFunction = async (args) => {
+  await adminAuthorizer.authorize(args, {
+    failureRedirect: "/articles",
+    raise: "redirect",
+  });
+
+  let url = new URL(args.request.url);
+  let id = url.searchParams.get("id");
+
+  if (!id) return json<LoaderData>({ article: null });
+
+  let article = await db.post.findUnique({
+    where: { id },
+  });
+
+  if (!article) return json<LoaderData>({ article: null });
+
+  return json<LoaderData>({ article });
 };
 
 export default function Screen() {
+  let { article } = useLoaderData<LoaderData>();
   let result = useActionData<{ message: string }>();
   let { t } = useTranslation();
 
   return (
     <Region className="w-full">
       <Form method="post" className="max-w-prose mx-auto py-12 space-y-6">
-        <Heading>{t("Create a new Article")}</Heading>
+        {article === null ? (
+          <Heading>{t("Create a new Article")}</Heading>
+        ) : (
+          <Heading>
+            <Trans
+              defaults='Update "<strong>{{title}}</strong>"'
+              values={article}
+              components={{ strong: <strong /> }}
+            />
+          </Heading>
+        )}
 
         {result?.message && <Alert type="danger" title={result.message} />}
 
         <Field>
           <Field.Label>{t("Title")}</Field.Label>
           <Field.Hint>{t("The title of the article.")}</Field.Hint>
-          <Field.Input type="text" required minLength={1} name="title" />
+          <Field.Input
+            type="text"
+            required
+            minLength={1}
+            name="title"
+            defaultValue={article?.title}
+          />
         </Field>
 
         <Field>
@@ -82,7 +126,12 @@ export default function Screen() {
               "The headline of the article. It will default to the first 140 characters of the body."
             )}
           </Field.Hint>
-          <Field.Textarea maxLength={140} name="headline" />
+          <Field.Textarea
+            maxLength={140}
+            rows={5}
+            name="headline"
+            defaultValue={article?.headline}
+          />
         </Field>
 
         <Field>
@@ -90,12 +139,34 @@ export default function Screen() {
           <Field.Hint>
             {t("The content of the article. You can use Markdown.")}
           </Field.Hint>
-          <Field.Textarea required minLength={1} name="body" />
+          <Field.Textarea
+            required
+            minLength={1}
+            rows={15}
+            name="body"
+            defaultValue={article?.body}
+          />
         </Field>
 
-        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          {t("Create Article")}
-        </button>
+        <footer className="flex gap-x-4 justify-end items-center">
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            name="action"
+            value="upsert"
+          >
+            {article === null ? t("Create") : t("Update")}
+          </button>
+
+          {article?.visibility === PostVisibility.DRAFT && (
+            <button
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+              name="action"
+              value="publish"
+            >
+              {t("Publish")}
+            </button>
+          )}
+        </footer>
       </Form>
     </Region>
   );

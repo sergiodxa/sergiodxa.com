@@ -15,6 +15,11 @@ enum Role {
   USER
 }
 
+enum PostVisibility {
+  PUBLIC
+  DRAFT
+}
+
 model User {
   id          String   @id @unique @default(cuid())
   displayName String
@@ -27,14 +32,15 @@ model User {
 }
 
 model Post {
-  id           String   @id @unique @default(cuid())
-  slug         String   @unique
+  id           String         @id @unique @default(cuid())
+  slug         String         @unique
   title        String
   body         String
   headline     String
-  author       User     @relation(fields: [userId], references: [id])
+  author       User           @relation(fields: [userId], references: [id])
   userId       String
-  updatedAt    DateTime @updatedAt
-  canonicalUrl String   @default("")
-  lang         String   @default("en")
+  updatedAt    DateTime       @updatedAt
+  canonicalUrl String         @default("")
+  lang         String         @default("en")
+  visibility   PostVisibility @default(DRAFT)
 }

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActionFunction,
   Form,
+  Link,
   LinksFunction,
   LoaderFunction,
   MetaFunction,
@@ -88,11 +89,18 @@ export default function Screen() {
   return (
     <main className="h-full overflow-y-auto w-full">
       {isAdmin && (
-        <aside className="border-b border-gray-100 py-2 flex justify-end px-4">
+        <aside className="border-b border-gray-100 py-2 flex justify-end px-4 gap-x-4">
+          <Link
+            to={`write?id=${id}`}
+            className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            {t("Edit")}
+          </Link>
+
           <Form action={location.pathname} method="post">
             <input type="hidden" name="_action" value="delete" />
             <input type="hidden" name="id" value={id} />
-            <button className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button className="inline-flex items-center px-2.5 py-1.5 border border-red-500 shadow-sm text-xs font-medium rounded text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               {t("Delete")}
             </button>
           </Form>

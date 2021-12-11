@@ -19,3 +19,7 @@ if (process.env.NODE_ENV === "production") {
   }
   db = global.__db;
 }
+
+db.$on("beforeExit", () => {
+  process.exit(0);
+});

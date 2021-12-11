@@ -1,4 +1,4 @@
-import { Post } from "@prisma/client";
+import { Post, PostVisibility, Role } from "@prisma/client";
 import { useId } from "@react-aria/utils";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,8 +11,10 @@ import {
 } from "remix";
 import { FeedList } from "~/components/feed-list";
 import { Heading } from "~/components/heading";
+import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
+import { render, TextRenderer } from "~/services/md.server";
 
 type LoaderData = {
   posts: Post[];
@@ -24,20 +26,38 @@ export let meta: MetaFunction = () => {
 };
 
 export let loader: LoaderFunction = async ({ request }) => {
+  let user = await authenticator.isAuthenticated(request);
+
+  let role = user ? user.role : "anonymous";
+
   let url = new URL(request.url);
   let page = Number(url.searchParams.get("page") || "1");
   let term = url.searchParams.get("term") || "";
 
   let posts = await db.post.findMany({
-    select: { title: true, slug: true, headline: true, updatedAt: true },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      headline: true,
+      updatedAt: true,
+    },
     where: {
       author: { email: "hello@sergiodxa.com" },
       body: { contains: term, mode: "insensitive" },
       headline: { contains: term, mode: "insensitive" },
+      visibility:
+        role !== Role.ADMIN ? { equals: PostVisibility.PUBLIC } : undefined,
     },
     skip: (page - 1) * 10,
     take: await db.post.count(),
     orderBy: { updatedAt: "desc" },
+  });
+
+  let renderer = new TextRenderer();
+
+  posts.forEach((post) => {
+    post.headline = render(post.headline, { renderer });
   });
 
   let locale = await i18n.getLocale(request);
@@ -85,7 +105,10 @@ function NoteItem({ post }: { post: Post }) {
       prefetch="intent"
     >
       <h2 className="font-medium text-black">{post.title}</h2>
-      <p className="text-gray-500 line-clamp-3">{post.headline}</p>
+      <p
+        className="text-gray-500 line-clamp-3"
+        dangerouslySetInnerHTML={{ __html: post.headline }}
+      />
       <time dateTime={updatedAt.toJSON()} className="text-gray-400 text-xs">
         {updatedAt.toLocaleDateString(locale, {
           day: "2-digit",
