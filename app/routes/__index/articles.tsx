@@ -1,14 +1,14 @@
-import { Post, PostVisibility, Role } from "@prisma/client";
+import { Content, ContentType, Role, Visibility } from "@prisma/client";
 import { useId } from "@react-aria/utils";
 import { useTranslation } from "react-i18next";
 import {
-  json,
   LoaderFunction,
   MetaFunction,
   NavLink,
   Outlet,
   useLoaderData,
 } from "remix";
+import { json } from "remix-utils";
 import { FeedList } from "~/components/feed-list";
 import { Heading } from "~/components/heading";
 import { authenticator } from "~/services/auth.server";
@@ -17,7 +17,7 @@ import { i18n } from "~/services/i18n.server";
 import { render, TextRenderer } from "~/services/md.server";
 
 type LoaderData = {
-  posts: Post[];
+  articles: Content[];
   locale: string;
 };
 
@@ -34,7 +34,7 @@ export let loader: LoaderFunction = async ({ request }) => {
   let page = Number(url.searchParams.get("page") || "1");
   let term = url.searchParams.get("term") || "";
 
-  let posts = await db.post.findMany({
+  let articles = await db.content.findMany({
     select: {
       id: true,
       title: true,
@@ -43,36 +43,37 @@ export let loader: LoaderFunction = async ({ request }) => {
       updatedAt: true,
     },
     where: {
+      type: { equals: ContentType.ARTICLE },
       author: { email: "hello@sergiodxa.com" },
       body: { contains: term, mode: "insensitive" },
       headline: { contains: term, mode: "insensitive" },
       visibility:
-        role !== Role.ADMIN ? { equals: PostVisibility.PUBLIC } : undefined,
+        role !== Role.ADMIN ? { equals: Visibility.PUBLIC } : undefined,
     },
     skip: (page - 1) * 10,
-    take: await db.post.count(),
+    take: await db.content.count(),
     orderBy: { updatedAt: "desc" },
   });
 
   let renderer = new TextRenderer();
 
-  posts.forEach((post) => {
-    post.headline = render(post.headline, { renderer });
+  articles.forEach((post) => {
+    post.headline = render(post.headline ?? "", { renderer });
   });
 
   let locale = await i18n.getLocale(request);
 
-  return json({ posts, locale });
+  return json<LoaderData>({ articles, locale });
 };
 
 export default function Screen() {
   let { t } = useTranslation();
   let id = useId();
-  let { posts } = useLoaderData<LoaderData>();
+  let { articles } = useLoaderData<LoaderData>();
 
   return (
     <>
-      <FeedList<Post>
+      <FeedList<Content>
         className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
         heading={
           <header className="px-4">
@@ -82,10 +83,10 @@ export default function Screen() {
           </header>
         }
         aria-labelledby={id}
-        data={posts}
-        keyExtractor={(note) => note.id}
-        renderItem={(note) => {
-          return <NoteItem post={note} />;
+        data={articles}
+        keyExtractor={(article) => article.id}
+        renderItem={(article) => {
+          return <ListItem article={article} />;
         }}
       />
       <Outlet />
@@ -93,21 +94,21 @@ export default function Screen() {
   );
 }
 
-function NoteItem({ post }: { post: Post }) {
+function ListItem({ article }: { article: Content }) {
   let { locale } = useLoaderData<LoaderData>();
 
-  let updatedAt = new Date(post.updatedAt);
+  let updatedAt = new Date(article.updatedAt);
 
   return (
     <NavLink
-      to={post.slug}
+      to={article.slug}
       className="flex flex-col gap-y-1.5 text-sm py-2 px-4 hover:bg-gray-200 rounded-md"
       prefetch="intent"
     >
-      <h2 className="font-medium text-black">{post.title}</h2>
+      <h2 className="font-medium text-black">{article.title}</h2>
       <p
         className="text-gray-500 line-clamp-3"
-        dangerouslySetInnerHTML={{ __html: post.headline }}
+        dangerouslySetInnerHTML={{ __html: article.headline ?? "" }}
       />
       <time dateTime={updatedAt.toJSON()} className="text-gray-400 text-xs">
         {updatedAt.toLocaleDateString(locale, {

@@ -20,15 +20,44 @@ enum PostVisibility {
   DRAFT
 }
 
+enum Visibility {
+  PRIVATE
+  PUBLIC
+  DRAFT
+}
+
+enum ContentType {
+  ARTICLE
+  BOOKMARK
+  STACK
+}
+
 model User {
-  id          String   @id @unique @default(cuid())
+  id          String    @id @unique @default(cuid())
   displayName String
-  email       String   @unique
+  email       String    @unique
   avatar      String
   posts       Post[]
-  updatedAt   DateTime @updatedAt
-  role        Role     @default(USER)
-  locale      String   @default("en")
+  updatedAt   DateTime  @updatedAt
+  role        Role      @default(USER)
+  locale      String    @default("en")
+  Content     Content[]
+}
+
+model Content {
+  id           String      @id @unique @default(cuid())
+  visibility   Visibility  @default(PRIVATE)
+  type         ContentType
+  slug         String      @unique
+  title        String
+  body         String?
+  headline     String?
+  canonicalUrl String?
+  lang         String      @default("en")
+  author       User        @relation(fields: [userId], references: [id])
+  userId       String
+  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime    @default(now())
 }
 
 model Post {

@@ -1,19 +1,22 @@
-import { PostVisibility } from ".prisma/client";
+import { Content, ContentType, Visibility } from ".prisma/client";
 import { NoteVisibility } from "collected-notes";
 import matter from "gray-matter";
+import { parameterize } from "inflected";
 import { LoaderFunction, redirect } from "remix";
+import { getBookmarks } from "~/services/airtable.server";
 import { adminAuthorizer } from "~/services/auth.server";
 import { cn, site } from "~/services/cn.server";
 import { db } from "~/services/db.server";
 
-function getPostVisibility(visibility: NoteVisibility): PostVisibility {
+function getPostVisibility(visibility: NoteVisibility): Visibility {
   switch (visibility) {
     case "public":
     case "public_site":
-      return PostVisibility.PUBLIC;
+      return Visibility.PUBLIC;
     case "public_unlisted":
+      return Visibility.DRAFT;
     case "private":
-      return PostVisibility.DRAFT;
+      return Visibility.PRIVATE;
     default:
       throw new Error(`Invalid visibility "${visibility}"`);
   }
@@ -35,9 +38,11 @@ export let loader: LoaderFunction = async (args) => {
     )
   ).flat();
 
-  await db.post.deleteMany();
+  let bookmarks = await getBookmarks();
 
-  await db.post.createMany({
+  await db.content.deleteMany();
+
+  await db.content.createMany({
     data: notes.map((note) => {
       let { content, data } = matter(note.body);
       let updatedAt = new Date(data.date ?? note.created_at);
@@ -47,6 +52,8 @@ export let loader: LoaderFunction = async (args) => {
       let headline = body.slice(0, body.indexOf("\n")).trim();
 
       return {
+        visibility: getPostVisibility(note.visibility),
+        type: ContentType.ARTICLE,
         slug: note.path,
         title: note.title,
         userId: user.id,
@@ -54,12 +61,29 @@ export let loader: LoaderFunction = async (args) => {
         lang,
         headline,
         updatedAt,
+        createdAt: updatedAt,
         canonicalUrl,
-        visibility: getPostVisibility(note.visibility),
-      };
+      } as Content;
     }),
     skipDuplicates: true,
   });
 
-  return redirect("/articles");
+  await db.content.createMany({
+    data: bookmarks.map((bookmark) => {
+      return {
+        visibility: Visibility.PUBLIC,
+        type: ContentType.BOOKMARK,
+        slug: parameterize(bookmark.title),
+        title: bookmark.title,
+        userId: user.id,
+        canonicalUrl: bookmark.url,
+        lang: "en",
+        createdAt: bookmark.createdAt,
+        updatedAt: bookmark.createdAt,
+      } as Content;
+    }),
+    skipDuplicates: true,
+  });
+
+  return redirect("/");
 };

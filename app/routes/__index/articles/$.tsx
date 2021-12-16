@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { ContentType, Role } from "@prisma/client";
 import { useTranslation } from "react-i18next";
 import {
   ActionFunction,
@@ -64,14 +64,14 @@ export let loader: LoaderFunction = async ({ request, params }) => {
   let slug = params["*"];
   invariant(slug, "Article slug is required");
 
-  let article = await db.post.findFirst({
+  let article = await db.content.findFirst({
     select: { id: true, title: true, body: true },
-    where: { slug },
+    where: { slug, type: { equals: ContentType.ARTICLE } },
   });
 
   if (!article) throw notFound({ message: "Article not found" });
 
-  let html = render(article.body);
+  let html = render(article.body ?? "");
 
   let headers = new Headers();
   headers.set("Cache-Control", "private, max-age=60");
