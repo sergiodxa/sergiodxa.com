@@ -20,8 +20,12 @@ export default function Screen() {
   let { t } = useTranslation();
 
   return (
-    <Region className="w-full">
-      {isAdmin && <Link to="write">{t("Write a new article")}</Link>}
+    <Region className="w-full relative">
+      {isAdmin && (
+        <div className="inset-0 absolute flex items-center justify-center">
+          <Link to="write">{t("Write a new article")}</Link>
+        </div>
+      )}
     </Region>
   );
 }

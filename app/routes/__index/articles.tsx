@@ -1,6 +1,4 @@
 import { Content, ContentType, Role, Visibility } from "@prisma/client";
-import { useId } from "@react-aria/utils";
-import { useTranslation } from "react-i18next";
 import {
   LoaderFunction,
   MetaFunction,
@@ -10,7 +8,6 @@ import {
 } from "remix";
 import { json } from "remix-utils";
 import { FeedList } from "~/components/feed-list";
-import { Heading } from "~/components/heading";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
@@ -43,7 +40,7 @@ export let loader: LoaderFunction = async ({ request }) => {
       updatedAt: true,
     },
     where: {
-      type: { equals: ContentType.ARTICLE },
+      type: ContentType.ARTICLE,
       author: { email: "hello@sergiodxa.com" },
       body: { contains: term, mode: "insensitive" },
       headline: { contains: term, mode: "insensitive" },
@@ -66,23 +63,16 @@ export let loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({ articles, locale });
 };
 
+export let handle = { title: "Articles" };
+
 export default function Screen() {
-  let { t } = useTranslation();
-  let id = useId();
   let { articles } = useLoaderData<LoaderData>();
 
   return (
     <>
       <FeedList<Content>
         className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
-        heading={
-          <header className="px-4">
-            <Heading level={2} id={id} className="font-medium">
-              {t("Articles")}
-            </Heading>
-          </header>
-        }
-        aria-labelledby={id}
+        aria-labelledby="main-title"
         data={articles}
         keyExtractor={(article) => article.id}
         renderItem={(article) => {

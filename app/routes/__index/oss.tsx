@@ -10,7 +10,6 @@ import {
   useLoaderData,
 } from "remix";
 import { FeedList } from "~/components/feed-list";
-import { Heading } from "~/components/heading";
 import { getRepos, Repository } from "~/services/gh.server";
 import { i18n } from "~/services/i18n.server";
 import { pick } from "~/utils/objects";
@@ -56,6 +55,8 @@ export let loader: LoaderFunction = async ({ request }) => {
   });
 };
 
+export let handle = { title: "Open Source" };
+
 export default function Screen() {
   let { t } = useTranslation();
   let id = useId();
@@ -65,14 +66,7 @@ export default function Screen() {
     <>
       <FeedList<MinimalRepo>
         className="flex flex-col flex-shrink-0 gap-y-2 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
-        heading={
-          <header className="px-4 pb-4">
-            <Heading level={2} id={id} className="font-medium">
-              {t("Open Source")}
-            </Heading>
-          </header>
-        }
-        aria-labelledby={id}
+        aria-labelledby="main-title"
         data={repos}
         keyExtractor={(note) => note.id}
         renderItem={(note) => {

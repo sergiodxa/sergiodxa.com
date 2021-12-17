@@ -1,23 +1,16 @@
 import { Content, ContentType, Role, Visibility } from "@prisma/client";
 import { useId } from "@react-aria/utils";
 import { useTranslation } from "react-i18next";
-import {
-  LoaderFunction,
-  MetaFunction,
-  NavLink,
-  Outlet,
-  useLoaderData,
-} from "remix";
+import { LoaderFunction, MetaFunction, Outlet, useLoaderData } from "remix";
 import { json } from "remix-utils";
 import { FeedList } from "~/components/feed-list";
-import { Heading } from "~/components/heading";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
 import { render, TextRenderer } from "~/services/md.server";
 
 type LoaderData = {
-  articles: Content[];
+  contents: Content[];
   locale: string;
 };
 
@@ -33,19 +26,18 @@ export let loader: LoaderFunction = async ({ request }) => {
   let url = new URL(request.url);
   let term = url.searchParams.get("term") || "";
 
-  let articles = await db.content.findMany({
+  let contents = await db.content.findMany({
     select: {
       id: true,
       title: true,
       slug: true,
       headline: true,
+      canonicalUrl: true,
       updatedAt: true,
     },
     where: {
-      type: { equals: ContentType.BOOKMARK },
-      author: { email: "hello@sergiodxa.com" },
-      body: { contains: term, mode: "insensitive" },
-      headline: { contains: term, mode: "insensitive" },
+      type: ContentType.BOOKMARK,
+      title: { contains: term, mode: "insensitive" },
       visibility:
         role !== Role.ADMIN ? { equals: Visibility.PUBLIC } : undefined,
     },
@@ -54,36 +46,31 @@ export let loader: LoaderFunction = async ({ request }) => {
 
   let renderer = new TextRenderer();
 
-  articles.forEach((post) => {
+  contents.forEach((post) => {
     post.headline = render(post.headline ?? "", { renderer });
   });
 
   let locale = await i18n.getLocale(request);
 
-  return json<LoaderData>({ articles, locale });
+  return json<LoaderData>({ contents, locale });
 };
+
+export let handle = { title: "Bookmarks" };
 
 export default function Screen() {
   let { t } = useTranslation();
   let id = useId();
-  let { articles } = useLoaderData<LoaderData>();
+  let { contents } = useLoaderData<LoaderData>();
 
   return (
     <>
       <FeedList<Content>
         className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
-        heading={
-          <header className="px-4">
-            <Heading level={2} id={id} className="font-medium">
-              {t("Bookmarks")}
-            </Heading>
-          </header>
-        }
-        aria-labelledby={id}
-        data={articles}
-        keyExtractor={(article) => article.id}
-        renderItem={(article) => {
-          return <ListItem article={article} />;
+        aria-labelledby="main-title"
+        data={contents}
+        keyExtractor={(content) => content.id}
+        renderItem={(content) => {
+          return <ListItem content={content} />;
         }}
       />
       <Outlet />
@@ -91,21 +78,20 @@ export default function Screen() {
   );
 }
 
-function ListItem({ article }: { article: Content }) {
+function ListItem({ content }: { content: Content }) {
   let { locale } = useLoaderData<LoaderData>();
 
-  let updatedAt = new Date(article.updatedAt);
+  let updatedAt = new Date(content.updatedAt);
 
   return (
-    <NavLink
-      to={article.slug}
+    <a
+      href={content.canonicalUrl ?? "/"}
       className="flex flex-col gap-y-1.5 text-sm py-2 px-4 hover:bg-gray-200 rounded-md"
-      prefetch="intent"
     >
-      <h2 className="font-medium text-black">{article.title}</h2>
+      <h2 className="font-medium text-black">{content.title}</h2>
       <p
         className="text-gray-500 line-clamp-3"
-        dangerouslySetInnerHTML={{ __html: article.headline ?? "" }}
+        dangerouslySetInnerHTML={{ __html: content.headline ?? "" }}
       />
       <time dateTime={updatedAt.toJSON()} className="text-gray-400 text-xs">
         {updatedAt.toLocaleDateString(locale, {
@@ -114,6 +100,6 @@ function ListItem({ article }: { article: Content }) {
           year: "numeric",
         })}
       </time>
-    </NavLink>
+    </a>
   );
 }
