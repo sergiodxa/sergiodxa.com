@@ -1,20 +1,25 @@
 import { Content, ContentType, Role, Visibility } from "@prisma/client";
 import {
+  json,
   LoaderFunction,
   MetaFunction,
   NavLink,
   Outlet,
   useLoaderData,
 } from "remix";
-import { json } from "remix-utils";
 import { FeedList } from "~/components/feed-list";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
 import { render, TextRenderer } from "~/services/md.server";
 
+type Article = Pick<
+  Content,
+  "id" | "title" | "slug" | "headline" | "updatedAt"
+>;
+
 type LoaderData = {
-  articles: Content[];
+  articles: Article[];
   locale: string;
 };
 
@@ -70,7 +75,7 @@ export default function Screen() {
 
   return (
     <>
-      <FeedList<Content>
+      <FeedList<Article>
         className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
         aria-labelledby="main-title"
         data={articles}
@@ -84,7 +89,7 @@ export default function Screen() {
   );
 }
 
-function ListItem({ article }: { article: Content }) {
+function ListItem({ article }: { article: Article }) {
   let { locale } = useLoaderData<LoaderData>();
 
   let updatedAt = new Date(article.updatedAt);

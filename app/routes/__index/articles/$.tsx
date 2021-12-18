@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActionFunction,
   Form,
+  json,
   Link,
   LinksFunction,
   LoaderFunction,
@@ -11,7 +12,7 @@ import {
   useLoaderData,
   useLocation,
 } from "remix";
-import { json, notFound, redirectBack } from "remix-utils";
+import { notFound, redirectBack } from "remix-utils";
 import invariant from "tiny-invariant";
 import { adminAuthorizer, authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
@@ -47,7 +48,7 @@ export let action: ActionFunction = async (args) => {
     case "delete": {
       let id = formData.get("id");
       invariant(typeof id === "string", "id must be a string");
-      await db.post.delete({ where: { id } });
+      await db.content.delete({ where: { id } });
       return redirect("/articles");
     }
     default: {

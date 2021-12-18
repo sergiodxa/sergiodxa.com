@@ -15,11 +15,6 @@ enum Role {
   USER
 }
 
-enum PostVisibility {
-  PUBLIC
-  DRAFT
-}
-
 enum Visibility {
   PRIVATE
   PUBLIC
@@ -37,11 +32,10 @@ model User {
   displayName String
   email       String    @unique
   avatar      String
-  posts       Post[]
   updatedAt   DateTime  @updatedAt
   role        Role      @default(USER)
   locale      String    @default("en")
-  Content     Content[]
+  contents    Content[]
 }
 
 model Content {
@@ -58,18 +52,4 @@ model Content {
   userId       String
   updatedAt    DateTime    @updatedAt
   createdAt    DateTime    @default(now())
-}
-
-model Post {
-  id           String         @id @unique @default(cuid())
-  slug         String         @unique
-  title        String
-  body         String
-  headline     String
-  author       User           @relation(fields: [userId], references: [id])
-  userId       String
-  updatedAt    DateTime       @updatedAt
-  canonicalUrl String         @default("")
-  lang         String         @default("en")
-  visibility   PostVisibility @default(DRAFT)
 }

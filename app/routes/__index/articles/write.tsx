@@ -1,15 +1,15 @@
-import { Post, PostVisibility } from "@prisma/client";
+import { Content, ContentType, Visibility } from "@prisma/client";
 import { parameterize } from "inflected";
 import { Trans, useTranslation } from "react-i18next";
 import {
   ActionFunction,
   Form,
+  json,
   LoaderFunction,
   redirect,
   useActionData,
   useLoaderData,
 } from "remix";
-import { json } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";
 import { Field } from "~/components/field";
@@ -18,7 +18,7 @@ import { adminAuthorizer } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 
 type LoaderData = {
-  article: Post | null;
+  article: Content | null;
 };
 
 export let action: ActionFunction = async (args) => {
@@ -37,7 +37,7 @@ export let action: ActionFunction = async (args) => {
     invariant(action === "upsert" || action === "publish", "Invalid action");
 
     let visibility =
-      action === "publish" ? PostVisibility.PUBLIC : PostVisibility.DRAFT;
+      action === "publish" ? Visibility.PUBLIC : Visibility.DRAFT;
 
     let title = formData.get("title");
     invariant(typeof title === "string", "title must be a string");
@@ -52,9 +52,17 @@ export let action: ActionFunction = async (args) => {
 
     let slug = parameterize(title);
 
-    await db.post.upsert({
+    await db.content.upsert({
       where: { id: id ?? undefined, slug },
-      create: { slug, title, body, headline, userId: user.id, visibility },
+      create: {
+        slug,
+        title,
+        body,
+        headline,
+        userId: user.id,
+        visibility,
+        type: ContentType.ARTICLE,
+      },
       update: { title, body, headline, visibility },
     });
 
@@ -76,7 +84,7 @@ export let loader: LoaderFunction = async (args) => {
 
   if (!id) return json<LoaderData>({ article: null });
 
-  let article = await db.post.findUnique({
+  let article = await db.content.findUnique({
     where: { id },
   });
 
@@ -130,7 +138,7 @@ export default function Screen() {
             maxLength={140}
             rows={5}
             name="headline"
-            defaultValue={article?.headline}
+            defaultValue={article?.headline ?? ""}
           />
         </Field>
 
@@ -144,7 +152,7 @@ export default function Screen() {
             minLength={1}
             rows={15}
             name="body"
-            defaultValue={article?.body}
+            defaultValue={article?.body ?? ""}
           />
         </Field>
 
@@ -157,7 +165,7 @@ export default function Screen() {
             {article === null ? t("Create") : t("Update")}
           </button>
 
-          {article?.visibility === PostVisibility.DRAFT && (
+          {article?.visibility === Visibility.DRAFT && (
             <button
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
               name="action"

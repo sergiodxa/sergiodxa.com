@@ -1,8 +1,13 @@
 import { Content, ContentType, Role, Visibility } from "@prisma/client";
 import { useId } from "@react-aria/utils";
 import { useTranslation } from "react-i18next";
-import { LoaderFunction, MetaFunction, Outlet, useLoaderData } from "remix";
-import { json } from "remix-utils";
+import {
+  json,
+  LoaderFunction,
+  MetaFunction,
+  Outlet,
+  useLoaderData,
+} from "remix";
 import { FeedList } from "~/components/feed-list";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
