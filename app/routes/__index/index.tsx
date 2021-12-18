@@ -6,7 +6,7 @@ import { FeedList } from "~/components/feed-list";
 import { Heading, Region } from "~/components/heading";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
-import { render, TextRenderer } from "~/services/md.server";
+import { PlainTextRenderer, render } from "~/services/md.server";
 
 type Item = {
   id: string;
@@ -38,7 +38,7 @@ export let loader: LoaderFunction = async ({ request }) => {
     orderBy: { createdAt: "desc" },
   });
 
-  let renderer = new TextRenderer();
+  let renderer = new PlainTextRenderer();
 
   let items: Item[] = contents.map((content) => {
     return {

@@ -1,5 +1,5 @@
 import Airtable, { FieldSet } from "airtable";
-import { requireEnv } from "~/utils/environment";
+import { env } from "~/utils/environment";
 
 export type Bookmark = FieldSet & {
   title: string;
@@ -9,8 +9,8 @@ export type Bookmark = FieldSet & {
 
 export async function getBookmarks(limit = 100): Promise<Bookmark[]> {
   const base = new Airtable({
-    apiKey: requireEnv("AIRTABLE_API_KEY"),
-  }).base(requireEnv("AIRTABLE_BASE"));
+    apiKey: env("AIRTABLE_API_KEY"),
+  }).base(env("AIRTABLE_BASE"));
 
   const table = base<Bookmark>("links");
 

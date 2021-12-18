@@ -14,7 +14,7 @@ export class GitHubRenderer extends Renderer {
   }
 }
 
-export class TextRenderer extends Renderer {
+export class PlainTextRenderer extends Renderer {
   image() {
     return "[image]";
   }

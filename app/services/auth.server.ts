@@ -2,14 +2,14 @@ import { Role, User } from "@prisma/client";
 import { Authenticator, Authorizer, GitHubStrategy } from "remix-auth";
 import { db } from "~/services/db.server";
 import { sessionStorage } from "~/services/session.server";
-import { requireEnv } from "~/utils/environment";
+import { env } from "~/utils/environment";
 
-let BASE_URL = requireEnv("BASE_URL");
+let BASE_URL = env("BASE_URL");
 
 let gitHubStrategy = new GitHubStrategy<User>(
   {
-    clientID: requireEnv("GITHUB_CLIENT_ID"),
-    clientSecret: requireEnv("GITHUB_CLIENT_SECRET"),
+    clientID: env("GITHUB_CLIENT_ID"),
+    clientSecret: env("GITHUB_CLIENT_SECRET"),
     callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
   },
   async (_, __, ___, profile) => {

@@ -12,7 +12,7 @@ import { FeedList } from "~/components/feed-list";
 import { authenticator } from "~/services/auth.server";
 import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
-import { render, TextRenderer } from "~/services/md.server";
+import { PlainTextRenderer, render } from "~/services/md.server";
 
 type LoaderData = {
   contents: Content[];
@@ -49,7 +49,7 @@ export let loader: LoaderFunction = async ({ request }) => {
     orderBy: { updatedAt: "desc" },
   });
 
-  let renderer = new TextRenderer();
+  let renderer = new PlainTextRenderer();
 
   contents.forEach((post) => {
     post.headline = render(post.headline ?? "", { renderer });

@@ -1,38 +1,9 @@
 import { Octokit } from "@octokit/core";
-import { requireEnv } from "~/utils/environment";
+import { env } from "~/utils/environment";
 
-let token = requireEnv("GITHUB_TOKEN");
+let token = env("GITHUB_TOKEN");
 
 export let gh = new Octokit({ auth: token });
-
-export async function getRepos(page = 1): Promise<Repository[]> {
-  let response = await gh.request("GET /users/{org}/repos", {
-    org: "sergiodxa",
-    type: "owner",
-    sort: "updated",
-    page,
-  });
-
-  return response.data ?? [];
-}
-
-export async function getRepo(repo: string): Promise<FullRepository> {
-  let response = await gh.request("GET /repos/{owner}/{repo}", {
-    owner: "sergiodxa",
-    repo,
-  });
-
-  return response.data as FullRepository;
-}
-
-export async function getRepoReadme(repo: string): Promise<RepositoryReadme> {
-  let response = await gh.request("GET /repos/{owner}/{repo}/readme", {
-    owner: "sergiodxa",
-    repo,
-  });
-
-  return response.data as RepositoryReadme;
-}
 
 export type Repository = {
   id: number;

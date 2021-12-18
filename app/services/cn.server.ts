@@ -1,6 +1,6 @@
 import { collectedNotes } from "collected-notes";
-import { requireEnv } from "~/utils/environment";
+import { env } from "~/utils/environment";
 
-export let cn = collectedNotes(requireEnv("CN_EMAIL"), requireEnv("CN_TOKEN"));
+export let cn = collectedNotes(env("CN_EMAIL"), env("CN_TOKEN"));
 
-export let site = requireEnv("CN_SITE");
+export let site = env("CN_SITE");

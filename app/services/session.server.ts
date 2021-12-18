@@ -1,15 +1,15 @@
 import { createCookieSessionStorage } from "remix";
-import { requireEnv } from "~/utils/environment";
+import { env, isProduction } from "~/utils/environment";
 
 export let sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "session",
     path: "/",
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction(),
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     sameSite: "lax",
-    secrets: [requireEnv("SESSION_SECRET", "s3cr3t")],
+    secrets: [env("SESSION_SECRET", "s3cr3t")],
   },
 });
 

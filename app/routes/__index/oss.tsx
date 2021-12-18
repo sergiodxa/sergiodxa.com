@@ -1,6 +1,5 @@
 import { StarIcon } from "@heroicons/react/outline";
-import { useId } from "@react-aria/utils";
-import { Trans, useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 import {
   json,
   LoaderFunction,
@@ -10,22 +9,14 @@ import {
   useLoaderData,
 } from "remix";
 import { FeedList } from "~/components/feed-list";
-import { getRepos, Repository } from "~/services/gh.server";
+import {
+  ListOfRepositories,
+  Repositories,
+} from "~/features/repositories.server";
 import { i18n } from "~/services/i18n.server";
-import { pick } from "~/utils/objects";
-
-type MinimalRepo = Pick<
-  Repository,
-  | "name"
-  | "stargazers_count"
-  | "description"
-  | "id"
-  | "updated_at"
-  | "full_name"
->;
 
 type LoaderData = {
-  repos: MinimalRepo[];
+  repos: ListOfRepositories;
   locale: string;
 };
 
@@ -38,33 +29,22 @@ export let loader: LoaderFunction = async ({ request }) => {
 
   let page = Number(url.searchParams.get("page") || "1");
 
-  let repos = await getRepos(page);
+  let [repos, locale] = await Promise.all([
+    Repositories.getList(page),
+    i18n.getLocale(request),
+  ]);
 
-  let locale = await i18n.getLocale(request);
-
-  return json({
-    repos: pick(repos, [
-      "id",
-      "name",
-      "stargazers_count",
-      "description",
-      "updated_at",
-      "full_name",
-    ]),
-    locale,
-  });
+  return json({ repos, locale });
 };
 
 export let handle = { title: "Open Source" };
 
 export default function Screen() {
-  let { t } = useTranslation();
-  let id = useId();
   let { repos } = useLoaderData<LoaderData>();
 
   return (
     <>
-      <FeedList<MinimalRepo>
+      <FeedList<ListOfRepositories[0]>
         className="flex flex-col flex-shrink-0 gap-y-2 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
         aria-labelledby="main-title"
         data={repos}
@@ -78,7 +58,7 @@ export default function Screen() {
   );
 }
 
-function Item({ repo }: { repo: MinimalRepo }) {
+function Item({ repo }: { repo: ListOfRepositories[0] }) {
   let { locale } = useLoaderData<LoaderData>();
 
   let updatedAt = new Date(repo.updated_at);
