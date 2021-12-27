@@ -31,6 +31,7 @@ model User {
   id          String    @id @unique @default(cuid())
   displayName String
   email       String    @unique
+  password    String?
   avatar      String
   updatedAt   DateTime  @updatedAt
   role        Role      @default(USER)

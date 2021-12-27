@@ -18,7 +18,7 @@ type Article = Pick<
   "id" | "title" | "slug" | "headline" | "updatedAt"
 >;
 
-type LoaderData = {
+export type LoaderData = {
   articles: Article[];
   locale: string;
 };
@@ -68,7 +68,7 @@ export let loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({ articles, locale });
 };
 
-export let handle = { title: "Articles" };
+export let handle = { title: "Articles", id: "articles-list" };
 
 export default function Screen() {
   let { articles } = useLoaderData<LoaderData>();

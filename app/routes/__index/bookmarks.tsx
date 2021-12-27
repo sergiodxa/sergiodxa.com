@@ -14,8 +14,13 @@ import { db } from "~/services/db.server";
 import { i18n } from "~/services/i18n.server";
 import { PlainTextRenderer, render } from "~/services/md.server";
 
+type MinContent = Pick<
+  Content,
+  "id" | "title" | "slug" | "headline" | "canonicalUrl" | "updatedAt"
+>;
+
 type LoaderData = {
-  contents: Content[];
+  contents: MinContent[];
   locale: string;
 };
 
@@ -69,7 +74,7 @@ export default function Screen() {
 
   return (
     <>
-      <FeedList<Content>
+      <FeedList<MinContent>
         className="flex flex-col flex-shrink-0 gap-y-6 w-full max-w-sm max-h-full overflow-y-auto py-4 px-2"
         aria-labelledby="main-title"
         data={contents}
@@ -83,7 +88,7 @@ export default function Screen() {
   );
 }
 
-function ListItem({ content }: { content: Content }) {
+function ListItem({ content }: { content: MinContent }) {
   let { locale } = useLoaderData<LoaderData>();
 
   let updatedAt = new Date(content.updatedAt);

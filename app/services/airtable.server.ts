@@ -4,7 +4,7 @@ import { env } from "~/utils/environment";
 export type Bookmark = FieldSet & {
   title: string;
   url: string;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export async function getBookmarks(limit = 100): Promise<Bookmark[]> {
@@ -24,6 +24,6 @@ export async function getBookmarks(limit = 100): Promise<Bookmark[]> {
   return records.map((record) => ({
     title: record.fields.title,
     url: record.fields.url,
-    createdAt: new Date(record._rawJson.createdTime),
+    createdAt: new Date(record._rawJson.createdTime).toJSON(),
   }));
 }

@@ -78,8 +78,8 @@ export let loader: LoaderFunction = async (args) => {
         userId: user.id,
         canonicalUrl: bookmark.url,
         lang: "en",
-        createdAt: bookmark.createdAt,
-        updatedAt: bookmark.createdAt,
+        createdAt: new Date(bookmark.createdAt),
+        updatedAt: new Date(bookmark.createdAt),
       } as Content;
     }),
     skipDuplicates: true,

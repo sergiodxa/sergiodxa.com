@@ -58,7 +58,6 @@ export let action: ActionFunction = async (args) => {
 };
 
 export let loader: LoaderFunction = async ({ request, params }) => {
-  console.log("articles.$");
   let user = await authenticator.isAuthenticated(request);
 
   let isAdmin = user?.role === Role.ADMIN;
@@ -83,6 +82,8 @@ export let loader: LoaderFunction = async ({ request, params }) => {
     { headers }
   );
 };
+
+export let handle = { id: "article-show" };
 
 export default function Screen() {
   let { isAdmin, title, html, id } = useLoaderData<LoaderData>();

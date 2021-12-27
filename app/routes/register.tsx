@@ -1,12 +1,52 @@
 import { useTranslation } from "react-i18next";
-import { Form, json, LoaderFunction, useLoaderData } from "remix";
+import {
+  ActionFunction,
+  Form,
+  json,
+  LoaderFunction,
+  redirect,
+  useActionData,
+  useLoaderData,
+} from "remix";
+import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";
 import { Field } from "~/components/field";
 import { GitHubIcon } from "~/components/icons";
+import { signup } from "~/models/user.server";
 import { authenticator } from "~/services/auth.server";
 import { commitSession, getSession } from "~/services/session.server";
 
 type LoaderData = { error: string | null };
+type ActionData = { error: string | null };
+
+export let action: ActionFunction = async ({ request }) => {
+  let form = await request.formData();
+
+  let email = form.get("email");
+  let password = form.get("password");
+  let displayName = form.get("displayName");
+
+  let session = await getSession(request);
+
+  try {
+    invariant(typeof email === "string", "email must be a string");
+    invariant(typeof password === "string", "password must be a string");
+    invariant(typeof displayName === "string", "displayName must be a string");
+
+    let user = await signup({ email, displayName, password });
+
+    session.set(authenticator.sessionKey, user);
+
+    let headers = new Headers({ "Set-Cookie": await commitSession(session) });
+
+    return redirect("/", { headers });
+  } catch (error) {
+    if (error instanceof Error) {
+      return json<ActionData>({ error: error.message });
+    }
+    throw error;
+  }
+};
 
 export let loader: LoaderFunction = async ({ request }) => {
   await authenticator.isAuthenticated(request, { successRedirect: "/" });
@@ -19,6 +59,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 export default function Screen() {
   let { t } = useTranslation();
   let { error } = useLoaderData<LoaderData>();
+  let action = useActionData<ActionData>();
 
   return (
     <div className="min-h-full bg-gradient-to-br from-rose-500 via-lime-500 to-sky-500 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -28,13 +69,18 @@ export default function Screen() {
         </h2>
 
         {Boolean(error) && <Alert type="danger" title={error?.message} />}
+        {Boolean(action?.error) && <Alert type="danger" title={action.error} />}
 
-        <Form
-          method="post"
-          action="/auth/form"
-          reloadDocument
-          className="max-w-xs mx-auto"
-        >
+        <Form method="post" reloadDocument className="max-w-xs mx-auto">
+          <Field>
+            <Field.Label>{t("Username")}</Field.Label>
+            <Field.Input
+              type="text"
+              name="displayName"
+              defaultValue="sergiodxa"
+            />
+          </Field>
+
           <Field>
             <Field.Label>{t("Email")}</Field.Label>
             <Field.Input
