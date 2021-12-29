@@ -6,19 +6,23 @@ import { GitHubIcon } from "~/components/icons";
 import { authenticator } from "~/services/auth.server";
 import { commitSession, getSession } from "~/services/session.server";
 
-type LoaderData = { error: string | null };
+type LoaderData = { error: string | null; magicLinkSent: boolean };
 
 export let loader: LoaderFunction = async ({ request }) => {
   await authenticator.isAuthenticated(request, { successRedirect: "/" });
   let session = await getSession(request);
+
   let error = session.get("auth:error") as string | null;
+  let magicLinkSent = session.has("auth:magiclink");
+
   let headers = new Headers({ "Set-Cookie": await commitSession(session) });
-  return json<LoaderData>({ error }, { headers });
+
+  return json<LoaderData>({ error, magicLinkSent }, { headers });
 };
 
 export default function Screen() {
   let { t } = useTranslation();
-  let { error } = useLoaderData<LoaderData>();
+  let { error, magicLinkSent } = useLoaderData<LoaderData>();
 
   return (
     <div className="min-h-full bg-gradient-to-br from-rose-500 via-lime-500 to-sky-500 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -28,32 +32,49 @@ export default function Screen() {
         </h2>
 
         {Boolean(error) && <Alert type="danger" title={error?.message} />}
+        {magicLinkSent && (
+          <Alert
+            type="success"
+            title="Check your email"
+            body="An email with a link was sent to your email, click it to complete the login."
+          />
+        )}
 
         <Form
           method="post"
           action="/auth/form"
           reloadDocument
-          className="max-w-xs mx-auto"
+          className="max-w-sm mx-auto flex flex-col gap-4"
         >
           <Field>
             <Field.Label>{t("Email")}</Field.Label>
-            <Field.Input
-              type="email"
-              name="email"
-              defaultValue="hello@sergiodxa.com"
-            />
+            <Field.Input type="email" name="email" required minLength={3} />
           </Field>
 
           <Field>
             <Field.Label>{t("Password")}</Field.Label>
+            <Field.Hint>
+              {t("If you have a password, write it here.")}
+            </Field.Hint>
             <Field.Input
               type="password"
               name="password"
-              defaultValue="abc123!@#"
+              autoComplete="current-password"
             />
           </Field>
 
-          <button>{t("Sign In")}</button>
+          <div className="flex gap-4">
+            <button className="w-full inline-flex items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+              {t("Sign In with Password")}
+            </button>
+
+            <button
+              formAction="/auth/email-link"
+              className="w-full inline-flex items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+            >
+              {t("Sign In with Email")}
+            </button>
+          </div>
         </Form>
 
         <hr />

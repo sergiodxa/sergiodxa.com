@@ -7,6 +7,7 @@ import { pick } from "~/utils/objects";
 export type PublicUser = Pick<User, "id" | "displayName" | "avatar" | "role">;
 
 type FormBody = { email: string; password: string };
+type EmailBody = { email: string };
 type GitHubBody = { email: string; displayName: string; avatar: string };
 
 export async function login(
@@ -14,12 +15,16 @@ export async function login(
   body: FormBody
 ): Promise<PublicUser>;
 export async function login(
+  provider: "email",
+  body: EmailBody
+): Promise<PublicUser>;
+export async function login(
   provider: "github",
   body: GitHubBody
 ): Promise<PublicUser>;
 export async function login(
-  provider: "form" | "github",
-  body: FormBody | GitHubBody
+  provider: "form" | "github" | "email",
+  body: FormBody | GitHubBody | EmailBody
 ): Promise<PublicUser> {
   switch (provider) {
     case "form": {
@@ -46,6 +51,16 @@ export async function login(
         update: { displayName, avatar },
         create: { email, displayName, avatar },
       });
+    }
+
+    case "email": {
+      let { email } = body as EmailBody;
+      let user = await db.user.findUnique({
+        where: { email },
+        select: { id: true, displayName: true, avatar: true, role: true },
+      });
+      if (!user) throw new Error("Account not found");
+      return user;
     }
   }
 }

@@ -1,11 +1,13 @@
 import { Role } from "@prisma/client";
 import { Authenticator, Authorizer } from "remix-auth";
+import { EmailLinkStrategy } from "remix-auth-email-link";
 import { FormStrategy } from "remix-auth-form";
 import { GitHubStrategy } from "remix-auth-github";
 import invariant from "tiny-invariant";
 import { login, PublicUser } from "~/models/user.server";
 import { sessionStorage } from "~/services/session.server";
 import { env } from "~/utils/environment";
+import { sendEmail } from "./email.server";
 
 let BASE_URL = env("BASE_URL");
 
@@ -18,7 +20,7 @@ authenticator.use(
       clientSecret: env("GITHUB_CLIENT_SECRET"),
       callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
     },
-    async ({ profile }) => {
+    async ({ profile, ...rest }) => {
       return await login("github", {
         email: profile.emails[0].value,
         displayName: profile.displayName,
@@ -38,6 +40,16 @@ authenticator.use(
 
     return await login("form", { email, password });
   })
+);
+
+authenticator.use(
+  // @ts-expect-error
+  new EmailLinkStrategy(
+    { sendEmail, secret: env("MAGIC_LINK_SECRET") },
+    async ({ email }) => {
+      return await login("email", { email });
+    }
+  )
 );
 
 export let adminAuthorizer = new Authorizer(authenticator, [
