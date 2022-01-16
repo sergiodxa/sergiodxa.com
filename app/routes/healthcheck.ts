@@ -1,9 +1,7 @@
 import { LoaderFunction } from "remix";
-import { RateLimit } from "~/services/rate-limit.server";
+import { db } from "~/services/db.server";
 
-let rateLimit = new RateLimit();
-
-export let loader: LoaderFunction = async ({ request }) => {
-  await rateLimit.check("test", 10);
+export let loader: LoaderFunction = async () => {
+  await db.content.count();
   return new Response("OK", { status: 200 });
 };
