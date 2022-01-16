@@ -64,14 +64,14 @@ export let loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({ items });
 };
 
-export let handle = { title: "Home" };
+export let handle = { title: "The Feed" };
 
 export default function Screen() {
   let { items } = useLoaderData<LoaderData>();
 
   return (
     <FeedList<Item>
-      className="h-full overflow-y-auto px-2 py-4 w-full max-w-screen-sm flex flex-col gap-y-8"
+      className="px-2 py-8 w-full max-w-screen-md mx-auto flex flex-col gap-y-8"
       aria-labelledby="main-title"
       data={items}
       keyExtractor={(item) => item.id}

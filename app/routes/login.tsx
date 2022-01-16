@@ -26,7 +26,7 @@ export default function Screen() {
 
   return (
     <div className="min-h-full bg-gradient-to-br from-rose-500 via-lime-500 to-sky-500 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="bg-white/40 py-8 px-4 shadow sm:rounded-lg sm:px-10 w-full max-w-lg mx-auto space-y-8">
+      <div className="bg-white/40 border border-gray-300 py-8 px-4 shadow sm:rounded-lg sm:px-10 w-full max-w-lg mx-auto space-y-8">
         <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
           {t("Sign in to your account")}
         </h2>

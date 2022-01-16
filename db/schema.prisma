@@ -12,7 +12,8 @@ datasource db {
 
 enum Role {
   ADMIN
-  USER
+  AUTHOR
+  READER
 }
 
 enum Visibility {
@@ -24,33 +25,38 @@ enum Visibility {
 enum ContentType {
   ARTICLE
   BOOKMARK
-  STACK
+  THOUGHT
 }
 
 model User {
   id          String    @id @unique @default(cuid())
-  displayName String
-  email       String    @unique
-  password    String?
-  avatar      String
-  updatedAt   DateTime  @updatedAt
-  role        Role      @default(USER)
+  role        Role      @default(READER)
   locale      String    @default("en")
+  email       String    @unique
+  displayName String
+  avatar      String
+  password    String?
   contents    Content[]
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
 }
 
 model Content {
   id           String      @id @unique @default(cuid())
   visibility   Visibility  @default(PRIVATE)
-  type         ContentType
-  slug         String      @unique
-  title        String
-  body         String?
-  headline     String?
-  canonicalUrl String?
   lang         String      @default("en")
+  slug         String      @unique
+  type         ContentType
+  title        String?
+  headline     String?
+  video        String?
+  body         String?
+  canonicalUrl String?
   author       User        @relation(fields: [userId], references: [id])
   userId       String
+  parent       Content?    @relation("CommentOfContent", fields: [parentId], references: [id])
+  parentId     String?
+  comments     Content[]   @relation("CommentOfContent")
   updatedAt    DateTime    @updatedAt
   createdAt    DateTime    @default(now())
 }

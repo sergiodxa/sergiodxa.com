@@ -1,5 +1,11 @@
 import { Role } from "@prisma/client";
-import { Authenticator, Authorizer } from "remix-auth";
+import { SessionStorage } from "remix";
+import {
+  AuthenticateOptions,
+  Authenticator,
+  Authorizer,
+  Strategy,
+} from "remix-auth";
 import { EmailLinkStrategy } from "remix-auth-email-link";
 import { FormStrategy } from "remix-auth-form";
 import { GitHubStrategy } from "remix-auth-github";
@@ -13,6 +19,40 @@ let BASE_URL = env("BASE_URL");
 
 export let authenticator = new Authenticator<PublicUser>(sessionStorage);
 
+class TokenStrategy<User> extends Strategy<User, { token: string }> {
+  name = "token";
+
+  async authenticate(
+    request: Request,
+    sessionStorage: SessionStorage,
+    options: AuthenticateOptions
+  ): Promise<User> {
+    let token = request.headers.get("Authorization");
+
+    if (!token) {
+      return await this.failure(
+        "Missing token",
+        request,
+        sessionStorage,
+        options
+      );
+    }
+
+    let user;
+    try {
+      user = await this.verify({ token });
+      return await this.success(user, request, sessionStorage, options);
+    } catch (error) {
+      return await this.failure(
+        (error as Error).message,
+        request,
+        sessionStorage,
+        options
+      );
+    }
+  }
+}
+
 authenticator.use(
   new GitHubStrategy(
     {
@@ -20,7 +60,7 @@ authenticator.use(
       clientSecret: env("GITHUB_CLIENT_SECRET"),
       callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
     },
-    async ({ profile, ...rest }) => {
+    async ({ profile }) => {
       return await login("github", {
         email: profile.emails[0].value,
         displayName: profile.displayName,
@@ -43,13 +83,18 @@ authenticator.use(
 );
 
 authenticator.use(
-  // @ts-expect-error
   new EmailLinkStrategy(
     { sendEmail, secret: env("MAGIC_LINK_SECRET") },
     async ({ email }) => {
       return await login("email", { email });
     }
   )
+);
+
+authenticator.use(
+  new TokenStrategy(async ({ token }) => {
+    return await login("email", { email: token });
+  })
 );
 
 export let adminAuthorizer = new Authorizer(authenticator, [

@@ -1,14 +1,12 @@
 import { SSRProvider } from "@react-aria/ssr";
-import i18next from "i18next";
 import { hydrate } from "react-dom";
 import { RemixBrowser } from "remix";
-import { RemixI18NextProvider } from "remix-i18next";
-import { init } from "./services/i18next";
+import { i18nextInit, RemixI18NextProvider } from "./services/i18next";
 
-init().then(() => {
+i18nextInit().then((i18n) => {
   hydrate(
     <SSRProvider>
-      <RemixI18NextProvider i18n={i18next}>
+      <RemixI18NextProvider i18n={i18n}>
         <RemixBrowser />
       </RemixI18NextProvider>
     </SSRProvider>,

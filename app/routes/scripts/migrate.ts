@@ -3,6 +3,7 @@ import { NoteVisibility } from "collected-notes";
 import matter from "gray-matter";
 import { parameterize } from "inflected";
 import { LoaderFunction, redirect } from "remix";
+import { PublicUser } from "~/models/user.server";
 import { getBookmarks } from "~/services/airtable.server";
 import { adminAuthorizer } from "~/services/auth.server";
 import { cn, site } from "~/services/cn.server";
@@ -22,12 +23,7 @@ function getPostVisibility(visibility: NoteVisibility): Visibility {
   }
 }
 
-export let loader: LoaderFunction = async (args) => {
-  let user = await adminAuthorizer.authorize(args, {
-    failureRedirect: "/",
-    raise: "redirect",
-  });
-
+async function migrateArticles(user: PublicUser) {
   let notes = (
     await Promise.all(
       Array.from({ length: 4 })
@@ -37,10 +33,6 @@ export let loader: LoaderFunction = async (args) => {
         })
     )
   ).flat();
-
-  let bookmarks = await getBookmarks();
-
-  await db.content.deleteMany();
 
   await db.content.createMany({
     data: notes.map((note) => {
@@ -67,6 +59,10 @@ export let loader: LoaderFunction = async (args) => {
     }),
     skipDuplicates: true,
   });
+}
+
+async function migrateBookmarks(user: PublicUser) {
+  let bookmarks = await getBookmarks();
 
   await db.content.createMany({
     data: bookmarks.map((bookmark) => {
@@ -84,6 +80,17 @@ export let loader: LoaderFunction = async (args) => {
     }),
     skipDuplicates: true,
   });
+}
+
+export let loader: LoaderFunction = async (args) => {
+  let user = await adminAuthorizer.authorize(args, {
+    failureRedirect: "/",
+    raise: "redirect",
+  });
+
+  await db.content.deleteMany();
+
+  await Promise.all([migrateArticles(user), migrateBookmarks(user)]);
 
   return redirect("/");
 };

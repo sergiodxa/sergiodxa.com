@@ -8,9 +8,9 @@ import {
   useCatch,
   useLoaderData,
 } from "remix";
-import { useRemixI18Next } from "remix-i18next";
 import { Document } from "~/components/document";
 import { i18n } from "~/services/i18n.server";
+import { useSetupI18N } from "~/services/i18next";
 import tailwindUrl from "~/styles/tailwind.css";
 import { ErrorPage } from "./components/error";
 import { useNProgress } from "./hooks/use-nprogress";
@@ -33,7 +33,7 @@ export let loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   let { locale } = useLoaderData();
-  useRemixI18Next(locale);
+  useSetupI18N(locale);
 
   useNProgress();
 

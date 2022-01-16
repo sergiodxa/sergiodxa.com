@@ -1,11 +1,9 @@
 import { SSRProvider } from "@react-aria/ssr";
 import "dotenv/config";
-import i18next from "i18next";
 import { renderToString } from "react-dom/server";
 import type { EntryContext } from "remix";
 import { RemixServer } from "remix";
-import { RemixI18NextProvider } from "remix-i18next";
-import { init } from "./services/i18next";
+import { i18nextInit, RemixI18NextProvider } from "~/services/i18next";
 
 export default async function handleRequest(
   request: Request,
@@ -13,11 +11,9 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  await init();
-
   let markup = renderToString(
     <SSRProvider>
-      <RemixI18NextProvider i18n={i18next}>
+      <RemixI18NextProvider i18n={await i18nextInit()}>
         <RemixServer context={remixContext} url={request.url} />
       </RemixI18NextProvider>
     </SSRProvider>

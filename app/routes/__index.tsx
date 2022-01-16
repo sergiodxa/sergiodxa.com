@@ -54,12 +54,10 @@ export default function Screen() {
   let { t } = useTranslation();
   let { user } = useLoaderData<LoaderData>();
 
-  let primary: Link[] = [
-    { to: "/", label: t("Home"), icon: HomeIcon },
-    { to: "articles", label: t("Articles"), icon: DocumentTextIcon },
-  ];
+  let primary: Link[] = [{ to: "/feed", label: t("The Feed"), icon: HomeIcon }];
 
   let me: Link[] = [
+    { to: "articles", label: t("Articles"), icon: DocumentTextIcon },
     { to: "bookmarks", label: t("Bookmarks"), icon: BookmarkIcon },
     { to: "oss", label: t("Open Source"), icon: CodeIcon },
   ];
@@ -110,19 +108,19 @@ export default function Screen() {
         user={user}
       />
 
-      <div className="flex divide-x divide-gray-100">
-        <header className="flex-shrink-0 hidden sm:flex flex-col w-full max-w-xs px-2 pt-4 gap-y-6 max-h-full overflow-y-auto">
-          <p className="font-extrabold text-xl px-2">Sergio Xalambrí</p>
+      <div className="h-full flex">
+        <nav className="flex-shrink-0 hidden sm:flex flex-col w-full max-w-xs px-2 pt-4 gap-y-6 fixed left-0 top-0 bottom-0">
+          <div className="font-extrabold text-xl px-2">Sergio Xalambrí</div>
 
-          <nav className="contents">
+          <ul className="contents">
             <Navigation links={primary} title={t("Primary")} hideTitle />
-            <Navigation links={me} title={t("Me")} />
+            {/* <Navigation links={me} title={t("Me")} /> */}
             <Navigation links={projects} title={t("Projects")} />
             <Navigation links={online} title={t("Online")} />
-          </nav>
+          </ul>
 
           <UserStatus user={user} />
-        </header>
+        </nav>
 
         <Outlet />
       </div>

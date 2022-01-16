@@ -11,7 +11,7 @@
     "build:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --minify",
     "build": "npm run build:css && npm run build:app",
     "postinstall": "remix setup node",
-    "start": "remix-serve api/_build",
+    "start": "HOST=0.0.0.0 remix-serve api/_build",
     "db:migrate": "prisma migrate",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
@@ -43,6 +43,7 @@
     "gray-matter": "^4.0.3",
     "i18next": "^21.6.4",
     "inflected": "^2.1.0",
+    "lru-cache": "^6.0.0",
     "marked": "^4.0.8",
     "md5": "^2.3.0",
     "nprogress": "^0.2.0",
