@@ -68,44 +68,54 @@ export let handle = { title: "The Feed" };
 
 export default function Screen() {
   let { items } = useLoaderData<LoaderData>();
+  let { t } = useTranslation();
 
   return (
-    <FeedList<Item>
-      className="px-2 py-8 w-full max-w-screen-md mx-auto flex flex-col gap-y-8"
-      aria-labelledby="main-title"
-      data={items}
-      keyExtractor={(item) => item.id}
-      articleProps={{ className: "relative" }}
-      renderItem={(item, index) => {
-        let isLast = index !== items.length - 1;
-        return (
-          <>
-            {isLast && (
+    <main className="px-4 py-8 w-full max-w-screen-md mx-auto space-y-8">
+      <h1 className="text-7xl font-extrabold">{t("The Feed")}</h1>
+      <p className="text-xl font-semibold">
+        {t("My current activity on the internet.")}
+      </p>
+      <FeedList<Item>
+        className="flex flex-col gap-y-8"
+        aria-labelledby="main-title"
+        data={items}
+        keyExtractor={(item) => item.id}
+        articleProps={{
+          className:
+            "relative focus:outline-none focus-visible:ring-4 ring-offset-8 ring-black rounded-lg",
+        }}
+        renderItem={(item, index) => {
+          // let isLast = index !== items.length - 1;
+          return (
+            <>
+              {/* {isLast && (
               <span
                 className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
                 aria-hidden="true"
               />
-            )}
+            )} */}
 
-            {item.type === "BOOKMARK" && <BookmarkItem item={item} />}
-            {item.type === "ARTICLE" && <ArticleItem item={item} />}
-          </>
-        );
-      }}
-    />
+              {item.type === "BOOKMARK" && <BookmarkItem item={item} />}
+              {item.type === "ARTICLE" && <ArticleItem item={item} />}
+            </>
+          );
+        }}
+      />
+    </main>
   );
 }
 
 function ArticleItem({ item }: { item: Item }) {
   let { t } = useTranslation();
   return (
-    <Region className="relative flex space-x-3 items-start">
+    <Region className="relative flex space-x-3 items-center">
       <div className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-black">
         <DocumentTextIcon className="h-5 w-5 text-white" aria-hidden="true" />
       </div>
 
       <div className="flex-1 flex justify-between space-x-4">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-black">
           <Trans
             t={t}
             defaults="I published <h><a>{{title}}</a></h>"
@@ -119,7 +129,7 @@ function ArticleItem({ item }: { item: Item }) {
 
         <time
           dateTime={item.date.dateTime}
-          className="text-right text-sm whitespace-nowrap text-gray-500"
+          className="text-right text-sm whitespace-nowrap text-gray-700"
         >
           {item.date.text}
         </time>
@@ -131,13 +141,13 @@ function ArticleItem({ item }: { item: Item }) {
 function BookmarkItem({ item }: { item: Item }) {
   let { t } = useTranslation();
   return (
-    <Region className="relative flex space-x-3 items-start">
+    <Region className="relative flex space-x-3 items-center">
       <div className="flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-black">
         <BookmarkIcon className="h-5 w-5 text-white" aria-hidden="true" />
       </div>
 
       <div className="flex-1 flex justify-between space-x-4">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-black">
           <Trans
             t={t}
             defaults="I read <h><a>{{title}}</a></h>"
@@ -152,7 +162,7 @@ function BookmarkItem({ item }: { item: Item }) {
 
         <time
           dateTime={item.date.dateTime}
-          className="text-right text-sm whitespace-nowrap text-gray-500"
+          className="text-right text-sm whitespace-nowrap text-gray-700"
         >
           {item.date.text}
         </time>

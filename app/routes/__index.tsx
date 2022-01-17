@@ -99,28 +99,27 @@ export default function Screen() {
   ];
 
   return (
-    <div className="h-full flex flex-col relative">
-      <Menu
+    <div className="flex flex-col relative">
+      {/* <Menu
         primary={primary}
         me={me}
         projects={projects}
         online={online}
         user={user}
-      />
+      /> */}
 
-      <div className="h-full flex">
-        <nav className="flex-shrink-0 hidden sm:flex flex-col w-full max-w-xs px-2 pt-4 gap-y-6 fixed left-0 top-0 bottom-0">
-          <div className="font-extrabold text-xl px-2">Sergio Xalambrí</div>
-
-          <ul className="contents">
-            <Navigation links={primary} title={t("Primary")} hideTitle />
-            {/* <Navigation links={me} title={t("Me")} /> */}
+      <div>
+        <header className="px-4 flex items-center gap-x-4">
+          <Navigation links={primary} title={t("Primary")} hideTitle />
+          <div className="ml-auto">
+            <UserStatus user={user} />
+          </div>
+          {/* <nav className="flex items-end gap-x-4">
+            <Navigation links={me} title={t("Me")} />
             <Navigation links={projects} title={t("Projects")} />
             <Navigation links={online} title={t("Online")} />
-          </ul>
-
-          <UserStatus user={user} />
-        </nav>
+          </nav> */}
+        </header>
 
         <Outlet />
       </div>
@@ -166,7 +165,7 @@ type NavigationProps = {
 
 function Navigation({ links, title, hideTitle = false }: NavigationProps) {
   return (
-    <Region className="space-y-2">
+    <Region>
       <Heading
         className={clsx("text-xs text-gray-500 font-medium px-2", {
           "sr-only": hideTitle,
@@ -175,7 +174,7 @@ function Navigation({ links, title, hideTitle = false }: NavigationProps) {
         {title}
       </Heading>
 
-      <ul className="flex flex-col gap-y-1.5">
+      <ul className="flex gap-x-1.5">
         {links.map((link) => {
           return (
             <li key={link.to}>
@@ -193,10 +192,18 @@ function UserStatus({ user }: { user: LoaderData["user"] }) {
 
   if (user === null) {
     return (
-      <div className="mt-auto border-t border-gray-100 -mx-2 px-2 py-2">
+      <div
+        className={clsx(
+          "flex items-center gap-x-1",
+          "px-2 py-1.5 rounded-md",
+          "text-sm font-medium",
+          "focus:outline-none focus:bg-gray-100 focus:text-gray-900",
+          "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+        )}
+      >
         <Link
           to="login"
-          className="block text-sm text-center w-full py-1 rounded-md hover:bg-gray-100"
+          className="block text-sm text-center w-full py-1 rounded-md hover:bg-gray-100 px-2"
         >
           <span>{t("Sign In")}</span>
         </Link>
@@ -217,7 +224,7 @@ function UserStatus({ user }: { user: LoaderData["user"] }) {
         reloadDocument
         className="ml-auto"
       >
-        <button type="submit">
+        <button type="submit" className="flex items-center">
           <span className="sr-only">{t("Logout")}</span>
           <LogoutIcon aria-hidden className="w-4 h-4" />
         </button>
