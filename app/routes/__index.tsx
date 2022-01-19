@@ -1,22 +1,8 @@
-import { Popover } from "@headlessui/react";
 import { LogoutIcon } from "@heroicons/react/outline";
-import {
-  BookmarkIcon,
-  CodeIcon,
-  DocumentTextIcon,
-  ExternalLinkIcon,
-  HomeIcon,
-  LockClosedIcon,
-  MenuIcon,
-  PuzzleIcon,
-  TranslateIcon,
-  XIcon,
-} from "@heroicons/react/solid";
-import type { User } from "@prisma/client";
+import { ExternalLinkIcon, HomeIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
-import { ComponentProps, useRef } from "react";
+import { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { usePopper } from "react-popper";
 import {
   Form,
   json,
@@ -25,15 +11,13 @@ import {
   NavLink,
   Outlet,
   useLoaderData,
-  useMatches,
 } from "remix";
 import { Heading, Region } from "~/components/heading";
-import { GitHubIcon, TwitterIcon } from "~/components/icons";
+import { PublicUser } from "~/models/user.server";
 import { authenticator } from "~/services/auth.server";
-import { pick } from "~/utils/objects";
 
 type LoaderData = {
-  user: Pick<User, "avatar" | "displayName"> | null;
+  user: PublicUser | null;
 };
 
 type Link = {
@@ -45,7 +29,7 @@ type Link = {
 
 export let loader: LoaderFunction = async ({ request }) => {
   let user = await authenticator.isAuthenticated(request);
-  return json({ user: user ? pick(user, ["avatar", "displayName"]) : null });
+  return json({ user });
 };
 
 export let handle = { hydrate: true };
@@ -56,47 +40,47 @@ export default function Screen() {
 
   let primary: Link[] = [{ to: "/feed", label: t("The Feed"), icon: HomeIcon }];
 
-  let me: Link[] = [
-    { to: "articles", label: t("Articles"), icon: DocumentTextIcon },
-    { to: "bookmarks", label: t("Bookmarks"), icon: BookmarkIcon },
-    { to: "oss", label: t("Open Source"), icon: CodeIcon },
-  ];
+  // let me: Link[] = [
+  //   { to: "articles", label: t("Articles"), icon: DocumentTextIcon },
+  //   { to: "bookmarks", label: t("Bookmarks"), icon: BookmarkIcon },
+  //   { to: "oss", label: t("Open Source"), icon: CodeIcon },
+  // ];
 
-  let projects: Link[] = [
-    {
-      to: "projects/remix-auth",
-      label: t("Remix Auth"),
-      icon: LockClosedIcon,
-      external: true,
-    },
-    {
-      to: "projects/remix-i18next",
-      label: t("Remix i18next"),
-      icon: TranslateIcon,
-      external: true,
-    },
-    {
-      to: "projects/remix-utils",
-      label: t("Remix Utils"),
-      icon: PuzzleIcon,
-      external: true,
-    },
-  ];
+  // let projects: Link[] = [
+  //   {
+  //     to: "projects/remix-auth",
+  //     label: t("Remix Auth"),
+  //     icon: LockClosedIcon,
+  //     external: true,
+  //   },
+  //   {
+  //     to: "projects/remix-i18next",
+  //     label: t("Remix i18next"),
+  //     icon: TranslateIcon,
+  //     external: true,
+  //   },
+  //   {
+  //     to: "projects/remix-utils",
+  //     label: t("Remix Utils"),
+  //     icon: PuzzleIcon,
+  //     external: true,
+  //   },
+  // ];
 
-  let online: Link[] = [
-    {
-      to: "social/twitter",
-      label: t("Twitter"),
-      icon: TwitterIcon,
-      external: true,
-    },
-    {
-      to: "social/github",
-      label: t("GitHub"),
-      icon: GitHubIcon,
-      external: true,
-    },
-  ];
+  // let online: Link[] = [
+  //   {
+  //     to: "social/twitter",
+  //     label: t("Twitter"),
+  //     icon: TwitterIcon,
+  //     external: true,
+  //   },
+  //   {
+  //     to: "social/github",
+  //     label: t("GitHub"),
+  //     icon: GitHubIcon,
+  //     external: true,
+  //   },
+  // ];
 
   return (
     <div className="flex flex-col relative">
@@ -230,99 +214,5 @@ function UserStatus({ user }: { user: LoaderData["user"] }) {
         </button>
       </Form>
     </div>
-  );
-}
-
-function Menu({
-  primary,
-  me,
-  projects,
-  online,
-  user,
-}: {
-  primary: Link[];
-  me: Link[];
-  projects: Link[];
-  online: Link[];
-  user: LoaderData["user"];
-}) {
-  let { t } = useTranslation();
-  let referenceElement = useRef<HTMLButtonElement>(null);
-  let popperElement = useRef<HTMLDivElement>(null);
-  let { styles, attributes } = usePopper(
-    referenceElement.current,
-    popperElement.current
-  );
-
-  let matches = useMatches();
-  let title = matches.reverse().find((match) => match.handle?.title)
-    ?.handle?.title;
-
-  return (
-    <Popover className="z-10 sm:hidden">
-      {({ open }) => {
-        return (
-          <>
-            <div className="border-b border-gray-100 px-2 py-2 flex items-center gap-x-2">
-              <Popover.Button
-                ref={referenceElement}
-                className="block text-sm text-center py-1 rounded-md hover:bg-gray-100"
-              >
-                <span className="sr-only">{t("Menu")}</span>
-                <MenuIcon className="w-5 h-5" aria-hidden />
-              </Popover.Button>
-
-              <h1 id="main-title">{t(title ?? "Sergio Xalambrí")}</h1>
-            </div>
-
-            <Popover.Overlay
-              className={clsx(
-                "bg-black",
-                { "opacity-0": !open },
-                { "opacity-30 fixed inset-0": open }
-              )}
-            />
-
-            <Popover.Panel
-              ref={popperElement}
-              style={styles.popper}
-              {...attributes.popper}
-              className="w-full h-full"
-            >
-              {({ close }) => {
-                return (
-                  <div
-                    onClick={() => close()}
-                    className="bg-white h-full overflow-y-auto max-w-xs flex-shrink-0 flex flex-col p-2 gap-y-6"
-                  >
-                    <div className="flex justify-between items-center">
-                      <p>Sergio Xalambrí</p>
-
-                      <Popover.Button className="text-sm text-center py-1 rounded-md hover:bg-gray-100">
-                        <span className="sr-only">{t("Close")}</span>
-                        <XIcon className="w-5 h-5" aria-hidden />
-                      </Popover.Button>
-                    </div>
-
-                    <nav className="contents">
-                      <Navigation
-                        links={primary}
-                        title={t("Primary")}
-                        hideTitle
-                      />
-                      <Navigation links={me} title={t("Me")} />
-                      <Navigation links={projects} title={t("Projects")} />
-                      <Navigation links={online} title={t("Online")} />
-                    </nav>
-
-                    <UserStatus user={user} />
-                  </div>
-                );
-              }}
-            </Popover.Panel>
-          </>
-        );
-      }}
-    </Popover>
   );
 }
