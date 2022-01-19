@@ -11,6 +11,7 @@
     "build:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --minify",
     "build": "npm run build:css && npm run build:app",
     "postinstall": "remix setup node",
+    "prestart": "npm run db:migrate deploy",
     "start": "HOST=0.0.0.0 remix-serve api/_build",
     "db:migrate": "prisma migrate",
     "typecheck": "tsc --noEmit --project tsconfig.json"
