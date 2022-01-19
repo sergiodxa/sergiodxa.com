@@ -95,9 +95,9 @@ export default function Screen() {
       <div>
         <header className="px-4 flex items-center gap-x-4">
           <Navigation links={primary} title={t("Primary")} hideTitle />
-          <div className="ml-auto">
+          {/* <div className="ml-auto">
             <UserStatus user={user} />
-          </div>
+          </div> */}
           {/* <nav className="flex items-end gap-x-4">
             <Navigation links={me} title={t("Me")} />
             <Navigation links={projects} title={t("Projects")} />
