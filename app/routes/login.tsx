@@ -31,13 +31,13 @@ export default function Screen() {
         </h2>
 
         {Boolean(error) && <Alert type="danger" title={error?.message} />}
-        {magicLinkSent && (
+        {/* {magicLinkSent && (
           <Alert
             type="success"
             title="Check your email"
             body="An email with a link was sent to your email, click it to complete the login."
           />
-        )}
+        )} */}
 
         {/* <Form
           method="post"
