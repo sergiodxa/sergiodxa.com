@@ -1,5 +1,7 @@
-import { Content, ContentType, Role, Visibility } from "@prisma/client";
-import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { Content } from "@prisma/client";
+import { ContentType, Role, Visibility } from "@prisma/client";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { FeedList } from "~/components/feed-list";
 import { authenticator } from "~/services/auth.server";

@@ -1,17 +1,12 @@
-import { LogoutIcon } from "@heroicons/react/outline";
 import { ExternalLinkIcon, HomeIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { NavLink, Outlet } from "@remix-run/react";
 import { Heading, Region } from "~/components/heading";
-import { PublicUser } from "~/models/user.server";
 import { authenticator } from "~/services/auth.server";
-
-type LoaderData = {
-  user: PublicUser | null;
-};
 
 type Link = {
   to: string;
@@ -29,7 +24,6 @@ export let handle = { hydrate: true };
 
 export default function Screen() {
   let { t } = useTranslation();
-  let { user } = useLoaderData<LoaderData>();
 
   let primary: Link[] = [{ to: "/feed", label: t("The Feed"), icon: HomeIcon }];
 
@@ -161,51 +155,5 @@ function Navigation({ links, title, hideTitle = false }: NavigationProps) {
         })}
       </ul>
     </Region>
-  );
-}
-
-function UserStatus({ user }: { user: LoaderData["user"] }) {
-  let { t } = useTranslation();
-
-  if (user === null) {
-    return (
-      <div
-        className={clsx(
-          "flex items-center gap-x-1",
-          "px-2 py-1.5 rounded-md",
-          "text-sm font-medium",
-          "focus:outline-none focus:bg-gray-100 focus:text-gray-900",
-          "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-        )}
-      >
-        <Link
-          to="login"
-          className="block text-sm text-center w-full py-1 rounded-md hover:bg-gray-100 px-2"
-        >
-          <span>{t("Sign In")}</span>
-        </Link>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-auto flex items-center gap-x-1 px-2 py-3 border-t border-gray-100 -mx-2">
-      <img
-        src={user.avatar}
-        className="rounded-full h-6 w-6 border border-gray-100 flex-shrink-0"
-      />
-      <p className="text-sm">@{user.displayName}</p>
-      <Form
-        action="/auth/logout"
-        method="post"
-        reloadDocument
-        className="ml-auto"
-      >
-        <button type="submit" className="flex items-center">
-          <span className="sr-only">{t("Logout")}</span>
-          <LogoutIcon aria-hidden className="w-4 h-4" />
-        </button>
-      </Form>
-    </div>
   );
 }

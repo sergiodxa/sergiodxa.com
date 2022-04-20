@@ -1,6 +1,8 @@
-import { Content, ContentType, Role, Visibility } from "@prisma/client";
+import type { Content } from "@prisma/client";
+import { ContentType, Role, Visibility } from "@prisma/client";
 import { singularize } from "inflected";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, NavLink, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { FeedList } from "~/components/feed-list";
@@ -42,7 +44,6 @@ export let loader: LoaderFunction = async ({ request, params }) => {
 
   let url = new URL(request.url);
   let page = Number(url.searchParams.get("page") || "1");
-  let term = url.searchParams.get("term") || "";
 
   let where = {
     type: { equals: contentType },

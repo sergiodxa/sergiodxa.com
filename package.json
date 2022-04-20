@@ -14,12 +14,18 @@
     "postbuild": "npm run db:migrate deploy",
     "start": "HOST=0.0.0.0 NODE_ENV=production node ./server/build",
     "db:migrate": "prisma migrate",
-    "typecheck": "tsc --noEmit --project tsconfig.json"
+    "typecheck": "tsc --noEmit --project tsconfig.json",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint ."
   },
   "prisma": {
     "schema": "db/schema.prisma",
     "seed": "node --require esbuild-register db/seed.ts"
   },
+  "eslintIgnore": [
+    "/node_modules",
+    "/server/build",
+    "/public/build"
+  ],
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@heroicons/react": "^1.0.6",
@@ -85,6 +91,14 @@
     "@types/react-dom": "^17.0.15",
     "esbuild-register": "^3.3.2",
     "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prefer-let": "^3.0.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0",
     "pm2": "^5.2.0",
     "prisma": "^3.12.0",
     "ts-node": "^10.7.0",

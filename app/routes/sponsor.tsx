@@ -1,9 +1,11 @@
 import { useTranslation } from "react-i18next";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { Header } from "~/components/header";
 import { Region } from "~/components/heading";
-import { Frequency, Pricing, Tier } from "~/components/pricing";
+import type { Frequency, Tier } from "~/components/pricing";
+import { Pricing } from "~/components/pricing";
 import { i18n } from "~/services/i18n.server";
 
 type LoaderData = {

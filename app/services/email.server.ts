@@ -1,6 +1,6 @@
 // app/services/email.server.tsx
 import type { SendEmailFunction } from "remix-auth-email-link";
-import { PublicUser } from "~/models/user.server";
+import type { PublicUser } from "~/models/user.server";
 
 export let sendEmail: SendEmailFunction<PublicUser> = async (options) => {
   // let subject = "Here's your Magic sign-in link";

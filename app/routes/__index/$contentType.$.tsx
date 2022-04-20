@@ -1,6 +1,7 @@
 import { ContentType, Visibility } from "@prisma/client";
 import { singularize } from "inflected";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { notFound } from "remix-utils";
 import invariant from "tiny-invariant";
@@ -23,7 +24,7 @@ function isContentType(
 }
 
 export let loader: LoaderFunction = async ({ request, params }) => {
-  let { contentType, ["*"]: slug } = params;
+  let { contentType, "*": slug } = params;
 
   let locale = await i18n.getLocale(request);
 

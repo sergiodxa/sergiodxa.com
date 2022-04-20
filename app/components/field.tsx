@@ -1,13 +1,12 @@
 import { useId } from "@react-aria/utils";
 import clsx from "clsx";
-import {
-  createContext,
+import type {
   FocusEvent,
   InputHTMLAttributes,
   ReactNode,
   TextareaHTMLAttributes,
-  useContext,
 } from "react";
+import { createContext, useContext } from "react";
 
 let fieldLabelIdContext = createContext<string | undefined>(void 0);
 let fieldHintIdContext = createContext<string | undefined>(void 0);

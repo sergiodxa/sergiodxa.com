@@ -5,7 +5,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/solid";
 import clsx from "clsx";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "@remix-run/react";
 import { hasAny } from "../utils/arrays";
 
@@ -16,7 +16,7 @@ type AlertAction = {
   onClick(): void;
 };
 
-type AlertLink = {
+type AlertLinkType = {
   label: ReactNode;
   icon?: ReactNode;
   href: string;
@@ -27,7 +27,7 @@ type AlertMessage = ReactNode | ReactNode[];
 type AlertBaseProps = {
   type: AlertType;
   actions?: AlertAction[];
-  link?: AlertLink;
+  link?: AlertLinkType;
 };
 
 type AlertProps = AlertBaseProps &
@@ -164,7 +164,7 @@ function AlertLink({
   label,
   icon,
   href,
-}: AlertLink & { type: AlertType }) {
+}: AlertLinkType & { type: AlertType }) {
   if (isExternalLink(href)) {
     return (
       <a

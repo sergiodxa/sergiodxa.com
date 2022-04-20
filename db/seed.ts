@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-let db = new PrismaClient();
+import {} from "@prisma/client";
 
 async function seed() {
   await Promise.all([]);

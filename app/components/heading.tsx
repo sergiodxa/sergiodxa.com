@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/heading-has-content */
 import { useId } from "@react-aria/utils";
-import { createContext, HTMLAttributes, useContext } from "react";
+import type { HTMLAttributes } from "react";
+import { createContext, useContext } from "react";
 
 let HeadingLevelContext = createContext<number>(0);
 let HeadingIdContext = createContext<string | undefined>(void 0);

@@ -1,7 +1,9 @@
 import { BookmarkIcon, DocumentTextIcon } from "@heroicons/react/solid";
-import { ContentType, Visibility } from "@prisma/client";
+import type { ContentType } from "@prisma/client";
+import { Visibility } from "@prisma/client";
 import { Trans, useTranslation } from "react-i18next";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { FeedList } from "~/components/feed-list";
 import { Heading, Region } from "~/components/heading";
@@ -122,6 +124,7 @@ function ArticleItem({ item }: { item: Item }) {
             defaults="I published <h><a>{{title}}</a></h>"
             components={{
               h: <Heading className="font-semibold inline" />,
+              // eslint-disable-next-line jsx-a11y/anchor-has-content
               a: <Link to={item.url} />,
             }}
             values={{ title: item.title }}
@@ -155,6 +158,7 @@ function BookmarkItem({ item }: { item: Item }) {
             shouldUnescape={true}
             components={{
               h: <Heading className="font-semibold inline" />,
+              // eslint-disable-next-line jsx-a11y/anchor-has-content
               a: <a href={item.url} />,
             }}
             values={{ title: item.title }}

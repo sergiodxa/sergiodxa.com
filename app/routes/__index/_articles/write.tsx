@@ -1,7 +1,9 @@
-import { Content, ContentType, Visibility } from "@prisma/client";
+import type { Content } from "@prisma/client";
+import { ContentType, Visibility } from "@prisma/client";
 import { parameterize } from "inflected";
 import { Trans, useTranslation } from "react-i18next";
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";

@@ -1,14 +1,13 @@
 import { ContentType, Role } from "@prisma/client";
 import { useTranslation } from "react-i18next";
 
-import {
+import type {
   ActionFunction,
-  json,
   LinksFunction,
   LoaderFunction,
   MetaFunction,
-  redirect,
 } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import { Form, Link, useLoaderData, useLocation } from "@remix-run/react";
 import { notFound, redirectBack } from "remix-utils";

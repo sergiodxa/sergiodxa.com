@@ -1,14 +1,13 @@
-import clsx, { ClassValue } from "clsx";
-import {
+import type { ClassValue } from "clsx";
+import clsx from "clsx";
+import type {
   AriaAttributes,
   HTMLAttributes,
   Key,
   KeyboardEventHandler,
   ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
 } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export type FeedShortcuts = {
   first?: string;

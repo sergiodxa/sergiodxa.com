@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";
@@ -61,8 +62,10 @@ export default function Screen() {
           {t("Sign in to your account")}
         </h2>
 
-        {Boolean(error) && <Alert type="danger" title={error?.message} />}
-        {Boolean(action?.error) && <Alert type="danger" title={action.error} />}
+        {Boolean(error) && <Alert type="danger" title={error} />}
+        {Boolean(action?.error) && (
+          <Alert type="danger" title={action?.error} />
+        )}
 
         <Form method="post" reloadDocument className="max-w-xs mx-auto">
           <Field>

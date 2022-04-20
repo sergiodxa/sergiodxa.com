@@ -30,7 +30,6 @@ export function last<Value>(list: Value[], limit = 1): Value[] {
  * Remove duplicated values from an array (only primitives and references)
  */
 export function unique<Value>(array: Value[]): Value[] {
-  // eslint-disable-next-line unicorn/prefer-spread
   return Array.from(new Set(array));
 }
 

@@ -1,4 +1,4 @@
-import { ActionFunction } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { authenticator } from "~/services/auth.server";
 

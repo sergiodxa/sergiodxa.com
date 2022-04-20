@@ -1,4 +1,5 @@
-import Airtable, { FieldSet } from "airtable";
+import type { FieldSet } from "airtable";
+import Airtable from "airtable";
 import { env } from "~/utils/environment";
 
 export type Bookmark = FieldSet & {
@@ -8,13 +9,13 @@ export type Bookmark = FieldSet & {
 };
 
 export async function getBookmarks(limit = 100): Promise<Bookmark[]> {
-  const base = new Airtable({
+  let base = new Airtable({
     apiKey: env("AIRTABLE_API_KEY"),
   }).base(env("AIRTABLE_BASE"));
 
-  const table = base<Bookmark>("links");
+  let table = base<Bookmark>("links");
 
-  const records = await table
+  let records = await table
     .select({
       maxRecords: limit,
       sort: [{ field: "created_at", direction: "desc" }],

@@ -1,12 +1,11 @@
 import { StarIcon } from "@heroicons/react/outline";
 import { Trans } from "react-i18next";
-import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { FeedList } from "~/components/feed-list";
-import {
-  ListOfRepositories,
-  Repositories,
-} from "~/features/repositories.server";
+import type { ListOfRepositories } from "~/features/repositories.server";
+import { Repositories } from "~/features/repositories.server";
 import { i18n } from "~/services/i18n.server";
 
 type LoaderData = {

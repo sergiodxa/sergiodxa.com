@@ -1,20 +1,12 @@
 import { Role } from "@prisma/client";
-import { SessionStorage } from "@remix-run/node";
-import {
-  AuthenticateOptions,
-  Authenticator,
-  AuthorizationError,
-  Authorizer,
-  Strategy,
-} from "remix-auth";
-import { EmailLinkStrategy } from "remix-auth-email-link";
+import { Authenticator, AuthorizationError, Authorizer } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { GitHubStrategy } from "remix-auth-github";
 import invariant from "tiny-invariant";
-import { login, PublicUser } from "~/models/user.server";
+import type { PublicUser } from "~/models/user.server";
+import { login } from "~/models/user.server";
 import { sessionStorage } from "~/services/session.server";
 import { env } from "~/utils/environment";
-import { sendEmail } from "./email.server";
 
 let BASE_URL = env("BASE_URL");
 
