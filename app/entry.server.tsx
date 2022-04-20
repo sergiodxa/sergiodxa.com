@@ -1,28 +1,52 @@
 import { SSRProvider } from "@react-aria/ssr";
-import "dotenv/config";
-import { renderToString } from "react-dom/server";
-import type { EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import { i18nextInit, RemixI18NextProvider } from "~/services/i18next";
+import type { EntryContext } from "@remix-run/server-runtime";
+import { createInstance } from "i18next";
+import Backend from "i18next-fs-backend";
+import { resolve } from "node:path";
+import { renderToString } from "react-dom/server";
+import { I18nextProvider, initReactI18next } from "react-i18next";
+import { i18n } from "~/services/i18n.server";
+import "dotenv/config";
 
 export default async function handleRequest(
   request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  remixContext: EntryContext
+  statusCode: number,
+  headers: Headers,
+  context: EntryContext
 ) {
+  let instance = createInstance();
+
+  let lng = await i18n.getLocale(request);
+  let ns = i18n.getRouteNamespaces(context);
+
+  await instance
+    .use(initReactI18next)
+    .use(Backend)
+    .init({
+      supportedLngs: ["es", "en"],
+      defaultNS: "common",
+      fallbackLng: "en",
+      react: { useSuspense: false },
+      lng,
+      ns,
+      backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
+    });
+
+  // Then you can render your app wrapped in the I18nextProvider as in the
+  // entry.client file
   let markup = renderToString(
-    <SSRProvider>
-      <RemixI18NextProvider i18n={await i18nextInit()}>
-        <RemixServer context={remixContext} url={request.url} />
-      </RemixI18NextProvider>
-    </SSRProvider>
+    <I18nextProvider i18n={instance}>
+      <SSRProvider>
+        <RemixServer context={context} url={request.url} />
+      </SSRProvider>
+    </I18nextProvider>
   );
 
-  responseHeaders.set("Content-Type", "text/html");
+  headers.set("Content-Type", "text/html");
 
   return new Response("<!DOCTYPE html>" + markup, {
-    status: responseStatusCode,
-    headers: responseHeaders,
+    status: statusCode,
+    headers: headers,
   });
 }

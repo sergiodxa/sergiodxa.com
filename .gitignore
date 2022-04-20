@@ -4,8 +4,9 @@ node_modules
 .vercel
 .output
 
-public/build
+app/styles/tailwind.css
 api/_build
+server/build
+public/build
 
 .env
-app/styles/tailwind.css

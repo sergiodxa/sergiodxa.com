@@ -1,22 +1,23 @@
-import { Backend, RemixI18Next } from "remix-i18next";
+import { RemixI18Next } from "remix-i18next";
+import Backend from "i18next-fs-backend";
+import { resolve } from "node:path";
+import { createCookie } from "@remix-run/node";
 
-class InMemoryBackend implements Backend {
-  constructor(
-    private readonly data: {
-      [locale: string]: {
-        [namespace: string]: {
-          [key: string]: string;
-        };
-      };
-    }
-  ) {}
+export let cookie = createCookie("locale", {
+  path: "/",
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+});
 
-  async getTranslations(namespace: string, locale: string) {
-    return this.data[locale][namespace];
-  }
-}
-
-export let i18n = new RemixI18Next(
-  new InMemoryBackend({ en: { common: {} } }),
-  { fallbackLng: "en", supportedLanguages: ["en"] }
-);
+export let i18n = new RemixI18Next({
+  backend: Backend,
+  detection: {
+    fallbackLanguage: "en",
+    supportedLanguages: ["es", "en"],
+    cookie,
+  },
+  i18next: {
+    supportedLngs: ["es", "en"],
+    backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
+  },
+});
