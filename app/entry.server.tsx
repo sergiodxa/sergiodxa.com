@@ -25,7 +25,7 @@ export default async function handleRequest(
     .use(Backend)
     .init({
       supportedLngs: ["es", "en"],
-      defaultNS: "common",
+      defaultNS: "translations",
       fallbackLng: "en",
       react: { useSuspense: false },
       lng,
