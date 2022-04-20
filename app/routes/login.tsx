@@ -1,27 +1,30 @@
 import { useTranslation } from "react-i18next";
 import { json, type LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
-import { Alert } from "~/components/alert";
-import { GitHubIcon } from "~/components/icons";
-import { authenticator } from "~/services/auth.server";
+import { Form } from "@remix-run/react";
+import { auth, returnToCookie } from "~/services/auth.server";
 import { commitSession, getSession } from "~/services/session.server";
 
 type LoaderData = { error: string | null };
 
 export let loader: LoaderFunction = async ({ request }) => {
-  await authenticator.isAuthenticated(request, { successRedirect: "/" });
+  await auth.isAuthenticated(request, { successRedirect: "/" });
+
+  let headers = new Headers();
+
+  let url = new URL(request.url);
+
+  let returnTo = url.searchParams.get("returnTo") ?? "/";
+  headers.append("Set-Cookie", await returnToCookie.serialize(returnTo));
+
   let session = await getSession(request);
+  let error = session.get("auth:error") as { message: string } | null;
+  headers.append("Set-Cookie", await commitSession(session));
 
-  let error = session.get("auth:error") as string | null;
-
-  let headers = new Headers({ "Set-Cookie": await commitSession(session) });
-
-  return json<LoaderData>({ error }, { headers });
+  return json<LoaderData>({ error: error?.message ?? null }, { headers });
 };
 
 export default function Screen() {
   let { t } = useTranslation();
-  let { error } = useLoaderData<LoaderData>();
 
   return (
     <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -29,8 +32,6 @@ export default function Screen() {
         <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
           {t("Sign in to your account")}
         </h2>
-
-        {Boolean(error) && <Alert type="danger" title={error} />}
 
         <hr />
 
@@ -44,7 +45,6 @@ export default function Screen() {
             type="submit"
             className="w-full inline-flex items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
           >
-            <GitHubIcon aria-hidden className="mr-2 -ml-1 h-5 w-5" />
             <span className="text-center flex-grow">
               {t("Sign in with GitHub")}
             </span>

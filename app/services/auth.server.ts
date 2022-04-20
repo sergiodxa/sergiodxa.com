@@ -1,18 +1,23 @@
-import { Role } from "@prisma/client";
-import { Authenticator, AuthorizationError, Authorizer } from "remix-auth";
-import { FormStrategy } from "remix-auth-form";
+import type { User } from "@prisma/client";
+import { Authenticator, AuthorizationError } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
-import invariant from "tiny-invariant";
-import type { PublicUser } from "~/models/user.server";
-import { login } from "~/models/user.server";
 import { sessionStorage } from "~/services/session.server";
-import { env } from "~/utils/environment";
+import { env, isDevelopment } from "~/utils/environment";
+import { db } from "~/services/db.server";
+import { createHash } from "node:crypto";
+import { createCookie } from "@remix-run/node";
 
-let BASE_URL = env("BASE_URL");
+const BASE_URL = env("BASE_URL");
 
-export let authenticator = new Authenticator<PublicUser>(sessionStorage);
+export let returnToCookie = createCookie("returnTo", {
+  path: "/auth",
+  sameSite: "lax",
+  secure: isDevelopment(),
+});
 
-authenticator.use(
+export let auth = new Authenticator<User["id"]>(sessionStorage);
+
+auth.use(
   new GitHubStrategy(
     {
       clientID: env("GITHUB_CLIENT_ID"),
@@ -20,30 +25,47 @@ authenticator.use(
       callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
     },
     async ({ profile }) => {
-      if (!profile.emails) throw new AuthorizationError("No emails");
-      return await login("github", {
-        email: profile.emails[0].value,
-        displayName: profile.displayName,
-        avatar: profile.photos[0].value,
+      if (!profile.emails) {
+        throw new AuthorizationError(
+          "The GitHub account has no email addresses."
+        );
+      }
+
+      let email = profile.emails.at(0)?.value;
+      if (!email) {
+        throw new AuthorizationError("The GitHub account has no email address");
+      }
+
+      let provider = await db.provider.findFirst({
+        select: { userId: true },
+        where: { provider: "github", providerId: profile.id },
       });
+
+      if (!provider) {
+        let avatar = profile.photos.at(0)?.value ?? gravatar(email);
+
+        provider = await db.provider.create({
+          select: { userId: true },
+          data: {
+            provider: "github",
+            providerId: profile.id,
+            user: {
+              create: {
+                email,
+                displayName: profile.displayName,
+                avatar,
+              },
+            },
+          },
+        });
+      }
+
+      return provider.userId;
     }
   )
 );
 
-authenticator.use(
-  new FormStrategy(async ({ form }) => {
-    let email = form.get("email");
-    let password = form.get("password");
-
-    invariant(typeof email === "string", "email must be a string");
-    invariant(typeof password === "string", "password must be a string");
-
-    return await login("form", { email, password });
-  })
-);
-
-export let adminAuthorizer = new Authorizer(authenticator, [
-  async function isAdmin({ user }) {
-    return user.role === Role.ADMIN;
-  },
-]);
+function gravatar(email: string): string {
+  let hash = createHash("md5").update(email.trim().toLowerCase()).digest("hex");
+  return new URL(hash, "https://www.gravatar.com/avatar/").toString();
+}

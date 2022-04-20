@@ -1,6 +1,6 @@
 import { SSRProvider } from "@react-aria/ssr";
 import { RemixServer } from "@remix-run/react";
-import type { EntryContext } from "@remix-run/server-runtime";
+import type { EntryContext, HandleDataRequestFunction } from "@remix-run/node";
 import { createInstance } from "i18next";
 import Backend from "i18next-fs-backend";
 import { resolve } from "node:path";
@@ -8,6 +8,8 @@ import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { i18n } from "~/services/i18n.server";
 import "dotenv/config";
+import etag from "etag";
+import { notModified } from "remix-utils";
 
 export default async function handleRequest(
   request: Request,
@@ -15,26 +17,21 @@ export default async function handleRequest(
   headers: Headers,
   context: EntryContext
 ) {
-  let instance = createInstance();
+  let instance = createInstance().use(initReactI18next).use(Backend);
 
   let lng = await i18n.getLocale(request);
   let ns = i18n.getRouteNamespaces(context);
 
-  await instance
-    .use(initReactI18next)
-    .use(Backend)
-    .init({
-      supportedLngs: ["es", "en"],
-      defaultNS: "translations",
-      fallbackLng: "en",
-      react: { useSuspense: false },
-      lng,
-      ns,
-      backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
-    });
+  await instance.init({
+    supportedLngs: ["es", "en"],
+    defaultNS: "translations",
+    fallbackLng: "en",
+    react: { useSuspense: false },
+    lng,
+    ns,
+    backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
+  });
 
-  // Then you can render your app wrapped in the I18nextProvider as in the
-  // entry.client file
   let markup = renderToString(
     <I18nextProvider i18n={instance}>
       <SSRProvider>
@@ -43,10 +40,29 @@ export default async function handleRequest(
     </I18nextProvider>
   );
 
+  headers.set("ETag", etag(markup));
   headers.set("Content-Type", "text/html");
+
+  if (request.headers.get("If-None-Match") === headers.get("ETag")) {
+    return notModified({ headers });
+  }
 
   return new Response("<!DOCTYPE html>" + markup, {
     status: statusCode,
     headers: headers,
   });
 }
+
+export let handleDataRequest: HandleDataRequestFunction = async (
+  response: Response,
+  { request }
+) => {
+  if (request.method.toLowerCase() === "get") {
+    response.headers.set("ETag", etag(await response.clone().text()));
+    if (request.headers.get("If-None-Match") === response.headers.get("ETag")) {
+      return notModified({ headers: response.headers });
+    }
+  }
+
+  return response;
+};
