@@ -1,7 +1,7 @@
-import { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 import { db } from "~/services/db.server";
 
 export let loader: LoaderFunction = async () => {
-  await db.content.count();
+  await db.user.count();
   return new Response("OK", { status: 200 });
 };
