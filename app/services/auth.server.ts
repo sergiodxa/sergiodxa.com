@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { SessionStorage } from "remix";
+import { SessionStorage } from "@remix-run/node";
 import {
   AuthenticateOptions,
   Authenticator,

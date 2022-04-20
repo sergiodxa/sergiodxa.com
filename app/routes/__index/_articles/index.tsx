@@ -1,6 +1,7 @@
 import { Role } from "@prisma/client";
 import { useTranslation } from "react-i18next";
-import { json, Link, LoaderFunction, useLoaderData } from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { Region } from "~/components/heading";
 import { authenticator } from "~/services/auth.server";
 

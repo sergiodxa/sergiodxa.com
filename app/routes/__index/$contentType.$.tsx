@@ -1,6 +1,7 @@
 import { ContentType, Visibility } from "@prisma/client";
 import { singularize } from "inflected";
-import { json, LoaderFunction, useLoaderData } from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { notFound } from "remix-utils";
 import invariant from "tiny-invariant";
 import { db } from "~/services/db.server";

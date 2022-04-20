@@ -1,7 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
 
 import { useTranslation } from "react-i18next";
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 
 export function Header() {
   let { t } = useTranslation();

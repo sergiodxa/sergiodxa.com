@@ -1,7 +1,7 @@
 import { CheckIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 import { Heading } from "./heading";
 
 export type Tier = {

@@ -1,6 +1,7 @@
 import { Content, ContentType, Role, Visibility } from "@prisma/client";
 import { singularize } from "inflected";
-import { json, Link, LoaderFunction, NavLink, useLoaderData } from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Link, NavLink, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { FeedList } from "~/components/feed-list";
 import { authenticator } from "~/services/auth.server";

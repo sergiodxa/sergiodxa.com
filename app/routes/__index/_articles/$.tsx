@@ -1,17 +1,16 @@
 import { ContentType, Role } from "@prisma/client";
 import { useTranslation } from "react-i18next";
+
 import {
   ActionFunction,
-  Form,
   json,
-  Link,
   LinksFunction,
   LoaderFunction,
   MetaFunction,
   redirect,
-  useLoaderData,
-  useLocation,
-} from "remix";
+} from "@remix-run/node";
+
+import { Form, Link, useLoaderData, useLocation } from "@remix-run/react";
 import { notFound, redirectBack } from "remix-utils";
 import invariant from "tiny-invariant";
 import { adminAuthorizer, authenticator } from "~/services/auth.server";

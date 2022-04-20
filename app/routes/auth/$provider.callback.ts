@@ -1,4 +1,4 @@
-import { LoaderFunction } from "remix";
+import { LoaderFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { authenticator } from "~/services/auth.server";
 

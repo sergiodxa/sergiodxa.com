@@ -1,13 +1,6 @@
 import { useTranslation } from "react-i18next";
-import {
-  ActionFunction,
-  Form,
-  json,
-  LoaderFunction,
-  redirect,
-  useActionData,
-  useLoaderData,
-} from "remix";
+import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Alert } from "~/components/alert";
 import { Field } from "~/components/field";

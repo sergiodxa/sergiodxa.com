@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 import { hasAny } from "../utils/arrays";
 
 type AlertType = "success" | "info" | "warning" | "danger";

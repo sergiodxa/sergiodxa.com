@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Form, json, LoaderFunction, useLoaderData } from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
 import { Alert } from "~/components/alert";
 import { GitHubIcon } from "~/components/icons";
 import { authenticator } from "~/services/auth.server";

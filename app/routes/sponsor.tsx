@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { json, LoaderFunction, useLoaderData, useSearchParams } from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData, useSearchParams } from "@remix-run/react";
 import { Header } from "~/components/header";
 import { Region } from "~/components/heading";
 import { Frequency, Pricing, Tier } from "~/components/pricing";

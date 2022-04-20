@@ -1,8 +1,8 @@
 import { SSRProvider } from "@react-aria/ssr";
 import "dotenv/config";
 import { renderToString } from "react-dom/server";
-import type { EntryContext } from "remix";
-import { RemixServer } from "remix";
+import type { EntryContext } from "@remix-run/node";
+import { RemixServer } from "@remix-run/react";
 import { i18nextInit, RemixI18NextProvider } from "~/services/i18next";
 
 export default async function handleRequest(

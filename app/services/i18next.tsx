@@ -2,7 +2,7 @@ import type { i18n } from "i18next";
 import { createInstance } from "i18next";
 import { createContext, ReactNode, useContext, useMemo } from "react";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import { useMatches } from "remix";
+import { useMatches } from "@remix-run/react";
 import type { Language } from "remix-i18next";
 import useConsistentValue from "use-consistent-value";
 

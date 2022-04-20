@@ -3,15 +3,8 @@ import { ExternalLinkIcon, HomeIcon } from "@heroicons/react/solid";
 import clsx from "clsx";
 import { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Form,
-  json,
-  Link,
-  LoaderFunction,
-  NavLink,
-  Outlet,
-  useLoaderData,
-} from "remix";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { Heading, Region } from "~/components/heading";
 import { PublicUser } from "~/models/user.server";
 import { authenticator } from "~/services/auth.server";

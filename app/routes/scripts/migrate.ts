@@ -2,7 +2,7 @@ import { Content, ContentType, Visibility } from ".prisma/client";
 import { NoteVisibility } from "collected-notes";
 import matter from "gray-matter";
 import { parameterize } from "inflected";
-import { LoaderFunction, redirect } from "remix";
+import { LoaderFunction, redirect } from "@remix-run/node";
 import { PublicUser } from "~/models/user.server";
 import { getBookmarks } from "~/services/airtable.server";
 import { adminAuthorizer } from "~/services/auth.server";

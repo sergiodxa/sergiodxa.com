@@ -1,13 +1,6 @@
 import nProgressUrl from "nprogress/nprogress.css";
-import {
-  json,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-  Outlet,
-  useCatch,
-  useLoaderData,
-} from "remix";
+import { json, LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
+import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
 import { Document } from "~/components/document";
 import { i18n } from "~/services/i18n.server";
 import { useSetupI18N } from "~/services/i18next";

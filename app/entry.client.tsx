@@ -1,6 +1,6 @@
 import { SSRProvider } from "@react-aria/ssr";
 import { hydrate } from "react-dom";
-import { RemixBrowser } from "remix";
+import { RemixBrowser } from "@remix-run/react";
 import { i18nextInit, RemixI18NextProvider } from "./services/i18next";
 
 i18nextInit().then((i18n) => {

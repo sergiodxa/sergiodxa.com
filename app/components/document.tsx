@@ -1,4 +1,4 @@
-import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from "remix";
+import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from "@remix-run/react";
 import { useShouldHydrate } from "remix-utils";
 
 export function Document({

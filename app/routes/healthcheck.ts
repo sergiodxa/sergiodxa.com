@@ -1,4 +1,4 @@
-import { LoaderFunction } from "remix";
+import { LoaderFunction } from "@remix-run/node";
 import { db } from "~/services/db.server";
 
 export let loader: LoaderFunction = async () => {
