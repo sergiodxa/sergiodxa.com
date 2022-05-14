@@ -9,7 +9,8 @@ import { logger } from "~/services/logger.server";
 const PORT = Number(process.env.PORT ?? "3000");
 const HOST = process.env.HOST ?? "localhost";
 
-let server = express();
+const server = express();
+const db = new PrismaClient();
 
 server.use(compression());
 
@@ -30,7 +31,6 @@ server.all(
     build,
     mode: process.env.NODE_ENV,
     getLoadContext(): SDX.Context {
-      let db = new PrismaClient();
       return { db, logger };
     },
   })
