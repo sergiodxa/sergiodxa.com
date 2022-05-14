@@ -6,31 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  ADMIN
-  AUTHOR
-  READER
-}
-
-enum Visibility {
-  PRIVATE
-  PUBLIC
-  DRAFT
-}
-
-enum ContentType {
-  ARTICLE
-  BOOKMARK
-  THOUGHT
 }
 
 model User {
   id          String     @id @unique @default(cuid())
-  role        Role       @default(READER)
+  role        String     @default("reader")
   locale      String     @default("en")
   email       String     @unique
   displayName String
@@ -41,6 +23,7 @@ model User {
   updatedAt   DateTime   @updatedAt
   createdAt   DateTime   @default(now())
   providers   Provider[]
+  Article     Article[]
 }
 
 model Provider {
@@ -52,21 +35,35 @@ model Provider {
   createdAt  DateTime @default(now())
 }
 
+model Article {
+  id        String   @id @default(cuid())
+  status    String   @default("draft")
+  lang      String   @default("en")
+  slug      String   @unique
+  title     String
+  body      String
+  headline  String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
 model Content {
-  id           String      @id @unique @default(cuid())
-  visibility   Visibility  @default(PRIVATE)
-  lang         String      @default("en")
-  slug         String      @unique
-  type         ContentType
+  id           String    @id @unique @default(cuid())
+  visibility   String    @default("private")
+  lang         String    @default("en")
+  slug         String    @unique
+  type         String
   title        String
   headline     String?
   body         String?
   canonicalUrl String?
-  author       User        @relation(fields: [userId], references: [id])
+  author       User      @relation(fields: [userId], references: [id])
   userId       String
   comments     Comment[]
-  updatedAt    DateTime    @updatedAt
-  createdAt    DateTime    @default(now())
+  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime  @default(now())
 }
 
 model Comment {
