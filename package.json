@@ -75,6 +75,7 @@
     "remix-i18next": "^4.0.0",
     "remix-utils": "^3.0.0",
     "tiny-invariant": "^1.2.0",
+    "winston": "^3.7.2",
     "zod": "^3.14.4"
   },
   "devDependencies": {
