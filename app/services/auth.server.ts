@@ -1,19 +1,36 @@
-import type { User } from "@prisma/client";
+import type { User } from "~/models/user.server";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
-import { sessionStorage } from "~/services/session.server";
-import { env, isDevelopment } from "~/utils/environment";
-import { db } from "~/services/db.server";
+import { env, isProduction, isDevelopment } from "~/utils/environment";
 import { createHash } from "node:crypto";
-import { createCookie } from "@remix-run/node";
+import { createCookie, createCookieSessionStorage } from "@remix-run/node";
 
 const BASE_URL = env("BASE_URL");
+
+let sessionCookie = createCookie("session", {
+  path: "/",
+  secure: isProduction(),
+  httpOnly: true,
+  maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+  sameSite: "lax",
+  secrets: [env("SESSION_SECRET", "s3cr3t")],
+});
 
 export let returnToCookie = createCookie("returnTo", {
   path: "/auth",
   sameSite: "lax",
   secure: isDevelopment(),
 });
+
+export let sessionStorage = createCookieSessionStorage({
+  cookie: sessionCookie,
+});
+
+export let { commitSession, destroySession } = sessionStorage;
+
+export function getSession(request: Request) {
+  return sessionStorage.getSession(request.headers.get("Cookie"));
+}
 
 export let auth = new Authenticator<User["id"]>(sessionStorage);
 
@@ -24,7 +41,7 @@ auth.use(
       clientSecret: env("GITHUB_CLIENT_SECRET"),
       callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
     },
-    async ({ profile }) => {
+    async ({ profile, context }) => {
       if (!profile.emails) {
         throw new AuthorizationError(
           "The GitHub account has no email addresses."
@@ -35,6 +52,8 @@ auth.use(
       if (!email) {
         throw new AuthorizationError("The GitHub account has no email address");
       }
+
+      let { db } = context as SDX.Context;
 
       let provider = await db.provider.findFirst({
         select: { userId: true },

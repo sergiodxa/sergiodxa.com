@@ -1,7 +1,6 @@
-import type { LoaderFunction } from "@remix-run/node";
-import { db } from "~/services/db.server";
+import countUsers from "~/use-cases/count-users";
 
-export let loader: LoaderFunction = async () => {
-  await db.user.count();
+export let loader: SDX.LoaderFunction = async ({ context }) => {
+  await countUsers(context);
   return new Response("OK", { status: 200 });
 };
