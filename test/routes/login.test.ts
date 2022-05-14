@@ -2,16 +2,17 @@
 import { test, expect } from "vitest";
 import puppeteer from "puppeteer";
 import "pptr-testing-library/extend";
+import { App, open } from "test/helpers/app";
 
-// let app: App;
+let app: App;
 
-// beforeAll(async () => {
-//   app = await open();
-// });
+beforeAll(async () => {
+  app = await open();
+});
 
-// afterAll(async () => {
-//   await app.close();
-// });
+afterAll(async () => {
+  await app.close();
+});
 
 test("Login page should render", async () => {
   let browser = await puppeteer.launch();
@@ -23,4 +24,14 @@ test("Login page should render", async () => {
     level: 2,
   });
   expect(await $h2.getNodeText()).toBe("Sign in to your account");
+
+  let $button = await document.findByRole("button", {
+    name: "Sign in with GitHub",
+  });
+  await $button.click();
+
+  await page.waitForNavigation();
+
+  let url = page.url();
+  expect(url.includes("github.com")).toBeTruthy();
 });
