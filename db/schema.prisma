@@ -17,13 +17,11 @@ model User {
   email       String     @unique
   displayName String
   avatar      String
-  contents    Content[]
-  comments    Comment[]
+  articles    Article[]
   disabledAt  DateTime?
   updatedAt   DateTime   @updatedAt
   createdAt   DateTime   @default(now())
   providers   Provider[]
-  Article     Article[]
 }
 
 model Provider {
@@ -47,33 +45,4 @@ model Article {
   author    User     @relation(fields: [authorId], references: [id])
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
-}
-
-model Content {
-  id           String    @id @unique @default(cuid())
-  visibility   String    @default("private")
-  lang         String    @default("en")
-  slug         String    @unique
-  type         String
-  title        String
-  headline     String?
-  body         String?
-  canonicalUrl String?
-  author       User      @relation(fields: [userId], references: [id])
-  userId       String
-  comments     Comment[]
-  updatedAt    DateTime  @updatedAt
-  createdAt    DateTime  @default(now())
-}
-
-model Comment {
-  id          String    @id @unique @default(cuid())
-  body        String
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    String
-  content     Content   @relation(fields: [contentId], references: [id])
-  contentId   String
-  publishedAt DateTime?
-  updatedAt   DateTime  @updatedAt
-  createdAt   DateTime  @default(now())
 }
