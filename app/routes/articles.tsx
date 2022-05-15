@@ -23,10 +23,13 @@ export default function Articles() {
   let { articles } = useLoaderData<LoaderData>();
 
   return (
-    <ul>
-      {articles.map((article) => {
-        return <li key={article.id}>{article.title}</li>;
-      })}
-    </ul>
+    <section>
+      <h1>Articles</h1>
+      <ul>
+        {articles.map((article) => {
+          return <li key={article.id}>{article.title}</li>;
+        })}
+      </ul>
+    </section>
   );
 }
