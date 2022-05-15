@@ -10,3 +10,6 @@ server/build
 public/build
 
 .env
+
+# Test database
+db/test.db
