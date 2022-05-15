@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { test, expect, describe, beforeAll, afterAll } from "vitest";
 import "pptr-testing-library/extend";
 import { type App, start } from "test/helpers/app";
 import { loader } from "./articles";
@@ -19,12 +19,12 @@ describe("E2E", () => {
   test("Articles page should render list of articles", async () => {
     let document = await app.navigate("/articles");
 
-    let $h2 = await document.findByRole("heading", {
+    let $h1 = await document.findByRole("heading", {
       name: "Articles",
       level: 1,
     });
 
-    expect(await $h2.getNodeText()).toBe("Articles");
+    expect(await $h1.getNodeText()).toBe("Articles");
   });
 });
 
