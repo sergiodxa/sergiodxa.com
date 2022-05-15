@@ -1,6 +1,9 @@
 import { createUseCase } from "~/use-case.server";
 import { parameterize } from "inflected";
 
+const MAX_HEADLINE_LENGTH = 140;
+const ELLIPSIS = "…";
+
 export default createUseCase({
   schema(z) {
     return z.object({
@@ -8,38 +11,30 @@ export default createUseCase({
       title: z.string(),
       body: z.string(),
       slug: z.string().nullable().optional(),
-      headlines: z.string().nullable().optional(),
+      headline: z.string().nullable().optional(),
     });
   },
 
   async perform(
     context,
-    {
-      authorId,
-      title,
-      body,
-      slug = parameterize(title),
-      headline = generarateHeadline(body),
-    }
+    { authorId, title, body, slug = parameterize(title), headline }
   ) {
-    context.logger.info("Write an article", {
-      authorId,
-      title,
-      body,
-      slug,
-      headline,
-    });
-
     let article = await context.db.article.create({
-      data: { authorId, title, body, slug, headline },
+      data: {
+        authorId,
+        title,
+        body,
+        slug,
+        headline: generarateHeadline(headline ?? body),
+      },
     });
 
     return article;
   },
 });
 
-function generarateHeadline(body: string) {
-  let headline = body.split("\n")[0];
-  if (headline.length <= 140) return headline;
-  return headline.slice(0, 139) + "…";
+function generarateHeadline(string: string) {
+  let headline = string.split("\n")[0];
+  if (headline.length <= MAX_HEADLINE_LENGTH) return headline;
+  return headline.slice(0, MAX_HEADLINE_LENGTH - 1) + ELLIPSIS;
 }
