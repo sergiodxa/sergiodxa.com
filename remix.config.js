@@ -9,4 +9,5 @@ module.exports = {
   server: "server/index.ts",
   serverBuildPath: "server/build/index.js",
   serverBuildTarget: "node-cjs",
+  ignoredRouteFiles: ["*.test.ts", "*.test.tsx"],
 };
