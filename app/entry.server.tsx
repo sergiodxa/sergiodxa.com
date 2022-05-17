@@ -1,15 +1,15 @@
+import type { EntryContext, HandleDataRequestFunction } from "@remix-run/node";
+import { resolve } from "node:path";
 import { SSRProvider } from "@react-aria/ssr";
 import { RemixServer } from "@remix-run/react";
-import type { EntryContext, HandleDataRequestFunction } from "@remix-run/node";
+import etag from "etag";
 import { createInstance } from "i18next";
 import Backend from "i18next-fs-backend";
-import { resolve } from "node:path";
 import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
+import { notModified } from "remix-utils";
 import { i18n } from "~/services/i18n.server";
 import "dotenv/config";
-import etag from "etag";
-import { notModified } from "remix-utils";
 
 export default async function handleRequest(
   request: Request,

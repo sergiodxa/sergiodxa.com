@@ -1,7 +1,8 @@
 import "pptr-testing-library/extend";
-import getPort from "get-port";
 import { execa } from "execa";
+import getPort from "get-port";
 import puppeteer from "puppeteer";
+import { type DATABASE_URL, generateDatabaseUrl, migrateDatabase } from "./db";
 
 export type Process = {
   stop(): Promise<void>;
@@ -26,7 +27,18 @@ function buildApp() {
   return execa("npm", ["run", "build"]);
 }
 
-async function startProcess() {
+async function prepareBuild() {
+  await clearBuild();
+  await buildApp();
+}
+
+async function prepareDatabase() {
+  let databaseUrl = generateDatabaseUrl();
+  await migrateDatabase(databaseUrl);
+  return databaseUrl;
+}
+
+async function startProcess({ databaseUrl }: { databaseUrl: DATABASE_URL }) {
   let port = await getPort();
 
   let server = execa("npm", ["start"], {
@@ -35,14 +47,12 @@ async function startProcess() {
       NODE_ENV: "test",
       PORT: port.toString(),
       BASE_URL: `http://localhost:${port}`,
+      DATABASE_URL: databaseUrl,
     },
   });
 
-  server.catch((error) => {
-    console.error(error);
-  });
-
   return await new Promise<Process>(async (resolve, reject) => {
+    server.catch((error) => reject(error));
     if (server.stdout === null) return reject("Failed to start server.");
     server.stdout.on("data", (stream: Buffer) => {
       if (stream.toString().includes(port.toString())) {
@@ -58,22 +68,20 @@ async function startProcess() {
   });
 }
 
-function openBrowser() {
-  return puppeteer.launch();
-}
-
-function openPage(browser: puppeteer.Browser) {
-  return browser.newPage();
+async function openBrowser() {
+  let browser = await puppeteer.launch();
+  let page = await browser.newPage();
+  return { browser, page };
 }
 
 export async function start(): Promise<App> {
-  await clearBuild();
-  await buildApp();
+  let browserPromise = openBrowser();
+  let [databaseUrl] = await Promise.all([prepareDatabase(), prepareBuild()]);
 
-  let { port, stop } = await startProcess();
-
-  let browser = await openBrowser();
-  let page = await openPage(browser);
+  let [{ port, stop }, { browser, page }] = await Promise.all([
+    startProcess({ databaseUrl }),
+    browserPromise,
+  ]);
 
   return {
     browser,

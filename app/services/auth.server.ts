@@ -1,9 +1,9 @@
 import type { User } from "~/models/user.server";
+import { createHash } from "node:crypto";
+import { createCookie, createCookieSessionStorage } from "@remix-run/node";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 import { env, isProduction, isDevelopment } from "~/utils/environment";
-import { createHash } from "node:crypto";
-import { createCookie, createCookieSessionStorage } from "@remix-run/node";
 
 const BASE_URL = env("BASE_URL");
 

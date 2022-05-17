@@ -1,9 +1,9 @@
-import express from "express";
-import compression from "compression";
-import morgan from "morgan";
-import { createRequestHandler } from "@remix-run/express";
-import * as build from "@remix-run/dev/server-build";
 import { PrismaClient } from "@prisma/client";
+import * as build from "@remix-run/dev/server-build";
+import { createRequestHandler } from "@remix-run/express";
+import compression from "compression";
+import express from "express";
+import morgan from "morgan";
 import { logger } from "~/services/logger.server";
 
 const PORT = Number(process.env.PORT ?? "3000");

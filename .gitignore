@@ -13,3 +13,5 @@ public/build
 
 # Test database
 db/test.db
+db/test/*.db
+db/test/*.db-journal

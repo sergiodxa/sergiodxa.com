@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next";
 import { json } from "@remix-run/node";
 import { Form } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 import {
   auth,
   returnToCookie,

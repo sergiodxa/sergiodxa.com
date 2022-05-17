@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   Links,
   LiveReload,
@@ -5,7 +6,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { ReactNode } from "react";
 import { useShouldHydrate } from "remix-utils";
 
 type DocumentProps = {

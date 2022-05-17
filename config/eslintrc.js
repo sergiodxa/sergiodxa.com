@@ -39,5 +39,25 @@ module.exports = {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "jsx-a11y/anchor-is-valid": "off",
+
+    "import/order": [
+      "error",
+      {
+        alphabetize: {
+          order: "asc",
+        },
+        groups: [
+          "type",
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          ["sibling", "index"],
+        ],
+        "newlines-between": "never",
+        pathGroups: [],
+        pathGroupsExcludedImportTypes: [],
+      },
+    ],
   },
 };

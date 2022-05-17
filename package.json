@@ -21,7 +21,7 @@
   },
   "prisma": {
     "schema": "db/schema.prisma",
-    "seed": "node --require tsconfig-paths/register db/seed.ts"
+    "seed": "ts-node --require tsconfig-paths/register db/seed.ts"
   },
   "eslintIgnore": [
     "/node_modules",

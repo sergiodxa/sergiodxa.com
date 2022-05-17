@@ -1,17 +1,17 @@
-import nProgressUrl from "nprogress/nprogress.css";
 import type {
   LinksFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
+import type { SDX } from "~/types";
 import { json } from "@remix-run/node";
 import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
-import { Document } from "~/views/layouts/document";
+import nProgressUrl from "nprogress/nprogress.css";
+import { useChangeLanguage } from "remix-i18next";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
+import { Document } from "~/views/layouts/document";
 import { useNProgress } from "./helpers/use-nprogress.hook";
-import type { SDX } from "~/types";
-import { useChangeLanguage } from "remix-i18next";
 import { isDevelopment } from "./utils/environment";
 
 export let meta: MetaFunction = () => {

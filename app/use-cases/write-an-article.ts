@@ -1,5 +1,5 @@
-import { createUseCase } from "~/use-case.server";
 import { parameterize } from "inflected";
+import { createUseCase } from "~/use-case.server";
 
 const MAX_HEADLINE_LENGTH = 140;
 const ELLIPSIS = "…";

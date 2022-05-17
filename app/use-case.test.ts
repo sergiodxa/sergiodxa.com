@@ -1,5 +1,5 @@
-import { test } from "vitest";
 import { PrismaClient } from "@prisma/client";
+import { test } from "vitest";
 import { createUseCase } from "~/use-case.server";
 
 let useCase = createUseCase({

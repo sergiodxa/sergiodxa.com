@@ -1,17 +1,17 @@
-import { PrismaClient } from "@prisma/client";
-import { test, expect, describe } from "vitest";
-import { logger } from "~/services/logger.server";
-import writeAnArticle from "./write-an-article";
+import type { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { test, expect, describe } from "vitest";
+import { createDatabaseClient, prepareDatabase } from "test/helpers/db";
+import { type User } from "~/models/user.server";
+import { logger } from "~/services/logger.server";
 import { isSuccess } from "~/use-case.server";
-import { type User, userModel } from "~/models/user.server";
+import writeAnArticle from "./write-an-article";
 
 let db: PrismaClient;
 
 beforeAll(async () => {
-  db = new PrismaClient({
-    datasources: { db: { url: "file:./test.db?mode=memory&cache=shared" } },
-  });
+  let url = await prepareDatabase();
+  db = await createDatabaseClient(url);
   await db.$connect();
 });
 
@@ -20,19 +20,7 @@ afterAll(async () => {
 });
 
 describe("Write an article", () => {
-  let userId: User["id"];
-
-  beforeAll(async () => {
-    let user = await db.user.create({
-      data: {
-        email: faker.internet.email(),
-        displayName: faker.name.findName(),
-        avatar: faker.internet.avatar(),
-      },
-    });
-
-    userId = userModel.parse(user).id;
-  });
+  let userId: User["id"] = "cl3amo1cf000009l04bi86f91";
 
   test("it should autogenerate the slug and headline", async () => {
     let formData = new FormData();

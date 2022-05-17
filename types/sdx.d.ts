@@ -1,10 +1,10 @@
+import type { PrismaClient } from "@prisma/client";
+import type { DataFunctionArgs } from "@remix-run/node";
 import type {
   DynamicLinksFunction,
   ExternalScriptsFunction,
   StructuredDataFunction,
 } from "remix-utils";
-import type { PrismaClient } from "@prisma/client";
-import type { DataFunctionArgs } from "@remix-run/node";
 import type { Logger } from "winston";
 
 declare global {

@@ -1,9 +1,10 @@
+import type { PrismaClient } from "@prisma/client";
 import { test, expect, describe, beforeAll, afterAll } from "vitest";
 import "pptr-testing-library/extend";
 import { type App, start } from "test/helpers/app";
-import { loader } from "./articles";
+import { createDatabaseClient, prepareDatabase } from "test/helpers/db";
 import { logger } from "~/services/logger.server";
-import { PrismaClient } from "@prisma/client";
+import { loader } from "./articles";
 
 describe("E2E", () => {
   let app: App;
@@ -28,13 +29,12 @@ describe("E2E", () => {
   });
 });
 
-describe("Loader", () => {
+describe("Integration", () => {
   let db: PrismaClient;
 
   beforeAll(async () => {
-    db = new PrismaClient({
-      datasources: { db: { url: "file:./test.db?mode=memory&cache=shared" } },
-    });
+    let url = await prepareDatabase();
+    db = await createDatabaseClient(url);
     await db.$connect();
   });
 

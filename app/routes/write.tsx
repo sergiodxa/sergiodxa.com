@@ -1,9 +1,9 @@
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import type { User } from "~/models/user.server";
 import { json, redirect } from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { badRequest, unauthorized } from "remix-utils";
 import { auth } from "~/services/auth.server";
 import writeAnArticle from "~/use-cases/write-an-article";
-import type { User } from "~/models/user.server";
 
 type LoaderData = {
   userId: User["id"];
