@@ -1,6 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { test } from "vitest";
+import { createDatabaseClient } from "test/helpers/db";
 import { createUseCase } from "~/use-case.server";
+import { logger } from "./services/logger.server";
 
 let useCase = createUseCase({
   schema: (z) => z.object({}),
@@ -9,22 +11,24 @@ let useCase = createUseCase({
   },
 });
 
-let db: PrismaClient;
+describe("createUseCase", () => {
+  let db: PrismaClient;
 
-beforeAll(async () => {
-  db = new PrismaClient();
-  await db.$connect();
-});
+  beforeAll(async () => {
+    db = await createDatabaseClient();
+    await db.$connect();
+  });
 
-afterAll(async () => {
-  await db.$disconnect();
-});
+  afterAll(async () => {
+    await db.$disconnect();
+  });
 
-test("should count the number of users", async () => {
-  let result = await useCase({ db } as SDX.Context, new FormData());
+  test("should count the number of users", async () => {
+    let result = await useCase({ db, logger });
 
-  expect(result.status).toBe("success");
-  if (result.status === "success") {
-    expect(result.value).toBe(await db.user.count());
-  }
+    expect(result.status).toBe("success");
+    if (result.status === "success") {
+      expect(result.value).toBe(1);
+    }
+  });
 });

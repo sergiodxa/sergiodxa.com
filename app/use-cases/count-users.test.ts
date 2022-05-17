@@ -1,6 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { createDatabaseClient, prepareDatabase } from "test/helpers/db";
+import { createDatabaseClient } from "test/helpers/db";
 import { logger } from "~/services/logger.server";
 import { isSuccess } from "~/use-case.server";
 import countUsers from "./count-users";
@@ -8,8 +8,7 @@ import countUsers from "./count-users";
 let db: PrismaClient;
 
 beforeAll(async () => {
-  let url = await prepareDatabase();
-  db = await createDatabaseClient(url);
+  db = await createDatabaseClient();
   await db.$connect();
 });
 

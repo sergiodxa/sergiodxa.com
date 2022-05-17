@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { test, expect, describe, beforeAll, afterAll } from "vitest";
 import "pptr-testing-library/extend";
 import { type App, start } from "test/helpers/app";
-import { createDatabaseClient, prepareDatabase } from "test/helpers/db";
+import { createDatabaseClient } from "test/helpers/db";
 import { logger } from "~/services/logger.server";
 import { loader } from "./articles";
 
@@ -33,8 +33,7 @@ describe("Integration", () => {
   let db: PrismaClient;
 
   beforeAll(async () => {
-    let url = await prepareDatabase();
-    db = await createDatabaseClient(url);
+    db = await createDatabaseClient();
     await db.$connect();
   });
 

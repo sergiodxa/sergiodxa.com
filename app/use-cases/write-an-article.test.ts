@@ -1,7 +1,7 @@
 import type { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 import { test, expect, describe } from "vitest";
-import { createDatabaseClient, prepareDatabase } from "test/helpers/db";
+import { createDatabaseClient } from "test/helpers/db";
 import { type User } from "~/models/user.server";
 import { logger } from "~/services/logger.server";
 import { isSuccess } from "~/use-case.server";
@@ -10,8 +10,7 @@ import writeAnArticle from "./write-an-article";
 let db: PrismaClient;
 
 beforeAll(async () => {
-  let url = await prepareDatabase();
-  db = await createDatabaseClient(url);
+  db = await createDatabaseClient();
   await db.$connect();
 });
 

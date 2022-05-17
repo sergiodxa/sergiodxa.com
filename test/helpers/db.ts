@@ -31,6 +31,7 @@ export async function prepareDatabase() {
   return url;
 }
 
-export async function createDatabaseClient(url: DATABASE_URL) {
+export async function createDatabaseClient() {
+  let url = await prepareDatabase();
   return new PrismaClient({ datasources: { db: { url } } });
 }
