@@ -28,7 +28,9 @@ describe("Write an article", () => {
     formData.set("body", faker.lorem.paragraphs(5));
 
     let result = await writeAnArticle({ db, logger }, formData);
-
+    if (result.status === "failure") {
+      console.error(result.error.cause);
+    }
     isSuccess(result);
 
     expect(result.status).toBe("success");

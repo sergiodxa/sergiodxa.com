@@ -1,11 +1,14 @@
 import type { PrismaClient } from "@prisma/client";
 import { test } from "vitest";
+import { z } from "zod";
 import { createDatabaseClient } from "test/helpers/db";
 import { createUseCase } from "~/use-case.server";
 import { logger } from "./services/logger.server";
 
 let useCase = createUseCase({
-  schema: (z) => z.object({}),
+  async validate() {
+    return null;
+  },
   async perform(context) {
     return await context.db.user.count();
   },

@@ -1,11 +1,11 @@
-import { useTransition } from "@remix-run/react";
 import nProgress from "nprogress";
 import { useEffect } from "react";
+import { useGlobalPendingState } from "remix-utils";
 
 export function useNProgress() {
-  let transition = useTransition();
+  let state = useGlobalPendingState();
   useEffect(() => {
-    if (transition.state === "idle") nProgress.done();
-    else nProgress.start();
-  }, [transition.state]);
+    if (state === "pending") nProgress.start();
+    if (state === "idle") nProgress.done();
+  }, [state]);
 }
