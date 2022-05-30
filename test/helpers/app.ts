@@ -2,7 +2,7 @@ import { execa } from "execa";
 import getPort from "get-port";
 import "pptr-testing-library/extend";
 import puppeteer from "puppeteer";
-import { generateDatabaseUrl, migrateDatabase, type DATABASE_URL } from "./db";
+import { prepareDatabase, type DATABASE_URL } from "./db";
 
 export type Process = {
   stop(): Promise<void>;
@@ -30,12 +30,6 @@ function buildApp() {
 async function prepareBuild() {
   await clearBuild();
   await buildApp();
-}
-
-async function prepareDatabase() {
-  let databaseUrl = generateDatabaseUrl();
-  await migrateDatabase(databaseUrl);
-  return databaseUrl;
 }
 
 async function startProcess({ databaseUrl }: { databaseUrl: DATABASE_URL }) {

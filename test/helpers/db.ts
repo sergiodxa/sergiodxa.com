@@ -1,6 +1,6 @@
+import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
 import { execa } from "execa";
-import { randomUUID } from "node:crypto";
 
 declare const helperDb: unique symbol;
 export type DATABASE_URL = string & { [helperDb]: true };
@@ -8,7 +8,7 @@ export type DATABASE_URL = string & { [helperDb]: true };
 const DATABASE_URL_FORMAT = "file:./test/{{uuid}}.db";
 
 export function generateDatabaseUrl() {
-  let uuid = randomUUID();
+  let uuid = faker.datatype.uuid();
   return DATABASE_URL_FORMAT.replace("{{uuid}}", uuid) as DATABASE_URL;
 }
 

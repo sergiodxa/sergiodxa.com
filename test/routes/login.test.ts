@@ -1,6 +1,6 @@
 import "pptr-testing-library/extend";
 import { afterAll, beforeAll, expect, test } from "vitest";
-import { start, type App } from "~/test/helpers/app";
+import { start, type App } from "~/helpers/app";
 
 describe("E2E", () => {
   let app: App;

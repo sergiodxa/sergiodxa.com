@@ -19,7 +19,7 @@ export default createQuery({
       where: { status: "published" },
       select: { id: true, title: true, slug: true },
       orderBy: { createdAt: "desc" },
-      skip: page * count,
+      skip: (page - 1) * count,
       take: count,
     });
   },

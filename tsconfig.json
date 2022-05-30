@@ -19,7 +19,7 @@
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*", "./test/*"]
     },
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,

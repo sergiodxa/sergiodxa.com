@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import { type PrismaClient, type User } from "@prisma/client";
 import { describe, expect, test } from "vitest";
+import { createDatabaseClient } from "~/helpers/db";
 import { logger } from "~/services/logger.server";
-import { createDatabaseClient } from "~/test/helpers/db";
 import writeAnArticle from "~/use-cases/write-an-article";
 
 let db: PrismaClient;

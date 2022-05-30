@@ -1,10 +1,10 @@
-import type { PrismaClient } from "@prisma/client";
+import { type PrismaClient } from "@prisma/client";
 import "pptr-testing-library/extend";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { start, type App } from "~/helpers/app";
+import { createDatabaseClient } from "~/helpers/db";
 import { loader } from "~/routes/articles";
 import { logger } from "~/services/logger.server";
-import { start, type App } from "~/test/helpers/app";
-import { createDatabaseClient } from "~/test/helpers/db";
 
 describe("E2E", () => {
   let app: App;
@@ -26,6 +26,9 @@ describe("E2E", () => {
     });
 
     expect(await $h1.getNodeText()).toBe("Articles");
+
+    let listItems = await document.findAllByRole("listitem");
+    expect(listItems).toHaveLength(10);
   });
 });
 
@@ -52,5 +55,6 @@ describe("Integration", () => {
 
     expect(data).toHaveProperty("articles");
     expect(data.articles).toBeInstanceOf(Array);
+    expect(data.articles).toHaveLength(10);
   });
 });
