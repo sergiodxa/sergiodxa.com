@@ -1,5 +1,11 @@
 {
-  "include": ["types/remix.env.d.ts", "types/sdx.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "types/*.d.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "test/**/*.ts",
+    "test/**/*.tsx"
+  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "isolatedModules": true,

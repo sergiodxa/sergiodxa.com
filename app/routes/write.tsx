@@ -1,4 +1,4 @@
-import type { User } from "~/models/user.server";
+import type { User } from "@prisma/client";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { badRequest, unauthorized } from "remix-utils";

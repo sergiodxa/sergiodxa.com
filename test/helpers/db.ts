@@ -1,6 +1,6 @@
-import { randomUUID } from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 import { execa } from "execa";
+import { randomUUID } from "node:crypto";
 
 declare const helperDb: unique symbol;
 export type DATABASE_URL = string & { [helperDb]: true };

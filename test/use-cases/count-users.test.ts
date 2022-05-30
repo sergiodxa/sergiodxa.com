@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, describe, test } from "vitest";
 import { logger } from "~/services/logger.server";
 import { createDatabaseClient } from "~/test/helpers/db";
-import countUsers from "./count-users";
+import countUsers from "~/use-cases/count-users";
 
 let db: PrismaClient;
 

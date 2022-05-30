@@ -25,16 +25,15 @@ server.use(express.static("public", { maxAge: "1h" }));
 
 server.use(morgan("tiny"));
 
-server.all(
-  "*",
-  createRequestHandler({
+server.all("*", async (req, res, next) => {
+  return createRequestHandler({
     build,
     mode: process.env.NODE_ENV,
     getLoadContext(): SDX.Context {
       return { db, logger };
     },
-  })
-);
+  })(req, res, next);
+});
 
 server.listen(PORT, HOST, () => {
   logger.info(`HTTP server listening on ${HOST}:${PORT}`);

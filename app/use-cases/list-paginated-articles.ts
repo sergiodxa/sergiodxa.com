@@ -1,16 +1,12 @@
 import { z } from "zod";
-import { articleModel } from "~/models/article.server";
-import { createUseCase } from "~/use-case.server";
+import { createQuery } from "~/use-case.server";
 
 let schema = z.object({
   page: z.number().default(1),
   count: z.number().default(10),
 });
 
-export default createUseCase<
-  z.infer<typeof schema>,
-  z.infer<typeof articleModel>[]
->({
+export default createQuery({
   async validate(data) {
     return schema.parse({
       page: data.get("page") ?? 1,
@@ -19,16 +15,12 @@ export default createUseCase<
   },
 
   async perform({ db }, { page, count }) {
-    let result = await db.article.findMany({
+    return await db.article.findMany({
       where: { status: "published" },
       select: { id: true, title: true, slug: true },
       orderBy: { createdAt: "desc" },
       skip: page * count,
       take: count,
-    });
-
-    return result.map((item) => {
-      return articleModel.parse(item);
     });
   },
 });

@@ -1,7 +1,7 @@
+import { type Article } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { badRequest } from "remix-utils";
-import { articleModel, type Article } from "~/models/article.server";
 import listPaginatedArticles from "~/use-cases/list-paginated-articles";
 
 type LoaderData = { articles: Pick<Article, "id" | "title" | "slug">[] };
@@ -13,11 +13,7 @@ export let loader: SDX.LoaderFunction = async ({ request, context }) => {
   if (listPaginatedArticles.isFailure(result)) return badRequest(result.error);
   let { value: articles } = result;
 
-  let schema = articleModel.pick({ id: true, title: true, slug: true });
-
-  return json<LoaderData>({
-    articles: articles.map((article) => schema.parse(article)),
-  });
+  return json<LoaderData>({ articles });
 };
 
 export default function Articles() {

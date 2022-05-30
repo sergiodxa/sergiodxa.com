@@ -1,8 +1,4 @@
-import type {
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
 import nProgressUrl from "nprogress/nprogress.css";
@@ -10,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useChangeLanguage } from "remix-i18next";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
-import type { SDX } from "~/types";
 import { Document } from "~/views/layouts/document";
 import { useNProgress } from "./helpers/use-nprogress.hook";
 import { isDevelopment } from "./utils/environment";
@@ -26,7 +21,7 @@ export let links: LinksFunction = () => {
   ];
 };
 
-export let loader: LoaderFunction = async ({ request }) => {
+export let loader: SDX.LoaderFunction = async ({ request }) => {
   let locale = await i18n.getLocale(request);
   return json({ locale });
 };

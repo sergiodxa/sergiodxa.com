@@ -1,8 +1,8 @@
-import "pptr-testing-library/extend";
 import { execa } from "execa";
 import getPort from "get-port";
+import "pptr-testing-library/extend";
 import puppeteer from "puppeteer";
-import { type DATABASE_URL, generateDatabaseUrl, migrateDatabase } from "./db";
+import { generateDatabaseUrl, migrateDatabase, type DATABASE_URL } from "./db";
 
 export type Process = {
   stop(): Promise<void>;

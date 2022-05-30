@@ -1,10 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
 import "pptr-testing-library/extend";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { loader } from "~/routes/articles";
 import { logger } from "~/services/logger.server";
 import { start, type App } from "~/test/helpers/app";
 import { createDatabaseClient } from "~/test/helpers/db";
-import { loader } from "./articles";
 
 describe("E2E", () => {
   let app: App;
