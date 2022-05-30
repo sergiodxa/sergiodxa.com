@@ -35,7 +35,7 @@ export function createUseCase<Input = unknown, Output = unknown>(
 ) {
   async function perform(
     context: SDX.Context,
-    data: FormData | URLSearchParams = new FormData()
+    data: Data = new FormData()
   ): Promise<Result<Output>> {
     try {
       let input = await useCase.validate(data);

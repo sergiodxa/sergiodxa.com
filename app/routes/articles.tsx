@@ -10,7 +10,7 @@ export let loader: SDX.LoaderFunction = async ({ request, context }) => {
   let url = new URL(request.url);
   let result = await listPaginatedArticles(context, url.searchParams);
 
-  if (result.status === "failure") throw badRequest(result.error);
+  if (listPaginatedArticles.isFailure(result)) return badRequest(result.error);
   let { value: articles } = result;
 
   let schema = articleModel.pick({ id: true, title: true, slug: true });

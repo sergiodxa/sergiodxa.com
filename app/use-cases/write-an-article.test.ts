@@ -4,7 +4,6 @@ import { describe, expect, test } from "vitest";
 import { type User } from "~/models/user.server";
 import { logger } from "~/services/logger.server";
 import { createDatabaseClient } from "~/test/helpers/db";
-import { isSuccess } from "~/use-case.server";
 import writeAnArticle from "./write-an-article";
 
 let db: PrismaClient;
@@ -29,7 +28,7 @@ describe("Write an article", () => {
 
     let result = await writeAnArticle({ db, logger }, formData);
 
-    isSuccess(result);
+    if (writeAnArticle.isFailure(result)) throw result.error;
 
     expect(result.status).toBe("success");
     expect(result.value).toBeInstanceOf(Object);
@@ -48,7 +47,7 @@ describe("Write an article", () => {
 
     let result = await writeAnArticle({ db, logger }, formData);
 
-    isSuccess(result);
+    if (writeAnArticle.isFailure(result)) throw result.error;
 
     expect(result.status).toBe("success");
     expect(result.value.slug).toBe(slug);
@@ -66,7 +65,7 @@ describe("Write an article", () => {
 
     let result = await writeAnArticle({ db, logger }, formData);
 
-    isSuccess(result);
+    if (writeAnArticle.isFailure(result)) throw result.error;
 
     expect(result.status).toBe("success");
     expect(result.value.headline).toBe(headline);
@@ -85,7 +84,7 @@ describe("Write an article", () => {
 
     let result = await writeAnArticle({ db, logger }, formData);
 
-    isSuccess(result);
+    if (writeAnArticle.isFailure(result)) throw result.error;
 
     expect(result.status).toBe("success");
     expect(result.value.headline).toBe(headline);
