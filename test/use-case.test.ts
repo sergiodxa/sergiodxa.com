@@ -1,8 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { logger } from "~/services/logger.server";
 import { createDatabaseClient } from "~/test/helpers/db";
 import { createUseCase } from "~/use-case.server";
-import { logger } from "./services/logger.server";
 
 let useCase = createUseCase({
   async validate() {
