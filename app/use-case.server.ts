@@ -1,12 +1,28 @@
-export type Success<Value> = { status: "success"; value: Value };
-export type Failure = { status: "failure"; error: Error };
+export interface Success<Value> {
+  status: "success";
+  value: Value;
+}
+export interface Failure {
+  status: "failure";
+  error: Error;
+}
+
+export type Data = URLSearchParams | FormData;
+
+export interface ValidatorFunction<Output> {
+  (input: Data): Promise<Output>;
+}
+
+export interface PerformFunction<Input, Output> {
+  (context: SDX.Context, input: Input): Promise<Output>;
+}
+
+export interface UseCase<Input, Output> {
+  validate: ValidatorFunction<Input>;
+  perform: PerformFunction<Input, Output>;
+}
 
 export type Result<Value> = Success<Value> | Failure;
-
-export type UseCase<Input, Output> = {
-  validate(input: URLSearchParams | FormData): Promise<Input>;
-  perform(context: SDX.Context, input: Input): Promise<Output>;
-};
 
 export function isSuccess<Value>(
   result: Result<Value>
@@ -34,6 +50,14 @@ export function createUseCase<Input = unknown, Output = unknown>(
       throw TypeError(`Unexpected error: ${error}`);
     }
   }
+
+  perform.isSuccess = (result: Result<Output>): result is Success<Output> => {
+    return result.status === "success";
+  };
+
+  perform.isFailure = (result: Result<Output>): result is Failure => {
+    return result.status === "failure";
+  };
 
   return perform;
 }

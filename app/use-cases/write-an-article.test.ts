@@ -1,9 +1,9 @@
-import type { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
-import { test, expect, describe } from "vitest";
-import { createDatabaseClient } from "test/helpers/db";
+import { type PrismaClient } from "@prisma/client";
+import { describe, expect, test } from "vitest";
 import { type User } from "~/models/user.server";
 import { logger } from "~/services/logger.server";
+import { createDatabaseClient } from "~/test/helpers/db";
 import { isSuccess } from "~/use-case.server";
 import writeAnArticle from "./write-an-article";
 
@@ -28,9 +28,7 @@ describe("Write an article", () => {
     formData.set("body", faker.lorem.paragraphs(5));
 
     let result = await writeAnArticle({ db, logger }, formData);
-    if (result.status === "failure") {
-      console.error(result.error.cause);
-    }
+
     isSuccess(result);
 
     expect(result.status).toBe("success");

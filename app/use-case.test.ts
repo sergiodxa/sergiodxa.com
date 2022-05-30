@@ -1,7 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
-import { test } from "vitest";
-import { z } from "zod";
-import { createDatabaseClient } from "test/helpers/db";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { createDatabaseClient } from "~/test/helpers/db";
 import { createUseCase } from "~/use-case.server";
 import { logger } from "./services/logger.server";
 
@@ -30,8 +29,11 @@ describe("createUseCase", () => {
     let result = await useCase({ db, logger });
 
     expect(result.status).toBe("success");
-    if (result.status === "success") {
-      expect(result.value).toBe(1);
+
+    if (useCase.isFailure(result)) {
+      throw new Error("Result is not a success");
     }
+
+    expect(result.value).toBe(1);
   });
 });

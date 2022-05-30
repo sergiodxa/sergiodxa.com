@@ -1,9 +1,9 @@
 import type { PrismaClient } from "@prisma/client";
-import { test, expect, describe, beforeAll, afterAll } from "vitest";
 import "pptr-testing-library/extend";
-import { type App, start } from "test/helpers/app";
-import { createDatabaseClient } from "test/helpers/db";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { logger } from "~/services/logger.server";
+import { start, type App } from "~/test/helpers/app";
+import { createDatabaseClient } from "~/test/helpers/db";
 import { loader } from "./articles";
 
 describe("E2E", () => {
@@ -43,7 +43,7 @@ describe("Integration", () => {
 
   test("The loader should have an articles key", async () => {
     let response = await loader({
-      request: new Request("/articles"),
+      request: new Request("http://sergiodxa.dev/articles"),
       params: {},
       context: { logger, db },
     });

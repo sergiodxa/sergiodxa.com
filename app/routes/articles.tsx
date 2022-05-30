@@ -4,9 +4,7 @@ import { badRequest } from "remix-utils";
 import { articleModel, type Article } from "~/models/article.server";
 import listPaginatedArticles from "~/use-cases/list-paginated-articles";
 
-type LoaderData = {
-  articles: Array<Pick<Article, "id" | "title" | "slug">>;
-};
+type LoaderData = { articles: Pick<Article, "id" | "title" | "slug">[] };
 
 export let loader: SDX.LoaderFunction = async ({ request, context }) => {
   let url = new URL(request.url);

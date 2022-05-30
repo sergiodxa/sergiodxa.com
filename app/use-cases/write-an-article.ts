@@ -1,3 +1,4 @@
+import { type Article } from "@prisma/client";
 import { parameterize } from "inflected";
 import { z } from "zod";
 import { createUseCase } from "~/use-case.server";
@@ -13,7 +14,7 @@ let schema = z.object({
   headline: z.string().nullable().optional(),
 });
 
-export default createUseCase({
+export default createUseCase<z.infer<typeof schema>, Article>({
   async validate(data) {
     return schema.parse({
       authorId: data.get("authorId"),
@@ -24,18 +25,12 @@ export default createUseCase({
     });
   },
 
-  async perform(
-    { db },
-    { authorId, title, body, slug = parameterize(title), headline }
-  ) {
+  async perform({ db }, { authorId, title, body, slug, headline }) {
+    headline = generarateHeadline(headline ?? body);
+    slug ??= parameterize(title);
+
     let article = await db.article.create({
-      data: {
-        authorId,
-        title,
-        body,
-        slug,
-        headline: generarateHeadline(headline ?? body),
-      },
+      data: { authorId, title, body, slug, headline },
     });
 
     return article;

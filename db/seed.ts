@@ -13,4 +13,10 @@ async function seed() {
   });
 }
 
-seed();
+seed()
+  .then(() => {
+    console.log("Seed completed");
+  })
+  .catch((error) => {
+    console.log("Seed failed");
+  });
