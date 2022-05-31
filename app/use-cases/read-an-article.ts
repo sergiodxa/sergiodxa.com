@@ -3,7 +3,7 @@ import { z } from "zod";
 import { define } from "~/use-case";
 
 let schema = z.object({
-  articleId: z.string().nonempty().cuid(),
+  slug: z.string().nonempty(),
 });
 
 export default define<z.infer<typeof schema>, Article | null>({
@@ -11,9 +11,9 @@ export default define<z.infer<typeof schema>, Article | null>({
     schema.parse(input);
   },
 
-  async execute({ input: { articleId }, context }) {
+  async execute({ input: { slug }, context }) {
     return await context.db.article.findUnique({
-      where: { id: articleId },
+      where: { slug },
     });
   },
 });

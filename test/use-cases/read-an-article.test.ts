@@ -1,5 +1,4 @@
 import type { PrismaClient } from "@prisma/client";
-import cuid from "cuid";
 import { afterAll, beforeAll, test } from "vitest";
 import { createDatabaseClient } from "~/helpers/db";
 import { logger } from "~/services/logger.server";
@@ -24,14 +23,14 @@ test("return the article if it exists", async () => {
   let article = await db.article.findFirst();
   if (!article) throw new Error("Run the seed!");
 
-  let result = await readAnArticle({ articleId: article.id }, context);
+  let result = await readAnArticle({ slug: article.slug }, context);
 
   if (isFailure(result)) throw result.error;
   expect(result.value).toEqual(article);
 });
 
 test("return null if the article doesn't exists", async () => {
-  let result = await readAnArticle({ articleId: cuid() }, context);
+  let result = await readAnArticle({ slug: "random-slug" }, context);
 
   if (isFailure(result)) throw result.error;
   expect(result.value).toBeNull();
@@ -44,22 +43,8 @@ test("throw if the articleId is missing", async () => {
   expect(result.error).toBeInstanceOf(ValidationError);
 });
 
-test("throw if the articleId is invalid", async () => {
-  let result = await readAnArticle({ articleId: "invalid" }, context);
-
-  if (isSuccess(result)) throw new Error("Expected failure");
-  expect(result.error).toBeInstanceOf(ValidationError);
-});
-
 test("throw if the articleId is empty", async () => {
-  let result = await readAnArticle({ articleId: "" }, context);
-
-  if (isSuccess(result)) throw new Error("Expected failure");
-  expect(result.error).toBeInstanceOf(ValidationError);
-});
-
-test("throw if the articleId is a number", async () => {
-  let result = await readAnArticle({ articleId: "123" }, context);
+  let result = await readAnArticle({ slug: "" }, context);
 
   if (isSuccess(result)) throw new Error("Expected failure");
   expect(result.error).toBeInstanceOf(ValidationError);
