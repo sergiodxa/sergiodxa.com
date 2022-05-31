@@ -6,6 +6,8 @@ import { parameterize } from "inflected";
 faker.seed(1);
 
 const USER_ID = "cl3amo1cf000009l04bi86f91";
+const MS_OF_2015 = new Date("2015-01-01").getTime();
+const NOW = Date.now();
 
 async function seed() {
   let client = new PrismaClient();
@@ -32,6 +34,7 @@ async function seed() {
           headline: faker.lorem.sentence(140),
           authorId: USER_ID,
           status: "published",
+          createdAt: faker.datatype.datetime({ min: MS_OF_2015, max: NOW }),
         },
       });
     })

@@ -5,11 +5,11 @@
   "license": "",
   "scripts": {
     "dev:app": "remix watch",
-    "dev:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --watch",
+    "dev:css": "tailwindcss --input ./styles/tailwind.css --output ./app/styles/tailwind.css --config ./config/tailwind.js --watch",
     "dev:http": "node ./server/build",
     "dev": "pm2-dev config/pm2.config.js",
     "build:app": "remix build",
-    "build:css": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js --minify",
+    "build:css": "tailwindcss --input ./styles/tailwind.css --output ./app/styles/tailwind.css --config ./config/tailwind.js --minify",
     "build": "npm run build:css && npm run build:app",
     "postbuild": "npm run db:migrate deploy",
     "start": "NODE_ENV=production node ./server/build/index.js",

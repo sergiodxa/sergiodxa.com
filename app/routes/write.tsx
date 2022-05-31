@@ -20,6 +20,7 @@ export let action: SDX.ActionFunction = async ({ request, context }) => {
   let userId = await auth.isAuthenticated(request);
   if (!userId) return unauthorized({ message: "Unauthorized" });
   let formData = await request.formData();
+  formData.set("authorId", userId);
   let result = await writeAnArticle(context, formData);
   if (result.status === "failure") return badRequest(result.error.message);
   return redirect("/articles");

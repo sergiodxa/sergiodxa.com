@@ -1,7 +1,9 @@
 module.exports = {
   content: ["./app/**/*.{ts,tsx}"],
   darkMode: "media",
-  theme: { extend: {} },
+  theme: {
+    extend: {},
+  },
   variants: {},
   plugins: [
     require("@tailwindcss/typography"),
