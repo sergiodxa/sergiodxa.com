@@ -16,9 +16,6 @@ export type ResultSuccessValue<T extends Result<unknown>> = T extends Success<
   ? Value
   : never;
 
-// export type SuccessValue<T extends (...args: any) => Promise<unknown>> =
-//   Awaited<ReturnType<T>> extends Result<infer Value> ? Value : never;
-
 export function isSuccess<Output>(
   result: Result<Output>
 ): result is Success<Output> {
