@@ -1,7 +1,7 @@
 import { type Article } from "@prisma/client";
 import { parameterize } from "inflected";
 import { z } from "zod";
-import { createUseCase } from "~/use-case.server";
+import { define } from "~/use-case";
 
 const MAX_HEADLINE_LENGTH = 140;
 const ELLIPSIS = "…";
@@ -14,22 +14,16 @@ let schema = z.object({
   headline: z.string().nullable().optional(),
 });
 
-export default createUseCase<z.infer<typeof schema>, Article>({
-  async validate(formData) {
-    return schema.parse({
-      authorId: formData.get("authorId"),
-      title: formData.get("title"),
-      body: formData.get("body"),
-      slug: formData.get("slug"),
-      headline: formData.get("headline"),
-    });
+export default define<z.infer<typeof schema>, Article>({
+  async validate({ authorId, title, body, slug, headline }) {
+    return schema.parse({ authorId, title, body, slug, headline });
   },
 
-  async perform({ db }, { authorId, title, body, slug, headline }) {
+  async execute({ input: { authorId, title, body, slug, headline }, context }) {
     headline = generarateHeadline(headline ?? body);
     slug ??= parameterize(title);
 
-    let article = await db.article.create({
+    let article = await context.db.article.create({
       data: { authorId, title, body, slug, headline, status: "draft" },
     });
 

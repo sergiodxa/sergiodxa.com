@@ -1,7 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
-import { afterAll, beforeAll, describe, test } from "vitest";
+import { afterAll, beforeAll, test } from "vitest";
 import { createDatabaseClient } from "~/helpers/db";
 import { logger } from "~/services/logger.server";
+import { isFailure } from "~/use-case/result";
 import countUsers from "~/use-cases/count-users";
 
 let db: PrismaClient;
@@ -15,10 +16,8 @@ afterAll(async () => {
   await db.$disconnect();
 });
 
-describe("Count users", () => {
-  test("should return the amount of users", async () => {
-    let result = await countUsers({ db, logger });
-    if (countUsers.isFailure(result)) throw result.error;
-    expect(result.value).toBe(1);
-  });
+test("should return the amount of users", async () => {
+  let result = await countUsers({}, { db, logger });
+  if (isFailure(result)) throw result.error;
+  expect(result.value).toBe(1);
 });

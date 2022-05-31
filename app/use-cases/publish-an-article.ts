@@ -1,17 +1,15 @@
 import { z } from "zod";
-import { createUseCase } from "~/use-case.server";
+import { define } from "~/use-case";
 
 let schema = z.object({ articleId: z.string().cuid() });
 
-export default createUseCase<z.infer<typeof schema>, void>({
-  async validate(data) {
-    return schema.parse({
-      articleId: data.get("articleId"),
-    });
+export default define<z.infer<typeof schema>, void>({
+  async validate({ articleId }) {
+    return schema.parse({ articleId });
   },
 
-  async perform({ db }, { articleId }) {
-    await db.article.update({
+  async execute({ input: { articleId }, context }) {
+    await context.db.article.update({
       where: { id: articleId },
       data: { status: "published" },
     });

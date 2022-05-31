@@ -31,7 +31,7 @@ async function seed() {
           title,
           slug: parameterize(title),
           body: faker.lorem.paragraphs(5),
-          headline: faker.lorem.sentence(140),
+          headline: faker.lorem.sentence().slice(0, 139) + "…",
           authorId: USER_ID,
           status: "published",
           createdAt: faker.datatype.datetime({ min: MS_OF_2015, max: NOW }),
@@ -46,5 +46,5 @@ seed()
     console.log("Seed completed");
   })
   .catch((error) => {
-    console.log("Seed failed");
+    console.error(error);
   });

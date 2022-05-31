@@ -1,6 +1,7 @@
 {
   "include": [
     "types/*.d.ts",
+    "server/index.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
     "test/**/*.ts",
@@ -19,7 +20,7 @@
     "strictNullChecks": true,
     "strictBindCallApply": true,
     "paths": {
-      "~/*": ["./app/*", "./test/*"]
+      "~/*": ["./app/*", "./test/*", "./framework/*"]
     },
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,

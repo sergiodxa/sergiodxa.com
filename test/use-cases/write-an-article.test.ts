@@ -1,10 +1,12 @@
 import { faker } from "@faker-js/faker";
 import { type PrismaClient, type User } from "@prisma/client";
-import { describe, expect, test } from "vitest";
+import { expect, test } from "vitest";
 import { createDatabaseClient } from "~/helpers/db";
 import { logger } from "~/services/logger.server";
+import { isFailure } from "~/use-case/result";
 import writeAnArticle from "~/use-cases/write-an-article";
 
+const USER_ID: User["id"] = "cl3amo1cf000009l04bi86f91";
 let db: PrismaClient;
 
 beforeAll(async () => {
@@ -16,76 +18,77 @@ afterAll(async () => {
   await db.$disconnect();
 });
 
-describe("Write an article", () => {
-  let userId: User["id"] = "cl3amo1cf000009l04bi86f91";
+test("it should autogenerate the slug and headline", async () => {
+  let result = await writeAnArticle(
+    {
+      authorId: USER_ID,
+      title: faker.random.words(5),
+      body: faker.lorem.paragraphs(5),
+    },
+    { db, logger }
+  );
 
-  test("it should autogenerate the slug and headline", async () => {
-    let formData = new FormData();
-    formData.set("authorId", userId);
-    formData.set("title", faker.random.words(5));
-    formData.set("body", faker.lorem.paragraphs(5));
+  if (isFailure(result)) throw result.error;
 
-    let result = await writeAnArticle({ db, logger }, formData);
+  expect(result.status).toBe("success");
+  expect(result.value).toBeInstanceOf(Object);
+});
 
-    if (writeAnArticle.isFailure(result)) throw result.error;
+test("it should use the defined slug", async () => {
+  let random = Math.round(Math.random() * 1000);
+  let slug = `test-slug-${random}`;
 
-    expect(result.status).toBe("success");
-    expect(result.value).toBeInstanceOf(Object);
-  });
+  let result = await writeAnArticle(
+    {
+      authorId: USER_ID,
+      title: faker.random.words(5),
+      body: faker.lorem.paragraphs(5),
+      slug,
+    },
+    { db, logger }
+  );
 
-  test("it should use the defined slug", async () => {
-    let formData = new FormData();
+  if (isFailure(result)) throw result.error;
 
-    let random = Math.round(Math.random() * 1000);
-    let slug = `test-slug-${random}`;
+  expect(result.status).toBe("success");
+  expect(result.value.slug).toBe(slug);
+});
 
-    formData.set("authorId", userId);
-    formData.set("title", faker.random.words(5));
-    formData.set("body", faker.lorem.paragraphs(5));
-    formData.set("slug", slug);
+test("it should use the defined headline", async () => {
+  let headline = `This is the headline of the article`;
 
-    let result = await writeAnArticle({ db, logger }, formData);
+  let result = await writeAnArticle(
+    {
+      authorId: USER_ID,
+      title: faker.random.words(5),
+      body: faker.lorem.paragraphs(5),
+      headline: headline,
+    },
+    { db, logger }
+  );
 
-    if (writeAnArticle.isFailure(result)) throw result.error;
+  if (isFailure(result)) throw result.error;
 
-    expect(result.status).toBe("success");
-    expect(result.value.slug).toBe(slug);
-  });
+  expect(result.status).toBe("success");
+  expect(result.value.headline).toBe(headline);
+});
 
-  test("it should use the defined headline", async () => {
-    let formData = new FormData();
+test("it should limit the headline length", async () => {
+  let body = faker.lorem.words(20);
+  let headline = body.split("\n")[0].slice(0, 139) + "…";
 
-    let headline = `This is the headline of the article`;
+  let result = await writeAnArticle(
+    {
+      authorId: USER_ID,
+      title: faker.random.words(5),
+      body: body,
+      headline: headline,
+    },
+    { db, logger }
+  );
 
-    formData.set("authorId", userId);
-    formData.set("title", faker.random.words(5));
-    formData.set("body", faker.lorem.paragraphs(5));
-    formData.set("headline", headline);
+  if (isFailure(result)) throw result.error;
 
-    let result = await writeAnArticle({ db, logger }, formData);
-
-    if (writeAnArticle.isFailure(result)) throw result.error;
-
-    expect(result.status).toBe("success");
-    expect(result.value.headline).toBe(headline);
-  });
-
-  test("it should limit the headline length", async () => {
-    let formData = new FormData();
-
-    let body = faker.lorem.words(20);
-    let headline = body.split("\n")[0].slice(0, 139) + "…";
-
-    formData.set("authorId", userId);
-    formData.set("title", faker.random.words(5));
-    formData.set("body", body);
-    formData.set("headline", headline);
-
-    let result = await writeAnArticle({ db, logger }, formData);
-
-    if (writeAnArticle.isFailure(result)) throw result.error;
-
-    expect(result.status).toBe("success");
-    expect(result.value.headline).toBe(headline);
-  });
+  expect(result.status).toBe("success");
+  expect(result.value.headline).toBe(headline);
 });

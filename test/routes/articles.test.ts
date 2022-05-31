@@ -28,7 +28,7 @@ describe("E2E", () => {
     expect(await $h1.getNodeText()).toBe("Articles");
 
     let listItems = await document.findAllByRole("listitem");
-    expect(listItems).toHaveLength(10);
+    expect(listItems).toHaveLength(14);
   });
 });
 
@@ -53,8 +53,9 @@ describe("Integration", () => {
 
     let data = await response.json();
 
-    expect(data).toHaveProperty("articles");
-    expect(data.articles).toBeInstanceOf(Array);
-    expect(data.articles).toHaveLength(10);
+    expect(data.articlesPerYear["2017"]).toHaveLength(1);
+    expect(data.articlesPerYear["2018"]).toHaveLength(2);
+    expect(data.articlesPerYear["2021"]).toHaveLength(6);
+    expect(data.articlesPerYear["2022"]).toHaveLength(1);
   });
 });

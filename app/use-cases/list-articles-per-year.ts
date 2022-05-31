@@ -1,13 +1,16 @@
 import { type Article } from "@prisma/client";
-import { createUseCase } from "~/use-case.server";
+import { define, type EmptyInput } from "~/use-case";
 
-export default createUseCase({
+export default define<
+  EmptyInput,
+  { [year: string]: Pick<Article, "id" | "title" | "slug" | "createdAt">[] }
+>({
   async validate() {
     return null;
   },
 
-  async perform({ db }) {
-    let articles = await db.article.findMany({
+  async execute({ context }) {
+    let articles = await context.db.article.findMany({
       where: { status: "published" },
       select: { id: true, title: true, slug: true, createdAt: true },
       orderBy: { createdAt: "desc" },
