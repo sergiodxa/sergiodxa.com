@@ -57,9 +57,10 @@ async function main() {
       },
       content: Buffer.from(markdown).toString("base64"),
     });
+    process.stdout.write(".");
   }
 
-  console.info("Data pushed to GitHub");
+  console.info("\nData pushed to GitHub");
 }
 
 main().catch((error) => {
