@@ -40,8 +40,32 @@ async function main() {
 
   console.info("Starting to push to GitHub");
 
+  try {
+    await gh.request("DELETE /repos/{owner}/{repo}", {
+      owner: GITHUB_USERNAME,
+      repo: GITHUB_CONTENT_REPO,
+    });
+    console.info("Deleting the old repository");
+  } catch (e) {
+    console.info("Repo didn't exists");
+  }
+
+  await gh.request("POST /user/repos", {
+    name: GITHUB_CONTENT_REPO,
+    private: true,
+    has_issues: false,
+    has_projects: false,
+    has_wiki: false,
+    description: "The content of sergiodxa.com",
+    allow_auto_merge: true,
+    allow_merge_commit: false,
+    allow_rebase_merge: false,
+  });
+
+  console.info("New repository created");
+
   for (let { content, path, ...note } of noteList) {
-    if ("tags" in notes && typeof note.tags === "string") {
+    if ("tags" in note && typeof note.tags === "string") {
       note.tags = note.tags.split(", ");
     }
     let markdown = matter.stringify(content.trim(), note);
