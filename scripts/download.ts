@@ -60,6 +60,8 @@ async function main() {
     allow_auto_merge: true,
     allow_merge_commit: false,
     allow_rebase_merge: false,
+    delete_branch_on_merge: true,
+    homepage: "https://sergiodxa.com",
   });
 
   console.info("New repository created");
