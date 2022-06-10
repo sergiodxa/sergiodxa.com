@@ -1,6 +1,5 @@
 import { type Note, type NoteVisibility } from "collected-notes";
 import matter from "gray-matter";
-import { join } from "node:path";
 import cn, { CN_SITE } from "./helpers/cn";
 import "./helpers/fetch";
 import gh, { GITHUB_CONTENT_REPO, GITHUB_USERNAME } from "./helpers/gh";
@@ -34,21 +33,23 @@ async function main() {
       content,
       createdAt: new Date(date ?? note.created_at).toISOString(),
       description: description ?? note.headline,
-      path: path ?? note.path,
-      ...meta,
+      path: (path as string | undefined) ?? note.path,
+      ...(meta as { tags?: string | string[] }),
     };
   });
 
   console.info("Starting to push to GitHub");
 
-  for (let { content, ...note } of noteList) {
-    let path = join("content/", `${note.path}.md`);
+  for (let { content, path, ...note } of noteList) {
+    if ("tags" in notes && typeof note.tags === "string") {
+      note.tags = note.tags.split(", ");
+    }
     let markdown = matter.stringify(content.trim(), note);
 
     await gh.request("PUT /repos/{owner}/{repo}/contents/{path}", {
       owner: GITHUB_USERNAME,
       repo: GITHUB_CONTENT_REPO,
-      path,
+      path: `${path}.md`,
       message: "Upload from Collected Notes",
       committer: {
         name: "Sergio Xalambrí",
