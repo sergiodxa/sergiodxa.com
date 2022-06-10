@@ -1,12 +1,11 @@
+import { type Article } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { i18n } from "~/services/i18n.server";
-import { type SuccessValue } from "~/use-case";
-import { isFailure } from "~/use-case/result";
-import readAnArticle from "~/use-cases/read-an-article";
+import { pick } from "~/utils/objects";
 
 type LoaderData = {
-  article: NonNullable<SuccessValue<typeof readAnArticle>>;
+  article: Pick<Article, "title" | "headline" | "body">;
 };
 
 export let loader: SDX.LoaderFunction = async ({
@@ -14,20 +13,22 @@ export let loader: SDX.LoaderFunction = async ({
   params,
   context,
 }) => {
-  let result = await readAnArticle({ articleId: params.articleId }, context);
-
-  if (isFailure(result)) throw result.error;
+  let article = await context.db.article.findUnique({
+    where: { slug: params.articleId },
+  });
 
   let t = await i18n.getFixedT(request);
 
-  if (result.value === null) {
+  if (!article) {
     throw json({ message: t("Not found") }, { status: 404 });
   }
 
-  return json<LoaderData>({ article: result.value });
+  return json<LoaderData>({
+    article: pick(article, ["title", "headline", "body"]),
+  });
 };
 
-export default function Article() {
+export default function Screen() {
   let { article } = useLoaderData<LoaderData>();
   return (
     <article className="prose mx-auto">

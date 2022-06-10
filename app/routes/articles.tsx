@@ -1,39 +1,68 @@
+import { type Article } from "@prisma/client";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { badRequest } from "remix-utils";
-import { type SuccessValue } from "~/use-case";
-import { isFailure } from "~/use-case/result";
-import listArticlesPerYear from "~/use-cases/list-articles-per-year";
+import { eachYearOfInterval } from "date-fns";
+import { isEmpty } from "~/utils/arrays";
 
 type LoaderData = {
-  articlesPerYear: SuccessValue<typeof listArticlesPerYear>;
+  articles: Array<{
+    year: number;
+    articles: Pick<Article, "title" | "slug" | "createdAt">[];
+  }>;
 };
 
 export let loader: SDX.LoaderFunction = async ({ context }) => {
-  let result = await listArticlesPerYear({}, context);
+  let articles = await context.db.article.findMany({
+    where: { status: "published" },
+    select: { title: true, slug: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+  });
 
-  if (isFailure(result)) return badRequest(result.error);
-  let { value: articlesPerYear } = result;
+  let articlesPerYear = articles.reduce(
+    (articlesByYear, article) => {
+      let year = article.createdAt.getFullYear().toString();
+      if (!articlesByYear[year]) articlesByYear[year] = [];
+      articlesByYear[year].push(article);
+      return articlesByYear;
+    },
+    {} as {
+      [year: string]: Pick<Article, "title" | "slug" | "createdAt">[];
+    }
+  );
 
-  return json<LoaderData>({ articlesPerYear });
+  let result: LoaderData["articles"] = eachYearOfInterval({
+    start: articles.at(-1)?.createdAt ?? new Date(),
+    end: articles.at(0)?.createdAt ?? new Date(),
+  })
+    .map((date) => date.getUTCFullYear())
+    .reverse()
+    .map((year) => {
+      let articles = articlesPerYear[year.toString()] ?? [];
+      return { year, articles };
+    });
+
+  return json<LoaderData>({ articles: result });
 };
 
 export default function Articles() {
-  let { articlesPerYear } = useLoaderData<LoaderData>();
+  let { articles } = useLoaderData<LoaderData>();
 
   return (
     <section>
       <h1>Articles</h1>
       <ul>
-        {Object.entries(articlesPerYear).map(([year, articles]) => {
+        {articles.map(({ year, articles }) => {
+          if (isEmpty(articles ?? [])) return null;
           return (
             <li key={year}>
               <p>{year}</p>
               <ul>
                 {articles.map((article) => {
                   return (
-                    <li key={article.id}>
-                      <Link to={article.id}>{article.title}</Link>
+                    <li key={article.slug}>
+                      <Link to={article.slug}>
+                        <h1 className="text-xl">{article.title}</h1>
+                      </Link>
                     </li>
                   );
                 })}
