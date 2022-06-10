@@ -23,7 +23,7 @@ async function main() {
     } else loadMore = false;
   }
 
-  console.log("Total articles downloaded %d", notes.length);
+  console.info("Total articles downloaded %d", notes.length);
 
   let noteList = notes.map((note) => {
     let { data, content } = matter(note.body);
@@ -38,6 +38,8 @@ async function main() {
       ...meta,
     };
   });
+
+  console.info("Starting to push to GitHub");
 
   for (let { content, ...note } of noteList) {
     let path = join("content/", `${note.path}.md`);
