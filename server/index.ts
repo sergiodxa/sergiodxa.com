@@ -1,16 +1,15 @@
-import { PrismaClient } from "@prisma/client";
 import * as build from "@remix-run/dev/server-build";
 import { createRequestHandler } from "@remix-run/express";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
 import { logger } from "~/services/logger.server";
+import { db } from "./db";
 
 const PORT = Number(process.env.PORT ?? "3000");
 const HOST = process.env.HOST ?? "localhost";
 
 const server = express();
-const db = new PrismaClient();
 
 server.use(compression());
 
