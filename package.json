@@ -18,7 +18,9 @@
     "db:seed": "prisma db seed",
     "typecheck": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "script": "ts-node --require tsconfig-paths/register",
+    "script:download": "npm run script -- scripts/download.ts"
   },
   "prisma": {
     "schema": "db/schema.prisma",
