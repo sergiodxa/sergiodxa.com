@@ -60,7 +60,12 @@ export default function Articles() {
                 {articles.map((article) => {
                   return (
                     <li key={article.slug}>
-                      <Link to={article.slug}>
+                      <Link
+                        to={article.slug}
+                        ping={`/analytics/track?event=${encodeURIComponent(
+                          "article:read"
+                        )}&slug=${article.slug}`}
+                      >
                         <h1 className="text-xl">{article.title}</h1>
                       </Link>
                     </li>

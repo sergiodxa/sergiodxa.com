@@ -1,3 +1,4 @@
+import { type User } from "@prisma/client";
 import { execa } from "execa";
 import getPort from "get-port";
 import "pptr-testing-library/extend";
@@ -10,6 +11,8 @@ export type Process = {
 };
 
 export type App = {
+  baseURL: URL;
+  login(userId: User["id"]): Promise<void>;
   navigate(path: string): Promise<puppeteer.ElementHandle<Element>>;
   stop(): Promise<void>;
   browser: puppeteer.Browser;
@@ -78,8 +81,19 @@ export async function start(): Promise<App> {
   ]);
 
   return {
+    baseURL: new URL(`http://localhost:${port}/`),
     browser,
     page,
+    async login(userId: User["id"]) {
+      await page.setCookie({
+        name: "session",
+        path: "/",
+        secure: false,
+        httpOnly: true,
+        sameSite: "Lax",
+        value: Buffer.from(JSON.stringify({ user: userId })).toString("base64"),
+      });
+    },
     async navigate(path: string) {
       let url = new URL(path, `http://localhost:${port}/`);
       await page.goto(url.toString());

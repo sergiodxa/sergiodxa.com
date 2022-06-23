@@ -1,6 +1,23 @@
-import { collectedNotes } from "collected-notes";
-import { env } from "~/utils/environment";
+import { collectedNotes, type Note } from "collected-notes";
+import { CN_EMAIL, CN_TOKEN, CN_SITE } from "~/env";
 
-export let cn = collectedNotes(env("CN_EMAIL"), env("CN_TOKEN"));
+const cn = collectedNotes(CN_EMAIL, CN_TOKEN);
 
-export let site = env("CN_SITE");
+export async function downloadAllArticles() {
+  let notes: Note[] = [];
+  let page = 1;
+  let loadMore = true;
+
+  while (loadMore) {
+    let moreNotes = await cn.latestNotes(CN_SITE, page, "public_site");
+
+    notes.push(...moreNotes);
+
+    if (moreNotes.length === 40) {
+      page += 1;
+      continue;
+    } else loadMore = false;
+  }
+
+  return notes;
+}

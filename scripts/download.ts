@@ -1,26 +1,18 @@
-import { type Note, type NoteVisibility } from "collected-notes";
 import matter from "gray-matter";
-import cn, { CN_SITE } from "./helpers/cn";
+import "dotenv/config";
 import "./helpers/fetch";
-import gh, { GITHUB_CONTENT_REPO, GITHUB_USERNAME } from "./helpers/gh";
+import { GITHUB_CONTENT_REPO } from "~/env";
+import { downloadAllArticles } from "~/services/cn.server";
+import {
+  createRepository,
+  deleteRepository,
+  pushFileToRepository,
+} from "~/services/gh.server";
 
-const VISIBILITY: NoteVisibility = "public_site";
+async function migrateArticles() {
+  console.info("Downloading articles from Collected Notes");
 
-async function main() {
-  let notes: Note[] = [];
-  let page = 1;
-  let loadMore = true;
-
-  while (loadMore) {
-    console.info("Fetching page %d", page);
-    let moreNotes = await cn.latestNotes(CN_SITE, page, VISIBILITY);
-    console.info("Fetched %d notes", moreNotes.length);
-    notes.push(...moreNotes);
-    if (moreNotes.length === 40) {
-      page += 1;
-      continue;
-    } else loadMore = false;
-  }
+  let notes = await downloadAllArticles();
 
   console.info("Total articles downloaded %d", notes.length);
 
@@ -41,28 +33,13 @@ async function main() {
   console.info("Starting to push to GitHub");
 
   try {
-    await gh.request("DELETE /repos/{owner}/{repo}", {
-      owner: GITHUB_USERNAME,
-      repo: GITHUB_CONTENT_REPO,
-    });
+    await deleteRepository(GITHUB_CONTENT_REPO);
     console.info("Deleting the old repository");
   } catch (e) {
     console.info("Repo didn't exists");
   }
 
-  await gh.request("POST /user/repos", {
-    name: GITHUB_CONTENT_REPO,
-    private: true,
-    has_issues: false,
-    has_projects: false,
-    has_wiki: false,
-    description: "The content of sergiodxa.com",
-    allow_auto_merge: true,
-    allow_merge_commit: false,
-    allow_rebase_merge: false,
-    delete_branch_on_merge: true,
-    homepage: "https://sergiodxa.com",
-  });
+  await createRepository(GITHUB_CONTENT_REPO, "The content of sergiodxa.com");
 
   console.info("New repository created");
 
@@ -72,21 +49,20 @@ async function main() {
     }
     let markdown = matter.stringify(content.trim(), note);
 
-    await gh.request("PUT /repos/{owner}/{repo}/contents/{path}", {
-      owner: GITHUB_USERNAME,
-      repo: GITHUB_CONTENT_REPO,
-      path: `${path}.md`,
-      message: "Upload from Collected Notes",
-      committer: {
-        name: "Sergio Xalambrí",
-        email: "hello@sergiodxa.com",
-      },
-      content: Buffer.from(markdown).toString("base64"),
-    });
+    await pushFileToRepository(
+      GITHUB_CONTENT_REPO,
+      `articles/${path}.md`,
+      "Upload from Collected Notes",
+      Buffer.from(markdown)
+    );
     process.stdout.write(".");
   }
 
   console.info("\nData pushed to GitHub");
+}
+
+async function main() {
+  await migrateArticles();
 }
 
 main().catch((error) => {
