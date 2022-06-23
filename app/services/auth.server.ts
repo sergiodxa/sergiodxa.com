@@ -3,23 +3,27 @@ import { type User } from "@prisma/client";
 import { createCookie, createCookieSessionStorage } from "@remix-run/node";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
-import { env, isDevelopment, isProduction } from "~/utils/environment";
-
-const BASE_URL = env("BASE_URL");
+import {
+  BASE_URL,
+  COOKIE_SESSION_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  NODE_ENV,
+} from "~/env";
 
 let sessionCookie = createCookie("session", {
   path: "/",
-  secure: isProduction(),
+  secure: NODE_ENV === "production",
   httpOnly: true,
   maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
   sameSite: "lax",
-  secrets: [env("SESSION_SECRET", "s3cr3t")],
+  secrets: [COOKIE_SESSION_SECRET],
 });
 
 export let returnToCookie = createCookie("returnTo", {
   path: "/auth",
   sameSite: "lax",
-  secure: isDevelopment(),
+  secure: NODE_ENV === "production",
 });
 
 export let sessionStorage = createCookieSessionStorage({
@@ -37,8 +41,8 @@ export let auth = new Authenticator<User["id"]>(sessionStorage);
 auth.use(
   new GitHubStrategy(
     {
-      clientID: env("GITHUB_CLIENT_ID"),
-      clientSecret: env("GITHUB_CLIENT_SECRET"),
+      clientID: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
       callbackURL: new URL("/auth/github/callback", BASE_URL).toString(),
     },
     async ({ profile, context }) => {

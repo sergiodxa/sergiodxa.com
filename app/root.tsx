@@ -8,7 +8,6 @@ import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
 import { Document } from "~/views/layouts/document";
 import { useNProgress } from "./helpers/use-nprogress.hook";
-import { isDevelopment } from "./utils/environment";
 
 export let meta: MetaFunction = () => {
   return { robots: "noindex", title: "Sergio Xalambrí" };
@@ -43,7 +42,7 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  if (isDevelopment()) console.error(error);
+  if (process.env.NODE_ENV === "development") console.error(error);
   let { i18n } = useTranslation();
 
   return (

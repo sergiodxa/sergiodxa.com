@@ -13,6 +13,7 @@ export const {
   GITHUB_CONTENT_REPO,
   GITHUB_TOKEN,
   GITHUB_USERNAME,
+  NODE_ENV,
 } = z
   .object({
     AIRTABLE_API_KEY: z.string().nonempty(),
@@ -27,5 +28,12 @@ export const {
     GITHUB_CONTENT_REPO: z.string().nonempty(),
     GITHUB_TOKEN: z.string().nonempty(),
     GITHUB_USERNAME: z.string().nonempty(),
+    NODE_ENV: z
+      .union([
+        z.literal("test"),
+        z.literal("development"),
+        z.literal("production"),
+      ])
+      .default("development"),
   })
   .parse(process.env);

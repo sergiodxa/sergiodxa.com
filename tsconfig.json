@@ -9,6 +9,7 @@
     "test/**/*.tsx",
     "scripts/**/*.ts"
   ],
+  "exclude": ["scripts/migrate.ts"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "isolatedModules": true,
