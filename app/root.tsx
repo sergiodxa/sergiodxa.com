@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
 import nProgressUrl from "nprogress/nprogress.css";
@@ -20,10 +20,10 @@ export let links: LinksFunction = () => {
   ];
 };
 
-export let loader: SDX.LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   let locale = await i18n.getLocale(request);
   return json({ locale });
-};
+}
 
 export let handle: SDX.Handle = { i18n: "translations" };
 

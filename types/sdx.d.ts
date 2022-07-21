@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import "@remix-run/node";
 import type { DataFunctionArgs } from "@remix-run/node";
 import type {
   DynamicLinksFunction,
@@ -14,22 +15,6 @@ declare global {
       logger: Logger;
     }
 
-    export interface LoaderFunction {
-      (
-        args: Pick<DataFunctionArgs, "request" | "params"> & {
-          context: Context;
-        }
-      ): Promise<Response> | Response;
-    }
-
-    export interface ActionFunction {
-      (
-        args: Pick<DataFunctionArgs, "request" | "params"> & {
-          context: Context;
-        }
-      ): Promise<Response> | Response;
-    }
-
     export type Handle<LoaderData = unknown> = {
       i18n?: string | string[];
       hydrate?: boolean | ((data: LoaderData) => boolean);
@@ -37,5 +22,15 @@ declare global {
       dynamicLinks?: DynamicLinksFunction<LoaderData>;
       structuredData?: StructuredDataFunction<LoaderData>;
     };
+  }
+}
+
+declare module "@remix-run/node" {
+  export interface LoaderArgs extends DataFunctionArgs {
+    context: SDX.Context;
+  }
+
+  export interface ActionArgs extends DataFunctionArgs {
+    context: SDX.Context;
   }
 }

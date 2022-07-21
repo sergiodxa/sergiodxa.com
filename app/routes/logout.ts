@@ -1,8 +1,8 @@
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionArgs } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 
-export let action: ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
   return await auth.logout(request, {
     redirectTo: "/",
   });
-};
+}

@@ -1,16 +1,16 @@
-import { json } from "@remix-run/node";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 import {
   auth,
-  returnToCookie,
   commitSession,
   getSession,
+  returnToCookie,
 } from "~/services/auth.server";
 
 type LoaderData = { error: string | null };
 
-export let loader: SDX.LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   await auth.isAuthenticated(request, { successRedirect: "/" });
 
   let headers = new Headers();
@@ -25,7 +25,7 @@ export let loader: SDX.LoaderFunction = async ({ request }) => {
   headers.append("Set-Cookie", await commitSession(session));
 
   return json<LoaderData>({ error: error?.message ?? null }, { headers });
-};
+}
 
 export default function Screen() {
   let { t } = useTranslation();

@@ -1,5 +1,5 @@
 import { type Article } from "@prisma/client";
-import { json } from "@remix-run/node";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { i18n } from "~/services/i18n.server";
 import { pick } from "~/utils/objects";
@@ -8,11 +8,7 @@ type LoaderData = {
   article: Pick<Article, "title" | "headline" | "body">;
 };
 
-export let loader: SDX.LoaderFunction = async ({
-  request,
-  params,
-  context,
-}) => {
+export async function loader({ request, params, context }: LoaderArgs) {
   let article = await context.db.article.findUnique({
     where: { slug: params.articleId },
   });
@@ -26,7 +22,7 @@ export let loader: SDX.LoaderFunction = async ({
   return json<LoaderData>({
     article: pick(article, ["title", "headline", "body"]),
   });
-};
+}
 
 export default function Screen() {
   let { article } = useLoaderData<LoaderData>();

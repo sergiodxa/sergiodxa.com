@@ -1,6 +1,6 @@
-import { json } from "@remix-run/node";
+import { json, type ActionArgs } from "@remix-run/node";
 
-export let action: SDX.ActionFunction = async ({ request }) => {
+export async function action({ request }: ActionArgs) {
   let { searchParams } = new URL(request.url);
 
   switch (searchParams.get("event")) {
@@ -12,4 +12,4 @@ export let action: SDX.ActionFunction = async ({ request }) => {
   }
 
   return json(null);
-};
+}

@@ -1,5 +1,5 @@
 import { type Article } from "@prisma/client";
-import { json } from "@remix-run/node";
+import { json, type LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { eachYearOfInterval } from "date-fns";
 import { isEmpty } from "~/utils/arrays";
@@ -11,7 +11,7 @@ type LoaderData = {
   }>;
 };
 
-export let loader: SDX.LoaderFunction = async ({ context }) => {
+export async function loader({ context }: LoaderArgs) {
   let articles = await context.db.article.findMany({
     where: { status: "published" },
     select: { title: true, slug: true, createdAt: true },
@@ -42,7 +42,7 @@ export let loader: SDX.LoaderFunction = async ({ context }) => {
     });
 
   return json<LoaderData>({ articles: result });
-};
+}
 
 export default function Articles() {
   let { articles } = useLoaderData<LoaderData>();

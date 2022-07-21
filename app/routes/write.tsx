@@ -1,4 +1,9 @@
-import { json, redirect } from "@remix-run/node";
+import {
+  json,
+  redirect,
+  type ActionArgs,
+  type LoaderArgs,
+} from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { parameterize } from "inflected";
 import { unauthorized } from "remix-utils";
@@ -12,12 +17,12 @@ type LoaderData = null;
 
 export let handle: SDX.Handle = { hydrate: true };
 
-export let loader: SDX.LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   await auth.isAuthenticated(request, { failureRedirect: "/login" });
   return json<LoaderData>(null);
-};
+}
 
-export let action: SDX.ActionFunction = async ({ request, context }) => {
+export async function action({ request, context }: ActionArgs) {
   let userId = await auth.isAuthenticated(request);
   if (!userId) return unauthorized({ message: "Unauthorized" });
 
@@ -53,7 +58,7 @@ export let action: SDX.ActionFunction = async ({ request, context }) => {
     if (headline.length <= MAX_HEADLINE_LENGTH) return headline;
     return headline.slice(0, MAX_HEADLINE_LENGTH - 1) + ELLIPSIS;
   }
-};
+}
 
 export default function Write() {
   let error = useActionData<string>();
