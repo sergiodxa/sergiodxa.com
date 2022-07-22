@@ -4,13 +4,6 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { eachYearOfInterval } from "date-fns";
 import { isEmpty } from "~/utils/arrays";
 
-type LoaderData = {
-  articles: Array<{
-    year: number;
-    articles: Pick<Article, "title" | "slug" | "createdAt">[];
-  }>;
-};
-
 export async function loader({ context }: LoaderArgs) {
   let articles = await context.db.article.findMany({
     where: { status: "published" },
@@ -30,22 +23,22 @@ export async function loader({ context }: LoaderArgs) {
     }
   );
 
-  let result: LoaderData["articles"] = eachYearOfInterval({
-    start: articles.at(-1)?.createdAt ?? new Date(),
-    end: articles.at(0)?.createdAt ?? new Date(),
-  })
-    .map((date) => date.getUTCFullYear())
-    .reverse()
-    .map((year) => {
-      let articles = articlesPerYear[year.toString()] ?? [];
-      return { year, articles };
-    });
-
-  return json<LoaderData>({ articles: result });
+  return json({
+    articles: eachYearOfInterval({
+      start: articles.at(-1)?.createdAt ?? new Date(),
+      end: articles.at(0)?.createdAt ?? new Date(),
+    })
+      .map((date) => date.getUTCFullYear())
+      .reverse()
+      .map((year) => {
+        let articles = articlesPerYear[year.toString()] ?? [];
+        return { year, articles };
+      }),
+  });
 }
 
 export default function Articles() {
-  let { articles } = useLoaderData<LoaderData>();
+  let { articles } = useLoaderData<typeof loader>();
 
   return (
     <section>

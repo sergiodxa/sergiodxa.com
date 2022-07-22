@@ -6,25 +6,22 @@ import {
 } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { parameterize } from "inflected";
-import { unauthorized } from "remix-utils";
 import { z } from "zod";
 import { auth } from "~/services/auth.server";
 
 const MAX_HEADLINE_LENGTH = 140;
 const ELLIPSIS = "…";
 
-type LoaderData = null;
-
 export let handle: SDX.Handle = { hydrate: true };
 
 export async function loader({ request }: LoaderArgs) {
   await auth.isAuthenticated(request, { failureRedirect: "/login" });
-  return json<LoaderData>(null);
+  return json(null);
 }
 
 export async function action({ request, context }: ActionArgs) {
   let userId = await auth.isAuthenticated(request);
-  if (!userId) return unauthorized({ message: "Unauthorized" });
+  if (!userId) return json({ message: "Unauthorized" }, 401);
 
   let formData = await request.formData();
 
@@ -61,7 +58,7 @@ export async function action({ request, context }: ActionArgs) {
 }
 
 export default function Write() {
-  let error = useActionData<string>();
+  let error = useActionData<typeof action>();
 
   return (
     <Form method="post">
