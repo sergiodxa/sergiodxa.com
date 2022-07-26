@@ -37,6 +37,8 @@ export async function loader({ context }: LoaderArgs) {
   });
 }
 
+export let handle: SDX.Handle = { hydrate: true };
+
 export default function Articles() {
   let { articles } = useLoaderData<typeof loader>();
 
@@ -53,12 +55,7 @@ export default function Articles() {
                 {articles.map((article) => {
                   return (
                     <li key={article.slug}>
-                      <Link
-                        to={article.slug}
-                        ping={`/analytics/track?event=${encodeURIComponent(
-                          "article:read"
-                        )}&slug=${article.slug}`}
-                      >
+                      <Link to={article.slug}>
                         <h1 className="text-xl">{article.title}</h1>
                       </Link>
                     </li>

@@ -3,14 +3,15 @@ import { createRequestHandler } from "@remix-run/express";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+import { InMemoryCache } from "~/services/cache.server";
+import { db } from "~/services/db.server";
 import { logger } from "~/services/logger.server";
-import { db } from "./db";
 
 const PORT = Number(process.env.PORT ?? "3000");
 const HOST = process.env.HOST ?? "localhost";
 
 const server = express();
-
+const cache = new InMemoryCache();
 server.use(compression());
 
 server.disable("x-powered-by");
@@ -24,15 +25,16 @@ server.use(express.static("public", { maxAge: "1h" }));
 
 server.use(morgan("tiny"));
 
-server.all("*", async (req, res, next) => {
-  return createRequestHandler({
+server.all(
+  "*",
+  createRequestHandler({
     build,
     mode: process.env.NODE_ENV,
     getLoadContext(): SDX.Context {
-      return { db, logger };
+      return { db, logger, cache };
     },
-  })(req, res, next);
-});
+  })
+);
 
 server.listen(PORT, HOST, () => {
   logger.info(`HTTP server listening on ${HOST}:${PORT}`);

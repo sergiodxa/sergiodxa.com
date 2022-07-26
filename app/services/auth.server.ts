@@ -1,6 +1,6 @@
-import { createHash } from "node:crypto";
 import { type User } from "@prisma/client";
 import { createCookie, createCookieSessionStorage } from "@remix-run/node";
+import { createHash } from "node:crypto";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 import {

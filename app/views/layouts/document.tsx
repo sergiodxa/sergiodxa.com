@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import {
   Links,
   LiveReload,
@@ -6,7 +5,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import type { ReactNode } from "react";
 import { useShouldHydrate } from "remix-utils";
+import { useDirection } from "~/helpers/use-i18n.hook";
 
 type DocumentProps = {
   children: ReactNode;
@@ -16,8 +17,9 @@ type DocumentProps = {
 
 export function Document({ children, title, locale }: DocumentProps) {
   let shouldHydrate = useShouldHydrate();
+  let dir = useDirection();
   return (
-    <html lang={locale} className="h-full">
+    <html lang={locale} dir={dir} className="h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

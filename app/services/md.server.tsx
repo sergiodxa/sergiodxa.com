@@ -1,5 +1,10 @@
+import { parse, transform, type Config } from "@markdoc/markdoc";
 import { marked, Renderer } from "marked";
 import { renderToString } from "react-dom/server";
+
+export function parseMarkdown(markdown: string, options: Config = {}) {
+  return transform(parse(markdown), options);
+}
 
 export class GitHubRenderer extends Renderer {
   constructor(private repo: string) {

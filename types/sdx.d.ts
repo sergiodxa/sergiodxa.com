@@ -7,17 +7,23 @@ import type {
   StructuredDataFunction,
 } from "remix-utils";
 import type { Logger } from "winston";
+import type { Cache } from "~/services/cache.server";
+
+interface HydrateFunction<LoaderData> {
+  (data: LoaderData): boolean;
+}
 
 declare global {
   namespace SDX {
     export interface Context {
       db: PrismaClient;
+      cache: Cache;
       logger: Logger;
     }
 
     export type Handle<LoaderData = unknown> = {
       i18n?: string | string[];
-      hydrate?: boolean | ((data: LoaderData) => boolean);
+      hydrate?: boolean | HydrateFunction<LoaderData>;
       scripts?: ExternalScriptsFunction;
       dynamicLinks?: DynamicLinksFunction<LoaderData>;
       structuredData?: StructuredDataFunction<LoaderData>;
