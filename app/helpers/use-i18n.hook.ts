@@ -1,17 +1,21 @@
-import { useTranslation } from "react-i18next";
+import {
+  useTranslation,
+  type DefaultNamespace,
+  type KeyPrefix,
+  type Namespace,
+} from "react-i18next";
 
-export function useI18n() {
-  return useTranslation().i18n;
-}
-
-export function useT() {
-  return useTranslation().t;
+export function useT<
+  N extends Namespace = DefaultNamespace,
+  TKPrefix extends KeyPrefix<N> = undefined
+>(ns?: N | Readonly<N>, keyPrefix?: TKPrefix) {
+  return useTranslation(ns, { keyPrefix }).t;
 }
 
 export function useLocale() {
-  return useI18n().language;
+  return useTranslation().i18n.language;
 }
 
 export function useDirection() {
-  return useI18n().dir();
+  return useTranslation().i18n.dir();
 }
