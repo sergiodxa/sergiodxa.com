@@ -1,6 +1,5 @@
-import matter from "gray-matter";
 import "dotenv/config";
-import "./helpers/fetch";
+import matter from "gray-matter";
 import { GITHUB_CONTENT_REPO } from "~/env";
 import { downloadAllArticles } from "~/services/cn.server";
 import {
@@ -8,6 +7,7 @@ import {
   deleteRepository,
   pushFileToRepository,
 } from "~/services/gh.server";
+import "./helpers/fetch";
 
 async function migrateArticles() {
   console.info("Downloading articles from Collected Notes");
@@ -21,13 +21,21 @@ async function migrateArticles() {
 
     let { date, description, path, ...meta } = data;
 
+    if (!meta.title) meta.title = note.title;
+
     return {
       content,
       createdAt: new Date(date ?? note.created_at).toISOString(),
       description: description ?? note.headline,
       path: (path as string | undefined) ?? note.path,
-      ...(meta as { tags?: string | string[] }),
+      ...(meta as { tags?: string | string[]; title: string }),
     };
+  });
+
+  noteList.sort((noteA, noteB) => {
+    let dateA = new Date(noteA.createdAt);
+    let dateB = new Date(noteB.createdAt);
+    return dateA.getTime() - dateB.getTime();
   });
 
   console.info("Starting to push to GitHub");
@@ -43,6 +51,8 @@ async function migrateArticles() {
 
   console.info("New repository created");
 
+  console.info("Pushing articles to GitHub");
+
   for (let { content, path, ...note } of noteList) {
     if ("tags" in note && typeof note.tags === "string") {
       note.tags = note.tags.split(", ");
@@ -52,7 +62,7 @@ async function migrateArticles() {
     await pushFileToRepository(
       GITHUB_CONTENT_REPO,
       `articles/${path}.md`,
-      "Upload from Collected Notes",
+      `Upload "${note.title}" from Collected Notes`,
       Buffer.from(markdown)
     );
     process.stdout.write(".");
