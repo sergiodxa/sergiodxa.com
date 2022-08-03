@@ -1,12 +1,22 @@
 import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useCatch,
+  useLoaderData,
+} from "@remix-run/react";
 import nProgressUrl from "nprogress/nprogress.css";
-import { useTranslation } from "react-i18next";
+import type { ReactNode } from "react";
 import { useChangeLanguage } from "remix-i18next";
+import { useShouldHydrate } from "remix-utils";
+import { useDirection, useLocale } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
-import { Document } from "~/views/layouts/document";
 import { useNProgress } from "./helpers/use-nprogress.hook";
 
 export let meta: MetaFunction = () => {
@@ -43,10 +53,8 @@ export default function App() {
 
 export function ErrorBoundary({ error }: { error: Error }) {
   if (process.env.NODE_ENV === "development") console.error(error);
-  let { i18n } = useTranslation();
-
   return (
-    <Document locale={i18n.language} title="Error!">
+    <Document locale={useLocale()} title="Error!">
       Unexpected error
     </Document>
   );
@@ -54,11 +62,39 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
 export function CatchBoundary() {
   let caught = useCatch();
-  let { i18n } = useTranslation();
-
   return (
-    <Document locale={i18n.language} title={caught.statusText}>
+    <Document locale={useLocale()} title={caught.statusText}>
       {caught.statusText}
     </Document>
+  );
+}
+
+function Document({
+  children,
+  title,
+  locale,
+}: {
+  children: ReactNode;
+  title?: string;
+  locale: string;
+}) {
+  let shouldHydrate = useShouldHydrate();
+  let dir = useDirection();
+  return (
+    <html lang={locale} dir={dir} className="h-full">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        {title ? <title>{title}</title> : null}
+        <Meta />
+        <Links />
+      </head>
+      <body className="h-full">
+        {children}
+        <ScrollRestoration />
+        {shouldHydrate && <Scripts />}
+        <LiveReload />
+      </body>
+    </html>
   );
 }
