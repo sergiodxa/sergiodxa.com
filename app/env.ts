@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const {
+  PORT,
+  HOST,
   AIRTABLE_API_KEY,
   AIRTABLE_BASE,
   BASE_URL,
@@ -16,6 +18,11 @@ export const {
   NODE_ENV,
 } = z
   .object({
+    PORT: z
+      .string()
+      .default("3000")
+      .transform((value) => Number(value)),
+    HOST: z.string().default("localhost"),
     AIRTABLE_API_KEY: z.string().nonempty(),
     AIRTABLE_BASE: z.string().nonempty(),
     BASE_URL: z.string().nonempty().url(),
