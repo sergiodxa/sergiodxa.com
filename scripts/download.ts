@@ -7,7 +7,7 @@ import {
   deleteRepository,
   pushFileToRepository,
 } from "~/services/gh.server";
-import "./helpers/fetch";
+import "./helpers/setup";
 
 async function migrateArticles() {
   console.info("Downloading articles from Collected Notes");
