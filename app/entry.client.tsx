@@ -8,28 +8,28 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import { getInitialNamespaces } from "remix-i18next";
 
 i18next
-  .use(initReactI18next)
-  .use(LanguageDetector)
-  .use(Backend)
-  .init({
-    supportedLngs: ["es", "en"],
-    defaultNS: "translations",
-    fallbackLng: "en",
-    react: { useSuspense: false },
-    ns: getInitialNamespaces(),
-    backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
-    detection: {
-      order: ["htmlTag"],
-      caches: [],
-    },
-  })
-  .then(() => {
-    return hydrate(
-      <I18nextProvider i18n={i18next}>
-        <SSRProvider>
-          <RemixBrowser />
-        </SSRProvider>
-      </I18nextProvider>,
-      document
-    );
-  });
+	.use(initReactI18next)
+	.use(LanguageDetector)
+	.use(Backend)
+	.init({
+		supportedLngs: ["es", "en"],
+		defaultNS: "translations",
+		fallbackLng: "en",
+		react: { useSuspense: false },
+		ns: getInitialNamespaces(),
+		backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
+		detection: {
+			order: ["htmlTag"],
+			caches: [],
+		},
+	})
+	.then(() => {
+		return hydrate(
+			<I18nextProvider i18n={i18next}>
+				<SSRProvider>
+					<RemixBrowser />
+				</SSRProvider>
+			</I18nextProvider>,
+			document
+		);
+	});

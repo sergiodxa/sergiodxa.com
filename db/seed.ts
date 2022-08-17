@@ -10,41 +10,41 @@ const MS_OF_2015 = new Date("2015-01-01").getTime();
 const NOW = Date.now();
 
 async function seed() {
-  let client = new PrismaClient();
+	let client = new PrismaClient();
 
-  await client.user.create({
-    data: {
-      id: USER_ID,
-      email: "hello@sergiodxa.com",
-      displayName: "Sergio Xalambrí",
-      avatar: "https://avatars.githubusercontent.com/u/1312018?v=4",
-    },
-  });
+	await client.user.create({
+		data: {
+			id: USER_ID,
+			email: "hello@sergiodxa.com",
+			displayName: "Sergio Xalambrí",
+			avatar: "https://avatars.githubusercontent.com/u/1312018?v=4",
+		},
+	});
 
-  await Promise.all(
-    faker.datatype.array(10).map(() => {
-      let title = faker.lorem.sentence();
+	await Promise.all(
+		faker.datatype.array(10).map(() => {
+			let title = faker.lorem.sentence();
 
-      return client.article.create({
-        data: {
-          id: cuid(),
-          title,
-          slug: parameterize(title),
-          body: faker.lorem.paragraphs(5),
-          headline: faker.lorem.sentence().slice(0, 139) + "…",
-          authorId: USER_ID,
-          status: "published",
-          createdAt: faker.datatype.datetime({ min: MS_OF_2015, max: NOW }),
-        },
-      });
-    })
-  );
+			return client.article.create({
+				data: {
+					id: cuid(),
+					title,
+					slug: parameterize(title),
+					body: faker.lorem.paragraphs(5),
+					headline: faker.lorem.sentence().slice(0, 139) + "…",
+					authorId: USER_ID,
+					status: "published",
+					createdAt: faker.datatype.datetime({ min: MS_OF_2015, max: NOW }),
+				},
+			});
+		})
+	);
 }
 
 seed()
-  .then(() => {
-    console.log("Seed completed");
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+	.then(() => {
+		console.log("Seed completed");
+	})
+	.catch((error) => {
+		console.error(error);
+	});
