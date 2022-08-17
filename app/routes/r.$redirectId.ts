@@ -23,7 +23,7 @@ export async function loader({ params, context }: LoaderArgs) {
 
     return redirect(REDIRECTS[redirectId as keyof typeof REDIRECTS]);
   } catch (error) {
-    context.logger.error(error);
+    context!.logger.error(error);
     return redirect("/");
   }
 }

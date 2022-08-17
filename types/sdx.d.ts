@@ -1,6 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import "@remix-run/node";
-import type { DataFunctionArgs } from "@remix-run/node";
+import "@remix-run/server-runtime";
 import type {
   DynamicLinksFunction,
   ExternalScriptsFunction,
@@ -31,12 +30,10 @@ declare global {
   }
 }
 
-declare module "@remix-run/node" {
-  export interface LoaderArgs extends DataFunctionArgs {
-    context: SDX.Context;
-  }
-
-  export interface ActionArgs extends DataFunctionArgs {
-    context: SDX.Context;
+declare module "@remix-run/server-runtime" {
+  export interface AppLoadContext {
+    db: PrismaClient;
+    cache: Cache;
+    logger: Logger;
   }
 }

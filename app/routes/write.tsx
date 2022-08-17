@@ -44,7 +44,7 @@ export async function action({ request, context }: ActionArgs) {
   headline = generarateHeadline(headline ?? body);
   slug ??= parameterize(title);
 
-  await context.db.article.create({
+  await context!.db.article.create({
     data: { authorId, title, body, slug, headline, status: "draft" },
   });
 

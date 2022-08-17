@@ -6,7 +6,7 @@ export async function loader({ request, context }: LoaderArgs) {
   let userId = await auth.isAuthenticated(request);
   if (!userId) return json(null);
 
-  let user = await context.db.user.findUnique({ where: { id: userId } });
+  let user = await context!.db.user.findUnique({ where: { id: userId } });
   if (!user) return json(null);
   return json<User>(user);
 }

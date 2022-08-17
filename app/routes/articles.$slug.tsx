@@ -18,8 +18,8 @@ export async function loader({ request, params, context }: LoaderArgs) {
   async function getArticle() {
     try {
       return await measure("getArticle", headers, async () => {
-        return await context.cache.run(`article:${params.slug}`, async () => {
-          let article = await context.db.article.findUniqueOrThrow({
+        return await context!.cache.run(`article:${params.slug}`, async () => {
+          let article = await context!.db.article.findUniqueOrThrow({
             where: { slug: params.slug },
             select: { title: true, headline: true, body: true },
           });
@@ -32,7 +32,7 @@ export async function loader({ request, params, context }: LoaderArgs) {
         });
       });
     } catch (error) {
-      context.logger.error(error);
+      context!.logger.error(error);
       return null;
     }
   }

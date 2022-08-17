@@ -19,7 +19,7 @@ export async function loader({ params, context }: LoaderArgs) {
 
     return redirect(PROJECTS[project as keyof typeof PROJECTS]);
   } catch (error) {
-    context.logger.error(error);
+    context!.logger.error(error);
     return redirect("/");
   }
 }

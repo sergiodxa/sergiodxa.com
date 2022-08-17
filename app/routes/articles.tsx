@@ -5,7 +5,7 @@ import { eachYearOfInterval } from "date-fns";
 import { isEmpty } from "~/utils/arrays";
 
 export async function loader({ context }: LoaderArgs) {
-  let articles = await context.db.article.findMany({
+  let articles = await context!.db.article.findMany({
     where: { status: "published" },
     select: { title: true, slug: true, createdAt: true },
     orderBy: { createdAt: "desc" },
