@@ -21,7 +21,8 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "test": "vitest",
     "script": "ts-node --require tsconfig-paths/register",
-    "script:download": "npm run script -- scripts/download.ts"
+    "script:download": "npm run script -- scripts/download.ts",
+    "update:remix": "npm i @remix-run/express@latest @remix-run/node@latest @remix-run/react@latest @remix-run/serve@latest @remix-run/dev@latest @remix-run/eslint-config@latest"
   },
   "prisma": {
     "schema": "db/schema.prisma",
@@ -41,10 +42,10 @@
     "@react-aria/overlays": "^3.8.1",
     "@react-aria/ssr": "^3.1.2",
     "@react-aria/utils": "^3.11.3",
-    "@remix-run/express": "^1.6.5",
-    "@remix-run/node": "^1.6.5",
-    "@remix-run/react": "^1.6.5",
-    "@remix-run/serve": "^1.6.5",
+    "@remix-run/express": "^1.6.8",
+    "@remix-run/node": "^1.6.8",
+    "@remix-run/react": "^1.6.8",
+    "@remix-run/serve": "^1.6.8",
     "@tailwindcss/forms": "^0.5.0",
     "@tailwindcss/line-clamp": "^0.4.0",
     "@tailwindcss/typography": "^0.5.2",
@@ -84,8 +85,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^6.1.2",
-    "@remix-run/dev": "^1.6.5",
-    "@remix-run/eslint-config": "^1.6.5",
+    "@remix-run/dev": "^1.6.8",
+    "@remix-run/eslint-config": "^1.6.8",
     "@testing-library/jest-dom": "^5.16.4",
     "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.2",
