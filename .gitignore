@@ -1,17 +1,17 @@
+# Dependencies
 node_modules
 
+# dotfiles
 .cache
-.vercel
 .output
-
-app/styles/tailwind.css
-api/_build
-server/build
-public/build
-
 .env
 
+# Built files
+/app/styles/tailwind.css
+/server/build
+/public/build
+
 # Test database
-db/test.db
-db/test/*.db
-db/test/*.db-journal
+/db/test.db
+/db/test/*.db
+/db/test/*.db-journal
