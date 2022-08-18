@@ -12,3 +12,4 @@ node_modules
 /public/build
 /functions/\[\[path\]\].js
 /functions/\[\[path\]\].js.map
+.dev.vars
