@@ -1,10 +1,9 @@
 import type { Content } from ".prisma/client";
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/cloudflare";
 import type { NoteVisibility } from "collected-notes";
 import type { PublicUser } from "~/models/user.server";
 
-import { ContentType, Visibility } from ".prisma/client";
-import { redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/cloudflare";
 import matter from "gray-matter";
 import { parameterize } from "inflected";
 
@@ -12,6 +11,7 @@ import { adminAuthorizer } from "~/services/auth.server";
 import { cn, site } from "~/services/cn.server";
 import { db } from "~/services/db.server";
 
+import { ContentType, Visibility } from ".prisma/client";
 import { getBookmarks } from "~/services/airtable.server";
 
 function getPostVisibility(visibility: NoteVisibility): Visibility {

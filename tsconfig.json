@@ -1,32 +1,30 @@
 {
-  "include": [
-    "types/*.d.ts",
-    "server/db.ts",
-    "server/index.ts",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "test/**/*.ts",
-    "test/**/*.tsx",
-    "scripts/**/*.ts"
-  ],
-  "exclude": ["scripts/migrate.ts"],
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "target": "ES2019",
-    "strict": true,
-    "baseUrl": ".",
-    "strictNullChecks": true,
-    "strictBindCallApply": true,
-    "paths": {
-      "~/*": ["./app/*", "./test/*", "./framework/*"]
-    },
-    "noEmit": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": true
-  }
+	"include": [
+		"types/*.d.ts",
+		"server/db.ts",
+		"server/index.ts",
+		"app/**/*.ts",
+		"app/**/*.tsx",
+		"test/**/*.ts",
+		"test/**/*.tsx",
+		"scripts/**/*.ts"
+	],
+	"exclude": ["scripts/migrate.ts"],
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ES2019"],
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"jsx": "react-jsx",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"target": "ES2019",
+		"strict": true,
+		"allowJs": true,
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./app/*", "./test/*", "./framework/*"]
+		},
+		"noEmit": true
+	}
 }

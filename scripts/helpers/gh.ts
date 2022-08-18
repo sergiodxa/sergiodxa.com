@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/core";
 
-import { GITHUB_TOKEN, GITHUB_USERNAME } from "~/env";
+import { GITHUB_TOKEN, GITHUB_USERNAME } from "./env";
 
 const gh = new Octokit({ auth: GITHUB_TOKEN });
 

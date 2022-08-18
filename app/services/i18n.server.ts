@@ -1,7 +1,4 @@
-import { resolve } from "node:path";
-
-import { createCookie } from "@remix-run/node";
-import Backend from "i18next-fs-backend";
+import { createCookie } from "@remix-run/cloudflare";
 import { RemixI18Next } from "remix-i18next";
 
 export let cookie = createCookie("locale", {
@@ -11,7 +8,6 @@ export let cookie = createCookie("locale", {
 });
 
 export let i18n = new RemixI18Next({
-	backend: Backend,
 	detection: {
 		fallbackLanguage: "en",
 		supportedLanguages: ["es", "en"],
@@ -19,6 +15,6 @@ export let i18n = new RemixI18Next({
 	},
 	i18next: {
 		supportedLngs: ["es", "en"],
-		backend: { loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json") },
+		resources: { en: { translation: {} } },
 	},
 });

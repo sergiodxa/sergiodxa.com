@@ -10,8 +10,5 @@ node_modules
 /app/styles/tailwind.css
 /server/build
 /public/build
-
-# Test database
-/db/test.db
-/db/test/*.db
-/db/test/*.db-journal
+/functions/\[\[path\]\].js
+/functions/\[\[path\]\].js.map

@@ -1,6 +1,6 @@
 import { collectedNotes, type Note } from "collected-notes";
 
-import { CN_EMAIL, CN_TOKEN, CN_SITE } from "~/env";
+import { CN_EMAIL, CN_TOKEN, CN_SITE } from "./env";
 
 const cn = collectedNotes(CN_EMAIL, CN_TOKEN);
 

@@ -1,4 +1,4 @@
-import { redirect, type LoaderArgs } from "@remix-run/node";
+import { redirect, type LoaderArgs } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 
 const PROJECTS = {
@@ -7,7 +7,7 @@ const PROJECTS = {
 	"remix-utils": "https://github.com/sergiodxa/remix-utils",
 };
 
-export async function loader({ params, context }: LoaderArgs) {
+export async function loader({ params }: LoaderArgs) {
 	try {
 		let { project } = params;
 
@@ -19,7 +19,6 @@ export async function loader({ params, context }: LoaderArgs) {
 
 		return redirect(PROJECTS[project as keyof typeof PROJECTS]);
 	} catch (error) {
-		context!.logger.error(error);
 		return redirect("/");
 	}
 }

@@ -1,6 +1,5 @@
-import { type LoaderArgs } from "@remix-run/node";
+import { type LoaderArgs } from "@remix-run/cloudflare";
 
 export async function loader({ context }: LoaderArgs) {
-	await context!.db.user.count();
 	return new Response("OK", { status: 200 });
 }

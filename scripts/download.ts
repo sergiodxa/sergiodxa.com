@@ -1,13 +1,14 @@
 import "dotenv/config";
 import matter from "gray-matter";
 
-import { GITHUB_CONTENT_REPO } from "~/env";
 import { downloadAllArticles } from "~/services/cn.server";
 import {
 	createRepository,
 	deleteRepository,
 	pushFileToRepository,
 } from "~/services/gh.server";
+
+import { GITHUB_CONTENT_REPO } from "./helpers/env";
 import "./helpers/setup";
 
 async function migrateArticles() {

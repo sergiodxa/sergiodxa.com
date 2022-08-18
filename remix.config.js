@@ -1,12 +1,7 @@
-/**
- * @type {import('@remix-run/dev/config').AppConfig}
- */
+/** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-	appDirectory: "app",
-	assetsBuildDirectory: "public/build",
-	cacheDirectory: ".cache",
-	publicPath: "/build/",
-	server: "server/index.ts",
-	serverBuildPath: "server/build/index.js",
-	serverBuildTarget: "node-cjs",
+	serverBuildTarget: "cloudflare-pages",
+	server: "./server/index.ts",
+	devServerBroadcastDelay: 1000,
+	ignoredRouteFiles: ["**/.*"],
 };
