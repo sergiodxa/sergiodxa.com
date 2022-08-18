@@ -13,7 +13,6 @@ i18next
 	.use(Backend)
 	.init({
 		supportedLngs: ["es", "en"],
-		defaultNS: "translations",
 		fallbackLng: "en",
 		react: { useSuspense: false },
 		ns: getInitialNamespaces(),

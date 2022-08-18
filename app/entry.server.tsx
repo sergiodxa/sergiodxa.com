@@ -20,7 +20,6 @@ export default async function handleRequest(
 
 	await instance.init({
 		supportedLngs: ["es", "en"],
-		defaultNS: "translation",
 		fallbackLng: "en",
 		react: { useSuspense: false },
 		lng,
