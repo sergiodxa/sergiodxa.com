@@ -1,4 +1,5 @@
-import { type EntryContext } from "@remix-run/cloudflare";
+import type { EntryContext } from "@remix-run/cloudflare";
+
 import { RemixServer } from "@remix-run/react";
 import { createInstance } from "i18next";
 import { renderToString } from "react-dom/server";

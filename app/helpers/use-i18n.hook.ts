@@ -1,9 +1,6 @@
-import {
-	useTranslation,
-	type DefaultNamespace,
-	type KeyPrefix,
-	type Namespace,
-} from "react-i18next";
+import type { DefaultNamespace, KeyPrefix, Namespace } from "react-i18next";
+
+import { useTranslation } from "react-i18next";
 
 export function useT<
 	N extends Namespace = DefaultNamespace,

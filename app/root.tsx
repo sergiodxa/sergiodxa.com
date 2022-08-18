@@ -21,10 +21,9 @@ import { useChangeLanguage } from "remix-i18next";
 import { useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale } from "~/helpers/use-i18n.hook";
+import { useNProgress } from "~/helpers/use-nprogress.hook";
 import { i18n } from "~/services/i18n.server";
 import tailwindUrl from "~/styles/tailwind.css";
-
-import { useNProgress } from "./helpers/use-nprogress.hook";
 
 export let meta: MetaFunction = () => {
 	return { robots: "noindex", title: "Sergio Xalambrí" };

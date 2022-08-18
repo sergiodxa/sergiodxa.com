@@ -1,4 +1,6 @@
-import { renderers, type RenderableTreeNodes } from "@markdoc/markdoc";
+import type { RenderableTreeNodes } from "@markdoc/markdoc";
+
+import { renderers } from "@markdoc/markdoc";
 import * as React from "react";
 
 type Props = {
