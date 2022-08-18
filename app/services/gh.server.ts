@@ -10,15 +10,14 @@ export class GitHubService {
 	async getArticleContent(slug: string) {
 		let { data } = await this.octokit.request(
 			"GET /repos/{owner}/{repo}/contents/{path}",
-			{ owner: "sergiodxa", repo: "content", path: `articles/${slug}.md` }
+			{
+				owner: "sergiodxa",
+				repo: "content",
+				path: `articles/${slug}.md`,
+				mediaType: { format: "raw" },
+			}
 		);
 
-		if (Array.isArray(data)) throw new Error("Invalid article.");
-
-		if (data.type !== "file") throw new Error("Invalid article.");
-
-		if (!("content" in data)) throw new Error("Invalid article.");
-
-		return data.content;
+		return data as unknown as string;
 	}
 }
