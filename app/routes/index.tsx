@@ -9,8 +9,10 @@ import { parseMarkdown } from "~/services/md.server";
 
 export async function loader({ context }: LoaderArgs) {
 	let gh = new GitHubService(context!.env.GITHUB_TOKEN);
+	let start = Date.now();
 	let content = await gh.getArticleContent("about");
-	return json({ article: parseMarkdown(content) });
+	let end = Date.now();
+	return json({ article: parseMarkdown(content), diff: end - start });
 }
 
 export let handle: SDX.Handle = { hydrate: true };
