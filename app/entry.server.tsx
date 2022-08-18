@@ -1,4 +1,3 @@
-import { SSRProvider } from "@react-aria/ssr";
 import { type EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import { createInstance } from "i18next";
@@ -29,9 +28,7 @@ export default async function handleRequest(
 
 	let markup = renderToString(
 		<I18nextProvider i18n={instance}>
-			<SSRProvider>
-				<RemixServer context={context} url={request.url} />
-			</SSRProvider>
+			<RemixServer context={context} url={request.url} />
 		</I18nextProvider>
 	);
 

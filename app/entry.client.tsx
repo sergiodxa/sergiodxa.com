@@ -1,4 +1,3 @@
-import { SSRProvider } from "@react-aria/ssr";
 import { RemixBrowser } from "@remix-run/react";
 import i18next from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -25,9 +24,7 @@ i18next
 	.then(() => {
 		return hydrate(
 			<I18nextProvider i18n={i18next}>
-				<SSRProvider>
-					<RemixBrowser />
-				</SSRProvider>
+				<RemixBrowser />
 			</I18nextProvider>,
 			document
 		);
