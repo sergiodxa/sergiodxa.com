@@ -10,6 +10,5 @@ node_modules
 /app/styles/tailwind.css
 /server/build
 /public/build
-/functions/\[\[path\]\].js
-/functions/\[\[path\]\].js.map
+/functions
 .dev.vars
