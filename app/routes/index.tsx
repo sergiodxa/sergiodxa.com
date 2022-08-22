@@ -48,7 +48,7 @@ export default function Index() {
 					{notes.map((note) => {
 						return (
 							<li key={note.id} className="list-inside list-disc">
-								<Link to={note.path}>{note.title}</Link>
+								<Link to={`articles/${note.path}`}>{note.title}</Link>
 							</li>
 						);
 					})}
