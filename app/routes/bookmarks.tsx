@@ -19,7 +19,7 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	let t = await i18n.getFixedT(request);
 
-	let meta = { title: t("Bookmarks of Sergio Xalambrí") };
+	let meta = { title: t("bookmarks.meta.title") };
 
 	return json({ bookmarks, meta });
 }
@@ -37,7 +37,7 @@ export default function Bookmarks() {
 	return (
 		<section className="space-y-2">
 			<header>
-				<h2 className="text-3xl font-bold">{t("Bookmarks")}</h2>
+				<h2 className="text-3xl font-bold">{t("bookmarks.title")}</h2>
 			</header>
 
 			<main>

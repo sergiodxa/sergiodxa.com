@@ -36,7 +36,7 @@ export async function loader({ request, context, params }: LoaderArgs) {
 	let t = await i18n.getFixedT(request);
 
 	let meta = {
-		title: t("{{note}} - Sergio Xalambrí", { note: note.title }),
+		title: t("article.meta.title", { note: note.title }),
 		description: note.headline,
 	};
 

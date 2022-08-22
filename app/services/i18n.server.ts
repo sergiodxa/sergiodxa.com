@@ -1,6 +1,9 @@
 import { createCookie } from "@remix-run/cloudflare";
 import { RemixI18Next } from "remix-i18next";
 
+import en from "~/locales/en";
+import es from "~/locales/es";
+
 export let cookie = createCookie("locale", {
 	path: "/",
 	httpOnly: true,
@@ -15,6 +18,6 @@ export let i18n = new RemixI18Next({
 	},
 	i18next: {
 		supportedLngs: ["es", "en"],
-		resources: { en: { translation: {} } },
+		resources: { en: { translation: en }, es: { translation: es } },
 	},
 });

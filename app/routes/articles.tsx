@@ -25,9 +25,9 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	let t = await i18n.getFixedT(request);
 
-	let meta = { title: t("Articles of Sergio Xalambrí") };
+	let meta = { title: t("articles.meta.title.default") };
 
-	if (term !== "") meta.title = t("Search results for {{term}}", { term });
+	if (term !== "") meta.title = t("articles.meta.title.search", { term });
 
 	return json({ term, page, notes, meta });
 }
@@ -48,13 +48,8 @@ export default function Articles() {
 	if (count === 0) {
 		return (
 			<main className="space-y-4">
-				<h2 className="text-3xl font-bold">{t("404 Not Found")}</h2>
-				<p>
-					{t(
-						"The requested URL /articles?page={{page}} was not found on this server.",
-						{ page }
-					)}
-				</p>
+				<h2 className="text-3xl font-bold">{t("articles.404")}</h2>
+				<p>{t("articles.empty", { page })}</p>
 			</main>
 		);
 	}
@@ -62,27 +57,27 @@ export default function Articles() {
 	return (
 		<main className="space-y-2">
 			<header>
-				<h2 className="text-3xl font-bold">{t("Articles")}</h2>
+				<h2 className="text-3xl font-bold">{t("articles.title")}</h2>
 				{term ? (
 					<p className="text-xl text-gray-900">
 						<Trans
 							t={t}
-							defaults="Showing {{count}} articles for the query <highlight>{{term}}</highlight>"
+							i18nKey="articles.description.search"
 							values={{ count, term }}
-							components={{
-								highlight: <em className="quote" />,
-							}}
+							components={{ highlight: <em className="quote" /> }}
 						/>
 					</p>
 				) : (
-					<p className="text-xl text-gray-900">{t("These are my articles.")}</p>
+					<p className="text-xl text-gray-900">
+						{t("articles.description.default")}
+					</p>
 				)}
 			</header>
 
 			<div className="space-y-4">
 				<Form method="get" role="search" className="p-4">
 					<label htmlFor="q" className="block pl-4 text-lg font-semibold">
-						{t("Search")}
+						{t("articles.search.title")}
 					</label>
 					<div className="flex items-center space-x-4">
 						<input
@@ -91,13 +86,15 @@ export default function Articles() {
 							name="q"
 							defaultValue={term}
 							className="flex-grow rounded-full py-2 px-4"
-							placeholder={t("Remix, SWR, Next, Rails...")}
+							placeholder={t("articles.search.placeholder")}
 						/>
 						<button
 							type="submit"
 							className="rounded-full border border-gray-900 bg-gray-800 px-4 py-2 text-white"
 						>
-							{submission ? t("Searching...") : t("Search")}
+							{submission
+								? t("aricles.search.button.progress")
+								: t("aricles.search.button.default")}
 						</button>
 					</div>
 				</Form>
@@ -116,12 +113,12 @@ export default function Articles() {
 			<footer className="flex w-full justify-evenly">
 				{page > 1 && (
 					<Link to={`/articles?page=${page - 1}`} prefetch="intent">
-						Previous page
+						{t("articles.nav.prev")}
 					</Link>
 				)}
 				{count === 40 && (
 					<Link to={`/articles?page=${page + 1}`} prefetch="intent">
-						Next page
+						{t("articles.nav.next")}
 					</Link>
 				)}
 			</footer>

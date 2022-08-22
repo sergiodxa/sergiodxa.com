@@ -38,9 +38,11 @@ export default function Index() {
 		<main className="grid gap-8 divide-y divide-black md:grid-cols-2 md:divide-y-0 md:divide-x">
 			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
 				<header>
-					<h2 className="text-xl font-semibold">{t("Latest notes")}</h2>
+					<h2 className="text-xl font-semibold">
+						{t("home.latestNotes.title")}
+					</h2>
 					<p className="text-sm text-gray-900">
-						{t("These are my latests articles")}
+						{t("home.latestNotes.description")}
 					</p>
 				</header>
 
@@ -57,7 +59,7 @@ export default function Index() {
 				<footer className="text-xs text-gray-900">
 					<Trans
 						t={t}
-						defaults="Want to read them all? <link:articles>Check the full article list</link:articles>"
+						i18nKey="home.latestNotes.footer"
 						components={{
 							// eslint-disable-next-line jsx-a11y/anchor-has-content
 							"link:articles": <Link to="/articles" className="underline" />,
@@ -68,9 +70,9 @@ export default function Index() {
 
 			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
 				<header>
-					<h2 className="text-xl font-semibold">{t("Recent bookmarks")}</h2>
+					<h2 className="text-xl font-semibold">{t("home.bookmarks.title")}</h2>
 					<p className="text-sm text-gray-900">
-						{t("The latests links I have bookmarked")}
+						{t("home.bookmarks.description")}
 					</p>
 				</header>
 

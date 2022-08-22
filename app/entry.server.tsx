@@ -5,6 +5,8 @@ import { createInstance } from "i18next";
 import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 
+import en from "~/locales/en";
+import es from "~/locales/es";
 import { i18n } from "~/services/i18n.server";
 
 export default async function handleRequest(
@@ -24,7 +26,7 @@ export default async function handleRequest(
 		react: { useSuspense: false },
 		lng,
 		ns,
-		resources: { en: { translation: {} } },
+		resources: { en: { translation: en }, es: { translation: es } },
 	});
 
 	let markup = renderToString(
