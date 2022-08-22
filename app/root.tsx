@@ -6,6 +6,7 @@ import type {
 import type { UseDataFunctionReturn } from "@remix-run/react/dist/components";
 import type { ReactNode } from "react";
 
+import { MetronomeLinks } from "@metronome-sh/react";
 import { json } from "@remix-run/cloudflare";
 import {
 	Links,
@@ -152,6 +153,7 @@ function Document({
 				{title ? <title>{title}</title> : null}
 				<Meta />
 				<Links />
+				<MetronomeLinks />
 			</head>
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}

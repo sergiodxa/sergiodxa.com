@@ -1,5 +1,10 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
+import {
+	combineGetLoadContexts,
+	createMetronomeGetLoadContext,
+	registerMetronome,
+} from "@metronome-sh/cloudflare-pages";
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
@@ -8,10 +13,17 @@ import { AirtableService } from "~/services/airtable";
 import { CollectedNotesService } from "~/services/cn";
 import { GitHubService } from "~/services/gh";
 
+const buildWithMetronome = registerMetronome(build);
+
+const metronomeGetLoadContext = createMetronomeGetLoadContext(
+	buildWithMetronome,
+	{ config: require("../metronome.config.js") }
+);
+
 const handleRequest = createPagesFunctionHandler({
-	build,
+	build: buildWithMetronome,
 	mode: process.env.NODE_ENV,
-	getLoadContext(context): AppLoadContext {
+	getLoadContext: combineGetLoadContexts((context): AppLoadContext => {
 		// Environment variables
 		let env: AppLoadContext["env"] = envSchema.parse(context.env);
 
@@ -33,7 +45,7 @@ const handleRequest = createPagesFunctionHandler({
 		};
 
 		return { env, services };
-	},
+	}, metronomeGetLoadContext),
 });
 
 export function onRequest(context: EventContext<any, any, any>) {
