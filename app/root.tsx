@@ -30,6 +30,9 @@ import tailwindUrl from "~/styles/tailwind.css";
 
 export let links: LinksFunction = () => {
 	return [
+		{ rel: "preload", as: "style", href: tailwindUrl },
+		{ rel: "preload", as: "style", href: globalStylesUrl },
+		{ rel: "preload", as: "style", href: nProgressUrl },
 		{ rel: "stylesheet", href: tailwindUrl },
 		{ rel: "stylesheet", href: globalStylesUrl },
 		{ rel: "stylesheet", href: nProgressUrl },
