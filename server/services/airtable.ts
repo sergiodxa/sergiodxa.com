@@ -18,35 +18,34 @@ let bookmarkRecord = record.and(
 );
 
 export interface IAirtableService {
-	getBookmarks(): Promise<
-		{ id: string; title: string; url: string; createdAt: string }[]
-	>;
+	getBookmarks(
+		limit: number
+	): Promise<{ id: string; title: string; url: string; createdAt: string }[]>;
 }
 
 export class AirtableService implements IAirtableService {
-	private apiKey: string;
-	private base: string;
-	private tableId: string;
-
-	constructor(apiKey: string, base: string, tableId: string) {
-		this.apiKey = apiKey;
-		this.base = base;
-		this.tableId = tableId;
-	}
+	constructor(
+		private kv: KVNamespace,
+		private apiKey: string,
+		private base: string,
+		private tableId: string
+	) {}
 
 	async getBookmarks(limit = 100) {
-		let url = new URL(`${this.base}/${this.tableId}`, BASE_URL);
-		url.searchParams.set("maxRecords", limit.toString());
-		url.searchParams.set("sort[0][field]", "created_at");
-		url.searchParams.set("sort[0][direction]", "desc");
+		let result = await this.cache(async () => {
+			let url = new URL(`${this.base}/${this.tableId}`, BASE_URL);
+			url.searchParams.set("maxRecords", limit.toString());
+			url.searchParams.set("sort[0][field]", "created_at");
+			url.searchParams.set("sort[0][direction]", "desc");
 
-		let response = await fetch(url.toString(), {
-			headers: { Authorization: `Bearer ${this.apiKey}` },
+			let response = await fetch(url.toString(), {
+				headers: { Authorization: `Bearer ${this.apiKey}` },
+			});
+
+			if (!response.ok) return [];
+
+			return await response.json();
 		});
-
-		if (!response.ok) return [];
-
-		let result = await response.json();
 
 		let schema = z.object({ records: bookmarkRecord.array() });
 
@@ -58,5 +57,15 @@ export class AirtableService implements IAirtableService {
 				createdAt: record.fields.created_at,
 			};
 		});
+	}
+
+	private async cache(callback: () => Promise<unknown>) {
+		let cached = await this.kv.get("bookmarks", "json");
+		if (cached !== null) return cached;
+		let result = await callback();
+		await this.kv.put("bookmarks", JSON.stringify(result), {
+			expirationTtl: 60 * 60 * 24,
+		});
+		return result;
 	}
 }

@@ -18,6 +18,7 @@ const handleRequest = createPagesFunctionHandler({
 		// Injected services objects to interact with third-party services
 		let services: AppLoadContext["services"] = {
 			airtable: new AirtableService(
+				context.env.airtable,
 				env.AIRTABLE_API_KEY,
 				env.AIRTABLE_BASE,
 				env.AIRTABLE_TABLE_ID
