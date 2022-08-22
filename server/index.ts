@@ -23,8 +23,13 @@ const handleRequest = createPagesFunctionHandler({
 				env.AIRTABLE_BASE,
 				env.AIRTABLE_TABLE_ID
 			),
-			cn: new CollectedNotesService(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
-			gh: new GitHubService(env.GITHUB_TOKEN),
+			cn: new CollectedNotesService(
+				context.env.cn,
+				env.CN_EMAIL,
+				env.CN_TOKEN,
+				env.CN_SITE
+			),
+			gh: new GitHubService(context.env.gh, env.GITHUB_TOKEN),
 		};
 
 		return { env, services };

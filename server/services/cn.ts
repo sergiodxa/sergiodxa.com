@@ -45,17 +45,22 @@ const noteSchema = z.object({
 });
 
 export class CollectedNotesService implements ICollectedNotesService {
-	private email: string;
-	private token: string;
-	private site: string;
-
-	constructor(email: string, token: string, site: string) {
-		this.email = email;
-		this.token = token;
-		this.site = site;
-	}
+	constructor(
+		private kv: KVNamespace,
+		private email: string,
+		private token: string,
+		private site: string
+	) {}
 
 	async getLatestNotes(page = 1) {
+		let cached = await this.kv.get(`latest-${page}`, "json");
+		if (cached !== null) {
+			return noteSchema
+				.pick({ id: true, title: true, path: true })
+				.array()
+				.parse(cached);
+		}
+
 		let url = new URL(`sites/${this.site}/notes`, BASE_URL);
 
 		url.searchParams.set("page", page.toString());
@@ -69,15 +74,29 @@ export class CollectedNotesService implements ICollectedNotesService {
 			},
 		});
 
-		let result = await response.json();
+		let data = await response.json();
 
-		return noteSchema
+		let result = noteSchema
+			.pick({ id: true, title: true, path: true })
 			.array()
-			.parse(result)
-			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
+			.parse(data);
+
+		await this.kv.put(`latest-${page}`, JSON.stringify(result), {
+			expirationTtl: 60,
+		});
+
+		return result;
 	}
 
 	async searchNotes(term: string, page = 1) {
+		let cached = await this.kv.get(`search-${term}-${page}`, "json");
+		if (cached !== null) {
+			return noteSchema
+				.pick({ id: true, title: true, path: true })
+				.array()
+				.parse(cached);
+		}
+
 		let url = new URL(`sites/${this.site}/notes/search`, BASE_URL);
 
 		url.searchParams.set("page", page.toString());
@@ -94,12 +113,18 @@ export class CollectedNotesService implements ICollectedNotesService {
 
 		if (!response.ok) return [];
 
-		let result = await response.json();
+		let data = await response.json();
 
-		return noteSchema
+		let result = noteSchema
+			.pick({ id: true, title: true, path: true })
 			.array()
-			.parse(result)
-			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
+			.parse(data);
+
+		await this.kv.put(`search-${term}-${page}`, JSON.stringify(result), {
+			expirationTtl: 60,
+		});
+
+		return result;
 	}
 
 	async getNotes(page = 1, term = "") {
@@ -108,6 +133,9 @@ export class CollectedNotesService implements ICollectedNotesService {
 	}
 
 	async readNote(path: string) {
+		let cached = await this.kv.get(path, "json");
+		if (cached !== null) return noteSchema.parse(cached);
+
 		let url = new URL(`${this.site}/${path}.json`, BASE_URL);
 
 		let response = await fetch(url.toString(), {
@@ -118,8 +146,12 @@ export class CollectedNotesService implements ICollectedNotesService {
 			},
 		});
 
-		let result = await response.json();
+		let data = await response.json();
 
-		return noteSchema.parse(result);
+		let result = noteSchema.parse(data);
+
+		await this.kv.put(path, JSON.stringify(result), { expirationTtl: 60 });
+
+		return result;
 	}
 }

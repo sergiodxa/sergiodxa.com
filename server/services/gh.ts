@@ -8,11 +8,14 @@ export interface IGitHubService {
 export class GitHubService implements IGitHubService {
 	private octokit: Octokit;
 
-	constructor(auth: string) {
+	constructor(private kv: KVNamespace, auth: string) {
 		this.octokit = new Octokit({ auth });
 	}
 
 	async getArticleContent(slug: string) {
+		let cached = await this.kv.get(slug, "text");
+		if (cached !== null) return z.string().parse(cached);
+
 		let { data } = await this.octokit.request(
 			"GET /repos/{owner}/{repo}/contents/{path}",
 			{
@@ -23,6 +26,10 @@ export class GitHubService implements IGitHubService {
 			}
 		);
 
-		return z.string().parse(data);
+		let result = z.string().parse(data);
+
+		this.kv.put(slug, result, { expirationTtl: 60 * 5 });
+
+		return result;
 	}
 }
