@@ -81,7 +81,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 			.array()
 			.parse(data);
 
-		await this.kv.put(`latest-${page}`, JSON.stringify(result), {
+		await this.kv.put(`latest:${page}`, JSON.stringify(result), {
 			expirationTtl: 60,
 		});
 
@@ -120,7 +120,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 			.array()
 			.parse(data);
 
-		await this.kv.put(`search-${term}-${page}`, JSON.stringify(result), {
+		await this.kv.put(`search:${term}:${page}`, JSON.stringify(result), {
 			expirationTtl: 60,
 		});
 
@@ -150,7 +150,9 @@ export class CollectedNotesService implements ICollectedNotesService {
 
 		let result = noteSchema.parse(data);
 
-		await this.kv.put(path, JSON.stringify(result), { expirationTtl: 60 });
+		await this.kv.put(`note:${path}`, JSON.stringify(result), {
+			expirationTtl: 60,
+		});
 
 		return result;
 	}
