@@ -158,6 +158,11 @@ function Document({
 				<ScrollRestoration />
 				{shouldHydrate && <Scripts />}
 				<LiveReload />
+				<script
+					defer
+					src="https://static.cloudflareinsights.com/beacon.min.js"
+					data-cf-beacon='{"token": "4ac2c9f7b33a46508599d50ab6b96fc9"}'
+				/>
 			</body>
 		</html>
 	);
