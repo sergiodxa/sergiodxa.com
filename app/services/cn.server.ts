@@ -47,6 +47,10 @@ export class CollectedNotesService {
 
 		let result = await response.json();
 
-		return noteSchema.array().parse(result);
+		return noteSchema
+			.array()
+			.parse(result)
+			.slice(0, 10)
+			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
 	}
 }
