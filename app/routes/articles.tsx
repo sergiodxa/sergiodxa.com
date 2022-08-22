@@ -93,8 +93,8 @@ export default function Articles() {
 							className="rounded-full border border-gray-900 bg-gray-800 px-4 py-2 text-white"
 						>
 							{submission
-								? t("aricles.search.button.progress")
-								: t("aricles.search.button.default")}
+								? t("articles.search.button.progress")
+								: t("articles.search.button.default")}
 						</button>
 					</div>
 				</Form>
