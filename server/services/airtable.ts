@@ -64,7 +64,7 @@ export class AirtableService implements IAirtableService {
 		if (cached !== null) return cached;
 		let result = await callback();
 		await this.kv.put("bookmarks", JSON.stringify(result), {
-			expirationTtl: 60 * 60 * 24,
+			expirationTtl: 60 * 5,
 		});
 		return result;
 	}
