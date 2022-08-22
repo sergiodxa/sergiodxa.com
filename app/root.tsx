@@ -92,7 +92,7 @@ export default function App() {
 				</h1>
 			</header>
 
-			<nav className="mb-10 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
+			<nav className="mb-4 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
 				<ul className="flex space-x-4 text-lg">
 					<li>
 						<NavLink to="/">{t("nav.home")}</NavLink>
@@ -153,7 +153,7 @@ function Document({
 				<Meta />
 				<Links />
 			</head>
-			<body className="mx-auto max-w-screen-xl py-10 px-4 font-sans">
+			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate && <Scripts />}
