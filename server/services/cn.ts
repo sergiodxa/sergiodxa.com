@@ -53,7 +53,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 	) {}
 
 	async getLatestNotes(page = 1) {
-		let cached = await this.kv.get(`latest-${page}`, "json");
+		let cached = await this.kv.get(`latest:${page}`, "json");
 		if (cached !== null) {
 			return noteSchema
 				.pick({ id: true, title: true, path: true })
@@ -89,7 +89,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 	}
 
 	async searchNotes(term: string, page = 1) {
-		let cached = await this.kv.get(`search-${term}-${page}`, "json");
+		let cached = await this.kv.get(`search:${term}:${page}`, "json");
 		if (cached !== null) {
 			return noteSchema
 				.pick({ id: true, title: true, path: true })
@@ -133,7 +133,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 	}
 
 	async readNote(path: string) {
-		let cached = await this.kv.get(path, "json");
+		let cached = await this.kv.get(`note:${path}`, "json");
 		if (cached !== null) return noteSchema.parse(cached);
 
 		let url = new URL(`${this.site}/${path}.json`, BASE_URL);
