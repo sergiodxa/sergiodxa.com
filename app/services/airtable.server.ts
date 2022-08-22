@@ -27,10 +27,14 @@ export class AirtableService {
 	async getBookmarks(limit = 100) {
 		let url = new URL(`${this.base}/${this.tableId}`, BASE_URL);
 		url.searchParams.set("maxRecords", limit.toString());
+		url.searchParams.set("sort[0][field]", "created_at");
+		url.searchParams.set("sort[0][direction]", "desc");
 
 		let response = await fetch(url.toString(), {
 			headers: { Authorization: `Bearer ${this.apiKey}` },
 		});
+
+		if (!response.ok) return [];
 
 		let result = await response.json();
 
