@@ -92,7 +92,7 @@ export default function App() {
 				</h1>
 			</header>
 
-			<nav className="mb-10 flex items-center justify-between border-b border-black pb-1">
+			<nav className="mb-10 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
 				<ul className="flex space-x-4 text-lg">
 					<li>
 						<NavLink to="/">{t("nav.home")}</NavLink>
@@ -105,14 +105,8 @@ export default function App() {
 					</li>
 				</ul>
 
-				<aside className="flex w-full justify-end">
-					<iframe
-						src="https://github.com/sponsors/sergiodxa/button"
-						title={t("nav.sponsor")}
-						height="35"
-						width="116"
-						className="border-0"
-					/>
+				<aside className="flex md:justify-end">
+					<a href="https://github.com/sponsors/sergiodxa">{t("nav.sponsor")}</a>
 				</aside>
 			</nav>
 
@@ -159,7 +153,7 @@ function Document({
 				<Meta />
 				<Links />
 			</head>
-			<body className="mx-auto max-w-screen-xl p-10 font-sans">
+			<body className="mx-auto max-w-screen-xl py-10 px-4 font-sans">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate && <Scripts />}
