@@ -30,8 +30,8 @@ import tailwindUrl from "~/styles/tailwind.css";
 
 export let links: LinksFunction = () => {
 	return [
-		{ rel: "stylesheet", href: globalStylesUrl },
 		{ rel: "stylesheet", href: tailwindUrl },
+		{ rel: "stylesheet", href: globalStylesUrl },
 		{ rel: "stylesheet", href: nProgressUrl },
 	];
 };
