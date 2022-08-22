@@ -1,5 +1,23 @@
 import { z } from "zod";
 
+export interface ICollectedNotesService {
+	getLatestNotes(
+		page?: number
+	): Promise<Array<Pick<z.infer<typeof noteSchema>, "id" | "title" | "path">>>;
+
+	searchNotes(
+		term: string,
+		page?: number
+	): Promise<Array<Pick<z.infer<typeof noteSchema>, "id" | "title" | "path">>>;
+
+	getNotes(
+		page?: number,
+		term?: string
+	): Promise<Array<Pick<z.infer<typeof noteSchema>, "id" | "title" | "path">>>;
+
+	readNote(path: string): Promise<z.infer<typeof noteSchema>>;
+}
+
 const BASE_URL = new URL("https://collectednotes.com/");
 
 const noteVisibility = z.union([
@@ -26,12 +44,16 @@ const noteSchema = z.object({
 	url: z.string(),
 });
 
-export class CollectedNotesService {
-	constructor(
-		private email: string,
-		private token: string,
-		private site: string
-	) {}
+export class CollectedNotesService implements ICollectedNotesService {
+	private email: string;
+	private token: string;
+	private site: string;
+
+	constructor(email: string, token: string, site: string) {
+		this.email = email;
+		this.token = token;
+		this.site = site;
+	}
 
 	async getLatestNotes(page = 1) {
 		let url = new URL(`sites/${this.site}/notes`, BASE_URL);
@@ -55,7 +77,7 @@ export class CollectedNotesService {
 			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
 	}
 
-	async searchNotes(page = 1, term = "") {
+	async searchNotes(term: string, page = 1) {
 		let url = new URL(`sites/${this.site}/notes/search`, BASE_URL);
 
 		url.searchParams.set("page", page.toString());
@@ -81,7 +103,7 @@ export class CollectedNotesService {
 	}
 
 	async getNotes(page = 1, term = "") {
-		if (term) return this.searchNotes(page, term);
+		if (term) return this.searchNotes(term, page);
 		return this.getLatestNotes(page);
 	}
 

@@ -5,17 +5,10 @@ import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { AirtableService } from "~/services/airtable.server";
 import { i18n } from "~/services/i18n.server";
 
 export async function loader({ request, context }: LoaderArgs) {
-	let airtable = new AirtableService(
-		context!.env.AIRTABLE_API_KEY,
-		context!.env.AIRTABLE_BASE,
-		context!.env.AIRTABLE_TABLE_ID
-	);
-
-	let bookmarks = await airtable.getBookmarks();
+	let bookmarks = await context!.services.airtable.getBookmarks();
 
 	let t = await i18n.getFixedT(request);
 

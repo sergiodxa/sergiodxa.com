@@ -6,7 +6,6 @@ import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { CollectedNotesService } from "~/services/cn.server";
 import { i18n } from "~/services/i18n.server";
 
 export async function loader({ request, context }: LoaderArgs) {
@@ -15,13 +14,7 @@ export async function loader({ request, context }: LoaderArgs) {
 	let term = url.searchParams.get("q") ?? "";
 	let page = Number(url.searchParams.get("page") ?? 1);
 
-	let cn = new CollectedNotesService(
-		context!.env.CN_EMAIL,
-		context!.env.CN_TOKEN,
-		context!.env.CN_SITE
-	);
-
-	let notes = await cn.getNotes(page, term);
+	let notes = await context!.services.cn.getNotes(page, term);
 
 	let t = await i18n.getFixedT(request);
 

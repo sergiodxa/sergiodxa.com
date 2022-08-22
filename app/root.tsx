@@ -24,7 +24,7 @@ import { useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { useNProgress } from "~/helpers/use-nprogress.hook";
-import { i18n } from "~/services/i18n.server";
+import { i18n, localeCookie } from "~/services/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 
@@ -41,7 +41,11 @@ export let links: LinksFunction = () => {
 
 export async function loader({ request }: LoaderArgs) {
 	let locale = await i18n.getLocale(request);
-	return json({ locale });
+
+	return json(
+		{ locale },
+		{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
+	);
 }
 
 export let meta: MetaFunction = ({ data }) => {

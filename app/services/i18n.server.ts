@@ -4,7 +4,7 @@ import { RemixI18Next } from "remix-i18next";
 import en from "~/locales/en";
 import es from "~/locales/es";
 
-export let cookie = createCookie("locale", {
+export let localeCookie = createCookie("locale", {
 	path: "/",
 	httpOnly: true,
 	secure: process.env.NODE_ENV === "production",
@@ -13,8 +13,8 @@ export let cookie = createCookie("locale", {
 export let i18n = new RemixI18Next({
 	detection: {
 		fallbackLanguage: "en",
-		supportedLanguages: ["es", "en"],
-		cookie,
+		supportedLanguages: ["cimode", "es", "en"],
+		cookie: localeCookie,
 	},
 	i18next: {
 		supportedLngs: ["es", "en"],

@@ -5,25 +5,11 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { AirtableService } from "~/services/airtable.server";
-import { CollectedNotesService } from "~/services/cn.server";
 
 export async function loader({ context }: LoaderArgs) {
-	let cn = new CollectedNotesService(
-		context!.env.CN_EMAIL,
-		context!.env.CN_TOKEN,
-		context!.env.CN_SITE
-	);
-
-	let airtable = new AirtableService(
-		context!.env.AIRTABLE_API_KEY,
-		context!.env.AIRTABLE_BASE,
-		context!.env.AIRTABLE_TABLE_ID
-	);
-
 	let [notes, bookmarks] = await Promise.all([
-		cn.getLatestNotes(),
-		airtable.getBookmarks(10),
+		context!.services.cn.getLatestNotes(),
+		context!.services.airtable.getBookmarks(10),
 	]);
 
 	return json({ notes: notes.slice(0, 10), bookmarks });

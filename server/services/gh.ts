@@ -1,6 +1,11 @@
 import { Octokit } from "@octokit/core";
+import { z } from "zod";
 
-export class GitHubService {
+export interface IGitHubService {
+	getArticleContent(slug: string): Promise<string>;
+}
+
+export class GitHubService implements IGitHubService {
 	private octokit: Octokit;
 
 	constructor(auth: string) {
@@ -18,6 +23,6 @@ export class GitHubService {
 			}
 		);
 
-		return data as unknown as string;
+		return z.string().parse(data);
 	}
 }

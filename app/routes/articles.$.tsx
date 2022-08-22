@@ -9,7 +9,6 @@ import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
 import { MarkdownView } from "~/components/markdown";
-import { CollectedNotesService } from "~/services/cn.server";
 import { i18n } from "~/services/i18n.server";
 import { parseMarkdown } from "~/services/md.server";
 import highlightStyles from "~/styles/highlight.css";
@@ -23,13 +22,7 @@ export async function loader({ request, context, params }: LoaderArgs) {
 
 	if (!path) return redirect("/articles");
 
-	let cn = new CollectedNotesService(
-		context!.env.CN_EMAIL,
-		context!.env.CN_TOKEN,
-		context!.env.CN_SITE
-	);
-
-	let note = await cn.readNote(path);
+	let note = await context!.services.cn.readNote(path);
 
 	let body = parseMarkdown(note.body);
 

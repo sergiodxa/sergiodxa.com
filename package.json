@@ -60,6 +60,7 @@
 		"@faker-js/faker": "^6.1.2",
 		"@remix-run/dev": "^1.6.8",
 		"@remix-run/eslint-config": "^1.6.8",
+		"@remix-run/node": "^1.6.8",
 		"@testing-library/jest-dom": "^5.16.4",
 		"@types/dotenv": "^8.2.0",
 		"@types/inflected": "^1.1.29",

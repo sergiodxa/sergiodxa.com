@@ -17,12 +17,22 @@ let bookmarkRecord = record.and(
 	})
 );
 
-export class AirtableService {
-	constructor(
-		private apiKey: string,
-		private base: string,
-		private tableId: string
-	) {}
+export interface IAirtableService {
+	getBookmarks(): Promise<
+		{ id: string; title: string; url: string; createdAt: string }[]
+	>;
+}
+
+export class AirtableService implements IAirtableService {
+	private apiKey: string;
+	private base: string;
+	private tableId: string;
+
+	constructor(apiKey: string, base: string, tableId: string) {
+		this.apiKey = apiKey;
+		this.base = base;
+		this.tableId = tableId;
+	}
 
 	async getBookmarks(limit = 100) {
 		let url = new URL(`${this.base}/${this.tableId}`, BASE_URL);
