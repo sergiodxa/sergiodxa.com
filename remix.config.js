@@ -2,6 +2,7 @@
 module.exports = {
 	serverBuildTarget: "cloudflare-pages",
 	server: "./server/index.ts",
-	devServerBroadcastDelay: 1000,
+	devServerBroadcastDelay: 2000,
 	ignoredRouteFiles: ["**/.*"],
+	watchPaths: ["./server/env.ts", "./server/services/**/*"],
 };
