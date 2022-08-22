@@ -51,7 +51,6 @@ export async function loader({ request }: LoaderArgs) {
 export let meta: MetaFunction = ({ data }) => {
 	let { locale } = (data as UseDataFunctionReturn<typeof loader>) ?? {};
 	return {
-		robots: "noindex",
 		"apple-mobile-web-app-capable": "yes",
 		"apple-mobile-web-app-status-bar-style": "black-transparent",
 		"apple-mobile-web-app-title": "Sergio Xalambrí",
@@ -70,6 +69,7 @@ export let meta: MetaFunction = ({ data }) => {
 		MobileOptimized: "320",
 		pagename: "Sergio Xalambrí",
 		title: "Sergio Xalambrí",
+		description: "The blog of sergiodxa",
 		viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
 	};
 };
