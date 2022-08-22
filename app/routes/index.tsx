@@ -26,7 +26,7 @@ export async function loader({ context }: LoaderArgs) {
 		airtable.getBookmarks(10),
 	]);
 
-	return json({ notes, bookmarks });
+	return json({ notes: notes.slice(0, 10), bookmarks });
 }
 
 export let handle: SDX.Handle = { hydrate: true };

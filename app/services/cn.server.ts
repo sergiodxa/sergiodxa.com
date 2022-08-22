@@ -33,8 +33,10 @@ export class CollectedNotesService {
 		private site: string
 	) {}
 
-	async getLatestNotes() {
+	async getLatestNotes(page = 1) {
 		let url = new URL(`sites/${this.site}/notes`, BASE_URL);
+
+		url.searchParams.set("page", page.toString());
 		url.searchParams.set("visibility", "public_site");
 
 		let response = await fetch(url.toString(), {
@@ -50,7 +52,36 @@ export class CollectedNotesService {
 		return noteSchema
 			.array()
 			.parse(result)
-			.slice(0, 10)
 			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
+	}
+
+	async searchNotes(page = 1, term = "") {
+		let url = new URL(`sites/${this.site}/notes/search`, BASE_URL);
+
+		url.searchParams.set("page", page.toString());
+		url.searchParams.set("term", term);
+		url.searchParams.set("visibility", "public_site");
+
+		let response = await fetch(url.toString(), {
+			headers: {
+				Accept: "application/json",
+				Authorization: `${this.email} ${this.token}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) return [];
+
+		let result = await response.json();
+
+		return noteSchema
+			.array()
+			.parse(result)
+			.map((note) => ({ title: note.title, path: note.path, id: note.id }));
+	}
+
+	async getNotes(page = 1, term = "") {
+		if (term) return this.searchNotes(page, term);
+		return this.getLatestNotes(page);
 	}
 }
