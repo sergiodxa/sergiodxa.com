@@ -152,7 +152,7 @@ function Document({
 				<Meta />
 				<Links />
 			</head>
-			<body className="mx-auto h-full max-w-screen-xl p-10 font-sans">
+			<body className="mx-auto max-w-screen-xl p-10 font-sans">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate && <Scripts />}
