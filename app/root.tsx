@@ -88,27 +88,27 @@ export default function App() {
 		<Document locale={locale}>
 			<header className="mb-4">
 				<h1 className="text-4xl font-black leading-none">
-					{t("Sergio Xalambrí")}
+					{t("header.title")}
 				</h1>
 			</header>
 
 			<nav className="mb-10 flex items-center justify-between border-b border-black pb-1">
 				<ul className="flex space-x-4 text-lg">
 					<li>
-						<NavLink to="/">Home</NavLink>
+						<NavLink to="/">{t("nav.home")}</NavLink>
 					</li>
 					<li>
-						<NavLink to="/articles">Articles</NavLink>
+						<NavLink to="/articles">{t("nav.articles")}</NavLink>
 					</li>
 					<li>
-						<NavLink to="/bookmarks">Bookmarks</NavLink>
+						<NavLink to="/bookmarks">{t("nav.bookmarks")}</NavLink>
 					</li>
 				</ul>
 
 				<aside className="flex w-full justify-end">
 					<iframe
 						src="https://github.com/sponsors/sergiodxa/button"
-						title="Sponsor sergiodxa"
+						title={t("nav.sponsor")}
 						height="35"
 						width="116"
 						className="border-0"

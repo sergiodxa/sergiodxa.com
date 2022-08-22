@@ -1,4 +1,13 @@
 export default {
+	header: { title: "Sergio Xalambrí" },
+
+	nav: {
+		home: "Inicio",
+		articles: "Artículos",
+		bookmarks: "Bookmarks",
+		sponsor: "Apoyame en GitHub",
+	},
+
 	home: {
 		latestNotes: {
 			title: "Articulos recientes",
