@@ -84,4 +84,20 @@ export class CollectedNotesService {
 		if (term) return this.searchNotes(page, term);
 		return this.getLatestNotes(page);
 	}
+
+	async readNote(path: string) {
+		let url = new URL(`${this.site}/${path}.json`, BASE_URL);
+
+		let response = await fetch(url.toString(), {
+			headers: {
+				Accept: "application/json",
+				Authorization: `${this.email} ${this.token}`,
+				"Content-Type": "application/json",
+			},
+		});
+
+		let result = await response.json();
+
+		return noteSchema.parse(result);
+	}
 }
