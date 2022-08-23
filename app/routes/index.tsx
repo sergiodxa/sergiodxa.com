@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/cloudflare";
+import type { HeadersFunction, LoaderArgs } from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
@@ -12,8 +12,16 @@ export async function loader({ context }: LoaderArgs) {
 		context!.services.airtable.getBookmarks(10),
 	]);
 
-	return json({ notes: notes.slice(0, 10), bookmarks });
+	let headers = new Headers({
+		"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
+	});
+
+	return json({ notes: notes.slice(0, 10), bookmarks }, { headers });
 }
+
+export let headers: HeadersFunction = ({ loaderHeaders }) => {
+	return loaderHeaders;
+};
 
 export let handle: SDX.Handle = { hydrate: true };
 
