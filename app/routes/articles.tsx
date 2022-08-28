@@ -14,7 +14,7 @@ export async function loader({ request, context }: LoaderArgs) {
 	let term = url.searchParams.get("q") ?? "";
 	let page = Number(url.searchParams.get("page") ?? 1);
 
-	let notes = await context!.services.cn.getNotes(page, term);
+	let notes = await context.services.cn.getNotes(page, term);
 
 	let t = await i18n.getFixedT(request);
 

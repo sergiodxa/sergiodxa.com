@@ -2,8 +2,8 @@ import type {
 	LinksFunction,
 	LoaderArgs,
 	MetaFunction,
+	SerializeFrom,
 } from "@remix-run/cloudflare";
-import type { UseDataFunctionReturn } from "@remix-run/react/dist/components";
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -22,7 +22,7 @@ export async function loader({ request, context, params }: LoaderArgs) {
 
 	if (!path) return redirect("/articles");
 
-	let note = await context!.services.cn.readNote(path);
+	let note = await context.services.cn.readNote(path);
 
 	let body = parseMarkdown(note.body);
 
@@ -38,7 +38,7 @@ export async function loader({ request, context, params }: LoaderArgs) {
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};
-	let { meta } = data as UseDataFunctionReturn<typeof loader>;
+	let { meta } = data as SerializeFrom<typeof loader>;
 	return meta;
 };
 
