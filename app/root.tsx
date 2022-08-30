@@ -7,7 +7,7 @@ import type {
 import type { ReactNode } from "react";
 
 import { MetronomeLinks } from "@metronome-sh/react";
-import { json, redirect } from "@remix-run/cloudflare";
+import { json } from "@remix-run/cloudflare";
 import {
 	Links,
 	LiveReload,
@@ -28,6 +28,7 @@ import { useNProgress } from "~/helpers/use-nprogress.hook";
 import { i18n, localeCookie } from "~/services/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
+import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
 export let links: LinksFunction = () => {
 	return [
@@ -41,9 +42,7 @@ export let links: LinksFunction = () => {
 };
 
 export async function loader({ request }: LoaderArgs) {
-	if (request.url.endsWith("/") && new URL(request.url).pathname !== "/") {
-		throw redirect(request.url.slice(0, request.url.length - 1));
-	}
+	removeTrailingSlash(new URL(request.url));
 
 	let locale = await i18n.getLocale(request);
 
