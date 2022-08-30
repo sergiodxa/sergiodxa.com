@@ -19,7 +19,7 @@ let bookmarkRecord = record.and(
 
 export interface IAirtableService {
 	getBookmarks(
-		limit: number
+		limit?: number
 	): Promise<{ id: string; title: string; url: string; createdAt: string }[]>;
 }
 

@@ -1,5 +1,8 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
-import type { UseDataFunctionReturn } from "@remix-run/react/dist/components";
+import type {
+	LoaderArgs,
+	MetaFunction,
+	SerializeFrom,
+} from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -19,7 +22,7 @@ export async function loader({ request, context }: LoaderArgs) {
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};
-	let { meta } = data as UseDataFunctionReturn<typeof loader>;
+	let { meta } = data as SerializeFrom<typeof loader>;
 	return meta;
 };
 

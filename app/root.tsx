@@ -2,12 +2,12 @@ import type {
 	LinksFunction,
 	LoaderArgs,
 	MetaFunction,
+	SerializeFrom,
 } from "@remix-run/cloudflare";
-import type { UseDataFunctionReturn } from "@remix-run/react/dist/components";
 import type { ReactNode } from "react";
 
 import { MetronomeLinks } from "@metronome-sh/react";
-import { json } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import {
 	Links,
 	LiveReload,
@@ -41,6 +41,10 @@ export let links: LinksFunction = () => {
 };
 
 export async function loader({ request }: LoaderArgs) {
+	if (request.url.endsWith("/") && new URL(request.url).pathname !== "/") {
+		throw redirect(request.url.slice(request.url.length));
+	}
+
 	let locale = await i18n.getLocale(request);
 
 	return json(
@@ -50,7 +54,7 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export let meta: MetaFunction = ({ data }) => {
-	let { locale } = (data as UseDataFunctionReturn<typeof loader>) ?? {};
+	let { locale } = (data as SerializeFrom<typeof loader>) ?? {};
 	return {
 		"apple-mobile-web-app-capable": "yes",
 		"apple-mobile-web-app-status-bar-style": "black-transparent",
