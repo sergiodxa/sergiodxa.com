@@ -42,7 +42,7 @@ export let links: LinksFunction = () => {
 
 export async function loader({ request }: LoaderArgs) {
 	if (request.url.endsWith("/") && new URL(request.url).pathname !== "/") {
-		throw redirect(request.url.slice(request.url.length));
+		throw redirect(request.url.slice(0, request.url.length - 1));
 	}
 
 	let locale = await i18n.getLocale(request);
