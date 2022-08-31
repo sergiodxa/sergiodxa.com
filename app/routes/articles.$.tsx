@@ -22,18 +22,22 @@ export async function loader({ request, context, params }: LoaderArgs) {
 
 	if (!path) return redirect("/articles");
 
-	let note = await context.services.cn.readNote(path);
+	try {
+		let note = await context.services.cn.readNote(path);
 
-	let body = parseMarkdown(note.body);
+		let body = parseMarkdown(note.body);
 
-	let t = await i18n.getFixedT(request);
+		let t = await i18n.getFixedT(request);
 
-	let meta = {
-		title: t("article.meta.title", { note: note.title }),
-		description: note.headline,
-	};
+		let meta = {
+			title: t("article.meta.title", { note: note.title }),
+			description: note.headline,
+		};
 
-	return json({ body, meta });
+		return json({ body, meta });
+	} catch {
+		return redirect("/articles");
+	}
 }
 
 export let meta: MetaFunction = ({ data }) => {
