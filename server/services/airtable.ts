@@ -31,8 +31,8 @@ export class AirtableService implements IAirtableService {
 		private tableId: string
 	) {}
 
-	async getBookmarks(limit = 100) {
-		let result = await this.cache(async () => {
+	async getBookmarks(limit = 10) {
+		let result = await this.cache(limit, async () => {
 			let url = new URL(`${this.base}/${this.tableId}`, BASE_URL);
 			url.searchParams.set("maxRecords", limit.toString());
 			url.searchParams.set("sort[0][field]", "created_at");
@@ -59,11 +59,11 @@ export class AirtableService implements IAirtableService {
 		});
 	}
 
-	private async cache(callback: () => Promise<unknown>) {
-		let cached = await this.kv.get("bookmarks", "json");
+	private async cache(limit: number, callback: () => Promise<unknown>) {
+		let cached = await this.kv.get(`bookmarks:${limit}`, "json");
 		if (cached !== null) return cached;
 		let result = await callback();
-		await this.kv.put("bookmarks", JSON.stringify(result), {
+		await this.kv.put(`bookmarks:${limit}`, JSON.stringify(result), {
 			expirationTtl: 60 * 60 * 24,
 		});
 		return result;
