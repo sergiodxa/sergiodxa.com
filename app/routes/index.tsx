@@ -23,8 +23,6 @@ export let headers: HeadersFunction = ({ loaderHeaders }) => {
 	return loaderHeaders;
 };
 
-export let handle: SDX.Handle = { hydrate: true };
-
 export default function Index() {
 	let { notes, bookmarks } = useLoaderData<typeof loader>();
 	let t = useT();
