@@ -6,7 +6,6 @@ import type {
 } from "@remix-run/cloudflare";
 import type { ReactNode } from "react";
 
-import { MetronomeLinks } from "@metronome-sh/react";
 import { json } from "@remix-run/cloudflare";
 import {
 	Links,
@@ -38,6 +37,11 @@ export let links: LinksFunction = () => {
 		{ rel: "stylesheet", href: tailwindUrl },
 		{ rel: "stylesheet", href: globalStylesUrl },
 		{ rel: "stylesheet", href: nProgressUrl },
+		{
+			rel: "preload",
+			href: "https://static.cloudflareinsights.com/beacon.min.js",
+			as: "script",
+		},
 	];
 };
 
@@ -156,7 +160,6 @@ function Document({
 				{title ? <title>{title}</title> : null}
 				<Meta />
 				<Links />
-				<MetronomeLinks />
 			</head>
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}
