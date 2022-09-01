@@ -103,13 +103,19 @@ export default function App() {
 			<nav className="mb-4 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
 				<ul className="flex space-x-4 text-lg">
 					<li>
-						<NavLink to="/">{t("nav.home")}</NavLink>
+						<NavLink to="/" className="py-3">
+							{t("nav.home")}
+						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/articles">{t("nav.articles")}</NavLink>
+						<NavLink to="/articles" className="py-3">
+							{t("nav.articles")}
+						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/bookmarks">{t("nav.bookmarks")}</NavLink>
+						<NavLink to="/bookmarks" className="py-3">
+							{t("nav.bookmarks")}
+						</NavLink>
 					</li>
 				</ul>
 
@@ -166,11 +172,13 @@ function Document({
 				<ScrollRestoration />
 				{shouldHydrate && <Scripts />}
 				<LiveReload />
-				<script
-					defer
-					src="https://static.cloudflareinsights.com/beacon.min.js"
-					data-cf-beacon='{"token": "4ac2c9f7b33a46508599d50ab6b96fc9"}'
-				/>
+				{process.env.NODE_ENV === "production" ? (
+					<script
+						defer
+						src="https://static.cloudflareinsights.com/beacon.min.js"
+						data-cf-beacon='{"token": "4ac2c9f7b33a46508599d50ab6b96fc9"}'
+					/>
+				) : null}
 			</body>
 		</html>
 	);
