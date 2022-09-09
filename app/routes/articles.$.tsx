@@ -18,7 +18,7 @@ export let links: LinksFunction = () => {
 };
 
 export async function loader({ request, context, params }: LoaderArgs) {
-	void context.services.log.http(request);
+	await context.services.log.http(request);
 
 	let path = params["*"];
 

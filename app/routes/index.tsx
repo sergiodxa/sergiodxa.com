@@ -7,7 +7,7 @@ import { Trans } from "react-i18next";
 import { useT } from "~/helpers/use-i18n.hook";
 
 export async function loader({ request, context }: LoaderArgs) {
-	void context.services.log.http(request);
+	await context.services.log.http(request);
 
 	let [notes, bookmarks] = await Promise.all([
 		context.services.cn.getLatestNotes(),
