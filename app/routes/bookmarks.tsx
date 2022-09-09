@@ -11,6 +11,8 @@ import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
 
 export async function loader({ request, context }: LoaderArgs) {
+	void context.services.log.http(request);
+
 	let bookmarks = await context.services.airtable.getBookmarks(100);
 
 	let t = await i18n.getFixedT(request);

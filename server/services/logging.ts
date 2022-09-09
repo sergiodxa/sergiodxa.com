@@ -1,5 +1,7 @@
 export interface ILoggingService {
 	info(message: string): Promise<void>;
+
+	http(request: Request): Promise<void>;
 }
 
 export class LoggingService implements ILoggingService {
@@ -7,6 +9,10 @@ export class LoggingService implements ILoggingService {
 
 	async info(message: string) {
 		await this.log("info", message);
+	}
+
+	async http(request: Request): Promise<void> {
+		await this.log("info", `${request.method} ${request.url}`);
 	}
 
 	private async log(level: "info", message: string) {
