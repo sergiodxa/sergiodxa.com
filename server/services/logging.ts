@@ -17,6 +17,7 @@ export class LoggingService implements ILoggingService {
 
 	private async log(level: "info", message: string) {
 		await fetch("https://in.logtail.com/", {
+			method: "POST",
 			body: JSON.stringify({ message, level }),
 			headers: {
 				Authorization: `Bearer ${this.sourceKey}`,
