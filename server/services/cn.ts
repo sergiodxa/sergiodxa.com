@@ -16,6 +16,10 @@ export interface ICollectedNotesService {
 	): Promise<Array<Pick<z.infer<typeof noteSchema>, "id" | "title" | "path">>>;
 
 	readNote(path: string): Promise<z.infer<typeof noteSchema>>;
+
+	emit(webhook: z.infer<typeof webhookSchema>): Promise<void>;
+
+	parseWebhookBody(data: unknown): z.infer<typeof webhookSchema>;
 }
 
 const BASE_URL = new URL("https://collectednotes.com/");
@@ -43,6 +47,33 @@ const noteSchema = z.object({
 	ordering: z.number(),
 	url: z.string(),
 });
+
+const notesReordered = z.object({
+	event: z.literal("notes-reordered"),
+	data: z.object({ notes: noteSchema.array() }),
+});
+
+const noteUpdated = z.object({
+	event: z.literal("note-updated"),
+	data: z.object({ note: noteSchema }),
+});
+
+const noteCreated = z.object({
+	event: z.literal("note-created"),
+	data: z.object({ note: noteSchema }),
+});
+
+const noteDeleted = z.object({
+	event: z.literal("note-deleted"),
+	data: z.object({ note: noteSchema }),
+});
+
+const webhookSchema = z.union([
+	notesReordered,
+	noteUpdated,
+	noteCreated,
+	noteDeleted,
+]);
 
 export class CollectedNotesService implements ICollectedNotesService {
 	constructor(
@@ -155,5 +186,31 @@ export class CollectedNotesService implements ICollectedNotesService {
 		});
 
 		return result;
+	}
+
+	async emit({ event, data }: z.infer<typeof webhookSchema>) {
+		switch (event) {
+			case "notes-reordered": {
+				return await this.deleteLatestKeys();
+			}
+			case "note-updated":
+			case "note-created":
+			case "note-deleted": {
+				let { note } = data;
+				await this.kv.delete(`note:${note.path}`);
+				await this.deleteLatestKeys();
+				return;
+			}
+		}
+	}
+
+	parseWebhookBody(data: unknown): z.infer<typeof webhookSchema> {
+		return webhookSchema.parse(data);
+	}
+
+	private async deleteLatestKeys() {
+		let result = await this.kv.list({ prefix: "latest:" });
+		let keys = result.keys.map((key) => key.name);
+		await Promise.all(keys.map((key) => this.kv.delete(key)));
 	}
 }
