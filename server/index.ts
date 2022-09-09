@@ -12,6 +12,7 @@ import { envSchema } from "~/env";
 import { AirtableService } from "~/services/airtable";
 import { CollectedNotesService } from "~/services/cn";
 import { GitHubService } from "~/services/gh";
+import { LoggingService } from "~/services/logging";
 
 const buildWithMetronome = registerMetronome(build);
 
@@ -42,6 +43,7 @@ const handleRequest = createPagesFunctionHandler({
 				env.CN_SITE
 			),
 			gh: new GitHubService(context.env.gh, env.GITHUB_TOKEN),
+			log: new LoggingService(context.env.LOGTAIL_SOURCE_TOKEN),
 		};
 
 		return { env, services };

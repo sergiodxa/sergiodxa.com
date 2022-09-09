@@ -14,6 +14,7 @@ export let envSchema = z.object({
 	GITHUB_CONTENT_REPO: z.string().min(1),
 	GITHUB_TOKEN: z.string().min(1),
 	GITHUB_USERNAME: z.string().min(1),
+	LOGTAIL_SOURCE_TOKEN: z.string().min(1),
 	NODE_ENV: z
 		.union([
 			z.literal("test"),

@@ -7,6 +7,8 @@ import { Trans } from "react-i18next";
 import { useT } from "~/helpers/use-i18n.hook";
 
 export async function loader({ context }: LoaderArgs) {
+	void context.services.log.info("Request to /");
+
 	let [notes, bookmarks] = await Promise.all([
 		context.services.cn.getLatestNotes(),
 		context.services.airtable.getBookmarks(10),
