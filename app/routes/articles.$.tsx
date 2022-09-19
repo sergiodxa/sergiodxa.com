@@ -5,6 +5,7 @@ import type {
 	SerializeFrom,
 } from "@remix-run/cloudflare";
 
+import { Tag } from "@markdoc/markdoc";
 import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
@@ -12,6 +13,7 @@ import { MarkdownView } from "~/components/markdown";
 import { i18n } from "~/services/i18n.server";
 import { parseMarkdown } from "~/services/md.server";
 import highlightStyles from "~/styles/highlight.css";
+import { generateID } from "~/utils/generate-id";
 
 export let links: LinksFunction = () => {
 	return [{ rel: "stylesheet", href: highlightStyles }];
@@ -27,7 +29,29 @@ export async function loader({ request, context, params }: LoaderArgs) {
 	try {
 		let note = await context.services.cn.readNote(path);
 
-		let body = parseMarkdown(note.body);
+		let body = parseMarkdown(note.body, {
+			nodes: {
+				heading: {
+					children: ["inline"],
+					attributes: {
+						id: { type: String },
+						level: { type: Number, required: true, default: 1 },
+					},
+					transform(node, config) {
+						let attributes = node.transformAttributes(config);
+						let children = node.transformChildren(config);
+
+						let id = generateID(children, attributes);
+
+						return new Tag(
+							`h${node.attributes["level"]}`,
+							{ ...attributes, id },
+							children
+						);
+					},
+				},
+			},
+		});
 
 		let t = await i18n.getFixedT(request);
 
