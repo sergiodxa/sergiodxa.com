@@ -12,3 +12,4 @@ node_modules
 /public/build
 /functions
 .dev.vars
+.DS_Store
