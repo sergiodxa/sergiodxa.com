@@ -3,6 +3,9 @@
 	"name": "sergiodxa.com",
 	"description": "",
 	"license": "",
+	"engines": {
+		"node": "16"
+	},
 	"scripts": {
 		"generateCss": "tailwindcss --output ./app/styles/tailwind.css --config ./config/tailwind.js",
 		"predev": "npm run build",
