@@ -18,12 +18,10 @@ import {
 	useLoaderData,
 } from "@remix-run/react";
 import { NavLink } from "@remix-run/react/dist/components";
-import nProgressUrl from "nprogress/nprogress.css";
 import { useChangeLanguage } from "remix-i18next";
 import { useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
-import { useNProgress } from "~/helpers/use-nprogress.hook";
 import { i18n, localeCookie } from "~/services/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
@@ -33,10 +31,8 @@ export let links: LinksFunction = () => {
 	return [
 		{ rel: "preload", as: "style", href: tailwindUrl },
 		{ rel: "preload", as: "style", href: globalStylesUrl },
-		{ rel: "preload", as: "style", href: nProgressUrl },
 		{ rel: "stylesheet", href: tailwindUrl },
 		{ rel: "stylesheet", href: globalStylesUrl },
-		{ rel: "stylesheet", href: nProgressUrl },
 		{
 			rel: "preload",
 			href: "https://static.cloudflareinsights.com/beacon.min.js",
@@ -89,8 +85,6 @@ export default function App() {
 	let t = useT();
 
 	useChangeLanguage(locale);
-
-	useNProgress();
 
 	return (
 		<Document locale={locale}>
