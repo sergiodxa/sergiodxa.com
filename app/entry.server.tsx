@@ -8,6 +8,8 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import en from "~/locales/en";
 import es from "~/locales/es";
 import { i18n } from "~/services/i18n.server";
+import globalStylesUrl from "~/styles/global.css";
+import tailwindUrl from "~/styles/tailwind.css";
 
 export default async function handleRequest(
 	request: Request,
@@ -36,6 +38,9 @@ export default async function handleRequest(
 	);
 
 	headers.set("Content-Type", "text/html");
+
+	headers.append("Link", `<${globalStylesUrl}>; rel=preload; as=style`);
+	headers.append("Link", `<${tailwindUrl}>; rel=preload; as=style`);
 
 	return new Response("<!DOCTYPE html>" + markup, {
 		status: statusCode,
