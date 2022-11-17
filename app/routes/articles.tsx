@@ -1,4 +1,5 @@
 import type {
+	HeadersFunction,
 	LoaderArgs,
 	MetaFunction,
 	SerializeFrom,
@@ -27,8 +28,16 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	if (term !== "") meta.title = t("articles.meta.title.search", { term });
 
-	return json({ term, page, notes, meta });
+	let headers = new Headers({
+		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+	});
+
+	return json({ term, page, notes, meta }, { headers });
 }
+
+export let headers: HeadersFunction = ({ loaderHeaders }) => {
+	return loaderHeaders;
+};
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};
@@ -84,7 +93,7 @@ export default function Articles() {
 							name="q"
 							defaultValue={term}
 							className="flex-grow rounded-full py-2 px-4"
-							placeholder={t("articles.search.placeholder")}
+							placeholder={t("articles.search.placeholder") as string}
 						/>
 						<button
 							type="submit"

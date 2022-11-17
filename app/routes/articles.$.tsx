@@ -1,4 +1,5 @@
 import type {
+	HeadersFunction,
 	LinksFunction,
 	LoaderArgs,
 	MetaFunction,
@@ -60,11 +61,19 @@ export async function loader({ request, context, params }: LoaderArgs) {
 			description: note.headline,
 		};
 
-		return json({ body, meta });
+		let headers = new Headers({
+			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+		});
+
+		return json({ body, meta }, { headers });
 	} catch {
 		return redirect("/articles");
 	}
 }
+
+export let headers: HeadersFunction = ({ loaderHeaders }) => {
+	return loaderHeaders;
+};
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};
