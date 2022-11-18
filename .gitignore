@@ -5,11 +5,12 @@ node_modules
 .cache
 .output
 .env
+.dev.vars
+.DS_Store
 
 # Built files
+.wrangler/state
 /app/styles/tailwind.css
 /server/build
 /public/build
 /functions
-.dev.vars
-.DS_Store

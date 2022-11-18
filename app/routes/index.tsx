@@ -11,7 +11,7 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	let [notes, bookmarks] = await Promise.all([
 		context.services.cn.getLatestNotes(),
-		context.services.airtable.getBookmarks(10),
+		context.services.bookmarks.getBookmarks(10),
 	]);
 
 	let headers = new Headers({

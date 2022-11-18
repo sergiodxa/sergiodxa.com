@@ -6,8 +6,8 @@ import type {
 } from "remix-utils";
 import type { Env } from "~/env";
 import type { IAirtableService } from "~/services/airtable";
+import type { IBookmarksService } from "~/services/bookmarks";
 import type { ICollectedNotesService } from "~/services/cn";
-import type { IGitHubService } from "~/services/gh";
 import type { ILoggingService } from "~/services/logging";
 
 interface HydrateFunction<LoaderData> {
@@ -32,8 +32,8 @@ declare module "@remix-run/server-runtime" {
 		services: {
 			airtable: IAirtableService;
 			cn: ICollectedNotesService;
-			gh: IGitHubService;
 			log: ILoggingService;
+			bookmarks: IBookmarksService;
 		};
 	}
 }

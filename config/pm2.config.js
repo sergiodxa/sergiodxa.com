@@ -22,6 +22,7 @@ module.exports = {
 			watch: ["./server/build/index.js"],
 			env: {
 				NODE_ENV: "development",
+				NO_D1_WARNING: true,
 			},
 		},
 	],

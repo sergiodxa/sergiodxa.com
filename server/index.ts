@@ -1,32 +1,23 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
-import {
-	combineGetLoadContexts,
-	createMetronomeGetLoadContext,
-	registerMetronome,
-} from "@metronome-sh/cloudflare-pages";
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
 import { envSchema } from "~/env";
 import { AirtableService } from "~/services/airtable";
 import { CollectedNotesService } from "~/services/cn";
-import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
 
-const buildWithMetronome = registerMetronome(build);
-
-const metronomeGetLoadContext = createMetronomeGetLoadContext(
-	buildWithMetronome,
-	{ config: require("../metronome.config.js") }
-);
+import { BookmarksService } from "./services/bookmarks";
 
 const handleRequest = createPagesFunctionHandler({
-	build: buildWithMetronome,
+	build,
 	mode: process.env.NODE_ENV,
-	getLoadContext: combineGetLoadContexts((context): AppLoadContext => {
+	getLoadContext(context): AppLoadContext {
 		// Environment variables
 		let env: AppLoadContext["env"] = envSchema.parse(context.env);
+
+		let bookmarks = new BookmarksService(context.env.db);
 
 		// Injected services objects to interact with third-party services
 		let services: AppLoadContext["services"] = {
@@ -42,12 +33,12 @@ const handleRequest = createPagesFunctionHandler({
 				env.CN_TOKEN,
 				env.CN_SITE
 			),
-			gh: new GitHubService(context.env.gh, env.GITHUB_TOKEN),
 			log: new LoggingService(context.env.LOGTAIL_SOURCE_TOKEN),
+			bookmarks,
 		};
 
 		return { env, services };
-	}, metronomeGetLoadContext),
+	},
 });
 
 export function onRequest(context: EventContext<any, any, any>) {

@@ -1,0 +1,4 @@
+[[ d1_databases ]]
+binding = "db" # i.e. available in your Worker on env.db
+database_name = "sergiodxa"
+database_id = "02102fd1-ece4-47c4-8eb2-9ffc8bc7b593"

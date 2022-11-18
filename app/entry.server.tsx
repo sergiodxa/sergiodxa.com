@@ -1,7 +1,7 @@
 import type { EntryContext } from "@remix-run/cloudflare";
 
 import { RemixServer } from "@remix-run/react";
-import { createInstance } from "i18next";
+import i18next from "i18next";
 import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 
@@ -17,7 +17,7 @@ export default async function handleRequest(
 	headers: Headers,
 	context: EntryContext
 ) {
-	let instance = createInstance().use(initReactI18next);
+	let instance = i18next.createInstance().use(initReactI18next);
 
 	let lng = await i18n.getLocale(request);
 	let ns = i18n.getRouteNamespaces(context);
