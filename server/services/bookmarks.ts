@@ -21,9 +21,9 @@ export class BookmarksService implements IBookmarksService {
 	}
 
 	async getBookmarks(limit = Number.MAX_SAFE_INTEGER): Promise<Bookmark[]> {
-		let { results, duration } = await this.#db
-			.prepare("SELECT * FROM Bookmark ORDER BY createdAt DESC")
-			.all<Bookmark[]>();
+		let { results, duration } = await this.#db.exec<Bookmark[]>(
+			"SELECT * FROM Bookmark ORDER BY createdAt DESC"
+		);
 
 		console.log(`getBookmarks took ${duration}ms`);
 
