@@ -6,6 +6,7 @@ import type {
 } from "remix-utils";
 import type { Env } from "~/env";
 import type { IAirtableService } from "~/services/airtable";
+import type { IAuthService } from "~/services/auth";
 import type { ICollectedNotesService } from "~/services/cn";
 import type { IGitHubService } from "~/services/gh";
 import type { ILoggingService } from "~/services/logging";
@@ -30,6 +31,7 @@ declare module "@remix-run/server-runtime" {
 	export interface AppLoadContext {
 		env: Env;
 		services: {
+			auth: IAuthService;
 			airtable: IAirtableService;
 			cn: ICollectedNotesService;
 			gh: IGitHubService;
