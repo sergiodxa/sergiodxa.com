@@ -69,7 +69,7 @@ export let meta: MetaFunction = ({ data }) => {
 		"og:locale": locale,
 		"og:site_name": "Sergio Xalambrí",
 		"og:type": "website",
-		"theme-color": "#000",
+		"theme-color": "#c0c0c0",
 		"twitter:card": "summary_large_image",
 		"twitter:creator": "@sergiodxa",
 		"twitter:site": "@sergiodxa",
