@@ -18,9 +18,11 @@ const handleRequest = createPagesFunctionHandler({
 		// Environment variables
 		let env: AppLoadContext["env"] = envSchema.parse(context.env);
 
+		let { hostname } = new URL(context.request.url);
+
 		// Injected services objects to interact with third-party services
 		let services: AppLoadContext["services"] = {
-			auth: new AuthService(context.env.auth, env),
+			auth: new AuthService(context.env.auth, env, hostname),
 			airtable: new AirtableService(
 				context.env.airtable,
 				env.AIRTABLE_API_KEY,

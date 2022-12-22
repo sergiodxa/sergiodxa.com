@@ -24,7 +24,7 @@ export class AuthService implements IAuthService {
 	#sessionStorage: SessionStorage;
 	#authenticator: Authenticator<User>;
 
-	constructor(kv: KVNamespace, env: Env) {
+	constructor(kv: KVNamespace, env: Env, hostname: string) {
 		this.#sessionStorage = createCloudflareKVSessionStorage({
 			cookie: {
 				name: "sid",
@@ -41,12 +41,15 @@ export class AuthService implements IAuthService {
 			throwOnError: true,
 		});
 
+		let callbackURL = new URL(env.GITHUB_CALLBACK_URL);
+		callbackURL.hostname = hostname;
+
 		this.#authenticator.use(
 			new GitHubStrategy(
 				{
 					clientID: env.GITHUB_CLIENT_ID,
 					clientSecret: env.GITHUB_CLIENT_SECRET,
-					callbackURL: env.GITHUB_CALLBACK_URL,
+					callbackURL: callbackURL.toString(),
 				},
 				async ({ profile }) => {
 					return UserSchema.parse({
