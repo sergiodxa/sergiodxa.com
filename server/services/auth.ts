@@ -1,18 +1,28 @@
 import type { Env } from "../env";
 import type { SessionStorage } from "@remix-run/cloudflare";
-import type { GitHubProfile } from "remix-auth-github";
 
 import { createCloudflareKVSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
+import { z } from "zod";
+
+const UserSchema = z.object({
+	username: z.string(),
+	displayName: z.string(),
+	email: z.string().email(),
+	avatar: z.string().url(),
+	githubId: z.string().min(1),
+});
+
+export type User = z.infer<typeof UserSchema>;
 
 export interface IAuthService {
-	readonly authenticator: Authenticator<GitHubProfile>;
+	readonly authenticator: Authenticator<User>;
 }
 
 export class AuthService implements IAuthService {
 	#sessionStorage: SessionStorage;
-	#authenticator: Authenticator<GitHubProfile>;
+	#authenticator: Authenticator<User>;
 
 	constructor(kv: KVNamespace, env: Env) {
 		this.#sessionStorage = createCloudflareKVSessionStorage({
@@ -27,12 +37,9 @@ export class AuthService implements IAuthService {
 			kv,
 		});
 
-		this.#authenticator = new Authenticator<GitHubProfile>(
-			this.#sessionStorage,
-			{
-				throwOnError: true,
-			}
-		);
+		this.#authenticator = new Authenticator<User>(this.#sessionStorage, {
+			throwOnError: true,
+		});
 
 		this.#authenticator.use(
 			new GitHubStrategy(
@@ -42,7 +49,13 @@ export class AuthService implements IAuthService {
 					callbackURL: env.GITHUB_CALLBACK_URL,
 				},
 				async ({ profile }) => {
-					return profile;
+					return UserSchema.parse({
+						displayName: profile._json.name,
+						username: profile._json.login,
+						email: profile._json.email,
+						avatar: profile._json.avatar_url,
+						githubId: profile._json.node_id,
+					});
 				}
 			)
 		);

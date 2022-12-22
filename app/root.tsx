@@ -50,9 +50,7 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	let isSponsoringMe = false;
 	if (user) {
-		isSponsoringMe = await context.services.gh.isSponsoringMe(
-			user._json.node_id
-		);
+		isSponsoringMe = await context.services.gh.isSponsoringMe(user.githubId);
 	}
 
 	return json(
@@ -131,7 +129,12 @@ export default function App() {
 				) : null}
 			</nav>
 
-			{user !== null ? <p>Hello {user.name.givenName}</p> : null}
+			{user !== null ? (
+				<div>
+					<img src={user.avatar} alt="" width={64} height={64} />
+					<p>Hello {user.displayName}</p>
+				</div>
+			) : null}
 
 			<Outlet />
 		</Document>
