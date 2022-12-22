@@ -41,6 +41,14 @@ const handleRequest = createPagesFunctionHandler({
 	},
 });
 
-export function onRequest(context: EventContext<any, any, any>) {
-	return handleRequest(context);
+export async function onRequest(context: EventContext<any, any, any>) {
+	try {
+		return await handleRequest(context);
+	} catch (error) {
+		console.error(error);
+		if (error instanceof Error) {
+			return new Response(error.message, { status: 500 });
+		}
+		return new Response("Internal Server Error", { status: 500 });
+	}
 }
