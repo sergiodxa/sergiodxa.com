@@ -1,4 +1,4 @@
-import type { HeadersFunction, LoaderArgs } from "@remix-run/cloudflare";
+import type { LoaderArgs } from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
@@ -20,10 +20,6 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	return json({ notes: notes.slice(0, 10), bookmarks }, { headers });
 }
-
-export let headers: HeadersFunction = ({ loaderHeaders }) => {
-	return loaderHeaders;
-};
 
 export default function Index() {
 	let { notes, bookmarks } = useLoaderData<typeof loader>();

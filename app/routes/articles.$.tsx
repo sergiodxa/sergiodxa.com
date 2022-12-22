@@ -1,5 +1,4 @@
 import type {
-	HeadersFunction,
 	LinksFunction,
 	LoaderArgs,
 	MetaFunction,
@@ -70,10 +69,6 @@ export async function loader({ request, context, params }: LoaderArgs) {
 		return redirect("/articles");
 	}
 }
-
-export let headers: HeadersFunction = ({ loaderHeaders }) => {
-	return loaderHeaders;
-};
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};

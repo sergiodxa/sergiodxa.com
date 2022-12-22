@@ -1,5 +1,4 @@
 import type {
-	HeadersFunction,
 	LoaderArgs,
 	MetaFunction,
 	SerializeFrom,
@@ -34,10 +33,6 @@ export async function loader({ request, context }: LoaderArgs) {
 
 	return json({ term, page, notes, meta }, { headers });
 }
-
-export let headers: HeadersFunction = ({ loaderHeaders }) => {
-	return loaderHeaders;
-};
 
 export let meta: MetaFunction = ({ data }) => {
 	if (!data) return {};
