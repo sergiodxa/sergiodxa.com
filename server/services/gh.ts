@@ -1,16 +1,13 @@
 import { Octokit } from "@octokit/core";
 import { z } from "zod";
 
-const isSponsoringMeSchema = z.object({
-	node: z.object({
-		__typename: z.enum(["User", "Organization"]),
-		isSponsoringViewer: z.boolean(),
-	}),
-});
-
 export interface IGitHubService {
 	getArticleContent(slug: string): Promise<string>;
 	isSponsoringMe(id: string): Promise<boolean>;
+	getSponsorshipTier(id: string): Promise<{
+		tier: { monthlyPriceInDollars: number; isOneTime: boolean };
+		tierSelectedAt: string;
+	} | null>;
 	getUserNodeId(username: string): Promise<string>;
 	getOrganizationNodeId(org: string): Promise<string>;
 }
@@ -47,7 +44,6 @@ export class GitHubService implements IGitHubService {
 		let result = await this.octokit.graphql(`
         query {
           node(id: "${id}") {
-            __typename
             ... on Sponsorable {
               isSponsoringViewer
             }
@@ -55,7 +51,48 @@ export class GitHubService implements IGitHubService {
         }
       `);
 
-		return isSponsoringMeSchema.parse(result).node.isSponsoringViewer;
+		return z
+			.object({ node: z.object({ isSponsoringViewer: z.boolean() }) })
+			.parse(result).node.isSponsoringViewer;
+	}
+
+	async getSponsorshipTier(id: string) {
+		let result = await this.octokit.graphql(`
+        query {
+          node(id: "${id}") {
+            ... on Sponsorable {
+              isSponsoringViewer
+              sponsorshipForViewerAsSponsorable {
+                tier {
+                  monthlyPriceInDollars
+                  isOneTime
+                }
+                tierSelectedAt
+              }
+            }
+          }
+        }
+      `);
+
+		let { node } = z
+			.object({
+				node: z.object({
+					isSponsoringViewer: z.boolean(),
+					sponsorshipForViewerAsSponsorable: z
+						.object({
+							tier: z.object({
+								monthlyPriceInDollars: z.number(),
+								isOneTime: z.boolean(),
+							}),
+							tierSelectedAt: z.string().datetime(),
+						})
+						.nullable(),
+				}),
+			})
+			.parse(result);
+
+		if (!node.isSponsoringViewer) return null;
+		return node.sponsorshipForViewerAsSponsorable;
 	}
 
 	async getUserNodeId(username: string) {
