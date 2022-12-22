@@ -41,13 +41,20 @@ export let links: LinksFunction = () => {
 	];
 };
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request, context }: LoaderArgs) {
 	removeTrailingSlash(new URL(request.url));
 
 	let locale = await i18n.getLocale(request);
 
+	let user = await context.services.auth.authenticator.isAuthenticated(request);
+
+	let isSponsoringMe = false;
+	if (user) {
+		isSponsoringMe = await context.services.gh.isSponsoringMe(user.githubId);
+	}
+
 	return json(
-		{ locale },
+		{ locale, user, isSponsoringMe },
 		{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
 	);
 }
@@ -81,7 +88,7 @@ export let meta: MetaFunction = ({ data }) => {
 export let handle: SDX.Handle = { i18n: "translation" };
 
 export default function App() {
-	let { locale } = useLoaderData();
+	let { locale, user, isSponsoringMe } = useLoaderData<typeof loader>();
 	let t = useT();
 
 	useChangeLanguage(locale);
@@ -113,10 +120,21 @@ export default function App() {
 					</li>
 				</ul>
 
-				<aside className="flex md:justify-end">
-					<a href="https://github.com/sponsors/sergiodxa">{t("nav.sponsor")}</a>
-				</aside>
+				{!isSponsoringMe ? (
+					<aside className="flex md:justify-end">
+						<a href="https://github.com/sponsors/sergiodxa">
+							{t("nav.sponsor")}
+						</a>
+					</aside>
+				) : null}
 			</nav>
+
+			{user !== null ? (
+				<div>
+					<img src={user.avatar} alt="" width={64} height={64} />
+					<p>Hello {user.displayName}</p>
+				</div>
+			) : null}
 
 			<Outlet />
 		</Document>

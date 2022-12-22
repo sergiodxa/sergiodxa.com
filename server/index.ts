@@ -1,10 +1,5 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
-import {
-	combineGetLoadContexts,
-	createMetronomeGetLoadContext,
-	registerMetronome,
-} from "@metronome-sh/cloudflare-pages";
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
@@ -14,22 +9,20 @@ import { CollectedNotesService } from "~/services/cn";
 import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
 
-const buildWithMetronome = registerMetronome(build);
-
-const metronomeGetLoadContext = createMetronomeGetLoadContext(
-	buildWithMetronome,
-	{ config: require("../metronome.config.js") }
-);
+import { AuthService } from "./services/auth";
 
 const handleRequest = createPagesFunctionHandler({
-	build: buildWithMetronome,
+	build,
 	mode: process.env.NODE_ENV,
-	getLoadContext: combineGetLoadContexts((context): AppLoadContext => {
+	getLoadContext(context): AppLoadContext {
 		// Environment variables
 		let env: AppLoadContext["env"] = envSchema.parse(context.env);
 
+		let { hostname } = new URL(context.request.url);
+
 		// Injected services objects to interact with third-party services
 		let services: AppLoadContext["services"] = {
+			auth: new AuthService(context.env.auth, env, hostname),
 			airtable: new AirtableService(
 				context.env.airtable,
 				env.AIRTABLE_API_KEY,
@@ -47,9 +40,17 @@ const handleRequest = createPagesFunctionHandler({
 		};
 
 		return { env, services };
-	}, metronomeGetLoadContext),
+	},
 });
 
-export function onRequest(context: EventContext<any, any, any>) {
-	return handleRequest(context);
+export async function onRequest(context: EventContext<any, any, any>) {
+	try {
+		return await handleRequest(context);
+	} catch (error) {
+		console.error(error);
+		if (error instanceof Error) {
+			return new Response(error.message, { status: 500 });
+		}
+		return new Response("Internal Server Error", { status: 500 });
+	}
 }
