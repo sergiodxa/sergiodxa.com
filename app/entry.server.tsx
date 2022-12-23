@@ -11,30 +11,38 @@ import { i18n } from "~/services/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 
+import { measure } from "./utils/measure";
+
 export default async function handleRequest(
 	request: Request,
 	statusCode: number,
 	headers: Headers,
 	context: EntryContext
 ) {
-	let instance = createInstance().use(initReactI18next);
+	let instance = await measure("init i18next", async () => {
+		let instance = createInstance().use(initReactI18next);
 
-	let lng = await i18n.getLocale(request);
-	let ns = i18n.getRouteNamespaces(context);
+		let lng = await i18n.getLocale(request);
+		let ns = i18n.getRouteNamespaces(context);
 
-	await instance.init({
-		supportedLngs: ["es", "en"],
-		fallbackLng: "en",
-		react: { useSuspense: false },
-		lng,
-		ns,
-		resources: { en: { translation: en }, es: { translation: es } },
+		await instance.init({
+			supportedLngs: ["es", "en"],
+			fallbackLng: "en",
+			react: { useSuspense: false },
+			lng,
+			ns,
+			resources: { en: { translation: en }, es: { translation: es } },
+		});
+
+		return instance;
 	});
 
-	let markup = renderToString(
-		<I18nextProvider i18n={instance}>
-			<RemixServer context={context} url={request.url} />
-		</I18nextProvider>
+	let markup = measure("render to html", () =>
+		renderToString(
+			<I18nextProvider i18n={instance}>
+				<RemixServer context={context} url={request.url} />
+			</I18nextProvider>
+		)
 	);
 
 	headers.set("Content-Type", "text/html");
