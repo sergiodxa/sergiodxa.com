@@ -84,9 +84,11 @@ export class CollectedNotesService implements ICollectedNotesService {
 	) {}
 
 	async getLatestNotes(page = 1) {
+		let start = Date.now();
 		let cached = await this.kv.get(`latest:${page}`, "json");
+		let end = Date.now();
 		if (cached !== null) {
-			console.log("getLatestNotes is cached");
+			console.log(`getLatestNotes is cached in ${end - start}ms`);
 			return noteSchema
 				.pick({ id: true, title: true, path: true })
 				.array()
