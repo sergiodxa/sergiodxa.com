@@ -56,7 +56,7 @@ export class AuthService implements IAuthService {
 					return UserSchema.parse({
 						displayName: profile._json.name,
 						username: profile._json.login,
-						email: profile._json.email,
+						email: profile._json.email ?? profile.emails?.at(0) ?? null,
 						avatar: profile._json.avatar_url,
 						githubId: profile._json.node_id,
 					});
