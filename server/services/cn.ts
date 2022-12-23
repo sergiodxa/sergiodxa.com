@@ -102,7 +102,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 		url.searchParams.set("page", page.toString());
 		url.searchParams.set("visibility", "public_site");
 
-		start = new Date();
+		start = Date.now();
 		let response = await fetch(url.toString(), {
 			headers: {
 				Accept: "application/json",
@@ -112,7 +112,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 		});
 
 		let data = await response.json();
-		end = new Date();
+		end = Date.now();
 
 		console.log(`getLatestNotes took ${end - start}ms to fetch`);
 
