@@ -102,6 +102,7 @@ export class CollectedNotesService implements ICollectedNotesService {
 		url.searchParams.set("page", page.toString());
 		url.searchParams.set("visibility", "public_site");
 
+		start = new Date();
 		let response = await fetch(url.toString(), {
 			headers: {
 				Accept: "application/json",
@@ -111,6 +112,9 @@ export class CollectedNotesService implements ICollectedNotesService {
 		});
 
 		let data = await response.json();
+		end = new Date();
+
+		console.log(`getLatestNotes took ${end - start}ms to fetch`);
 
 		let result = noteSchema
 			.pick({ id: true, title: true, path: true })
