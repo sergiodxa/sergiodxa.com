@@ -18,6 +18,7 @@ export type User = z.infer<typeof UserSchema>;
 
 export interface IAuthService {
 	readonly authenticator: Authenticator<User>;
+	readonly sessionStorage: SessionStorage;
 }
 
 export class AuthService implements IAuthService {
@@ -66,5 +67,9 @@ export class AuthService implements IAuthService {
 
 	get authenticator() {
 		return this.#authenticator;
+	}
+
+	get sessionStorage() {
+		return this.#sessionStorage;
 	}
 }

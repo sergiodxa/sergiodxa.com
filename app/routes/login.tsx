@@ -1,6 +1,15 @@
 import type { ActionArgs } from "@remix-run/cloudflare";
 
-import { Form } from "@remix-run/react";
+import { json } from "@remix-run/cloudflare";
+import { Form, useLoaderData } from "@remix-run/react";
+
+export async function loader({ request, context }: ActionArgs) {
+	let session = await context.services.auth.sessionStorage.getSession(
+		request.headers.get("Cookie")
+	);
+	let error = session.get(context.services.auth.authenticator.sessionErrorKey);
+	return json({ error });
+}
 
 export async function action({ request, context }: ActionArgs) {
 	return await context.services.auth.authenticator.authenticate(
@@ -11,8 +20,10 @@ export async function action({ request, context }: ActionArgs) {
 }
 
 export default function Component() {
+	let { error } = useLoaderData<typeof loader>();
 	return (
 		<Form method="post">
+			{error ? <p>{JSON.stringify(error, null, 2)}</p> : null}
 			<button>Continue with GitHub</button>
 		</Form>
 	);
