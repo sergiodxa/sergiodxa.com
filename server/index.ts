@@ -8,6 +8,7 @@ import { AirtableService } from "~/services/airtable";
 import { CollectedNotesService } from "~/services/cn";
 import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
+import { measure } from "~/utils/measure";
 
 import { AuthService } from "./services/auth";
 
@@ -45,7 +46,7 @@ const handleRequest = createPagesFunctionHandler({
 
 export async function onRequest(context: EventContext<any, any, any>) {
 	try {
-		return await handleRequest(context);
+		return await measure("handle request", () => handleRequest(context));
 	} catch (error) {
 		console.error(error);
 		if (error instanceof Error) {
