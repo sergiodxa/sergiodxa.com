@@ -37,7 +37,7 @@ export default async function handleRequest(
 		return instance;
 	});
 
-	let markup = measure("render to html", () =>
+	let markup = await measure("render to html", () =>
 		renderToString(
 			<I18nextProvider i18n={instance}>
 				<RemixServer context={context} url={request.url} />
