@@ -84,25 +84,20 @@ export class CollectedNotesService implements ICollectedNotesService {
 	) {}
 
 	async getLatestNotes(page = 1) {
-		let start = Date.now();
 		let cached = await this.kv.get(`latest:${page}`, "json");
-		let end = Date.now();
+
 		if (cached !== null) {
-			console.log(`getLatestNotes is cached in ${end - start}ms`);
 			return noteSchema
 				.pick({ id: true, title: true, path: true })
 				.array()
 				.parse(cached);
 		}
 
-		console.log("getLatestNotes is not cached");
-
 		let url = new URL(`sites/${this.site}/notes`, BASE_URL);
 
 		url.searchParams.set("page", page.toString());
 		url.searchParams.set("visibility", "public_site");
 
-		start = Date.now();
 		let response = await fetch(url.toString(), {
 			headers: {
 				Accept: "application/json",
@@ -112,9 +107,6 @@ export class CollectedNotesService implements ICollectedNotesService {
 		});
 
 		let data = await response.json();
-		end = Date.now();
-
-		console.log(`getLatestNotes took ${end - start}ms to fetch`);
 
 		let result = noteSchema
 			.pick({ id: true, title: true, path: true })
