@@ -47,18 +47,21 @@ export async function loader({ request, context }: LoaderArgs) {
 	removeTrailingSlash(new URL(request.url));
 
 	return await measure("root#loader", async () => {
-		let locale = await i18n.getLocale(request);
+		let locale = await measure("i18n.getLocale", () => i18n.getLocale(request));
 
-		let user = await context.services.auth.authenticator.isAuthenticated(
-			request
-		);
-
-		let isSponsoringMe = false;
-		if (user) {
-			isSponsoringMe = await context.services.gh.isSponsoringMe(
-				"MDQ6VXNlcjQ1NjA3ODUw"
+		let { user, isSponsoringMe } = await measure("auth", async () => {
+			let user = await context.services.auth.authenticator.isAuthenticated(
+				request
 			);
-		}
+
+			let isSponsoringMe = false;
+			if (user) {
+				isSponsoringMe = await context.services.gh.isSponsoringMe(
+					"MDQ6VXNlcjQ1NjA3ODUw"
+				);
+			}
+			return { user, isSponsoringMe };
+		});
 
 		return json(
 			{ locale, user, isSponsoringMe },
