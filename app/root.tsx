@@ -27,6 +27,8 @@ import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
+import { measure } from "./utils/measure";
+
 export let links: LinksFunction = () => {
 	return [
 		{ rel: "preload", as: "style", href: tailwindUrl },
@@ -44,19 +46,25 @@ export let links: LinksFunction = () => {
 export async function loader({ request, context }: LoaderArgs) {
 	removeTrailingSlash(new URL(request.url));
 
-	let locale = await i18n.getLocale(request);
+	return await measure("root#loader", async () => {
+		let locale = await i18n.getLocale(request);
 
-	let user = await context.services.auth.authenticator.isAuthenticated(request);
+		let user = await context.services.auth.authenticator.isAuthenticated(
+			request
+		);
 
-	let isSponsoringMe = false;
-	if (user) {
-		isSponsoringMe = await context.services.gh.isSponsoringMe(user.githubId);
-	}
+		let isSponsoringMe = false;
+		if (user) {
+			isSponsoringMe = await context.services.gh.isSponsoringMe(
+				"MDQ6VXNlcjQ1NjA3ODUw"
+			);
+		}
 
-	return json(
-		{ locale, user, isSponsoringMe },
-		{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
-	);
+		return json(
+			{ locale, user, isSponsoringMe },
+			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
+		);
+	});
 }
 
 export let meta: MetaFunction = ({ data }) => {
