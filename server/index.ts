@@ -1,6 +1,5 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
-import { createPagesFunctionHandler } from "./adapter";
 import * as build from "@remix-run/dev/server-build";
 
 import { envSchema } from "~/env";
@@ -10,6 +9,7 @@ import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
 import { measure, measureSync } from "~/utils/measure";
 
+import { createPagesFunctionHandler } from "./adapter";
 import { AuthService } from "./services/auth";
 
 const handleRequest = createPagesFunctionHandler({

@@ -8,22 +8,24 @@ import { useT } from "~/helpers/use-i18n.hook";
 import { measure } from "~/utils/measure";
 
 export async function loader({ request, context }: LoaderArgs) {
-	await context.services.log.http(request);
+	return await measure("routes/index#loader", async () => {
+		await context.services.log.http(request);
 
-	let [notes, bookmarks] = await measure("get notes and bookmarks", () =>
-		Promise.all([
-			measure("get notes", () => context.services.cn.getLatestNotes()),
-			measure("get bookmarks", () =>
-				context.services.airtable.getBookmarks(10)
-			),
-		])
-	);
+		let [notes, bookmarks] = await measure("get notes and bookmarks", () =>
+			Promise.all([
+				measure("get notes", () => context.services.cn.getLatestNotes()),
+				measure("get bookmarks", () =>
+					context.services.airtable.getBookmarks(10)
+				),
+			])
+		);
 
-	let headers = new Headers({
-		"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
+		let headers = new Headers({
+			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
+		});
+
+		return json({ notes: notes.slice(0, 10), bookmarks }, { headers });
 	});
-
-	return json({ notes: notes.slice(0, 10), bookmarks }, { headers });
 }
 
 export default function Index() {
