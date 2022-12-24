@@ -19,13 +19,15 @@ export class LoggingService implements ILoggingService {
 		if (process.env.NODE_ENV === "development") {
 			return console.info(message);
 		}
-		await fetch("https://in.logtail.com/", {
-			method: "POST",
-			body: JSON.stringify({ message, level }),
-			headers: {
-				Authorization: `Bearer ${this.sourceKey}`,
-				"Content-Type": "application/json",
-			},
-		});
+		try {
+			await fetch("https://in.logtail.com/", {
+				method: "POST",
+				body: JSON.stringify({ message, level }),
+				headers: {
+					Authorization: `Bearer ${this.sourceKey}`,
+					"Content-Type": "application/json",
+				},
+			});
+		} catch {}
 	}
 }
