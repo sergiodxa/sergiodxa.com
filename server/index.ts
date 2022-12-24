@@ -1,6 +1,6 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
-import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
+import { createPagesFunctionHandler } from "./adapter";
 import * as build from "@remix-run/dev/server-build";
 
 import { envSchema } from "~/env";
