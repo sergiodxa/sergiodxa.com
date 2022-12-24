@@ -97,7 +97,7 @@ export let meta: MetaFunction = ({ data }) => {
 	};
 };
 
-export let handle: SDX.Handle = { i18n: "translation", hydrate: true };
+export let handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
 	let { locale, user, isSponsoringMe } = useLoaderData<typeof loader>();
