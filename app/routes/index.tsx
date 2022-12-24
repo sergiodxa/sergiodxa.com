@@ -9,6 +9,8 @@ import { measure } from "~/utils/measure";
 
 export async function loader({ request, context }: LoaderArgs) {
 	return await measure("routes/index#loader", async () => {
+		void context.services.log.http(request);
+
 		let [notes, bookmarks] = await measure("get notes and bookmarks", () => {
 			return Promise.all([
 				measure("get notes", () => context.services.cn.getLatestNotes()),
