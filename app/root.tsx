@@ -57,7 +57,7 @@ export async function loader({ request, context }: LoaderArgs) {
 			let isSponsoringMe = false;
 			if (user) {
 				isSponsoringMe = await context.services.gh.isSponsoringMe(
-					"MDQ6VXNlcjQ1NjA3ODUw"
+					user.githubId
 				);
 			}
 			return { user, isSponsoringMe };
