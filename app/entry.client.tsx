@@ -1,5 +1,7 @@
+import type { i18n } from "i18next";
+
 import { RemixBrowser } from "@remix-run/react";
-import i18next from "i18next";
+import { createInstance } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
@@ -12,27 +14,25 @@ import es from "~/locales/es";
 import { measure } from "./utils/measure";
 
 measure("entry.client#hydrate", async () => {
-	await i18next
-		.use(initReactI18next)
-		.use(LanguageDetector)
-		.init({
-			supportedLngs: ["es", "en"],
-			fallbackLng: "en",
-			react: { useSuspense: false },
-			ns: getInitialNamespaces(),
-			detection: { order: ["htmlTag"], caches: [] },
-			resources: { en: { translation: en }, es: { translation: es } },
-			interpolation: { escapeValue: false },
-		});
+	let instance = createInstance().use(initReactI18next).use(LanguageDetector);
+	await instance.init({
+		supportedLngs: ["es", "en"],
+		fallbackLng: "en",
+		react: { useSuspense: false },
+		ns: getInitialNamespaces(),
+		detection: { order: ["htmlTag"], caches: [] },
+		resources: { en: { translation: en }, es: { translation: es } },
+		interpolation: { escapeValue: false },
+	});
 
-	return hydrate();
+	return hydrate(instance);
 });
 
-function hydrate() {
+function hydrate(instance: i18n) {
 	startTransition(() => {
 		hydrateRoot(
 			document,
-			<I18nextProvider i18n={i18next}>
+			<I18nextProvider i18n={instance}>
 				<StrictMode>
 					<RemixBrowser />
 				</StrictMode>
