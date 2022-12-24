@@ -14,60 +14,63 @@ import { i18n } from "~/services/i18n.server";
 import { parseMarkdown } from "~/services/md.server";
 import highlightStyles from "~/styles/highlight.css";
 import { generateID } from "~/utils/generate-id";
+import { measure } from "~/utils/measure";
 
 export let links: LinksFunction = () => {
 	return [{ rel: "stylesheet", href: highlightStyles }];
 };
 
-export async function loader({ request, context, params }: LoaderArgs) {
-	void context.services.log.http(request);
+export function loader({ request, context, params }: LoaderArgs) {
+	return measure("routes/articles.$id#loader", async () => {
+		void context.services.log.http(request);
 
-	let path = params["*"];
+		let path = params["*"];
 
-	if (!path) return redirect("/articles");
+		if (!path) return redirect("/articles");
 
-	try {
-		let note = await context.services.cn.readNote(path);
+		try {
+			let note = await context.services.cn.readNote(path);
 
-		let body = parseMarkdown(note.body, {
-			nodes: {
-				heading: {
-					children: ["inline"],
-					attributes: {
-						id: { type: String },
-						level: { type: Number, required: true, default: 1 },
-					},
-					transform(node, config) {
-						let attributes = node.transformAttributes(config);
-						let children = node.transformChildren(config);
+			let body = parseMarkdown(note.body, {
+				nodes: {
+					heading: {
+						children: ["inline"],
+						attributes: {
+							id: { type: String },
+							level: { type: Number, required: true, default: 1 },
+						},
+						transform(node, config) {
+							let attributes = node.transformAttributes(config);
+							let children = node.transformChildren(config);
 
-						let id = generateID(children, attributes);
+							let id = generateID(children, attributes);
 
-						return new Tag(
-							`h${node.attributes["level"]}`,
-							{ ...attributes, id },
-							children
-						);
+							return new Tag(
+								`h${node.attributes["level"]}`,
+								{ ...attributes, id },
+								children
+							);
+						},
 					},
 				},
-			},
-		});
+			});
 
-		let t = await i18n.getFixedT(request);
+			let t = await i18n.getFixedT(request);
 
-		let meta = {
-			title: t("article.meta.title", { note: note.title }),
-			description: note.headline,
-		};
+			let meta = {
+				title: t("article.meta.title", { note: note.title }),
+				description: note.headline,
+			};
 
-		let headers = new Headers({
-			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
-		});
+			let headers = new Headers({
+				"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+			});
 
-		return json({ body, meta }, { headers });
-	} catch {
-		return redirect("/articles");
-	}
+			return json({ body, meta }, { headers });
+		} catch {
+			return redirect("/articles");
+		}
+	});
 }
 
 export let meta: MetaFunction = ({ data }) => {

@@ -13,13 +13,13 @@ import tailwindUrl from "~/styles/tailwind.css";
 
 import { measure } from "./utils/measure";
 
-export default async function handleRequest(
+export default function handleRequest(
 	request: Request,
 	statusCode: number,
 	headers: Headers,
 	context: EntryContext
 ) {
-	let instance = await measure("init i18next", async () => {
+	return measure("entry.server#handleRequest", async () => {
 		let instance = createInstance().use(initReactI18next);
 
 		let lng = await i18n.getLocale(request);
@@ -32,26 +32,23 @@ export default async function handleRequest(
 			lng,
 			ns,
 			resources: { en: { translation: en }, es: { translation: es } },
+			interpolation: { escapeValue: false },
 		});
 
-		return instance;
-	});
-
-	let markup = await measure("render to html", () =>
-		renderToString(
+		let markup = renderToString(
 			<I18nextProvider i18n={instance}>
 				<RemixServer context={context} url={request.url} />
 			</I18nextProvider>
-		)
-	);
+		);
 
-	headers.set("Content-Type", "text/html");
+		headers.set("Content-Type", "text/html");
 
-	headers.append("Link", `<${globalStylesUrl}>; rel=preload; as=style`);
-	headers.append("Link", `<${tailwindUrl}>; rel=preload; as=style`);
+		headers.append("Link", `<${globalStylesUrl}>; rel=preload; as=style`);
+		headers.append("Link", `<${tailwindUrl}>; rel=preload; as=style`);
 
-	return new Response("<!DOCTYPE html>" + markup, {
-		status: statusCode,
-		headers: headers,
+		return new Response("<!DOCTYPE html>" + markup, {
+			status: statusCode,
+			headers: headers,
+		});
 	});
 }

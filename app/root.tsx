@@ -18,6 +18,8 @@ import {
 	useLoaderData,
 } from "@remix-run/react";
 import { NavLink } from "@remix-run/react/dist/components";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useChangeLanguage } from "remix-i18next";
 import { useShouldHydrate } from "remix-utils";
 
@@ -43,31 +45,31 @@ export let links: LinksFunction = () => {
 	];
 };
 
-export async function loader({ request, context }: LoaderArgs) {
-	removeTrailingSlash(new URL(request.url));
+export function loader({ request, context }: LoaderArgs) {
+	return measure("root#loader", async () => {
+		removeTrailingSlash(new URL(request.url));
 
-	return await measure("root#loader", async () => {
-		let locale = await measure("i18n.getLocale", () => i18n.getLocale(request));
+		let locale = await i18n.getLocale(request);
 
-		let { user, isSponsoringMe } = await measure("auth", async () => {
-			let user = await context.services.auth.authenticator.isAuthenticated(
-				request
-			);
-
-			let isSponsoringMe = false;
-			if (user) {
-				isSponsoringMe = await context.services.gh.isSponsoringMe(
-					user.githubId
-				);
-			}
-			return { user, isSponsoringMe };
-		});
+		let { user, isSponsoringMe } = await getAuthData();
 
 		return json(
 			{ locale, user, isSponsoringMe },
 			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
 		);
 	});
+
+	async function getAuthData() {
+		let user = await context.services.auth.authenticator.isAuthenticated(
+			request
+		);
+
+		let isSponsoringMe = false;
+		if (user) {
+			isSponsoringMe = await context.services.gh.isSponsoringMe(user.githubId);
+		}
+		return { user, isSponsoringMe };
+	}
 }
 
 export let meta: MetaFunction = ({ data }) => {
@@ -96,7 +98,7 @@ export let meta: MetaFunction = ({ data }) => {
 	};
 };
 
-export let handle: SDX.Handle = { i18n: "translation" };
+export let handle: SDX.Handle = { i18n: "translation", hydrate: true };
 
 export default function App() {
 	let { locale, user, isSponsoringMe } = useLoaderData<typeof loader>();
@@ -205,4 +207,11 @@ function Document({
 			</body>
 		</html>
 	);
+}
+
+function useChangeLanguage1(locale: string) {
+	let { i18n } = useTranslation();
+	useEffect(() => {
+		i18n.changeLanguage(locale);
+	}, [locale, i18n]);
 }

@@ -9,18 +9,24 @@ import { getInitialNamespaces } from "remix-i18next";
 import en from "~/locales/en";
 import es from "~/locales/es";
 
-i18next
-	.use(initReactI18next)
-	.use(LanguageDetector)
-	.init({
-		supportedLngs: ["es", "en"],
-		fallbackLng: "en",
-		react: { useSuspense: false },
-		ns: getInitialNamespaces(),
-		detection: { order: ["htmlTag"], caches: [] },
-		resources: { en: { translation: en }, es: { translation: es } },
-	})
-	.then(hydrate);
+import { measure } from "./utils/measure";
+
+measure("entry.client#hydrate", async () => {
+	await i18next
+		.use(initReactI18next)
+		.use(LanguageDetector)
+		.init({
+			supportedLngs: ["es", "en"],
+			fallbackLng: "en",
+			react: { useSuspense: false },
+			ns: getInitialNamespaces(),
+			detection: { order: ["htmlTag"], caches: [] },
+			resources: { en: { translation: en }, es: { translation: es } },
+			interpolation: { escapeValue: false },
+		});
+
+	return hydrate();
+});
 
 function hydrate() {
 	startTransition(() => {

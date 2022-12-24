@@ -3,20 +3,28 @@ import type { ActionArgs } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
 import { Form, useLoaderData } from "@remix-run/react";
 
-export async function loader({ request, context }: ActionArgs) {
-	let session = await context.services.auth.sessionStorage.getSession(
-		request.headers.get("Cookie")
-	);
-	let error = session.get(context.services.auth.authenticator.sessionErrorKey);
-	return json({ error });
+import { measure } from "~/utils/measure";
+
+export function loader({ request, context }: ActionArgs) {
+	return measure("routes/login#loader", async () => {
+		let session = await context.services.auth.sessionStorage.getSession(
+			request.headers.get("Cookie")
+		);
+		let error = session.get(
+			context.services.auth.authenticator.sessionErrorKey
+		);
+		return json({ error });
+	});
 }
 
-export async function action({ request, context }: ActionArgs) {
-	return await context.services.auth.authenticator.authenticate(
-		"github",
-		request,
-		{ successRedirect: "/", failureRedirect: "/login," }
-	);
+export function action({ request, context }: ActionArgs) {
+	return measure("routes/login#action", async () => {
+		return await context.services.auth.authenticator.authenticate(
+			"github",
+			request,
+			{ successRedirect: "/", failureRedirect: "/login," }
+		);
+	});
 }
 
 export default function Component() {

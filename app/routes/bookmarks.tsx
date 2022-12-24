@@ -9,17 +9,20 @@ import { useLoaderData } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
+import { measure } from "~/utils/measure";
 
-export async function loader({ request, context }: LoaderArgs) {
-	void context.services.log.http(request);
+export function loader({ request, context }: LoaderArgs) {
+	return measure("routes/bookmarks#loader", async () => {
+		void context.services.log.http(request);
 
-	let bookmarks = await context.services.airtable.getBookmarks(100);
+		let bookmarks = await context.services.airtable.getBookmarks(100);
 
-	let t = await i18n.getFixedT(request);
+		let t = await i18n.getFixedT(request);
 
-	let meta = { title: t("bookmarks.meta.title") };
+		let meta = { title: t("bookmarks.meta.title") };
 
-	return json({ bookmarks, meta });
+		return json({ bookmarks, meta });
+	});
 }
 
 export let meta: MetaFunction = ({ data }) => {

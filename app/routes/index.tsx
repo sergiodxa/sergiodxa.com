@@ -7,18 +7,14 @@ import { Trans } from "react-i18next";
 import { useT } from "~/helpers/use-i18n.hook";
 import { measure } from "~/utils/measure";
 
-export async function loader({ request, context }: LoaderArgs) {
-	return await measure("routes/index#loader", async () => {
+export function loader({ request, context }: LoaderArgs) {
+	return measure("routes/index#loader", async () => {
 		void context.services.log.http(request);
 
-		let [notes, bookmarks] = await measure("get notes and bookmarks", () => {
-			return Promise.all([
-				measure("get notes", () => context.services.cn.getLatestNotes()),
-				measure("get bookmarks", () =>
-					context.services.airtable.getBookmarks(10)
-				),
-			]);
-		});
+		let [notes, bookmarks] = await Promise.all([
+			context.services.cn.getLatestNotes(),
+			context.services.airtable.getBookmarks(10),
+		]);
 
 		let headers = new Headers({
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",

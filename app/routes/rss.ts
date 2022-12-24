@@ -1,11 +1,15 @@
-export async function loader() {
-	let response = await fetch(
-		"https://collectednotes.com/sergiodxa/feed/public_site.rss"
-	);
+import { measure } from "~/utils/measure";
 
-	let headers = new Headers(response.headers);
+export function loader() {
+	return measure("routes/rss#loader", async () => {
+		let response = await fetch(
+			"https://collectednotes.com/sergiodxa/feed/public_site.rss"
+		);
 
-	headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");
+		let headers = new Headers(response.headers);
 
-	return new Response(response.body, { headers });
+		headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");
+
+		return new Response(response.body, { headers });
+	});
 }

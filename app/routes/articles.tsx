@@ -10,28 +10,31 @@ import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
+import { measure } from "~/utils/measure";
 
-export async function loader({ request, context }: LoaderArgs) {
-	void context.services.log.http(request);
+export function loader({ request, context }: LoaderArgs) {
+	return measure("routes/articles#loader", async () => {
+		void context.services.log.http(request);
 
-	let url = new URL(request.url);
+		let url = new URL(request.url);
 
-	let term = url.searchParams.get("q") ?? "";
-	let page = Number(url.searchParams.get("page") ?? 1);
+		let term = url.searchParams.get("q") ?? "";
+		let page = Number(url.searchParams.get("page") ?? 1);
 
-	let notes = await context.services.cn.getNotes(page, term);
+		let notes = await context.services.cn.getNotes(page, term);
 
-	let t = await i18n.getFixedT(request);
+		let t = await i18n.getFixedT(request);
 
-	let meta = { title: t("articles.meta.title.default") };
+		let meta = { title: t("articles.meta.title.default") };
 
-	if (term !== "") meta.title = t("articles.meta.title.search", { term });
+		if (term !== "") meta.title = t("articles.meta.title.search", { term });
 
-	let headers = new Headers({
-		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+		let headers = new Headers({
+			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+		});
+
+		return json({ term, page, notes, meta }, { headers });
 	});
-
-	return json({ term, page, notes, meta }, { headers });
 }
 
 export let meta: MetaFunction = ({ data }) => {

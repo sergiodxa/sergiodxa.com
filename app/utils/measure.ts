@@ -3,17 +3,13 @@ export async function measure<Result>(
 	callback: () => Result | Promise<Result>
 ) {
 	let start = Date.now();
-	let result = callback();
-	if (result instanceof Promise) result = await result;
-	let end = Date.now();
-	console.log(`${key} took ${end - start}ms`);
-	return result;
-}
 
-export function measureSync<Result>(key: string, callback: () => Result) {
-	let start = Date.now();
-	let result = callback();
-	let end = Date.now();
-	console.log(`${key} took ${end - start}ms`);
-	return result;
+	try {
+		let result = callback();
+		if (result instanceof Promise) result = await result;
+		return result;
+	} finally {
+		let end = Date.now();
+		console.log(`${key} took ${end - start}ms`);
+	}
 }
