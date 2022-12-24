@@ -20,7 +20,6 @@ import {
 import { NavLink } from "@remix-run/react/dist/components";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useChangeLanguage } from "remix-i18next";
 import { useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
@@ -209,7 +208,7 @@ function Document({
 	);
 }
 
-function useChangeLanguage1(locale: string) {
+function useChangeLanguage(locale: string) {
 	let { i18n } = useTranslation();
 	useEffect(() => {
 		i18n.changeLanguage(locale);
