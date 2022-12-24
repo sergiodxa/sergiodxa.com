@@ -116,16 +116,19 @@ export default function App() {
 			<nav className="mb-4 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
 				<ul className="flex space-x-4 text-lg">
 					<li>
+						<link rel="prefetch" href="/" />
 						<NavLink to="/" className="py-3">
 							{t("nav.home")}
 						</NavLink>
 					</li>
 					<li>
+						<link rel="prefetch" href="/articles" />
 						<NavLink to="/articles" className="py-3">
 							{t("nav.articles")}
 						</NavLink>
 					</li>
 					<li>
+						<link rel="prefetch" href="/bookmarks" />
 						<NavLink to="/bookmarks" className="py-3">
 							{t("nav.bookmarks")}
 						</NavLink>

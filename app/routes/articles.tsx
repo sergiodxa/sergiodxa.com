@@ -59,6 +59,13 @@ export default function Articles() {
 		);
 	}
 
+	let prevLink = term
+		? `/articles?q=${term}&page=${page - 1}`
+		: `/articles?page=${page - 1}`;
+	let nextLink = term
+		? `/articles?q=${term}&page=${page + 1}`
+		: `/articles?page=${page + 1}`;
+
 	return (
 		<main className="space-y-2">
 			<header>
@@ -107,6 +114,7 @@ export default function Articles() {
 				<ul className="space-y-2">
 					{notes.map((note) => (
 						<li key={note.id} className="list-inside list-disc">
+							<link rel="prefetch" href={`/articles/${note.path}`} />
 							<Link to={`/articles/${note.path}`} prefetch="intent">
 								{note.title}
 							</Link>
@@ -117,14 +125,20 @@ export default function Articles() {
 
 			<footer className="flex w-full justify-evenly">
 				{page > 1 && (
-					<Link to={`/articles?page=${page - 1}`} prefetch="intent">
-						{t("articles.nav.prev")}
-					</Link>
+					<>
+						<link rel="prefetch" href={prevLink} />
+						<Link to={prevLink} prefetch="intent">
+							{t("articles.nav.prev")}
+						</Link>
+					</>
 				)}
 				{count === 40 && (
-					<Link to={`/articles?page=${page + 1}`} prefetch="intent">
-						{t("articles.nav.next")}
-					</Link>
+					<>
+						<link rel="prefetch" href={nextLink} />
+						<Link to={nextLink} prefetch="intent">
+							{t("articles.nav.next")}
+						</Link>
+					</>
 				)}
 			</footer>
 		</main>
