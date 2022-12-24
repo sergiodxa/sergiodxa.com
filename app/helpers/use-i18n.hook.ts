@@ -1,4 +1,5 @@
-import type { DefaultNamespace, KeyPrefix, Namespace } from "react-i18next";
+import type { KeyPrefix, Namespace } from "i18next";
+import type { DefaultNamespace } from "react-i18next/TransWithoutContext";
 
 import { useTranslation } from "react-i18next";
 
