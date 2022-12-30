@@ -1,8 +1,4 @@
-import type {
-	LoaderArgs,
-	MetaFunction,
-	SerializeFrom,
-} from "@remix-run/cloudflare";
+import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
 
