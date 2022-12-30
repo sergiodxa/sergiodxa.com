@@ -4,31 +4,31 @@ import type {
 	SerializeFrom,
 } from "@remix-run/cloudflare";
 
-import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
+import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
 	return measure("routes/bookmarks#loader", async () => {
 		void context.services.log.http(request);
 
-		let bookmarks = await context.services.airtable.getBookmarks(100);
+		return json({
+			bookmarks: context.services.airtable.getBookmarks(100),
+			async meta() {
+				let t = await i18n.getFixedT(request);
 
-		let t = await i18n.getFixedT(request);
-
-		let meta = { title: t("bookmarks.meta.title") };
-
-		return json({ bookmarks, meta });
+				return { title: t("bookmarks.meta.title") };
+			},
+		});
 	});
 }
 
-export let meta: MetaFunction = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return {};
-	let { meta } = data as SerializeFrom<typeof loader>;
-	return meta;
+	return data.meta;
 };
 
 export default function Bookmarks() {

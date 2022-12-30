@@ -4,12 +4,12 @@ import type {
 	SerializeFrom,
 } from "@remix-run/cloudflare";
 
-import { json } from "@remix-run/cloudflare";
 import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/services/i18n.server";
+import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
@@ -21,19 +21,29 @@ export function loader({ request, context }: LoaderArgs) {
 		let term = url.searchParams.get("q") ?? "";
 		let page = Number(url.searchParams.get("page") ?? 1);
 
-		let notes = await context.services.cn.getNotes(page, term);
-
-		let t = await i18n.getFixedT(request);
-
-		let meta = { title: t("articles.meta.title.default") };
-
-		if (term !== "") meta.title = t("articles.meta.title.search", { term });
-
 		let headers = new Headers({
 			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 		});
 
-		return json({ term, page, notes, meta }, { headers });
+		return json(
+			{
+				term,
+				page,
+				notes: context.services.cn.getNotes(page, term),
+				async meta() {
+					let t = await i18n.getFixedT(request);
+
+					let meta = { title: t("articles.meta.title.default") };
+
+					if (term !== "") {
+						meta.title = t("articles.meta.title.search", { term });
+					}
+
+					return meta;
+				},
+			},
+			{ headers }
+		);
 	});
 }
 

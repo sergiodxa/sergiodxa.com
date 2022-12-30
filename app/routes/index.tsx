@@ -1,26 +1,32 @@
 import type { LoaderArgs } from "@remix-run/cloudflare";
 
-import { json } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
+import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
 	return measure("routes/index#loader", async () => {
 		void context.services.log.http(request);
 
-		let [notes, bookmarks] = await Promise.all([
-			context.services.cn.getLatestNotes(),
-			context.services.airtable.getBookmarks(10),
-		]);
-
 		let headers = new Headers({
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
 		});
 
-		return json({ notes: notes.slice(0, 10), bookmarks }, { headers });
+		return json(
+			{
+				async notes() {
+					let notes = await context.services.cn.getLatestNotes();
+					return notes.slice(0, 10);
+				},
+				bookmarks() {
+					return context.services.airtable.getBookmarks(10);
+				},
+			},
+			{ headers }
+		);
 	});
 }
 
