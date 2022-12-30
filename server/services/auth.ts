@@ -1,5 +1,4 @@
 import type { Env } from "../env";
-import type { SessionStorage } from "@remix-run/cloudflare";
 import type { TypedSessionStorage } from "remix-utils";
 
 import { createCloudflareKVSessionStorage } from "@remix-run/cloudflare";
@@ -27,7 +26,7 @@ export type User = z.infer<typeof UserSchema>;
 
 export interface IAuthService {
 	readonly authenticator: Authenticator<User>;
-	readonly sessionStorage: SessionStorage;
+	readonly sessionStorage: TypedSessionStorage<typeof SessionSchema>;
 }
 
 export class AuthService implements IAuthService {
