@@ -201,14 +201,15 @@ function Document({
 					<script
 						dangerouslySetInnerHTML={{
 							__html: `
-	document.querySelectorAll("a").forEach((link) => {
+	document.querySelectorAll("a").forEach(($anchor) => {
+    if ($anchor.origin !== location.origin) return;
 		function listener() {
 			let $link = document.createElement("link");
 			$link.setAttribute("rel", "prefetch");
-			$link.setAttribute("href", link.href);
+			$link.setAttribute("href", $anchor.href);
 			document.body.appendChild($link);
 		}
-		link.addEventListener("mouseenter", listener, { once: true });
+		$anchor.addEventListener("mouseenter", listener, { once: true });
 	});
 `,
 						}}
