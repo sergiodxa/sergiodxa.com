@@ -124,7 +124,6 @@ export default function Articles() {
 				<ul className="space-y-2">
 					{notes.map((note) => (
 						<li key={note.id} className="list-inside list-disc">
-							<link rel="prefetch" href={`/articles/${note.path}`} />
 							<Link to={`/articles/${note.path}`} prefetch="intent">
 								{note.title}
 							</Link>
@@ -136,7 +135,6 @@ export default function Articles() {
 			<footer className="flex w-full justify-evenly">
 				{page > 1 && (
 					<>
-						<link rel="prefetch" href={prevLink} />
 						<Link to={prevLink} prefetch="intent">
 							{t("articles.nav.prev")}
 						</Link>
@@ -144,7 +142,6 @@ export default function Articles() {
 				)}
 				{count === 40 && (
 					<>
-						<link rel="prefetch" href={nextLink} />
 						<Link to={nextLink} prefetch="intent">
 							{t("articles.nav.next")}
 						</Link>

@@ -49,7 +49,6 @@ export default function Index() {
 					{notes.map((note) => {
 						return (
 							<li key={note.id} className="list-inside list-disc">
-								<link rel="prefetch" href={`/articles/${note.path}`} />
 								<Link to={`articles/${note.path}`} prefetch="intent">
 									{note.title}
 								</Link>
