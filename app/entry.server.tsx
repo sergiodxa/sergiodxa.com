@@ -45,6 +45,10 @@ export default function handleRequest(
 
 		headers.append("Link", `<${globalStylesUrl}>; rel=preload; as=style`);
 		headers.append("Link", `<${tailwindUrl}>; rel=preload; as=style`);
+		headers.append(
+			"Link",
+			`<https://static.cloudflareinsights.com/beacon.min.js>; rel=preload; as=style`
+		);
 
 		return new Response("<!DOCTYPE html>" + markup, {
 			status: statusCode,
