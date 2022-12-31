@@ -195,7 +195,25 @@ function Document({
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}
 				<ScrollRestoration />
-				{shouldHydrate && <Scripts />}
+				{shouldHydrate ? (
+					<Scripts />
+				) : (
+					<script
+						dangerouslySetInnerHTML={{
+							__html: `
+	document.querySelectorAll("a").forEach((link) => {
+		function listener() {
+			let $link = document.createElement("link");
+			$link.setAttribute("rel", "prefetch");
+			$link.setAttribute("href", link.href);
+			document.body.appendChild($link);
+		}
+		link.addEventListener("mouseenter", listener, { once: true });
+	});
+`,
+						}}
+					/>
+				)}
 				<LiveReload />
 				{process.env.NODE_ENV === "production" ? (
 					<script
