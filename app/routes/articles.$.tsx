@@ -43,7 +43,15 @@ export function loader({ request, context, params }: LoaderArgs) {
 
 										let id = generateID(children, attributes);
 
-										return new Tag("a", { href: `#${id}`, className: "test" }, [
+										if (node.attributes["level"] === 1) {
+											return new Tag(
+												`h${node.attributes["level"]}`,
+												{ ...attributes, id },
+												children
+											);
+										}
+
+										return new Tag("a", { href: `#${id}` }, [
 											new Tag(
 												`h${node.attributes["level"]}`,
 												{ ...attributes, id },
