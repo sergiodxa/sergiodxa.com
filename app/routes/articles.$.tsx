@@ -1,8 +1,4 @@
-import type {
-	LinksFunction,
-	LoaderArgs,
-	MetaFunction,
-} from "@remix-run/cloudflare";
+import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
 
 import { Tag } from "@markdoc/markdoc";
 import { redirect } from "@remix-run/cloudflare";
@@ -11,14 +7,9 @@ import { useLoaderData } from "@remix-run/react";
 import { MarkdownView } from "~/components/markdown";
 import { i18n } from "~/services/i18n.server";
 import { parseMarkdown } from "~/services/md.server";
-import highlightStyles from "~/styles/highlight.css";
 import { generateID } from "~/utils/generate-id";
 import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
-
-export let links: LinksFunction = () => {
-	return [{ rel: "stylesheet", href: highlightStyles }];
-};
 
 export function loader({ request, context, params }: LoaderArgs) {
 	return measure("routes/articles.$id#loader", async () => {
@@ -52,11 +43,13 @@ export function loader({ request, context, params }: LoaderArgs) {
 
 										let id = generateID(children, attributes);
 
-										return new Tag(
-											`h${node.attributes["level"]}`,
-											{ ...attributes, id },
-											children
-										);
+										return new Tag("a", { href: `#${id}`, className: "test" }, [
+											new Tag(
+												`h${node.attributes["level"]}`,
+												{ ...attributes, id },
+												children
+											),
+										]);
 									},
 								},
 							},
