@@ -6,6 +6,7 @@ export default {
 		articles: "Articles",
 		bookmarks: "Bookmarks",
 		sponsor: "Sponsor me on GitHub",
+		logout: "Sign Out",
 	},
 
 	home: {
