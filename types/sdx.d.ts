@@ -4,12 +4,12 @@ import type {
 	ExternalScriptsFunction,
 	StructuredDataFunction,
 } from "remix-utils";
+import type { IAirtableService } from "~/airtable";
+import type { IAuthService } from "~/auth";
+import type { ICollectedNotesService } from "~/cn";
 import type { Env } from "~/env";
-import type { IAirtableService } from "~/services/airtable";
-import type { IAuthService } from "~/services/auth";
-import type { ICollectedNotesService } from "~/services/cn";
-import type { IGitHubService } from "~/services/gh";
-import type { ILoggingService } from "~/services/logging";
+import type { IGitHubService } from "~/gh";
+import type { ILoggingService } from "~/logging";
 
 interface HydrateFunction<LoaderData> {
 	(data: LoaderData): boolean;
