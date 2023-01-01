@@ -67,29 +67,14 @@ function prefetchAssets(context: EntryContext, headers: Headers) {
 			}
 			return null;
 		})
-		.filter(isLink);
-
-	links = removeDuplicatesByKey(links, "href");
+		.filter((link: any): link is { href: string; as: string } => {
+			return link && "href" in link;
+		})
+		.filter((item, index, list) => {
+			return index === list.findIndex((link) => link.href === item.href);
+		});
 
 	for (let link of links) {
 		headers.append("Link", `<${link.href}>; rel=preload; as=${link.as}`);
 	}
-}
-
-function removeDuplicatesByKey<Value>(
-	list: Value[],
-	key: keyof Value
-): Value[] {
-	return list.filter((item, index, self) => {
-		return (
-			index ===
-			self.findIndex((t) => {
-				return t[key] === item[key];
-			})
-		);
-	});
-}
-
-function isLink(link: any): link is { href: string; as: string } {
-	return link && "href" in link;
 }
