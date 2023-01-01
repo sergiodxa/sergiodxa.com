@@ -1,4 +1,4 @@
-import type { IAirtableService } from "~/services/airtable";
+import type { IAirtableService } from "~/airtable";
 
 import { vi } from "vitest";
 

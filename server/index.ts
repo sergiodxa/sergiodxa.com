@@ -3,13 +3,12 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
+import { AirtableService } from "~/airtable";
+import { AuthService } from "~/auth";
+import { CollectedNotesService } from "~/cn";
 import { envSchema } from "~/env";
-import { AirtableService } from "~/services/airtable";
-import { CollectedNotesService } from "~/services/cn";
-import { GitHubService } from "~/services/gh";
-import { LoggingService } from "~/services/logging";
-
-import { AuthService } from "./services/auth";
+import { GitHubService } from "~/gh";
+import { LoggingService } from "~/logging";
 
 const handleRequest = createPagesFunctionHandler({
 	build,
@@ -22,7 +21,12 @@ const handleRequest = createPagesFunctionHandler({
 
 		// Injected services objects to interact with third-party services
 		let services: AppLoadContext["services"] = {
-			auth: new AuthService(context.env.auth, env, hostname),
+			auth: new AuthService(
+				context.env.auth,
+				env,
+				hostname,
+				new GitHubService(context.env.gh, env.GITHUB_TOKEN)
+			),
 			airtable: new AirtableService(
 				context.env.airtable,
 				env.AIRTABLE_API_KEY,

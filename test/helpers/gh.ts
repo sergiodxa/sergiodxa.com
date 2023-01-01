@@ -1,4 +1,4 @@
-import type { IGitHubService } from "~/services/gh";
+import type { IGitHubService } from "~/gh";
 
 import { vi } from "vitest";
 

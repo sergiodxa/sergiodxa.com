@@ -1,4 +1,4 @@
-import type { ICollectedNotesService } from "~/services/cn";
+import type { ICollectedNotesService } from "~/cn";
 
 import { vi } from "vitest";
 

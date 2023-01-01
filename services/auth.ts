@@ -1,5 +1,6 @@
-import type { Env } from "../env";
+import type { IGitHubService } from "./gh";
 import type { TypedSessionStorage } from "remix-utils";
+import type { Env } from "~/env";
 
 import { createCloudflareKVSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";
@@ -13,6 +14,7 @@ const UserSchema = z.object({
 	email: z.string().email().nullable(),
 	avatar: z.string().url(),
 	githubId: z.string().min(1),
+	isSponsor: z.boolean(),
 });
 
 const SessionSchema = z.object({
@@ -24,6 +26,8 @@ const SessionSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>;
 
+export type Session = z.infer<typeof SessionSchema>;
+
 export interface IAuthService {
 	readonly authenticator: Authenticator<User>;
 	readonly sessionStorage: TypedSessionStorage<typeof SessionSchema>;
@@ -33,7 +37,7 @@ export class AuthService implements IAuthService {
 	#sessionStorage: TypedSessionStorage<typeof SessionSchema>;
 	#authenticator: Authenticator<User>;
 
-	constructor(kv: KVNamespace, env: Env, hostname: string) {
+	constructor(kv: KVNamespace, env: Env, hostname: string, gh: IGitHubService) {
 		let sessionStorage = createCloudflareKVSessionStorage({
 			cookie: {
 				name: "sid",
@@ -72,6 +76,7 @@ export class AuthService implements IAuthService {
 						email: profile._json.email ?? profile.emails?.at(0) ?? null,
 						avatar: profile._json.avatar_url,
 						githubId: profile._json.node_id,
+						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 					};
 				}
 			)
