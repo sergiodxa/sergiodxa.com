@@ -6,8 +6,8 @@ import type {
 } from "@remix-run/cloudflare";
 import type { ReactNode } from "react";
 
-import { json } from "@remix-run/cloudflare";
 import {
+	Link,
 	Links,
 	LiveReload,
 	Meta,
@@ -28,6 +28,7 @@ import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
+import { json } from "./utils/http";
 import { measure } from "./utils/measure";
 
 export let links: LinksFunction = () => {
@@ -51,25 +52,18 @@ export function loader({ request, context }: LoaderArgs) {
 
 		let locale = await i18n.getLocale(request);
 
-		let { user, isSponsoringMe } = await getAuthData();
-
 		return json(
-			{ locale, user, isSponsoringMe },
+			{
+				locale,
+				async user() {
+					return await context.services.auth.authenticator.isAuthenticated(
+						request
+					);
+				},
+			},
 			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
 		);
 	});
-
-	async function getAuthData() {
-		let user = await context.services.auth.authenticator.isAuthenticated(
-			request
-		);
-
-		let isSponsoringMe = false;
-		if (user) {
-			isSponsoringMe = await context.services.gh.isSponsoringMe(user.githubId);
-		}
-		return { user, isSponsoringMe };
-	}
 }
 
 export let meta: MetaFunction = ({ data }) => {
@@ -101,7 +95,7 @@ export let meta: MetaFunction = ({ data }) => {
 export let handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
-	let { locale, user, isSponsoringMe } = useLoaderData<typeof loader>();
+	let { locale, user } = useLoaderData<typeof loader>();
 	let t = useT();
 
 	useChangeLanguage(locale);
@@ -133,13 +127,15 @@ export default function App() {
 					</li>
 				</ul>
 
-				{!isSponsoringMe ? (
-					<aside className="flex md:justify-end">
+				<aside className="flex md:justify-end">
+					{!user?.isSponsor ? (
 						<a href="https://github.com/sponsors/sergiodxa">
 							{t("nav.sponsor")}
 						</a>
-					</aside>
-				) : null}
+					) : (
+						<Link to="/logout">{t("nav.logout")}</Link>
+					)}
+				</aside>
 			</nav>
 
 			{user !== null ? (
