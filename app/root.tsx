@@ -187,6 +187,7 @@ function Document({
 				{title ? <title>{title}</title> : null}
 				<Meta />
 				<Links />
+				<link href="https://github.com/sergiodxa" rel="me authn" />
 			</head>
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}
