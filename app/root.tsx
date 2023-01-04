@@ -188,6 +188,14 @@ function Document({
 				<Meta />
 				<Links />
 				<link href="https://github.com/sergiodxa" rel="me authn" />
+				<link
+					rel="webmention"
+					href="https://webmention.io/sergiodxa.com/webmention"
+				/>
+				<link
+					rel="pingback"
+					href="https://webmention.io/sergiodxa.com/xmlrpc"
+				/>
 			</head>
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}
