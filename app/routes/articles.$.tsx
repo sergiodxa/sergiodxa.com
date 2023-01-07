@@ -72,6 +72,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 						return {
 							wordCount: note.body.split(/\s+/).length,
 							datePublished: note.created_at,
+							dateModified: note.updated_at,
 						};
 					},
 					async meta() {
@@ -102,11 +103,16 @@ export let handle: SDX.Handle<SerializeFrom<typeof loader>, SchemaArticle> = {
 		return {
 			"@context": "https://schema.org",
 			"@type": "Article",
-			title: data.meta.title,
+			headline: data.meta.title,
 			description: data.meta.description,
-			author: { "@type": "Person", name: "Sergio Xalambrí" },
+			author: {
+				"@type": "Person",
+				name: "Sergio Xalambrí",
+				url: "https://sergiodxa.com/about",
+			},
 			wordCount: data.structuredData.wordCount,
 			datePublished: data.structuredData.datePublished,
+			dateModified: data.structuredData.dateModified,
 		};
 	},
 };
