@@ -4,6 +4,7 @@ import type {
 	ExternalScriptsFunction,
 	StructuredDataFunction,
 } from "remix-utils";
+import type { Thing } from "schema-dts";
 import type { IAirtableService } from "~/airtable";
 import type { IAuthService } from "~/auth";
 import type { ICollectedNotesService } from "~/cn";
@@ -17,12 +18,15 @@ interface HydrateFunction<LoaderData> {
 
 declare global {
 	namespace SDX {
-		export type Handle<LoaderData = unknown> = {
+		export type Handle<
+			LoaderData = unknown,
+			StructuredDataThing extends Thing = Thing
+		> = {
 			i18n?: string | string[];
 			hydrate?: boolean | HydrateFunction<LoaderData>;
 			scripts?: ExternalScriptsFunction;
 			dynamicLinks?: DynamicLinksFunction<LoaderData>;
-			structuredData?: StructuredDataFunction<LoaderData>;
+			structuredData?: StructuredDataFunction<LoaderData, StructuredDataThing>;
 		};
 	}
 }

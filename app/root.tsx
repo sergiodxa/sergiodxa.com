@@ -20,7 +20,7 @@ import {
 import { NavLink } from "@remix-run/react/dist/components";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useShouldHydrate } from "remix-utils";
+import { StructuredData, useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/services/i18n.server";
@@ -196,6 +196,7 @@ function Document({
 					rel="pingback"
 					href="https://webmention.io/sergiodxa.com/xmlrpc"
 				/>
+				<StructuredData />
 			</head>
 			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
 				{children}

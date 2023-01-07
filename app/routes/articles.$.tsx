@@ -1,4 +1,9 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
+import type {
+	LoaderArgs,
+	MetaFunction,
+	SerializeFrom,
+} from "@remix-run/cloudflare";
+import type { Article as SchemaArticle } from "schema-dts";
 
 import { Tag } from "@markdoc/markdoc";
 import { redirect } from "@remix-run/cloudflare";
@@ -63,6 +68,12 @@ export function loader({ request, context, params }: LoaderArgs) {
 							},
 						});
 					},
+					structuredData() {
+						return {
+							wordCount: note.body.split(/\s+/).length,
+							datePublished: note.created_at,
+						};
+					},
 					async meta() {
 						let t = await i18n.getFixedT(request);
 
@@ -83,6 +94,21 @@ export function loader({ request, context, params }: LoaderArgs) {
 export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return {};
 	return data.meta;
+};
+
+export let handle: SDX.Handle<SerializeFrom<typeof loader>, SchemaArticle> = {
+	structuredData({ data }) {
+		if (!data) return [];
+		return {
+			"@context": "https://schema.org",
+			"@type": "Article",
+			title: data.meta.title,
+			description: data.meta.description,
+			author: { "@type": "Person", name: "Sergio Xalambrí" },
+			wordCount: data.structuredData.wordCount,
+			datePublished: data.structuredData.datePublished,
+		};
+	},
 };
 
 export default function Article() {
