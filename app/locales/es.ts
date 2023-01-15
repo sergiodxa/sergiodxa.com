@@ -59,4 +59,9 @@ export default {
 		meta: { title: "Bookmarks de sergiodxa" },
 		title: "Bookmarks",
 	},
+
+	error: {
+		NOT_FOUND: "404 No encontrado",
+		NOTE_NOT_FOUND: "El artículo {{path}} no se pudo encontrar",
+	},
 };

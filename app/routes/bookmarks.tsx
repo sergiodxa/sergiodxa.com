@@ -3,7 +3,7 @@ import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { i18n } from "~/services/i18n.server";
+import { i18n } from "~/i18n.server";
 import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
@@ -12,7 +12,7 @@ export function loader({ request, context }: LoaderArgs) {
 		void context.services.log.http(request);
 
 		return json({
-			bookmarks: context.services.airtable.getBookmarks(100),
+			bookmarks: context.services.bookmarks.perform(),
 			async meta() {
 				let t = await i18n.getFixedT(request);
 

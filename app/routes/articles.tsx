@@ -8,7 +8,7 @@ import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { i18n } from "~/services/i18n.server";
+import { i18n } from "~/i18n.server";
 import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
@@ -29,7 +29,7 @@ export function loader({ request, context }: LoaderArgs) {
 			{
 				term,
 				page,
-				notes: context.services.cn.getNotes(page, term),
+				notes: context.services.archive.perform(page, term),
 				async meta() {
 					let t = await i18n.getFixedT(request);
 

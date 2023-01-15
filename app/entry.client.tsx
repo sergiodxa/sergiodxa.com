@@ -10,8 +10,7 @@ import { getInitialNamespaces } from "remix-i18next";
 
 import en from "~/locales/en";
 import es from "~/locales/es";
-
-import { measure } from "./utils/measure";
+import { measure } from "~/utils/measure";
 
 measure("entry.client#hydrate", async () => {
 	let instance = createInstance().use(initReactI18next).use(LanguageDetector);

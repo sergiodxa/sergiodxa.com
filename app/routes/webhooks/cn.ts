@@ -5,8 +5,7 @@ import { measure } from "~/utils/measure";
 export function action({ request, context }: ActionArgs) {
 	return measure("routes/webhooks/cn#action", async () => {
 		void context.services.log.http(request);
-		let webhook = context.services.cn.parseWebhookBody(await request.json());
-		await context.services.cn.emit(webhook);
+		await context.services.notes.webhook.perform(await request.json());
 		return null;
 	});
 }

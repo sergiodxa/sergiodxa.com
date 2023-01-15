@@ -5,12 +5,17 @@ import type {
 	StructuredDataFunction,
 } from "remix-utils";
 import type { Thing } from "schema-dts";
-import type { IAirtableService } from "~/airtable";
-import type { IAuthService } from "~/auth";
-import type { ICollectedNotesService } from "~/cn";
-import type { Env } from "~/env";
-import type { IGitHubService } from "~/gh";
-import type { ILoggingService } from "~/logging";
+import type { BookmarksRepo } from "~/repositories/bookmarks";
+import type { NotesRepo } from "~/repositories/notes";
+import type { Env } from "~/server/env";
+import type { ArchiveService } from "~/services/archive";
+import type { IAuthService } from "~/services/auth";
+import type { BookmarksService } from "~/services/bookmarks";
+import type { CollectedNotesWebhookService } from "~/services/cn-webhook";
+import type { FeedService } from "~/services/feed";
+import type { IGitHubService } from "~/services/gh";
+import type { ILoggingService } from "~/services/logging";
+import type { ReadNoteService } from "~/services/read-note";
 
 interface HydrateFunction<LoaderData> {
 	(data: LoaderData): boolean;
@@ -28,18 +33,28 @@ declare global {
 			dynamicLinks?: DynamicLinksFunction<LoaderData>;
 			structuredData?: StructuredDataFunction<LoaderData, StructuredDataThing>;
 		};
+
+		export interface Repos {
+			notes: NotesRepo;
+			bookmarks: BookmarksRepo;
+		}
+
+		export interface Services {
+			notes: { read: ReadNoteService; webhook: CollectedNotesWebhookService };
+			archive: ArchiveService;
+			feed: FeedService;
+			bookmarks: BookmarksService;
+			auth: IAuthService;
+			gh: IGitHubService;
+			log: ILoggingService;
+		}
 	}
 }
 
 declare module "@remix-run/server-runtime" {
 	export interface AppLoadContext {
 		env: Env;
-		services: {
-			auth: IAuthService;
-			airtable: IAirtableService;
-			cn: ICollectedNotesService;
-			gh: IGitHubService;
-			log: ILoggingService;
-		};
+		services: SDX.Services;
+		repos: SDX.Repos;
 	}
 }

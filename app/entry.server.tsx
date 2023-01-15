@@ -6,9 +6,9 @@ import { renderToString } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { preloadLinkedAssets } from "remix-utils";
 
+import { i18n } from "~/i18n.server";
 import en from "~/locales/en";
 import es from "~/locales/es";
-import { i18n } from "~/services/i18n.server";
 import { measure } from "~/utils/measure";
 
 export default function handleRequest(

@@ -10,9 +10,7 @@ export function loader({ request, context }: ActionArgs) {
 		let session = await context.services.auth.sessionStorage.getSession(
 			request.headers.get("Cookie")
 		);
-		let error = session.get(
-			context.services.auth.authenticator.sessionErrorKey
-		);
+		let error = session.get("auth:error");
 		return json({ error });
 	});
 }
