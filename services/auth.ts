@@ -1,6 +1,6 @@
 import type { IGitHubService } from "./gh";
 import type { TypedSessionStorage } from "remix-utils";
-import type { Env } from "~/env";
+import type { Env } from "~/server/env";
 
 import { createCloudflareKVSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";

@@ -1,13 +1,15 @@
 {
 	"include": [
-		"types/*.d.ts",
-		"server/db.ts",
+		"entities/**/*.ts",
+		"repositories/**/*.ts",
+		"server/env.ts",
 		"server/index.ts",
-		"app/**/*.ts",
-		"app/**/*.tsx",
+		"services/**/*.ts",
 		"test/**/*.ts",
 		"test/**/*.tsx",
-		"scripts/**/*.ts"
+		"types/*.d.ts",
+		"app/**/*.ts",
+		"app/**/*.tsx"
 	],
 	"exclude": ["scripts/migrate.ts"],
 	"compilerOptions": {
@@ -23,7 +25,12 @@
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["./app/*", "./test/*", "./server/*", "./services/*"]
+			"~/*": ["./app/*"],
+			"~/entities/*": ["./entities/*"],
+			"~/repositories/*": ["./repositories/*"],
+			"~/server/*": ["./server/*"],
+			"~/services/*": ["./services/*"],
+			"~/test/*": ["./test/*"]
 		},
 		"noEmit": true
 	}

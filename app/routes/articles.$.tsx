@@ -3,16 +3,15 @@ import type {
 	MetaFunction,
 	SerializeFrom,
 } from "@remix-run/cloudflare";
+import type { ThrownResponse } from "@remix-run/react";
 import type { Article as SchemaArticle } from "schema-dts";
 
-import { Tag } from "@markdoc/markdoc";
 import { redirect } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { useCatch, useLoaderData } from "@remix-run/react";
 
 import { MarkdownView } from "~/components/markdown";
-import { i18n } from "~/services/i18n.server";
-import { parseMarkdown } from "~/services/md.server";
-import { generateID } from "~/utils/generate-id";
+import { i18n } from "~/i18n.server";
+import { NoteNotFoundError } from "~/repositories/notes";
 import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
@@ -25,7 +24,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 		if (!path) return redirect("/articles");
 
 		try {
-			let note = await context.services.cn.readNote(path);
+			let note = await context.services.notes.read.perform(path);
 
 			let headers = new Headers({
 				"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
@@ -33,46 +32,12 @@ export function loader({ request, context, params }: LoaderArgs) {
 
 			return json(
 				{
-					body() {
-						return parseMarkdown(note.body, {
-							nodes: {
-								heading: {
-									children: ["inline"],
-									attributes: {
-										id: { type: String },
-										level: { type: Number, required: true, default: 1 },
-									},
-									transform(node, config) {
-										let attributes = node.transformAttributes(config);
-										let children = node.transformChildren(config);
-
-										let id = generateID(children, attributes);
-
-										if (node.attributes["level"] === 1) {
-											return new Tag(
-												`h${node.attributes["level"]}`,
-												{ ...attributes, id },
-												children
-											);
-										}
-
-										return new Tag("a", { href: `#${id}` }, [
-											new Tag(
-												`h${node.attributes["level"]}`,
-												{ ...attributes, id },
-												children
-											),
-										]);
-									},
-								},
-							},
-						});
-					},
+					body: note.body,
 					structuredData() {
 						return {
-							wordCount: note.body.split(/\s+/).length,
-							datePublished: note.created_at,
-							dateModified: note.updated_at,
+							wordCount: note.wordCount,
+							datePublished: note.datePublished.toISOString(),
+							dateModified: note.dateModified.toISOString(),
 						};
 					},
 					async meta() {
@@ -86,7 +51,15 @@ export function loader({ request, context, params }: LoaderArgs) {
 				},
 				{ headers }
 			);
-		} catch {
+		} catch (error) {
+			if (error instanceof NoteNotFoundError) {
+				let t = await i18n.getFixedT(request);
+				throw json(
+					{ message: t("error.NOTE_NOT_FOUND", { path }) },
+					{ status: 404 }
+				);
+			}
+
 			return redirect("/articles");
 		}
 	});
@@ -121,10 +94,17 @@ export default function Article() {
 	let { body } = useLoaderData<typeof loader>();
 
 	return (
-		<section className="space-y-4">
-			<article className="dark:prose-dark prose prose-blue mx-auto sm:prose-lg">
-				<MarkdownView content={body} />
-			</article>
-		</section>
+		<article className="dark:prose-dark prose prose-blue mx-auto sm:prose-lg">
+			<MarkdownView content={body} />
+		</article>
+	);
+}
+
+export function CatchBoundary() {
+	let caught = useCatch<ThrownResponse<404, { message: string }>>();
+	return (
+		<article className="dark:prose-dark prose prose-blue mx-auto sm:prose-lg">
+			<h1>{caught.data.message}</h1>
+		</article>
 	);
 }

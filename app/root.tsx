@@ -23,13 +23,12 @@ import { useTranslation } from "react-i18next";
 import { StructuredData, useShouldHydrate } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
-import { i18n, localeCookie } from "~/services/i18n.server";
+import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
+import { json } from "~/utils/http";
+import { measure } from "~/utils/measure";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
-
-import { json } from "./utils/http";
-import { measure } from "./utils/measure";
 
 export let links: LinksFunction = () => {
 	return [
@@ -208,7 +207,7 @@ function Document({
 						dangerouslySetInnerHTML={{
 							__html: `
 	document.querySelectorAll("a").forEach(($anchor) => {
-    if ($anchor.origin !== location.origin) return;
+		if ($anchor.origin !== location.origin) return;
 		function listener() {
 			let $link = document.createElement("link");
 			$link.setAttribute("rel", "prefetch");
