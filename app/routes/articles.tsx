@@ -6,10 +6,10 @@ import type {
 
 import { Form, Link, useLoaderData, useTransition } from "@remix-run/react";
 import { Trans } from "react-i18next";
+import { jsonHash } from "remix-utils";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
-import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
@@ -25,7 +25,7 @@ export function loader({ request, context }: LoaderArgs) {
 			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 		});
 
-		return json(
+		return jsonHash(
 			{
 				term,
 				page,

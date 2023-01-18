@@ -1,17 +1,17 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
+import { jsonHash } from "remix-utils";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
-import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
 	return measure("routes/bookmarks#loader", async () => {
 		void context.services.log.http(request);
 
-		return json({
+		return jsonHash({
 			bookmarks: context.services.bookmarks.perform(),
 			async meta() {
 				let t = await i18n.getFixedT(request);
