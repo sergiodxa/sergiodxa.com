@@ -4,16 +4,17 @@ import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
 import { BookmarksRepo } from "~/repositories/bookmarks";
+import { DataRepo } from "~/repositories/data";
 import { NotesRepo } from "~/repositories/notes";
 import { envSchema } from "~/server/env";
 import { ArchiveService } from "~/services/archive";
 import { AuthService } from "~/services/auth";
 import { BookmarksService } from "~/services/bookmarks";
-import { CollectedNotesWebhookService } from "~/services/cn-webhook";
 import { FeedService } from "~/services/feed";
 import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
-import { ReadNoteService } from "~/services/read-note";
+import { CollectedNotes } from "~/services/notes";
+import { Tutorials } from "~/services/tutorials";
 
 const handleRequest = createPagesFunctionHandler({
 	build,
@@ -24,7 +25,7 @@ const handleRequest = createPagesFunctionHandler({
 
 		let { hostname } = new URL(context.request.url);
 
-		// Repositories to interact with the database
+		// Repositories to interact with the outside world
 		let repos: SDX.Repos = {
 			notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
 			bookmarks: new BookmarksRepo(
@@ -32,13 +33,20 @@ const handleRequest = createPagesFunctionHandler({
 				env.AIRTABLE_BASE,
 				env.AIRTABLE_TABLE_ID
 			),
+			data: new DataRepo(context.env.data),
 		};
 
-		// Injected services objects to interact with third-party services
+		// Services to contain business logic
 		let services: SDX.Services = {
 			notes: {
-				read: new ReadNoteService(repos, context.env.cn),
-				webhook: new CollectedNotesWebhookService(repos, context.env.cn),
+				read: new CollectedNotes.ReadNoteService(repos, context.env.cn),
+				webhook: new CollectedNotes.WebhookService(repos, context.env.cn),
+			},
+			tutorials: {
+				search: new Tutorials.SearchTutorials(repos),
+				list: new Tutorials.ListTutorials(repos),
+				read: new Tutorials.ReadTutorial(repos),
+				rss: new Tutorials.RSSFeedTutorials(repos),
 			},
 			archive: new ArchiveService(repos, context.env.cn),
 			feed: new FeedService(repos, {

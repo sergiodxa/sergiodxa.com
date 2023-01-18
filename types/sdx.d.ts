@@ -6,16 +6,17 @@ import type {
 } from "remix-utils";
 import type { Thing } from "schema-dts";
 import type { BookmarksRepo } from "~/repositories/bookmarks";
+import type { DataRepo } from "~/repositories/data";
 import type { NotesRepo } from "~/repositories/notes";
 import type { Env } from "~/server/env";
 import type { ArchiveService } from "~/services/archive";
 import type { IAuthService } from "~/services/auth";
 import type { BookmarksService } from "~/services/bookmarks";
-import type { CollectedNotesWebhookService } from "~/services/cn-webhook";
 import type { FeedService } from "~/services/feed";
 import type { IGitHubService } from "~/services/gh";
 import type { ILoggingService } from "~/services/logging";
-import type { ReadNoteService } from "~/services/read-note";
+import type { CollectedNotes } from "~/services/notes";
+import type { Tutorials } from "~/services/tutorials";
 
 interface HydrateFunction<LoaderData> {
 	(data: LoaderData): boolean;
@@ -37,10 +38,20 @@ declare global {
 		export interface Repos {
 			notes: NotesRepo;
 			bookmarks: BookmarksRepo;
+			data: DataRepo;
 		}
 
 		export interface Services {
-			notes: { read: ReadNoteService; webhook: CollectedNotesWebhookService };
+			notes: {
+				read: CollectedNotes.ReadNoteService;
+				webhook: CollectedNotes.WebhookService;
+			};
+			tutorials: {
+				search: Tutorials.SearchTutorials;
+				list: Tutorials.ListTutorials;
+				read: Tutorials.ReadTutorial;
+				rss: Tutorials.RSSFeedTutorials;
+			};
 			archive: ArchiveService;
 			feed: FeedService;
 			bookmarks: BookmarksService;
