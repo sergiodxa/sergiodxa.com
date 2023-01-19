@@ -15,6 +15,7 @@ const UserSchema = z.object({
 	avatar: z.string().url(),
 	githubId: z.string().min(1),
 	isSponsor: z.boolean(),
+	isAdmin: z.boolean(),
 });
 
 const SessionSchema = z.object({
@@ -31,6 +32,8 @@ export type Session = z.infer<typeof SessionSchema>;
 export interface IAuthService {
 	readonly authenticator: Authenticator<User>;
 	readonly sessionStorage: TypedSessionStorage<typeof SessionSchema>;
+
+	isAdmin(request: Request): Promise<boolean>;
 }
 
 export class AuthService implements IAuthService {
@@ -77,6 +80,7 @@ export class AuthService implements IAuthService {
 						avatar: profile._json.avatar_url,
 						githubId: profile._json.node_id,
 						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
+						isAdmin: profile._json.login === "sergiodxa",
 					};
 				}
 			)
@@ -89,5 +93,11 @@ export class AuthService implements IAuthService {
 
 	get sessionStorage() {
 		return this.#sessionStorage;
+	}
+
+	async isAdmin(request: Request) {
+		let user = await this.#authenticator.isAuthenticated(request);
+		if (!user) return false;
+		return user.isAdmin;
 	}
 }

@@ -7,6 +7,7 @@ export default {
 		bookmarks: "Bookmarks",
 		sponsor: "Sponsor me on GitHub",
 		logout: "Sign Out",
+		admin: "Admin",
 	},
 
 	home: {
@@ -62,5 +63,25 @@ export default {
 	error: {
 		NOT_FOUND: "404 Not Found",
 		NOTE_NOT_FOUND: "The article {{path}} was not found",
+	},
+
+	tutorials: {
+		technologies: "Versions:",
+		related: "Related Tutorials",
+	},
+
+	admin: {
+		title: "Admin",
+
+		write: {
+			title: "Write a new tutorial",
+
+			form: {
+				title: "Title",
+				content: "Content",
+				technologies: { legend: "Technologies" },
+				cta: "Create",
+			},
+		},
 	},
 };

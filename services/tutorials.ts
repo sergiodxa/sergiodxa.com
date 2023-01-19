@@ -1,7 +1,7 @@
 import type { z } from "zod";
 import type { TutorialSchema } from "~/entities/data";
 
-import RSS from "rss";
+import { parameterize } from "inflected";
 import * as semver from "semver";
 
 import { Service } from "~/services/service";
@@ -95,35 +95,56 @@ export namespace Tutorials {
 			let tutorial = await this.repos.data.findTutorialBySlug(slug);
 			if (!tutorial) return null;
 			let related = await this.#findRelated(tutorial);
+
 			return { tutorial, related };
 		}
 
 		async #findRelated(original: z.infer<typeof TutorialSchema>) {
 			let tutorials = await this.repos.data.tutorials();
 
-			return tutorials.filter((tutorial) => {
-				if (tutorial.id === original.id) {
-					return false;
-				}
-
-				let names = tutorial.technologies.map((tech) => tech.name);
-
-				for (let technology of original.technologies) {
-					if (!names.includes(technology.name)) {
-						continue;
+			return this.#shuffle(
+				tutorials.filter((tutorial) => {
+					if (tutorial.id === original.id) {
+						return false;
 					}
 
-					let tech = tutorial.technologies.find(
-						(tech) => tech.name === technology.name
-					);
+					let names = tutorial.technologies.map((tech) => tech.name);
 
-					if (!tech) continue;
+					for (let technology of original.technologies) {
+						if (!names.includes(technology.name)) {
+							continue;
+						}
 
-					return semver.satisfies(tech.version, `^${technology.version}`);
-				}
+						let tech = tutorial.technologies.find(
+							(tech) => tech.name === technology.name
+						);
 
-				return false;
-			});
+						if (!tech) continue;
+
+						return semver.satisfies(tech.version, `^${technology.version}`);
+					}
+
+					return false;
+				})
+			)
+				.slice(0, 3)
+				.map((tutorial) => {
+					return {
+						...tutorial,
+						content: tutorial.content.slice(0, 140) + "…",
+					};
+				});
+		}
+
+		#shuffle<Value>(list: Value[]): Value[] {
+			let newList = [...list];
+
+			for (let i = newList.length - 1; i > 0; i--) {
+				let j = Math.floor(Math.random() * (i + 1));
+				[newList[i], newList[j]] = [newList[j], newList[i]];
+			}
+
+			return newList;
 		}
 	}
 
@@ -137,24 +158,6 @@ export namespace Tutorials {
 	export class RSSFeedTutorials extends Service {
 		async perform() {
 			let tutorials = await this.repos.data.tutorials();
-
-			let rss = new RSS({
-				title: "Sergio Xalambrí",
-				description: "Tutorials wrote by Sergio Xalambrí",
-				feed_url: "https://sergiodxa.com/tutorials.xml",
-				site_url: "https://sergiodxa.com",
-			});
-
-			for (let tutorial of tutorials) {
-				rss.item({
-					title: tutorial.title,
-					description: tutorial.content,
-					url: `https://sergiodxa.com/tutorials/${tutorial.slug}`,
-					date: tutorial.createdAt,
-					author: "Sergio Xalambrí",
-					guid: tutorial.id,
-				});
-			}
 
 			return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -177,6 +180,26 @@ export namespace Tutorials {
 			.trim()}
   </channel>
 </rss>`;
+		}
+	}
+
+	export class WriteTutorial extends Service {
+		async perform(
+			data: Pick<
+				z.input<typeof TutorialSchema>,
+				"title" | "content" | "technologies"
+			>
+		): Promise<z.infer<typeof TutorialSchema>> {
+			let slug = parameterize(data.title);
+
+			let result = await this.repos.data.createTutorial({
+				...data,
+				slug,
+				questions: [],
+			});
+
+			if (result.type === "tutorial") return result;
+			throw new Error("Error creating tutorial");
 		}
 	}
 

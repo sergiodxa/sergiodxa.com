@@ -47,6 +47,7 @@ const handleRequest = createPagesFunctionHandler({
 				list: new Tutorials.ListTutorials(repos),
 				read: new Tutorials.ReadTutorial(repos),
 				rss: new Tutorials.RSSFeedTutorials(repos),
+				write: new Tutorials.WriteTutorial(repos),
 			},
 			archive: new ArchiveService(repos, context.env.cn),
 			feed: new FeedService(repos, {

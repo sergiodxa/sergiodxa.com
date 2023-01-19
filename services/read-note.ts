@@ -3,7 +3,7 @@ import type { RenderableTreeNode, Scalar } from "@markdoc/markdoc";
 import { Tag } from "@markdoc/markdoc";
 import { z } from "zod";
 
-import { parseMarkdown } from "~/md.server";
+import { parseMarkdown } from "~/md";
 import { generateID } from "~/utils/generate-id";
 
 import { Service } from "./service";

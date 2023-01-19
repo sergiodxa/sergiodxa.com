@@ -125,23 +125,24 @@ export default function App() {
 					</li>
 				</ul>
 
-				<aside className="flex md:justify-end">
-					{!user?.isSponsor ? (
+				<aside className="flex gap-1 md:justify-end">
+					{!user?.isSponsor && !user?.isAdmin ? (
 						<a href="https://github.com/sponsors/sergiodxa">
 							{t("nav.sponsor")}
 						</a>
-					) : (
-						<Link to="/logout">{t("nav.logout")}</Link>
-					)}
+					) : null}
+
+					{user?.isAdmin ? <Link to="/admin">{t("nav.admin")}</Link> : null}
+					{user ? <Link to="/logout">{t("nav.logout")}</Link> : null}
 				</aside>
 			</nav>
-
+			{/* 
 			{user !== null ? (
 				<div>
 					<img src={user.avatar} alt="" width={64} height={64} />
 					<p>Hello {user.displayName}</p>
 				</div>
-			) : null}
+			) : null} */}
 
 			<Outlet />
 		</Document>

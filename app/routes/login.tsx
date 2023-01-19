@@ -7,10 +7,16 @@ import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: ActionArgs) {
 	return measure("routes/login#loader", async () => {
+		await context.services.auth.authenticator.isAuthenticated(request, {
+			successRedirect: "/",
+		});
+
 		let session = await context.services.auth.sessionStorage.getSession(
 			request.headers.get("Cookie")
 		);
+
 		let error = session.get("auth:error");
+
 		return json({ error });
 	});
 }

@@ -51,6 +51,7 @@ declare global {
 				list: Tutorials.ListTutorials;
 				read: Tutorials.ReadTutorial;
 				rss: Tutorials.RSSFeedTutorials;
+				write: Tutorials.WriteTutorial;
 			};
 			archive: ArchiveService;
 			feed: FeedService;

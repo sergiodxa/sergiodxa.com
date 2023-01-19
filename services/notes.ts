@@ -4,7 +4,7 @@ import { Tag } from "@markdoc/markdoc";
 import { z } from "zod";
 
 import { NoteEventSchema } from "~/entities/note";
-import { parseMarkdown } from "~/md.server";
+import { parseMarkdown } from "~/md";
 import { Service } from "~/services/service";
 import { generateID } from "~/utils/generate-id";
 
