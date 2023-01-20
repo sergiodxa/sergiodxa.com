@@ -1,7 +1,7 @@
 ---
 title: Progressively enhance the useFetcher hook in Remix
-createdAt: Fri Jan 20 2023 03:30:08 GMT-0500 (Peru Standard Time)
-updatedAt: Fri Jan 20 2023 03:30:08 GMT-0500 (Peru Standard Time)
+createdAt: 2023-01-20T08:30:08.000Z
+updatedAt: 2023-01-20T08:30:08.000Z
 technologies: []
 questions: []
 ---
