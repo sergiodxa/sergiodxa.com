@@ -1,4 +1,5 @@
 ---
+id: 2153c390-05d6-4b6d-a6d1-a79f61285b2c
 title: Progressively enhance the useFetcher hook in Remix
 createdAt: 2023-01-20T08:30:08.000Z
 updatedAt: 2023-01-20T08:30:08.000Z
