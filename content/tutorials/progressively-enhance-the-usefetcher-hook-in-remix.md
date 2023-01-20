@@ -2,8 +2,8 @@
 title: Progressively enhance the useFetcher hook in Remix
 createdAt: Fri Jan 20 2023 03:30:08 GMT-0500 (Peru Standard Time)
 updatedAt: Fri Jan 20 2023 03:30:08 GMT-0500 (Peru Standard Time)
-technologies: [object Object], [object Object]
-questions: 
+technologies: []
+questions: []
 ---
 
 If you're using multiple forms on the same route, you may use the useFetcher hook, which also gives you a Form component.
