@@ -1,7 +1,8 @@
 import type { LoaderArgs } from "@remix-run/cloudflare";
 
-import { json } from "@remix-run/cloudflare";
-import { Link, useLoaderData } from "@remix-run/react";
+import { defer } from "@remix-run/cloudflare";
+import { Await, Link, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
@@ -17,7 +18,7 @@ export function loader({ request, context }: LoaderArgs) {
 
 		let { notes, bookmarks } = await context.services.feed.perform();
 
-		return json({ notes, bookmarks }, { headers });
+		return defer({ notes, bookmarks }, { headers });
 	});
 }
 
@@ -68,15 +69,26 @@ export default function Index() {
 					</p>
 				</header>
 
-				<ul className="space-y-1">
-					{bookmarks.map((bookmark) => {
-						return (
-							<li key={bookmark.id} className="list-inside list-disc">
-								<a href={bookmark.url}>{bookmark.title}</a>
-							</li>
-						);
-					})}
-				</ul>
+				<Suspense fallback={<p>{t("Loading bookmarks…")}</p>}>
+					<Await
+						resolve={bookmarks}
+						errorElement={<p>{t("Failed to load bookmarks. 😭")}</p>}
+					>
+						{(bookmarks) => {
+							return (
+								<ul className="space-y-1">
+									{bookmarks.map((bookmark) => {
+										return (
+											<li key={bookmark.id} className="list-inside list-disc">
+												<a href={bookmark.url}>{bookmark.title}</a>
+											</li>
+										);
+									})}
+								</ul>
+							);
+						}}
+					</Await>
+				</Suspense>
 			</section>
 		</main>
 	);

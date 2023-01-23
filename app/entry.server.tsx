@@ -2,7 +2,8 @@ import type { EntryContext } from "@remix-run/cloudflare";
 
 import { RemixServer } from "@remix-run/react";
 import { createInstance } from "i18next";
-import { renderToString } from "react-dom/server";
+import isbot from "isbot";
+import { renderToReadableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { preloadLinkedAssets } from "remix-utils";
 
@@ -13,7 +14,7 @@ import { measure } from "~/utils/measure";
 
 export default function handleRequest(
 	request: Request,
-	statusCode: number,
+	status: number,
 	headers: Headers,
 	context: EntryContext
 ) {
@@ -33,19 +34,27 @@ export default function handleRequest(
 			interpolation: { escapeValue: false },
 		});
 
-		let markup = renderToString(
+		let body = await renderToReadableStream(
 			<I18nextProvider i18n={instance}>
 				<RemixServer context={context} url={request.url} />
-			</I18nextProvider>
+			</I18nextProvider>,
+			{
+				onError(error) {
+					console.error("renderToReadableStream error");
+					console.error(error);
+					status = 500;
+				},
+			}
 		);
+
+		if (isbot(request.headers.get("user-agent"))) {
+			await body.allReady;
+		}
 
 		headers.set("Content-Type", "text/html");
 
 		preloadLinkedAssets(context, headers);
 
-		return new Response("<!DOCTYPE html>" + markup, {
-			status: statusCode,
-			headers: headers,
-		});
+		return new Response(body, { headers, status });
 	});
 }

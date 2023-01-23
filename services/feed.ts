@@ -9,7 +9,8 @@ const FeedSchema = z.object({
 	notes: NoteSchema.pick({ id: true, title: true, path: true }).array().max(10),
 	bookmarks: BookmarkSchema.pick({ id: true, title: true, url: true })
 		.array()
-		.max(10),
+		.max(10)
+		.promise(),
 });
 
 export class FeedService extends Service {
@@ -21,10 +22,8 @@ export class FeedService extends Service {
 	}
 
 	async perform(): Promise<z.infer<typeof FeedSchema>> {
-		let [notes, bookmarks] = await Promise.all([
-			this.cachedNotes(),
-			this.cachedBookmarks(),
-		]);
+		let bookmarks = this.cachedBookmarks();
+		let notes = await this.cachedNotes();
 
 		return FeedSchema.parse({ notes: notes.slice(0, 10), bookmarks });
 	}
