@@ -1,0 +1,3 @@
+compatibility_date = "2022-11-30"
+
+compatibility_flags = ["streams_enable_constructors"]
