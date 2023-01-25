@@ -12,7 +12,10 @@ export class GithubRepository {
 	#octokit: Octokit;
 
 	constructor(token: string) {
-		this.#octokit = new Octokit({ auth: token });
+		this.#octokit = new Octokit({
+			auth: token,
+			baseUrl: "https://api.github.com",
+		});
 	}
 
 	async getMarkdownFile(filename: string) {
