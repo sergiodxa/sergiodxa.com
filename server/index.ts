@@ -4,6 +4,8 @@ import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
 import { BookmarksRepo } from "~/repositories/bookmarks";
+import { GithubRepository } from "~/repositories/github";
+import { KVTutorialRepository } from "~/repositories/kv-tutorial";
 import { NotesRepo } from "~/repositories/notes";
 import { envSchema } from "~/server/env";
 import { ArchiveService } from "~/services/archive";
@@ -14,6 +16,7 @@ import { FeedService } from "~/services/feed";
 import { GitHubService } from "~/services/gh";
 import { LoggingService } from "~/services/logging";
 import { ReadNoteService } from "~/services/read-note";
+import { TutorialsService } from "~/services/tutorials";
 
 const handleRequest = createPagesFunctionHandler({
 	build,
@@ -32,6 +35,8 @@ const handleRequest = createPagesFunctionHandler({
 				env.AIRTABLE_BASE,
 				env.AIRTABLE_TABLE_ID
 			),
+			github: new GithubRepository(env.GITHUB_TOKEN),
+			tutorials: new KVTutorialRepository(context.env.cn),
 		};
 
 		// Injected services objects to interact with third-party services
