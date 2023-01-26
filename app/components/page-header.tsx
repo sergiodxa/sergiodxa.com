@@ -6,7 +6,7 @@ type Props = { t: TFunction };
 
 export function PageHeader({ t }: Props) {
 	return (
-		<header>
+		<header className="flex flex-col gap-2">
 			<h1 className="text-3xl font-bold tracking-tight text-gray-900">
 				{t("header.title")}
 			</h1>
