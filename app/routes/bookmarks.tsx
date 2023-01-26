@@ -3,6 +3,7 @@ import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { jsonHash } from "remix-utils";
 
+import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
 import { measure } from "~/utils/measure";
@@ -29,13 +30,11 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Bookmarks() {
 	let { bookmarks } = useLoaderData<typeof loader>();
-	let t = useT();
+	let t = useT("translation", "bookmarks");
 
 	return (
 		<section className="mx-auto max-w-screen-sm space-y-2">
-			<header>
-				<h2 className="text-3xl font-bold">{t("bookmarks.title")}</h2>
-			</header>
+			<PageHeader t={t} />
 
 			<main>
 				<ul className="space-y-2">
