@@ -50,17 +50,6 @@ export class FeedService extends Service {
 				.parse(cached);
 		}
 
-		let hasMore = true;
-		let page = 1;
-		let totalNotes: z.infer<typeof NoteSchema>[] = [];
-		while (hasMore) {
-			let notes = await this.repos.notes.fetchNotes(page);
-
-			if (notes.length < 40) hasMore = false;
-			totalNotes.push(...notes);
-			page += 1;
-		}
-
 		let notes = await NoteSchema.pick({
 			id: true,
 			title: true,
@@ -68,7 +57,8 @@ export class FeedService extends Service {
 			created_at: true,
 		})
 			.array()
-			.parse(totalNotes);
+			.promise()
+			.parse(this.repos.notes.fetchNotes(page));
 
 		await this.kv.cn.put("feed:notes", JSON.stringify(notes), {
 			expirationTtl: 3600,
