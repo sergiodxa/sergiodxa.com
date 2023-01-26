@@ -58,7 +58,7 @@ export class FeedService extends Service {
 		})
 			.array()
 			.promise()
-			.parse(this.repos.notes.fetchNotes(page));
+			.parse(this.repos.notes.fetchNotes());
 
 		await this.kv.cn.put("feed:notes", JSON.stringify(notes), {
 			expirationTtl: 3600,
