@@ -1,10 +1,12 @@
 import type { LoaderArgs } from "@remix-run/cloudflare";
+import type { TFunction } from "i18next";
 
 import { defer } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import { Trans } from "react-i18next";
 
+import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { measure } from "~/utils/measure";
 
@@ -24,16 +26,16 @@ export function loader({ request, context }: LoaderArgs) {
 
 export default function Index() {
 	let { notes, bookmarks } = useLoaderData<typeof loader>();
-	let t = useT();
+	let t = useT("translation", "home");
 	return (
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-2">
+			<PageHeader t={t} />
+
 			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
 				<header>
-					<h2 className="text-xl font-semibold">
-						{t("home.latestNotes.title")}
-					</h2>
+					<h2 className="text-xl font-semibold">{t("latestNotes.title")}</h2>
 					<p className="text-sm text-gray-900">
-						{t("home.latestNotes.description")}
+						{t("latestNotes.description")}
 					</p>
 				</header>
 
@@ -52,7 +54,7 @@ export default function Index() {
 				<footer className="text-xs text-gray-900">
 					<Trans
 						t={t}
-						i18nKey="home.latestNotes.footer"
+						i18nKey="latestNotes.footer"
 						components={{
 							// eslint-disable-next-line jsx-a11y/anchor-has-content
 							"link:articles": <Link to="/articles" className="underline" />,
@@ -63,16 +65,14 @@ export default function Index() {
 
 			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
 				<header>
-					<h2 className="text-xl font-semibold">{t("home.bookmarks.title")}</h2>
-					<p className="text-sm text-gray-900">
-						{t("home.bookmarks.description")}
-					</p>
+					<h2 className="text-xl font-semibold">{t("bookmarks.title")}</h2>
+					<p className="text-sm text-gray-900">{t("bookmarks.description")}</p>
 				</header>
 
-				<Suspense fallback={<p>{t("Loading bookmarks…")}</p>}>
+				<Suspense fallback={<p>{t("bookmarks.loading")}</p>}>
 					<Await
 						resolve={bookmarks}
-						errorElement={<p>{t("Failed to load bookmarks. 😭")}</p>}
+						errorElement={<p>{t("bookmarks.error")}</p>}
 					>
 						{(bookmarks) => {
 							return (

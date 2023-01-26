@@ -12,15 +12,24 @@ export default {
 	},
 
 	home: {
+		header: {
+			title: "Sergio Xalambrí",
+			description:
+				"I'm a software engineer from Buenos Aires, Argentina. I work at <strong>Daffy</strong> as a Web Developer.",
+		},
+
 		latestNotes: {
 			title: "Latest notes",
 			description: "These are my latests articles",
 			footer:
 				"Want to read them all? <link:articles>Check the full article list</link:articles>",
 		},
+
 		bookmarks: {
 			title: "Recent bookmarks",
 			description: "The latests links I have bookmarked",
+			loading: "Loading bookmarks…",
+			error: "Failed to load bookmarks. 😭",
 		},
 	},
 
