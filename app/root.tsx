@@ -156,7 +156,7 @@ function Document({
 				/>
 				<StructuredData />
 			</head>
-			<body className="font-sans">
+			<body className="bg-neutral-50 font-sans text-neutral-900">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate ? (
