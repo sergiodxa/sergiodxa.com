@@ -20,13 +20,12 @@ import {
 import { NavLink } from "@remix-run/react/dist/components";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { StructuredData, useShouldHydrate } from "remix-utils";
+import { StructuredData, useShouldHydrate, jsonHash } from "remix-utils";
 
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
-import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
@@ -51,7 +50,7 @@ export function loader({ request, context }: LoaderArgs) {
 
 		let locale = await i18n.getLocale(request);
 
-		return json(
+		return jsonHash(
 			{
 				locale,
 				async user() {

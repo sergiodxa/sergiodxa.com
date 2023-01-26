@@ -8,11 +8,11 @@ import type { Article as SchemaArticle } from "schema-dts";
 
 import { redirect } from "@remix-run/cloudflare";
 import { useCatch, useLoaderData } from "@remix-run/react";
+import { jsonHash } from "remix-utils";
 
 import { MarkdownView } from "~/components/markdown";
 import { i18n } from "~/i18n.server";
 import { NoteNotFoundError } from "~/repositories/notes";
-import { json } from "~/utils/http";
 import { measure } from "~/utils/measure";
 
 export function loader({ request, context, params }: LoaderArgs) {
@@ -30,7 +30,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 				"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 			});
 
-			return json(
+			return jsonHash(
 				{
 					body: note.body,
 					structuredData() {
@@ -54,7 +54,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 		} catch (error) {
 			if (error instanceof NoteNotFoundError) {
 				let t = await i18n.getFixedT(request);
-				throw json(
+				throw jsonHash(
 					{ message: t("error.NOTE_NOT_FOUND", { path }) },
 					{ status: 404 }
 				);
