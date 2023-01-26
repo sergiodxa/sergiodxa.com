@@ -26,7 +26,7 @@ export default function Index() {
 	let { notes, bookmarks } = useLoaderData<typeof loader>();
 	let t = useT();
 	return (
-		<main className="flex flex-col gap-2">
+		<main className="mx-auto flex max-w-screen-sm flex-col gap-2">
 			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
 				<header>
 					<h2 className="text-xl font-semibold">

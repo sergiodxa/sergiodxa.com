@@ -94,7 +94,7 @@ export default function Article() {
 	let { body } = useLoaderData<typeof loader>();
 
 	return (
-		<article className="dark:prose-dark prose prose-blue mx-auto sm:prose-lg">
+		<article className="dark:prose-dark prose prose-blue mx-auto max-w-screen-sm sm:prose-lg">
 			<MarkdownView content={body} />
 		</article>
 	);
@@ -103,7 +103,7 @@ export default function Article() {
 export function CatchBoundary() {
 	let caught = useCatch<ThrownResponse<404, { message: string }>>();
 	return (
-		<article className="dark:prose-dark prose prose-blue mx-auto sm:prose-lg">
+		<article className="dark:prose-dark prose prose-blue mx-auto max-w-screen-sm sm:prose-lg">
 			<h1>{caught.data.message}</h1>
 		</article>
 	);

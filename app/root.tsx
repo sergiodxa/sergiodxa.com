@@ -101,7 +101,7 @@ export default function App() {
 		<Document locale={locale}>
 			<Header />
 
-			<div className="mx-auto max-w-screen-sm py-10 px-4">
+			<div className="p-4">
 				<Outlet />
 			</div>
 		</Document>

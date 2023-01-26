@@ -35,13 +35,17 @@ export default {
 				search: 'Search results for "{{term}}" on sergiodxa\' blog',
 			},
 		},
+		header: {
+			title: "Articles",
+			description: "These are my articles.",
+		},
 		description: {
 			search:
 				"Showing {{count}} articles for the query <highlight>{{term}}</highlight>",
 			default: "These are my articles.",
 		},
 		search: {
-			title: "Search",
+			label: "Search",
 			placeholder: "Remix, SWR, Next, Rails…",
 			button: {
 				progress: "Searching…",
@@ -73,6 +77,15 @@ export default {
 	logout: {
 		title: "Are you sure you want to sign out?",
 		cta: "Sign Out",
+	},
+
+	tutorials: {
+		title: "Tutorials",
+		description: "Learn about Remix, React, and more.",
+		search: {
+			label: "Search tutorials",
+			placeholder: "Remix, React, Next…",
+		},
 	},
 
 	error: {

@@ -32,7 +32,7 @@ export default function Bookmarks() {
 	let t = useT();
 
 	return (
-		<section className="space-y-2">
+		<section className="mx-auto max-w-screen-sm space-y-2">
 			<header>
 				<h2 className="text-3xl font-bold">{t("bookmarks.title")}</h2>
 			</header>
