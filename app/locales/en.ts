@@ -3,9 +3,11 @@ export default {
 
 	nav: {
 		home: "Home",
-		articles: "Articles",
+		articles: "Essays",
 		bookmarks: "Bookmarks",
+		tutorials: "Tutorials",
 		sponsor: "Sponsor me on GitHub",
+		login: "Access",
 		logout: "Sign Out",
 	},
 

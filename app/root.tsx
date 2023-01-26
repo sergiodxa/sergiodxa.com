@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { StructuredData, useShouldHydrate, jsonHash } from "remix-utils";
 
+import avatarHref from "~/assets/avatar.png";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
@@ -93,57 +94,16 @@ export let meta: MetaFunction = ({ data }) => {
 export let handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
-	let { locale, user } = useLoaderData<typeof loader>();
-	let t = useT();
-
+	let { locale } = useLoaderData<typeof loader>();
 	useChangeLanguage(locale);
 
 	return (
 		<Document locale={locale}>
-			<header className="mb-4">
-				<h1 className="text-4xl font-black leading-none">
-					{t("header.title")}
-				</h1>
-			</header>
+			<Header />
 
-			<nav className="mb-4 flex flex-wrap items-center justify-between gap-x-4 border-b border-black pb-1">
-				<ul className="flex space-x-4 text-lg">
-					<li>
-						<NavLink to="/" className="py-3">
-							{t("nav.home")}
-						</NavLink>
-					</li>
-					<li>
-						<NavLink to="/articles" className="py-3">
-							{t("nav.articles")}
-						</NavLink>
-					</li>
-					<li>
-						<NavLink to="/bookmarks" className="py-3">
-							{t("nav.bookmarks")}
-						</NavLink>
-					</li>
-				</ul>
-
-				<aside className="flex md:justify-end">
-					{!user?.isSponsor ? (
-						<a href="https://github.com/sponsors/sergiodxa">
-							{t("nav.sponsor")}
-						</a>
-					) : (
-						<Link to="/logout">{t("nav.logout")}</Link>
-					)}
-				</aside>
-			</nav>
-
-			{user !== null ? (
-				<div>
-					<img src={user.avatar} alt="" width={64} height={64} />
-					<p>Hello {user.displayName}</p>
-				</div>
-			) : null}
-
-			<Outlet />
+			<div className="mx-auto max-w-screen-sm py-10 px-4">
+				<Outlet />
+			</div>
 		</Document>
 	);
 }
@@ -196,7 +156,7 @@ function Document({
 				/>
 				<StructuredData />
 			</head>
-			<body className="mx-auto max-w-screen-sm py-10 px-4 font-sans">
+			<body className="font-sans">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate ? (
@@ -237,4 +197,76 @@ function useChangeLanguage(locale: string) {
 	useEffect(() => {
 		i18n.changeLanguage(locale);
 	}, [locale, i18n]);
+}
+
+function Header() {
+	let { user } = useLoaderData<typeof loader>();
+	let t = useT("translation");
+
+	let navigation = [
+		{ name: t("nav.home"), to: "/" },
+		{ name: t("nav.articles"), to: "/articles" },
+		// { name: t("nav.tutorials"), to: "/tutorials" },
+		{ name: t("nav.bookmarks"), to: "/bookmarks" },
+	] as const;
+
+	return (
+		<header className="bg-blue-600">
+			<nav className="mx-auto max-w-7xl px-6 lg:px-8" aria-label="Top">
+				<div className="flex w-full flex-col justify-between gap-4 border-b border-blue-500 py-6 md:flex-row md:items-center md:gap-10 lg:border-none">
+					<div className="flex items-center gap-10">
+						<NavLink to="/" className="hidden flex-shrink-0 md:block">
+							<span className="sr-only">{t("header.title")}</span>
+							<img
+								className="aspect-square h-10 h-10"
+								width={40}
+								height={40}
+								src={avatarHref}
+								alt=""
+							/>
+						</NavLink>
+
+						<div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+							{navigation.map((link) => (
+								<NavLink
+									key={link.name}
+									to={link.to}
+									className="text-base font-medium text-white hover:text-blue-50"
+								>
+									{link.name}
+								</NavLink>
+							))}
+						</div>
+					</div>
+
+					<div className="flex flex-wrap items-center justify-end gap-4">
+						{!user?.isSponsor ? (
+							<a
+								href="https://github.com/sponsors/sergiodxa"
+								className="block flex-shrink-0 flex-grow rounded-md border border-transparent bg-white py-2 px-4 text-center text-base font-medium text-blue-600 hover:bg-blue-50"
+							>
+								{t("nav.sponsor")}
+							</a>
+						) : null}
+
+						{user === null ? (
+							<Link
+								to="login"
+								className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+							>
+								{t("nav.login")}
+							</Link>
+						) : (
+							<Link
+								to="logout"
+								className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+							>
+								{t("nav.logout")}
+							</Link>
+						)}
+					</div>
+				</div>
+			</nav>
+		</header>
+	);
 }

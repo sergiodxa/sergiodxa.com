@@ -7,24 +7,24 @@ body {
 	color: black;
 }
 
-a {
+main a {
 	color: blue;
 	text-decoration: underline;
 }
 
-a:visited {
+main a:visited {
 	color: purple;
 }
 
-a:active {
+main a:active {
 	color: red;
 }
 
-a:has(:is(h1, h2, h3, h4, h5, h6)) {
+main a:has(:is(h1, h2, h3, h4, h5, h6)) {
 	text-decoration: none !important;
 }
 
-a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
+main a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
 	content: " #";
 	color: rgb(55, 65, 81);
 	opacity: 0;
@@ -32,7 +32,9 @@ a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
 	transition-delay: 150ms;
 }
 
-a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):hover:after {
+main
+	a:has(:is(h1, h2, h3, h4, h5, h6))
+	:is(h1, h2, h3, h4, h5, h6):hover:after {
 	opacity: 1;
 }
 
