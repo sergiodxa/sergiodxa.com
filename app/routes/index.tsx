@@ -1,11 +1,9 @@
 import type { LoaderArgs } from "@remix-run/cloudflare";
-import type { TFunction } from "i18next";
 
-import { defer } from "@remix-run/cloudflare";
-import { Await, Link, useLoaderData } from "@remix-run/react";
-import { Suspense } from "react";
-import { Trans } from "react-i18next";
+import { json } from "@remix-run/cloudflare";
+import { useLoaderData } from "@remix-run/react";
 
+import { Feed } from "~/components/feed";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { measure } from "~/utils/measure";
@@ -20,76 +18,46 @@ export function loader({ request, context }: LoaderArgs) {
 
 		let { notes, bookmarks } = await context.services.feed.perform();
 
-		return defer({ notes, bookmarks }, { headers });
+		return json({ notes, bookmarks }, { headers });
 	});
 }
 
 export default function Index() {
 	let { notes, bookmarks } = useLoaderData<typeof loader>();
 	let t = useT("translation", "home");
+
+	let feed = [
+		...notes.map((note) => {
+			return {
+				id: String(note.id),
+				type: "article",
+				payload: {
+					title: note.title,
+					link: `/articles/${note.path}`,
+					createdAt: new Date(note.created_at),
+				},
+			} as const;
+		}),
+		...bookmarks.map((bookmark) => {
+			return {
+				id: String(bookmark.id),
+				type: "bookmark",
+				payload: {
+					title: bookmark.title,
+					link: bookmark.url,
+					createdAt: new Date(bookmark.created_at),
+				},
+			} as const;
+		}),
+	].sort(
+		(a, b) => b.payload.createdAt.getTime() - a.payload.createdAt.getTime()
+	);
+
 	return (
-		<main className="mx-auto flex max-w-screen-sm flex-col gap-2">
+		<main className="mx-auto flex max-w-screen-sm flex-col gap-8">
 			<PageHeader t={t} />
 
-			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
-				<header>
-					<h2 className="text-xl font-semibold">{t("latestNotes.title")}</h2>
-					<p className="text-sm text-gray-900">
-						{t("latestNotes.description")}
-					</p>
-				</header>
-
-				<ul className="space-y-1">
-					{notes.map((note) => {
-						return (
-							<li key={note.id} className="list-inside list-disc">
-								<Link to={`articles/${note.path}`} prefetch="intent">
-									{note.title}
-								</Link>
-							</li>
-						);
-					})}
-				</ul>
-
-				<footer className="text-xs text-gray-900">
-					<Trans
-						t={t}
-						i18nKey="latestNotes.footer"
-						components={{
-							// eslint-disable-next-line jsx-a11y/anchor-has-content
-							"link:articles": <Link to="/articles" className="underline" />,
-						}}
-					/>
-				</footer>
-			</section>
-
-			<section className="space-y-2 px-0 py-6 md:px-6 md:py-2">
-				<header>
-					<h2 className="text-xl font-semibold">{t("bookmarks.title")}</h2>
-					<p className="text-sm text-gray-900">{t("bookmarks.description")}</p>
-				</header>
-
-				<Suspense fallback={<p>{t("bookmarks.loading")}</p>}>
-					<Await
-						resolve={bookmarks}
-						errorElement={<p>{t("bookmarks.error")}</p>}
-					>
-						{(bookmarks) => {
-							return (
-								<ul className="space-y-1">
-									{bookmarks.map((bookmark) => {
-										return (
-											<li key={bookmark.id} className="list-inside list-disc">
-												<a href={bookmark.url}>{bookmark.title}</a>
-											</li>
-										);
-									})}
-								</ul>
-							);
-						}}
-					</Await>
-				</Suspense>
-			</section>
+			<Feed t={t} items={feed} />
 		</main>
 	);
 }

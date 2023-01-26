@@ -31,6 +31,19 @@ export default {
 			loading: "Loading bookmarks…",
 			error: "Failed to load bookmarks. 😭",
 		},
+
+		feed: {
+			title: "Activity",
+			description: "The latests activity on my website",
+
+			article: "I published the article <link:article>{{title}}</link:article>",
+
+			tutorial:
+				"I published a new tutorial <link:tutorial>{{title}}</link:tutorial>",
+
+			bookmark:
+				"I read <link:bookmark>{{title}}</link:bookmark> and bookmarked it",
+		},
 	},
 
 	articles: {
