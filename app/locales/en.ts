@@ -62,7 +62,11 @@ export default {
 
 	bookmarks: {
 		meta: { title: "Bookmarks of sergiodxa" },
-		title: "Bookmarks",
+
+		header: {
+			title: "Bookmarks",
+			description: "Links that I read and liked.",
+		},
 	},
 
 	login: {
