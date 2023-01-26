@@ -7,7 +7,7 @@ import type {
 import type { ReactNode } from "react";
 
 import {
-	Link,
+	Form,
 	Links,
 	LiveReload,
 	Meta,
@@ -250,19 +250,23 @@ function Header() {
 						) : null}
 
 						{user === null ? (
-							<Link
-								to="login"
-								className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
-							>
-								{t("nav.login")}
-							</Link>
+							<Form method="post" action="/auth/login" className="contents">
+								<button
+									type="submit"
+									className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+								>
+									{t("nav.login")}
+								</button>
+							</Form>
 						) : (
-							<Link
-								to="logout"
-								className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
-							>
-								{t("nav.logout")}
-							</Link>
+							<Form method="post" action="/auth/logout" className="contents">
+								<button
+									type="submit"
+									className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+								>
+									{t("nav.logout")}
+								</button>
+							</Form>
 						)}
 					</div>
 				</div>

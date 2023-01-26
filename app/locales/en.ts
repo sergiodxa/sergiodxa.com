@@ -61,6 +61,20 @@ export default {
 		title: "Bookmarks",
 	},
 
+	login: {
+		title: "Access to your account",
+		github: "Continue with GitHub",
+		error: {
+			title: "There is a problem",
+			description: "There was an error trying to login with GitHub",
+		},
+	},
+
+	logout: {
+		title: "Are you sure you want to sign out?",
+		cta: "Sign Out",
+	},
+
 	error: {
 		NOT_FOUND: "404 Not Found",
 		NOTE_NOT_FOUND: "The article {{path}} was not found",
