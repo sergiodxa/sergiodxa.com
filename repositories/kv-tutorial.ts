@@ -37,4 +37,10 @@ export class KVTutorialRepository {
 
 		return TutorialSchema.parse(result);
 	}
+
+	async save(slug: string, data: z.infer<typeof TutorialSchema>) {
+		await this.#kv.put(`${PREFIX}${slug}`, JSON.stringify(data), {
+			expirationTtl: 60 * 60 * 24 * 7,
+		});
+	}
 }

@@ -17,7 +17,7 @@
 		"build:css": "npm run generateCss -- --minify",
 		"build": "npm run build:css && npm run build:app",
 		"start": "cross-env NODE_ENV=production npm run wrangler",
-		"wrangler": "wrangler pages dev ./public --kv airtable --kv cn --kv gh --kv auth",
+		"wrangler": "wrangler pages dev ./public --kv airtable --kv cn --kv gh --kv auth --kv tutorials",
 		"typecheck": "tsc --noEmit --project tsconfig.json",
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
 		"lint:fix": "npm run lint -- --fix",

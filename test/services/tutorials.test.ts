@@ -1,11 +1,15 @@
+import { parse, transform } from "@markdoc/markdoc";
 import { describe, test, vi } from "vitest";
 
+import { TutorialSchema } from "~/entities/tutorial";
 import { GithubRepository } from "~/repositories/github";
 import { TutorialsService } from "~/services/tutorials";
 
 let repos = {
 	tutorials: {
 		list: vi.fn(),
+		read: vi.fn(),
+		save: vi.fn(),
 	},
 	github: new GithubRepository(),
 };
@@ -38,7 +42,28 @@ describe(TutorialsService.name, () => {
 	});
 
 	describe(service.read.name, () => {
-		test("should return a tutorial", async () => {
+		let tutorial = TutorialSchema.parse({
+			title: "Progressively enhance the useFetcher hook in Remix",
+			content: transform(parse("This is the content")),
+			slug: "progressively-enhance-the-usefetcher-hook-in-remix",
+			tags: [
+				"@remix-run/node@10.0.0",
+				"@remix-run/react@10.0.0",
+				"remix-utils@6.0.0",
+			],
+		});
+
+		test("should get tutorial from KV", async () => {
+			repos.tutorials.read.mockResolvedValueOnce(tutorial);
+
+			await expect(
+				service.read("progressively-enhance-the-usefetcher-hook-in-remix")
+			).resolves.toEqual(tutorial);
+		});
+
+		test("should get tutorial from GitHub and cache it", async () => {
+			repos.tutorials.read.mockResolvedValueOnce(null);
+
 			await expect(
 				service.read("progressively-enhance-the-usefetcher-hook-in-remix")
 			).resolves.toEqual({
@@ -51,7 +76,10 @@ describe(TutorialsService.name, () => {
 					"remix-utils@6.0.0",
 				],
 			});
+
+			expect(repos.tutorials.save).toHaveBeenCalledTimes(1);
 		});
+
 		test.skip("should return null if the tutorial does not exist", async () => {});
 		test.skip("should return null if the tutorial is not published", async () => {});
 	});

@@ -1,10 +1,8 @@
 import type { Scalar, Tag } from "@markdoc/markdoc";
-import type { TutorialSchema } from "~/entities/tutorial";
 
-import { parse, transform } from "@markdoc/markdoc";
 import { z } from "zod";
 
-import { SemanticVersionSchema } from "~/entities/semver";
+import { TutorialSchema } from "~/entities/tutorial";
 
 import { Service } from "./service";
 
@@ -54,21 +52,22 @@ export class TutorialsService extends Service {
 	}
 
 	async read(slug: string) {
+		let tutorial = await this.repos.tutorials.read(slug);
+		if (tutorial) return tutorial;
+
 		let { file } = await this.repos.github.getMarkdownFile(
 			`tutorials/${slug}.md`
 		);
-		return z
-			.object({
-				content: RenderableTreeNodeSchema,
-				slug: z.string(),
-				tags: z.string().array(),
-				title: z.string(),
-			})
-			.parse({
-				...file.attributes,
-				slug,
-				content: file.body,
-			});
+
+		let result = TutorialSchema.parse({
+			...file.attributes,
+			slug,
+			content: file.body,
+		});
+
+		await this.repos.tutorials.save(slug, result);
+
+		return result;
 	}
 
 	async recommendations(slug: string) {

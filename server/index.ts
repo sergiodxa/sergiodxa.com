@@ -36,7 +36,7 @@ const handleRequest = createPagesFunctionHandler({
 				env.AIRTABLE_TABLE_ID
 			),
 			github: new GithubRepository(),
-			tutorials: new KVTutorialRepository(context.env.cn),
+			tutorials: new KVTutorialRepository(context.env.tutorials),
 		};
 
 		// Injected services objects to interact with third-party services
