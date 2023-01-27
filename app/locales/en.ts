@@ -3,7 +3,7 @@ export default {
 
 	nav: {
 		home: "Home",
-		articles: "Essays",
+		articles: "Articles",
 		bookmarks: "Bookmarks",
 		tutorials: "Tutorials",
 		sponsor: "Sponsor me on GitHub",
@@ -106,11 +106,18 @@ export default {
 	},
 
 	tutorials: {
-		title: "Tutorials",
-		description: "Learn about Remix, React, and more.",
+		header: {
+			title: "Tutorials",
+			description: "Learn about Remix, React, and more.",
+		},
+
 		search: {
 			label: "Search tutorials",
 			placeholder: "Remix, React, Next…",
+			button: {
+				progress: "Searching…",
+				default: "Search",
+			},
 		},
 	},
 
