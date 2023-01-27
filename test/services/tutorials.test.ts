@@ -7,7 +7,7 @@ let repos = {
 	tutorials: {
 		list: vi.fn(),
 	},
-	github: new GithubRepository(process.env.GITHUB_TOKEN!),
+	github: new GithubRepository(),
 };
 
 describe(TutorialsService.name, () => {
