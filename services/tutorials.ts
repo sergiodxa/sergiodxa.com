@@ -1,7 +1,7 @@
 import type { Scalar, Tag } from "@markdoc/markdoc";
 import type { TutorialSchema } from "~/entities/tutorial";
 
-import { parse, transform, type Config } from "@markdoc/markdoc";
+import { parse, transform } from "@markdoc/markdoc";
 import { z } from "zod";
 
 import { Service } from "./service";
@@ -70,7 +70,8 @@ export class TutorialsService extends Service {
 	}
 
 	async recommendations(slug: string) {
-		throw new Error("Not implemented");
+		let tutorial = await this.read(slug);
+		return [tutorial];
 	}
 
 	async save(id: string, data: Partial<z.infer<typeof TutorialSchema>>) {

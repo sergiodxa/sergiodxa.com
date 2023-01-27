@@ -18,6 +18,7 @@ import type { FeedService } from "~/services/feed";
 import type { IGitHubService } from "~/services/gh";
 import type { ILoggingService } from "~/services/logging";
 import type { ReadNoteService } from "~/services/read-note";
+import type { TutorialsService } from "~/services/tutorials";
 
 interface HydrateFunction<LoaderData> {
 	(data: LoaderData): boolean;
@@ -51,6 +52,7 @@ declare global {
 			auth: IAuthService;
 			gh: IGitHubService;
 			log: ILoggingService;
+			tutorials: TutorialsService;
 		}
 	}
 }

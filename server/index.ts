@@ -59,6 +59,7 @@ const handleRequest = createPagesFunctionHandler({
 			bookmarks: new BookmarksService(repos, context.env.airtable),
 			gh: new GitHubService(context.env.gh, env.GITHUB_TOKEN),
 			log: new LoggingService(context.env.LOGTAIL_SOURCE_TOKEN),
+			tutorials: new TutorialsService(repos),
 		};
 
 		return { env, services, repos };

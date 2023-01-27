@@ -125,7 +125,7 @@ export default {
 		header: {
 			edit: "Edit on GitHub",
 		},
-		technologies: "Versions",
+		tags: "Used",
 		related: { title: "Related tutorials" },
 	},
 
