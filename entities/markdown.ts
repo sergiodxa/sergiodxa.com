@@ -1,4 +1,25 @@
+import type { Scalar, Tag } from "@markdoc/markdoc";
+
+import { parse, transform } from "@markdoc/markdoc";
 import { z } from "zod";
+
+export const TagSchema: z.ZodType<Tag> = z.object({
+	$$mdtype: z.literal("Tag"),
+	name: z.string(),
+	attributes: z.record(z.any()),
+	children: z.lazy(() => RenderableTreeNodeSchema.array()),
+});
+
+export const ScalarSchema: z.ZodType<Scalar> = z.union([
+	z.null(),
+	z.boolean(),
+	z.number(),
+	z.string(),
+	z.lazy(() => ScalarSchema.array()),
+	z.record(z.lazy(() => ScalarSchema)),
+]);
+
+export const RenderableTreeNodeSchema = z.union([TagSchema, ScalarSchema]);
 
 export const MarkdownSchema = z
 	.string()
@@ -11,7 +32,7 @@ export const MarkdownSchema = z
 					title: title.slice(1).trim(),
 					tags: [],
 				},
-				body: body.join("\n").trimStart(),
+				body: transform(parse(body.join("\n").trimStart())),
 			};
 		}
 
@@ -26,7 +47,7 @@ export const MarkdownSchema = z
 					.map((tag) => tag.trim())
 					.filter(Boolean),
 			},
-			body: body.join("\n").trimStart(),
+			body: transform(parse(body.join("\n").trimStart())),
 		};
 	})
 	.pipe(
@@ -35,7 +56,7 @@ export const MarkdownSchema = z
 				title: z.string().min(1).max(140),
 				tags: z.string().array(),
 			}),
-			body: z.string().min(1),
+			body: RenderableTreeNodeSchema,
 		})
 	);
 

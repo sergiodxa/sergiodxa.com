@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { TutorialSchema } from "~/entities/tutorial";
+
 const PREFIX = "tutorial:";
 
 export class KVTutorialRepository {
@@ -29,9 +31,10 @@ export class KVTutorialRepository {
 			.parse(keys);
 	}
 
-	async read(id: string) {
-		let result = await this.#kv.getWithMetadata(id, "json");
+	async read(slug: string) {
+		let result = await this.#kv.get(`${PREFIX}${slug}`, "json");
+		if (!result) return null;
 
-		return z.object({}).parse(result);
+		return TutorialSchema.parse(result);
 	}
 }

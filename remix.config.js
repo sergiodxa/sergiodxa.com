@@ -4,5 +4,10 @@ module.exports = {
 	server: "./server/index.ts",
 	devServerBroadcastDelay: 2000,
 	ignoredRouteFiles: ["**/.*"],
-	watchPaths: ["./server/env.ts", "./services/**/*", "./repositories/**/*"],
+	watchPaths: [
+		"./server/env.ts",
+		"./services/**/*",
+		"./repositories/**/*",
+		"./entities/**/*",
+	],
 };

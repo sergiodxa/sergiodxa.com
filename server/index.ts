@@ -35,7 +35,7 @@ const handleRequest = createPagesFunctionHandler({
 				env.AIRTABLE_BASE,
 				env.AIRTABLE_TABLE_ID
 			),
-			github: new GithubRepository(env.GITHUB_TOKEN),
+			github: new GithubRepository(),
 			tutorials: new KVTutorialRepository(context.env.cn),
 		};
 

@@ -1,35 +1,19 @@
-import { Octokit } from "@octokit/core";
 import { z } from "zod";
 
 import { MarkdownSchema } from "~/entities/markdown";
 
-const FileContentSchema = z.object({
-	type: z.literal("file"),
-	content: z.string().transform((value) => atob(value)),
-});
-
 export class GithubRepository {
-	#octokit: Octokit;
-
-	constructor(token: string) {
-		this.#octokit = new Octokit({
-			auth: token,
-			baseUrl: "https://api.github.com",
-		});
-	}
-
 	async getMarkdownFile(filename: string) {
 		let path = `content/${filename}`;
 
 		try {
-			let result = await this.#octokit.request(
-				"GET /repos/{owner}/{repo}/contents/{path}",
-				{ owner: "sergiodxa", repo: "sergiodxa.com", path }
+			let response = await fetch(
+				`https://raw.githubusercontent.com/sergiodxa/sergiodxa.com/main/${path}`
 			);
 
-			if (!result.data) throw new GitHubFileNotFoundError(path);
+			if (!response.ok) throw new GitHubFileNotFoundError(path);
 
-			let { content } = FileContentSchema.parse(result.data);
+			let content = await response.text();
 
 			return z
 				.object({

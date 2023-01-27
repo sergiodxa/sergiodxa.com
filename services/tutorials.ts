@@ -4,6 +4,8 @@ import type { TutorialSchema } from "~/entities/tutorial";
 import { parse, transform } from "@markdoc/markdoc";
 import { z } from "zod";
 
+import { SemanticVersionSchema } from "~/entities/semver";
+
 import { Service } from "./service";
 
 const PAGE_SIZE = 1000;
@@ -59,13 +61,13 @@ export class TutorialsService extends Service {
 			.object({
 				content: RenderableTreeNodeSchema,
 				slug: z.string(),
-				tags: z.array(z.string()),
+				tags: z.string().array(),
 				title: z.string(),
 			})
 			.parse({
 				...file.attributes,
 				slug,
-				content: this.#parseMarkdown(file.body),
+				content: file.body,
 			});
 	}
 
@@ -94,9 +96,5 @@ export class TutorialsService extends Service {
 			total,
 			page: { size, current: page, first, next, prev, last },
 		};
-	}
-
-	#parseMarkdown(markdown: string) {
-		return transform(parse(markdown));
 	}
 }

@@ -15,11 +15,11 @@ async function existsFile(path: string) {
 
 export let github = [
 	rest.get(
-		"https://api.github.com/repos/:owner/:repo/contents/:path",
+		"https://raw.githubusercontent.com/:owner/:repo/main/:path*",
 		async (req, res, ctx) => {
-			let { path } = z.object({ path: z.string() }).parse(req.params);
+			let { path } = z.object({ path: z.string().array() }).parse(req.params);
 
-			if (!(await existsFile(path))) {
+			if (!(await existsFile(path.join("/")))) {
 				return res(
 					ctx.status(404),
 					ctx.json({
@@ -28,15 +28,9 @@ export let github = [
 				);
 			}
 
-			let content = await fs.readFile(resolve(path), "utf-8");
+			let content = await fs.readFile(resolve(path.join("/")), "utf-8");
 
-			return res(
-				ctx.status(200),
-				ctx.json({
-					type: "file",
-					content: Buffer.from(content).toString("base64"),
-				})
-			);
+			return res(ctx.status(200), ctx.text(content));
 		}
 	),
 ];
