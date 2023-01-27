@@ -1,11 +1,6 @@
----
-id: 2153c390-05d6-4b6d-a6d1-a79f61285b2c
-title: Progressively enhance the useFetcher hook in Remix
-createdAt: 2023-01-20T08:30:08.000Z
-updatedAt: 2023-01-20T08:30:08.000Z
-technologies: []
-questions: []
----
+#@remix-run/node@10.0.0 #@remix-run/react@10.0.0 #remix-utils@6.0.0
+
+# Progressively enhance the useFetcher hook in Remix
 
 If you're using multiple forms on the same route, you may use the useFetcher hook, which also gives you a Form component.
 
@@ -44,34 +39,34 @@ import { redirectBack } from "remix-utils";
 import { z } from "zod";
 
 export async function action({ request }: ActionArgs) {
-  let formData = await request.formData();
+	let formData = await request.formData();
 
-  // you can replace Zod with any other validation library, or your checks
-  let noJS = z
-    // convert "true" to boolean, treat any other value as false
-    .preprocess((v) => v === "true", z.boolean())
-    .nullable() // allow it to be null
-    .default(true) // default to true (support the worst scenario)
-    .parse(formData.get("no-js")); // read from formData
+	// you can replace Zod with any other validation library, or your checks
+	let noJS = z
+		// convert "true" to boolean, treat any other value as false
+		.preprocess((v) => v === "true", z.boolean())
+		.nullable() // allow it to be null
+		.default(true) // default to true (support the worst scenario)
+		.parse(formData.get("no-js")); // read from formData
 
-  let result = await doSomething();
+	let result = await doSomething();
 
-  if (noJS) {
-    let session = await sessionStorage.getSession(
-      request.headers.get("Cookie")
-    );
-    // save anything you want to send to the user with session.flash
-    session.flash("someKey", result);
-    // redirect the user where it was before
-    return redirectBack(request, {
-      // provide a fallback if it's not possible to detect where the user was
-      fallback: "/where/the/user/may/have/been/before",
-      headers: { "Set-Cookie": await sessionStorage.commitSession(session) },
-    });
-  }
+	if (noJS) {
+		let session = await sessionStorage.getSession(
+			request.headers.get("Cookie")
+		);
+		// save anything you want to send to the user with session.flash
+		session.flash("someKey", result);
+		// redirect the user where it was before
+		return redirectBack(request, {
+			// provide a fallback if it's not possible to detect where the user was
+			fallback: "/where/the/user/may/have/been/before",
+			headers: { "Set-Cookie": await sessionStorage.commitSession(session) },
+		});
+	}
 
-  // return your
-  return json(result, { status: 201 });
+	// return your
+	return json(result, { status: 201 });
 }
 ```
 
