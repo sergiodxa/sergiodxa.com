@@ -1,3 +1,9 @@
+import type { Scalar, Tag } from "@markdoc/markdoc";
+import type { TutorialSchema } from "~/entities/tutorial";
+
+import { parse, transform, type Config } from "@markdoc/markdoc";
+import { z } from "zod";
+
 import { Service } from "./service";
 
 const PAGE_SIZE = 1000;
@@ -15,13 +21,30 @@ interface Paginated<Type> {
 	};
 }
 
+let TagSchema: z.ZodType<Tag> = z.object({
+	$$mdtype: z.literal("Tag"),
+	name: z.string(),
+	attributes: z.record(z.any()),
+	children: z.lazy(() => RenderableTreeNodeSchema.array()),
+});
+
+let ScalarSchema: z.ZodType<Scalar> = z.union([
+	z.null(),
+	z.boolean(),
+	z.number(),
+	z.string(),
+	z.lazy(() => ScalarSchema.array()),
+	z.record(z.lazy(() => ScalarSchema)),
+]);
+
+let RenderableTreeNodeSchema = z.union([TagSchema, ScalarSchema]);
+
 export class TutorialsService extends Service {
 	async list({
 		page = 1,
 		size = PAGE_SIZE,
 	}: { page?: number; size?: number } = {}) {
-		let result = await this.repos.tutorials.list();
-		return this.#paginate(result, page, size);
+		return this.#paginate([], page, size);
 	}
 
 	async search({ query, page = 1 }: { query: string; page?: number }) {
@@ -29,10 +52,32 @@ export class TutorialsService extends Service {
 	}
 
 	async read(slug: string) {
-		throw new Error("Not implemented");
+		let { file } = await this.repos.github.getMarkdownFile(
+			`tutorials/${slug}.md`
+		);
+		return z
+			.object({
+				content: RenderableTreeNodeSchema,
+				slug: z.string(),
+				tags: z.array(z.string()),
+				title: z.string(),
+			})
+			.parse({
+				...file.attributes,
+				slug,
+				content: this.#parseMarkdown(file.body),
+			});
 	}
 
 	async recommendations(slug: string) {
+		throw new Error("Not implemented");
+	}
+
+	async save(id: string, data: Partial<z.infer<typeof TutorialSchema>>) {
+		throw new Error("Not implemented");
+	}
+
+	async create(data: z.infer<typeof TutorialSchema>) {
 		throw new Error("Not implemented");
 	}
 
@@ -48,5 +93,9 @@ export class TutorialsService extends Service {
 			total,
 			page: { size, current: page, first, next, prev, last },
 		};
+	}
+
+	#parseMarkdown(markdown: string) {
+		return transform(parse(markdown));
 	}
 }
