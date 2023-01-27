@@ -1,4 +1,4 @@
-import type { DataFunctionArgs } from "@remix-run/cloudflare";
+import type { DataFunctionArgs, SerializeFrom } from "@remix-run/cloudflare";
 
 import { defer } from "@remix-run/cloudflare";
 import { Await, Link, useAsyncValue, useLoaderData } from "@remix-run/react";
@@ -10,6 +10,9 @@ import { MarkdownView } from "~/components/markdown";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
 import { measure } from "~/utils/measure";
+
+type LoaderData = SerializeFrom<typeof loader>;
+type RecommendationsList = Awaited<LoaderData["recommendations"]>;
 
 export async function loader(_: DataFunctionArgs) {
 	return measure("routes/tutorials.$slug#loader", async () => {
@@ -114,12 +117,7 @@ function Versions() {
 }
 
 function Recommendations() {
-	let recommendations = useAsyncValue() as Array<{
-		title: string;
-		tags: string[];
-		slug: string;
-		content: string;
-	}>;
+	let recommendations = useAsyncValue() as RecommendationsList;
 	let t = useT("translation", "tutorial.related");
 
 	if (!recommendations || recommendations.length === 0) return null;
@@ -139,42 +137,30 @@ function Recommendations() {
 					"md:grid-cols-3": recommendations.length >= 3,
 				})}
 			>
-				{recommendations.map((tutorial) => {
+				{recommendations.map(({ title, slug, tag }) => {
+					let searchParams = new URLSearchParams();
+					searchParams.set("q", `tech:${tag}`);
+
+					let to = `/tutorials?q=${searchParams.toString()}`;
+
 					return (
-						<div key={tutorial.title}>
-							<ul className="flex flex-wrap items-center gap-1">
-								{tutorial.tags.map((tag) => {
-									let searchParams = new URLSearchParams();
-									searchParams.set("q", `tech:${tag}`);
-
-									let to = `/tutorials?q=${searchParams.toString()}`;
-
-									return (
-										<li key={tag} className="contents">
-											<Link
-												to={to}
-												className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800"
-											>
-												{tag}
-											</Link>
-										</li>
-									);
-								})}
+						<div key={slug}>
+							<ul className="flex flex-nowrap items-center gap-1 truncate">
+								<li key={tag} className="contents">
+									<Link
+										to={to}
+										className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800"
+									>
+										{tag}
+									</Link>
+								</li>
 							</ul>
 
 							<Link
-								to={`/tutorials/${tutorial.slug}`}
+								to={`/tutorials/${slug}`}
 								className="mt-4 block no-underline"
 							>
-								<p className="text-xl font-semibold text-gray-900">
-									{tutorial.title}
-								</p>
-								<p className="mt-3 text-base text-gray-600">
-									Lorem ipsum dolor sit amet consectetur adipisicing elit.
-									Ducimus fugiat provident aut. Voluptatum repellat odio
-									exercitationem eligendi amet molestias doloribus minus eaque
-									cum accusantium neque vel dolorem ducimus, rerum illo.
-								</p>
+								<p className="text-xl font-semibold text-gray-900">{title}</p>
 							</Link>
 						</div>
 					);

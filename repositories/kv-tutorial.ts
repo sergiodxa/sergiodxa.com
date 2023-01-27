@@ -19,9 +19,12 @@ export class KVTutorialRepository extends KVRepository {
 
 		return z
 			.object({
-				name: z.string(),
+				name: z
+					.string()
+					.transform((value) => value.split(":").at(1))
+					.pipe(z.string()),
 				expiration: z.number().optional(),
-				metadata: z.unknown(),
+				metadata: z.object({ tags: z.string().array(), title: z.string() }),
 			})
 			.array()
 			.parse(keys);
@@ -37,7 +40,7 @@ export class KVTutorialRepository extends KVRepository {
 	async save(slug: string, data: z.infer<typeof TutorialSchema>) {
 		await this.kv.put(`${this.prefix}${slug}`, JSON.stringify(data), {
 			expirationTtl: 60 * 60 * 24 * 7,
-			metadata: { tags: data.tags },
+			metadata: { tags: data.tags, title: data.title },
 		});
 	}
 }

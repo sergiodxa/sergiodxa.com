@@ -71,8 +71,31 @@ export class TutorialsService extends Service {
 	}
 
 	async recommendations(slug: string) {
-		let tutorial = await this.read(slug);
-		return [tutorial];
+		let [list, tutorial] = await Promise.all([
+			this.repos.tutorials.list(),
+			this.repos.tutorials.read(slug),
+		]);
+
+		if (!tutorial) return [];
+
+		list = list.filter((item) => !item.name.includes(slug));
+
+		let result: { title: string; tag: string; slug: string }[] = [];
+
+		for (let item of list) {
+			for (let tag of tutorial.tags) {
+				if (item.metadata.tags.includes(tag)) {
+					result.push({
+						title: item.metadata.title,
+						tag,
+						slug: item.name,
+					});
+					break;
+				}
+			}
+		}
+
+		return result.slice(0, 3);
 	}
 
 	async save(id: string, data: Partial<z.infer<typeof TutorialSchema>>) {
