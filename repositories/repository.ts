@@ -34,3 +34,8 @@ export abstract class DatabaseRepositroy<
 		return this.schema.array().parse(result.results);
 	}
 }
+
+export abstract class KVRepository {
+	abstract prefix: string;
+	constructor(protected kv: KVNamespace) {}
+}

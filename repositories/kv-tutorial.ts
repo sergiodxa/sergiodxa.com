@@ -2,21 +2,17 @@ import { z } from "zod";
 
 import { TutorialSchema } from "~/entities/tutorial";
 
-const PREFIX = "tutorial:";
+import { KVRepository } from "./repository";
 
-export class KVTutorialRepository {
-	#kv: KVNamespace;
-
-	constructor(kv: KVNamespace) {
-		this.#kv = kv;
-	}
+export class KVTutorialRepository extends KVRepository {
+	prefix = "tutorial:";
 
 	async list() {
 		let keys: KVNamespaceListKey<unknown>[] = [];
 
 		let hasMore = true;
 		while (hasMore) {
-			let result = await this.#kv.list({ prefix: PREFIX });
+			let result = await this.kv.list({ prefix: this.prefix });
 			keys.push(...result.keys);
 			if (result.list_complete) hasMore = false;
 		}
@@ -32,15 +28,16 @@ export class KVTutorialRepository {
 	}
 
 	async read(slug: string) {
-		let result = await this.#kv.get(`${PREFIX}${slug}`, "json");
+		let result = await this.kv.get(`${this.prefix}${slug}`, "json");
 		if (!result) return null;
 
 		return TutorialSchema.parse(result);
 	}
 
 	async save(slug: string, data: z.infer<typeof TutorialSchema>) {
-		await this.#kv.put(`${PREFIX}${slug}`, JSON.stringify(data), {
+		await this.kv.put(`${this.prefix}${slug}`, JSON.stringify(data), {
 			expirationTtl: 60 * 60 * 24 * 7,
+			metadata: { tags: data.tags },
 		});
 	}
 }
