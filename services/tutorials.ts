@@ -78,18 +78,14 @@ export class TutorialsService extends Service {
 
 		if (!tutorial) return [];
 
-		list = list.filter((item) => !item.name.includes(slug));
+		list = list.filter((item) => !item.slug.includes(slug));
 
 		let result: { title: string; tag: string; slug: string }[] = [];
 
 		for (let item of list) {
 			for (let tag of tutorial.tags) {
-				if (item.metadata.tags.includes(tag)) {
-					result.push({
-						title: item.metadata.title,
-						tag,
-						slug: item.name,
-					});
+				if (item.tags.includes(tag)) {
+					result.push({ title: item.title, tag, slug: item.slug });
 					break;
 				}
 			}

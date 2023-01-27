@@ -8,26 +8,37 @@ export class KVTutorialRepository extends KVRepository {
 	prefix = "tutorial:";
 
 	async list() {
-		let keys: KVNamespaceListKey<unknown>[] = [];
+		let keys: KVNamespaceListKey<{ tags: string[]; title: string }>[] = [];
 
 		let hasMore = true;
 		while (hasMore) {
-			let result = await this.kv.list({ prefix: this.prefix });
+			let result = await this.kv.list<{ tags: string[]; title: string }>({
+				prefix: this.prefix,
+			});
+
 			keys.push(...result.keys);
 			if (result.list_complete) hasMore = false;
 		}
 
 		return z
 			.object({
-				name: z
+				slug: z
 					.string()
 					.transform((value) => value.split(":").at(1))
 					.pipe(z.string()),
-				expiration: z.number().optional(),
-				metadata: z.object({ tags: z.string().array(), title: z.string() }),
+				tags: z.string().array(),
+				title: z.string(),
 			})
 			.array()
-			.parse(keys);
+			.parse(
+				keys.map((key) => {
+					return {
+						slug: key.name,
+						tags: key.metadata?.tags,
+						title: key.metadata?.title,
+					};
+				})
+			);
 	}
 
 	async read(slug: string) {
