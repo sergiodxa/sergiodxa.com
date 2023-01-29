@@ -90,10 +90,10 @@ export class TutorialsService extends Service {
 		let result: Recommendation[] = [];
 
 		for (let item of list) {
-			for (let tag of tutorial.tags) {
+			for (let tag of this.#shuffle(tutorial.tags)) {
 				let { name, version } = this.#getPackageNameAndVersion(tag);
 
-				let match = item.tags.find((itemTag) => {
+				let match = this.#shuffle(item.tags).find((itemTag) => {
 					let { name: itemName, version: itemVersion } =
 						this.#getPackageNameAndVersion(itemTag);
 					if (itemName !== name) return false;
