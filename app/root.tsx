@@ -206,7 +206,7 @@ function Header() {
 	let navigation = [
 		{ name: t("nav.home"), to: "/" },
 		{ name: t("nav.articles"), to: "/articles" },
-		// { name: t("nav.tutorials"), to: "/tutorials" },
+		{ name: t("nav.tutorials"), to: "/tutorials" },
 		{ name: t("nav.bookmarks"), to: "/bookmarks" },
 	] as const;
 
