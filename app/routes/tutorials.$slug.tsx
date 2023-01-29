@@ -36,15 +36,16 @@ export default function Component() {
 	if (!tutorial) return null;
 
 	return (
-		<article className="mx-auto flex max-w-screen-sm flex-col gap-8">
-			<Versions />
-
-			<div className="prose prose-blue sm:prose-lg">
-				<Header />
-				<MarkdownView content={tutorial?.content} />
+		<article className="mx-auto flex max-w-screen-md flex-col gap-8">
+			<div className="prose prose-blue mx-auto max-w-prose space-y-8 sm:prose-lg">
+				<Versions />
+				<div>
+					<Header />
+					<MarkdownView content={tutorial?.content} />
+				</div>
 			</div>
 
-			<Suspense fallback={<div>Loading...</div>}>
+			<Suspense fallback={null}>
 				<Await resolve={recommendations} errorElement={null}>
 					<footer>
 						<Recommendations />
@@ -163,7 +164,7 @@ function Recommendations() {
 
 							<Link
 								to={`/tutorials/${slug}`}
-								className="mt-4 block no-underline"
+								className="mt-4 block no-underline line-clamp-2"
 							>
 								<p className="text-xl font-semibold text-gray-900">{title}</p>
 							</Link>
