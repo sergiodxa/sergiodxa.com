@@ -33,7 +33,11 @@ const FeedSchema = z.object({
 export class FeedService extends Service {
 	constructor(
 		repos: SDX.Repos,
-		private kv: { airtable: KVNamespace; cn: KVNamespace }
+		private kv: {
+			airtable: KVNamespace;
+			cn: KVNamespace;
+			tutorials: KVNamespace;
+		}
 	) {
 		super(repos);
 	}
@@ -94,15 +98,15 @@ export class FeedService extends Service {
 	}
 
 	async cachedTutorials() {
-		let cached = await this.kv.airtable.get("feed:tutorials", "json");
-		await this.kv.airtable.delete("feed:tutorials");
+		let cached = await this.kv.tutorials.get("feed:tutorials", "json");
+		await this.kv.tutorials.delete("feed:tutorials");
 		if (cached) return TutorialSchema.array().parse(cached);
 
 		let tutorials = await TutorialSchema.array()
 			.promise()
 			.parse(this.repos.tutorials.list());
 
-		this.kv.airtable.put("feed:tutorials", JSON.stringify(tutorials), {
+		this.kv.tutorials.put("feed:tutorials", JSON.stringify(tutorials), {
 			expirationTtl: 3600,
 		});
 

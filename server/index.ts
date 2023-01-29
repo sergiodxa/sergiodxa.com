@@ -49,6 +49,7 @@ const handleRequest = createPagesFunctionHandler({
 			feed: new FeedService(repos, {
 				airtable: context.env.airtable,
 				cn: context.env.cn,
+				tutorials: context.env.tutorials,
 			}),
 			auth: new AuthService(
 				context.env.auth,
