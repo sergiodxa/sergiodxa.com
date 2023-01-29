@@ -43,13 +43,13 @@ export class FeedService extends Service {
 	}
 
 	async perform(): Promise<z.infer<typeof FeedSchema>> {
-		let [notes, bookmarks, tutorials] = await Promise.all([
+		let [notes, bookmarks] = await Promise.all([
 			this.cachedNotes(),
 			this.cachedBookmarks(),
-			this.cachedTutorials(),
+			// this.cachedTutorials(),
 		]);
 
-		return FeedSchema.parse({ notes, bookmarks, tutorials });
+		return FeedSchema.parse({ notes, bookmarks, tutorials: [] });
 	}
 
 	async cachedNotes() {
