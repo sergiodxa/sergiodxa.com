@@ -1,4 +1,4 @@
-#@remix-run/node@10.0.0 #@remix-run/react@10.0.0
+#@remix-run/node@1.10.0 #@remix-run/react@1.10.0
 
 # Use Remix as a SPA only
 

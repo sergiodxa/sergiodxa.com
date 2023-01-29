@@ -1,4 +1,4 @@
-#@remix-run/node@10.0.0 #@remix-run/react@10.0.0 #remix-utils@6.0.0
+#@remix-run/node@1.10.0 #@remix-run/react@1.10.0 #remix-utils@6.0.0
 
 # Improve SEO by not sending JS in Remix
 
