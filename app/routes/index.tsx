@@ -16,9 +16,9 @@ export function loader({ request, context }: LoaderArgs) {
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
 		});
 
-		let { notes, bookmarks } = await context.services.feed.perform();
+		let { notes, bookmarks, tutorials } = await context.services.feed.perform();
 
-		return json({ notes, bookmarks }, { headers });
+		return json({ notes, bookmarks, tutorials }, { headers });
 	});
 }
 

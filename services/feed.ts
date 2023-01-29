@@ -5,6 +5,15 @@ import { NoteSchema } from "~/entities/note";
 
 import { Service } from "./service";
 
+const TutorialSchema = z.object({
+	slug: z
+		.string()
+		.transform((value) => value.split(":").at(1))
+		.pipe(z.string()),
+	tags: z.string().array(),
+	title: z.string(),
+});
+
 const FeedSchema = z.object({
 	notes: NoteSchema.pick({
 		id: true,
@@ -18,6 +27,7 @@ const FeedSchema = z.object({
 		url: true,
 		created_at: true,
 	}).array(),
+	tutorials: TutorialSchema.array(),
 });
 
 export class FeedService extends Service {
@@ -29,12 +39,13 @@ export class FeedService extends Service {
 	}
 
 	async perform(): Promise<z.infer<typeof FeedSchema>> {
-		let [notes, bookmarks] = await Promise.all([
+		let [notes, bookmarks, tutorials] = await Promise.all([
 			this.cachedNotes(),
 			this.cachedBookmarks(),
+			this.cachedTutorials(),
 		]);
 
-		return FeedSchema.parse({ notes: notes, bookmarks });
+		return FeedSchema.parse({ notes, bookmarks, tutorials });
 	}
 
 	async cachedNotes() {
@@ -80,5 +91,21 @@ export class FeedService extends Service {
 		});
 
 		return bookmarks;
+	}
+
+	async cachedTutorials() {
+		let cached = await this.kv.airtable.get("feed:tutorials", "json");
+		await this.kv.airtable.delete("feed:tutorials");
+		if (cached) return TutorialSchema.array().parse(cached);
+
+		let tutorials = await TutorialSchema.array()
+			.promise()
+			.parse(this.repos.tutorials.list());
+
+		this.kv.airtable.put("feed:tutorials", JSON.stringify(tutorials), {
+			expirationTtl: 3600,
+		});
+
+		return tutorials;
 	}
 }

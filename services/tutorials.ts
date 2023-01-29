@@ -51,11 +51,73 @@ export class TutorialsService extends Service {
 		page = 1,
 		size = PAGE_SIZE,
 	}: { page?: number; size?: number } = {}) {
-		return this.#paginate([], page, size);
+		void this.#fillTutorialsFromRepo();
+		let list = await this.repos.tutorials.list();
+		return this.#paginate(list, page, size);
 	}
 
-	async search({ query, page = 1 }: { query: string; page?: number }) {
-		throw new Error("Not implemented");
+	async search({
+		query,
+		page = 1,
+		size = PAGE_SIZE,
+	}: {
+		query: string;
+		page?: number;
+		size?: number;
+	}) {
+		let tutorials = await this.repos.tutorials.list();
+
+		query = query.toLowerCase();
+
+		if (query.trim().length === 0) {
+			return this.#paginate(tutorials, page, size);
+		}
+
+		let techsInQuery = this.#findTechnologiesInString(query);
+
+		for (let techInQuery of techsInQuery) {
+			if (techInQuery.version) {
+				query = query.replace(
+					`tech:${techInQuery.name}@${techInQuery.version}`,
+					""
+				);
+			} else {
+				query = query.replace(`tech:${techInQuery.name}`, "");
+			}
+
+			tutorials = tutorials.filter((tutorial) => {
+				for (let tagInTutorial of tutorial.tags) {
+					let techInTutorial = this.#getPackageNameAndVersion(tagInTutorial);
+					if (techInQuery.name.includes("*")) {
+						if (
+							!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
+						) {
+							continue;
+						}
+					} else if (techInTutorial.name !== techInQuery.name) {
+						continue;
+					}
+					if (!techInQuery.version) return true;
+					if (semver.gte(techInTutorial.version, techInQuery.version)) {
+						return true;
+					}
+				}
+
+				return false;
+			});
+		}
+
+		for (let word of query.trim()) {
+			tutorials = tutorials.filter((tutorial) => {
+				let title = tutorial.title.toLowerCase();
+
+				if (title.includes(word)) return true;
+
+				return false;
+			});
+		}
+
+		return this.#paginate(tutorials, page, size);
 	}
 
 	async read(slug: string) {
@@ -166,5 +228,27 @@ export class TutorialsService extends Service {
 		}
 
 		return result;
+	}
+
+	/**
+	 * can find the technologies name and version from a string
+	 * @example
+	 * this.#findTechnologiesInString(`hello world tech:@remix-run/react@1.10.0 tech:react@18 tech:@types/react-dom@18.5`)
+	 */
+	#findTechnologiesInString(value: string) {
+		if (!value.includes("tech:")) return [];
+
+		return value
+			.split(" ")
+			.filter((value) => value.includes("tech:"))
+			.map((value) => {
+				value = value.slice("tech:".length);
+				return this.#getPackageNameAndVersion(value);
+			});
+	}
+
+	async #fillTutorialsFromRepo() {
+		let data = await this.repos.github.getListOfMarkdownFiles("tutorials");
+		await Promise.all(data.map((path) => this.read(path)));
 	}
 }

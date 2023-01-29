@@ -36,10 +36,9 @@ export default {
 			title: "Activity",
 			description: "The latests activity on my website",
 
-			article: "I published the article <link:article>{{title}}</link:article>",
+			article: "I wrote about <link:article>{{title}}</link:article>",
 
-			tutorial:
-				"I published a new tutorial <link:tutorial>{{title}}</link:tutorial>",
+			tutorial: "I published how to <link:tutorial>{{title}}</link:tutorial>",
 
 			bookmark:
 				"I read <link:bookmark>{{title}}</link:bookmark> and bookmarked it",
@@ -118,6 +117,13 @@ export default {
 				progress: "Searching…",
 				default: "Search",
 			},
+		},
+
+		pagination: {
+			first: "Newest",
+			prev: "Newer",
+			next: "Older",
+			last: "Oldest",
 		},
 	},
 
