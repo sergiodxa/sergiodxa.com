@@ -4,10 +4,10 @@ import { z } from "zod";
 import { MarkdownSchema } from "~/entities/markdown";
 
 export class GithubRepository {
-  #gh: Octokit;
-  constructor(token: string) {
-    this.#gh = new Octokit({ auth: token });
-  },
+	#gh: Octokit;
+	constructor(token: string) {
+		this.#gh = new Octokit({ auth: token });
+	}
 
 	async getMarkdownFile(filename: string) {
 		let path = `content/${filename}`;
