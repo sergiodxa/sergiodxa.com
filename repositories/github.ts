@@ -4,6 +4,11 @@ import { z } from "zod";
 import { MarkdownSchema } from "~/entities/markdown";
 
 export class GithubRepository {
+  #gh: Octokit;
+  constructor(token: string) {
+    this.#gh = new Octokit({ auth: token });
+  },
+
 	async getMarkdownFile(filename: string) {
 		let path = `content/${filename}`;
 
@@ -37,11 +42,7 @@ export class GithubRepository {
 
 	async getListOfMarkdownFiles(path: string) {
 		try {
-			let gh = new Octokit({
-				auth: "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",
-			});
-
-			let { data } = await gh.request(
+			let { data } = await this.#gh.request(
 				"GET /repos/{owner}/{repo}/contents/{path}",
 				{
 					owner: "sergiodxa",
