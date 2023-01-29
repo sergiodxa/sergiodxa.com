@@ -41,7 +41,7 @@ export function loader(_: DataFunctionArgs) {
 					let meta = { title: t("tutorials.meta.title.default") };
 
 					if (query !== "") {
-						meta.title = t("tutorials.meta.title.search", { term: query });
+						meta.title = t("tutorials.meta.title.search", { query });
 					}
 
 					return meta;

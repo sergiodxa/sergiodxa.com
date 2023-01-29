@@ -105,6 +105,13 @@ export default {
 	},
 
 	tutorials: {
+		meta: {
+			title: {
+				default: "Tutorials by sergiodxa",
+				search: "Tutorials about {{query}} by sergiodxa",
+			},
+		},
+
 		header: {
 			title: "Tutorials",
 			description: "Learn about Remix, React, and more.",
@@ -128,9 +135,7 @@ export default {
 	},
 
 	tutorial: {
-		header: {
-			edit: "Edit on GitHub",
-		},
+		header: { edit: "Edit on GitHub" },
 		tags: "Used",
 		related: { title: "Related tutorials" },
 	},
