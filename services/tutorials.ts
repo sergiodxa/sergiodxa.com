@@ -1,5 +1,6 @@
 import type { Scalar, Tag } from "@markdoc/markdoc";
 
+import * as semver from "semver";
 import { z } from "zod";
 
 import { TutorialSchema } from "~/entities/tutorial";
@@ -19,6 +20,12 @@ interface Paginated<Type> {
 		prev: number | null;
 		last: number;
 	};
+}
+
+interface Recommendation {
+	title: string;
+	tag: string;
+	slug: string;
 }
 
 let TagSchema: z.ZodType<Tag> = z.object({
@@ -80,18 +87,26 @@ export class TutorialsService extends Service {
 
 		list = list.filter((item) => !item.slug.includes(slug));
 
-		let result: { title: string; tag: string; slug: string }[] = [];
+		let result: Recommendation[] = [];
 
 		for (let item of list) {
 			for (let tag of tutorial.tags) {
-				if (item.tags.includes(tag)) {
-					result.push({ title: item.title, tag, slug: item.slug });
-					break;
+				let { name, version } = this.#getPackageNameAndVersion(tag);
+
+				let match = item.tags.find((itemTag) => {
+					let { name: itemName, version: itemVersion } =
+						this.#getPackageNameAndVersion(itemTag);
+					if (itemName !== name) return false;
+					return semver.gte(version, itemVersion);
+				});
+
+				if (match) {
+					result.push({ title: item.title, tag: match, slug: item.slug });
 				}
 			}
 		}
 
-		return this.#shuffle(result).slice(0, 3);
+		return this.#shuffle(this.#dedupeBySlug(result)).slice(0, 3);
 	}
 
 	async save(id: string, data: Partial<z.infer<typeof TutorialSchema>>) {
@@ -122,6 +137,32 @@ export class TutorialsService extends Service {
 		for (let i = result.length - 1; i > 0; i--) {
 			let j = Math.floor(Math.random() * (i + 1));
 			[result[i], result[j]] = [result[j], result[i]];
+		}
+
+		return result;
+	}
+
+	#getPackageNameAndVersion(tag: string) {
+		if (!tag.startsWith("@")) {
+			let [name, version] = tag.split("@");
+			return { name, version };
+		}
+
+		let [, name, version] = tag.split("@");
+		return { name: `@${name}`, version };
+	}
+
+	#dedupeBySlug(items: Recommendation[]): Recommendation[] {
+		let result: Recommendation[] = [];
+
+		for (let item of items) {
+			if (!result.find((resultItem) => resultItem.slug === item.slug)) {
+				result.push(item);
+
+				if (result.length >= 3) break;
+
+				continue;
+			}
 		}
 
 		return result;
