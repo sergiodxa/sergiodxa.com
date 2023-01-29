@@ -4,14 +4,14 @@ import { z } from "zod";
 
 import { measure } from "~/utils/measure";
 
-export function loader({ request, params, context }: LoaderArgs) {
+export function loader(_: LoaderArgs) {
 	return measure("routes/auth.$provider.callback#loader", async () => {
-		let provider = z.enum(["github"]).parse(params.provider);
+		let provider = z.enum(["github"]).parse(_.params.provider);
 
-		return await context.services.auth.authenticator.authenticate(
+		return await _.context.services.auth.authenticator.authenticate(
 			provider,
-			request,
-			{ successRedirect: "/", failureRedirect: "/login" }
+			_.request,
+			{ successRedirect: "/", failureRedirect: "/auth/login" }
 		);
 	});
 }

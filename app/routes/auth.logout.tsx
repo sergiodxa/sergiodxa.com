@@ -5,9 +5,18 @@ import { Form } from "@remix-run/react";
 import { useT } from "~/helpers/use-i18n.hook";
 import { measure } from "~/utils/measure";
 
-export async function action({ request, context }: DataFunctionArgs) {
+export async function loader(_: DataFunctionArgs) {
+	return measure("routes/auth.logout#loader", async () => {
+		return await _.context.services.auth.authenticator.isAuthenticated(
+			_.request,
+			{ successRedirect: "/" }
+		);
+	});
+}
+
+export async function action(_: DataFunctionArgs) {
 	return measure("routes/login#action", async () => {
-		return await context.services.auth.authenticator.logout(request, {
+		return await _.context.services.auth.authenticator.logout(_.request, {
 			redirectTo: "/",
 		});
 	});
@@ -16,7 +25,10 @@ export async function action({ request, context }: DataFunctionArgs) {
 export default function Component() {
 	let t = useT();
 	return (
-		<Form method="post" className="flex flex-col items-center gap-10">
+		<Form
+			method="post"
+			className="mx-auto flex max-w-screen-sm flex-col items-center gap-10 pt-10"
+		>
 			<header className="sm:mx-auto sm:w-full sm:max-w-md">
 				<h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
 					{t("logout.title")}

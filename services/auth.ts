@@ -21,7 +21,7 @@ const SessionSchema = z.object({
 	user: UserSchema.optional(),
 	strategy: z.string().optional(),
 	"oauth2:state": z.string().uuid().optional(),
-	"auth:error": z.string().optional(),
+	"auth:error": z.object({ message: z.string() }).optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
