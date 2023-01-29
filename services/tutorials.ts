@@ -91,7 +91,7 @@ export class TutorialsService extends Service {
 			}
 		}
 
-		return result.slice(0, 3);
+		return this.#shuffle(result).slice(0, 3);
 	}
 
 	async save(id: string, data: Partial<z.infer<typeof TutorialSchema>>) {
@@ -114,5 +114,16 @@ export class TutorialsService extends Service {
 			total,
 			page: { size, current: page, first, next, prev, last },
 		};
+	}
+
+	#shuffle<Value>(list: Value[]) {
+		let result = [...list];
+
+		for (let i = result.length - 1; i > 0; i--) {
+			let j = Math.floor(Math.random() * (i + 1));
+			[result[i], result[j]] = [result[j], result[i]];
+		}
+
+		return result;
 	}
 }
