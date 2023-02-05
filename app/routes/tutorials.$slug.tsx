@@ -37,7 +37,7 @@ export default function Component() {
 
 	return (
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8">
-			<div className="prose prose-blue mx-auto max-w-prose space-y-8 sm:prose-lg">
+			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
 				<Versions />
 				<div>
 					<Header />
