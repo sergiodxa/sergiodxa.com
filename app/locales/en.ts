@@ -135,7 +135,10 @@ export default {
 	},
 
 	tutorial: {
-		header: { edit: "Edit on GitHub" },
+		header: {
+			eyebrown: "How to",
+			edit: "Edit on GitHub",
+		},
 		tags: "Used",
 		related: { title: "Related tutorials" },
 	},

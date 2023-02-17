@@ -67,7 +67,10 @@ function Header() {
 
 	return (
 		<header className="gap-4 md:flex md:items-start md:justify-between">
-			<h1>{tutorial.title}</h1>
+			<h1>
+				<small className="block text-xl text-blue-500">{t("eyebrown")}</small>
+				{tutorial.title}
+			</h1>
 			{user ? (
 				<div className="flex flex-shrink-0">
 					<a
