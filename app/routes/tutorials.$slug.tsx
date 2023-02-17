@@ -147,7 +147,7 @@ function Recommendations() {
 					let searchParams = new URLSearchParams();
 					searchParams.set("q", `tech:${tag}`);
 
-					let to = `/tutorials?q=${searchParams.toString()}`;
+					let to = `/tutorials?${searchParams.toString()}`;
 
 					return (
 						<div key={slug}>
