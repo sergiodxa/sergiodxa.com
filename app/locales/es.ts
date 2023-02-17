@@ -5,20 +5,29 @@ export default {
 		home: "Inicio",
 		articles: "Artículos",
 		bookmarks: "Bookmarks",
+		tutorials: "Tutoriales",
 		sponsor: "Apoyame en GitHub",
+		login: "Acceso",
 		logout: "Cerrar sesión",
 	},
 
 	home: {
-		latestNotes: {
-			title: "Articulos recientes",
-			description: "Estos son mis ultimos artículos",
-			footer:
-				"¿Querés leerlos todos? <link:articles>Andá a la lista completa de artículos</link:articles>",
+		header: {
+			title: "Sergio Xalambrí",
+			description:
+				"Soy un desarrolladores web de Buenos Aires, Argentina. Trabajo en <strong>Daffy</strong> como desarrollador web.",
 		},
-		bookmarks: {
-			title: "Bookmarks recientes",
-			description: "Los últimos links que me guardé",
+
+		feed: {
+			title: "Actividad",
+			description: "La última actividad en mi sitio",
+
+			article: "Escribí sobre <link:article>{{title}}</link:article>",
+
+			tutorial: "Publiqué cómo <link:tutorial>{{title}}</link:tutorial>",
+
+			bookmark:
+				"Leí <link:bookmark>{{title}}</link:bookmark> y lo guardé como bookmark",
 		},
 	},
 
@@ -27,6 +36,7 @@ export default {
 		empty:
 			"La URL /articles?page={{page}} no se pudo encontrar en el servidor.",
 		title: "Artículos",
+
 		meta: {
 			title: {
 				default: "Artículos de sergiodxa",
@@ -34,11 +44,18 @@ export default {
 					"Resultados de búsqueda para '{{term}}' en el blog de sergiodxa",
 			},
 		},
+
+		header: {
+			title: "Artículos",
+			description: "Estos son mis artículos.",
+		},
+
 		description: {
 			search:
 				"Mostrando {{count}} artículos para la búsqueda <highlight>{{term}}</highlight>",
 			default: "Estos son mis artículos.",
 		},
+
 		search: {
 			title: "Buscador",
 			placeholder: "Remix, SWR, Next, Rails…",
@@ -57,7 +74,65 @@ export default {
 
 	bookmarks: {
 		meta: { title: "Bookmarks de sergiodxa" },
-		title: "Bookmarks",
+
+		header: {
+			title: "Bookmarks",
+			description: "Links que leí y me gustaron.",
+		},
+	},
+
+	login: {
+		title: "Accedé a tu cuenta",
+		github: "Continuar con GitHub",
+		error: {
+			title: "Hubo un problema",
+			description:
+				"Ocurrió un error al intentar acceder a tu cuenta con GitHub.",
+		},
+	},
+
+	logout: {
+		title: "¿Estás seguro?",
+		cta: "Cerrar sesión",
+	},
+
+	tutorials: {
+		meta: {
+			title: {
+				default: "Tutoriales de sergiodxa",
+				search: "Tutorialess sobre {{query}} de sergiodxa",
+			},
+		},
+
+		header: {
+			title: "Tutoriales",
+			description: "Aprendé sobre Remix, React, y más.",
+		},
+
+		search: {
+			label: "Buscar tutoriales",
+			placeholder: "Remix, React, Next…",
+			button: {
+				progress: "Buscando…",
+				default: "Buscar",
+			},
+		},
+
+		pagination: {
+			first: "Más nuevos",
+			prev: "Siguientes",
+			next: "Anteriores",
+			last: "Más viejos",
+		},
+	},
+
+	tutorial: {
+		header: {
+			eyebrown: "Cómo",
+			edit: "Editar en GitHub",
+		},
+		tags: "Usé",
+		related: { title: "Relacionados" },
 	},
 
 	error: {

@@ -41,7 +41,9 @@ export function loader(_: DataFunctionArgs) {
 					let meta = { title: t("tutorials.meta.title.default") };
 
 					if (query !== "") {
-						meta.title = t("tutorials.meta.title.search", { query });
+						meta.title = t("tutorials.meta.title.search", {
+							query: decodeURIComponent(query),
+						});
 					}
 
 					return meta;
