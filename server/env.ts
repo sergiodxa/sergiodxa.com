@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export let envSchema = z.object({
+export let EnvSchema = z.object({
 	AIRTABLE_API_KEY: z.string().min(1),
 	AIRTABLE_BASE: z.string().min(1),
 	AIRTABLE_TABLE_ID: z.string().min(1),
@@ -15,6 +15,8 @@ export let envSchema = z.object({
 	GITHUB_CONTENT_REPO: z.string().min(1),
 	GITHUB_TOKEN: z.string().min(1),
 	GITHUB_USERNAME: z.string().min(1),
+	CONTENTFUL_SPACE: z.string().min(1),
+	CONTENTFUL_ACCESS_TOKEN: z.string().min(1),
 	LOGTAIL_SOURCE_TOKEN: z.string().min(1),
 	NODE_ENV: z
 		.union([
@@ -25,4 +27,4 @@ export let envSchema = z.object({
 		.default("development"),
 });
 
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof EnvSchema>;

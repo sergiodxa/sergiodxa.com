@@ -6,6 +6,7 @@ import type {
 } from "remix-utils";
 import type { Thing } from "schema-dts";
 import type { BookmarksRepo } from "~/repositories/bookmarks";
+import type { Contentful } from "~/repositories/contentful";
 import type { GithubRepository } from "~/repositories/github";
 import type { KVTutorialRepository } from "~/repositories/kv-tutorial";
 import type { NotesRepo } from "~/repositories/notes";
@@ -42,6 +43,7 @@ declare global {
 			bookmarks: BookmarksRepo;
 			github: GithubRepository;
 			tutorials: KVTutorialRepository;
+			contentful: Contentful;
 		}
 
 		export interface Services {

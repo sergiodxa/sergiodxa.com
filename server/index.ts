@@ -4,10 +4,11 @@ import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
 import { BookmarksRepo } from "~/repositories/bookmarks";
+import { Contentful } from "~/repositories/contentful";
 import { GithubRepository } from "~/repositories/github";
 import { KVTutorialRepository } from "~/repositories/kv-tutorial";
 import { NotesRepo } from "~/repositories/notes";
-import { envSchema } from "~/server/env";
+import { EnvSchema } from "~/server/env";
 import { ArchiveService } from "~/services/archive";
 import { AuthService } from "~/services/auth";
 import { BookmarksService } from "~/services/bookmarks";
@@ -23,7 +24,7 @@ const handleRequest = createPagesFunctionHandler({
 	mode: process.env.NODE_ENV,
 	getLoadContext(context): AppLoadContext {
 		// Environment variables
-		let env: AppLoadContext["env"] = envSchema.parse(context.env);
+		let env: AppLoadContext["env"] = EnvSchema.parse(context.env);
 
 		let { hostname } = new URL(context.request.url);
 
@@ -37,6 +38,10 @@ const handleRequest = createPagesFunctionHandler({
 			),
 			github: new GithubRepository(env.GITHUB_TOKEN),
 			tutorials: new KVTutorialRepository(context.env.tutorials),
+			contentful: new Contentful(
+				env.CONTENTFUL_SPACE,
+				env.CONTENTFUL_ACCESS_TOKEN
+			),
 		};
 
 		// Injected services objects to interact with third-party services

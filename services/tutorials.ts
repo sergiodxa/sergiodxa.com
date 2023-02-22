@@ -1,9 +1,11 @@
 import type { Scalar, Tag } from "@markdoc/markdoc";
 
+import { parse, transform } from "@markdoc/markdoc";
 import * as semver from "semver";
 import { z } from "zod";
 
 import { TutorialSchema } from "~/entities/tutorial";
+import { TutorialFieldsSchema } from "~/repositories/contentful";
 
 import { Service } from "./service";
 
@@ -51,9 +53,22 @@ export class TutorialsService extends Service {
 		page = 1,
 		size = PAGE_SIZE,
 	}: { page?: number; size?: number } = {}) {
-		void this.#fillTutorialsFromRepo();
-		let list = await this.repos.tutorials.list();
+		let result = await this.repos.contentful.getEntries(
+			"tutorials",
+			(page - 1) * size,
+			size,
+			"en-US"
+		);
+
+		let list = result.items.map((item) => {
+			let fields = TutorialFieldsSchema.parse(item.fields);
+			return { slug: fields.slug, title: fields.title, tags: fields.uses };
+		});
+
 		return this.#paginate(list, page, size);
+		// void this.#fillTutorialsFromRepo();
+		// let list = await this.repos.tutorials.list();
+		// return this.#paginate(list, page, size);
 	}
 
 	async search({
@@ -121,22 +136,35 @@ export class TutorialsService extends Service {
 	}
 
 	async read(slug: string) {
-		let tutorial = await this.repos.tutorials.read(slug);
-		if (tutorial) return tutorial;
-
-		let { file } = await this.repos.github.getMarkdownFile(
-			`tutorials/${slug}.md`
-		);
-
-		let result = TutorialSchema.parse({
-			...file.attributes,
+		let tutorial = await this.repos.contentful.getEntry(
+			"tutorials",
 			slug,
-			content: file.body,
+			"en-US"
+		);
+		let fields = TutorialFieldsSchema.parse(tutorial.fields);
+
+		return TutorialSchema.parse({
+			slug,
+			content: transform(parse(fields.content)),
+			title: fields.title,
+			tags: fields.uses,
 		});
+		// let tutorial = await this.repos.tutorials.read(slug);
+		// if (tutorial) return tutorial;
 
-		await this.repos.tutorials.save(slug, result);
+		// let { file } = await this.repos.github.getMarkdownFile(
+		// 	`tutorials/${slug}.md`
+		// );
 
-		return result;
+		// let result = TutorialSchema.parse({
+		// 	...file.attributes,
+		// 	slug,
+		// 	content: file.body,
+		// });
+
+		// await this.repos.tutorials.save(slug, result);
+
+		// return result;
 	}
 
 	async recommendations(slug: string) {
