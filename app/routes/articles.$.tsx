@@ -11,6 +11,7 @@ import { useCatch, useLoaderData } from "@remix-run/react";
 import { jsonHash } from "remix-utils";
 
 import { MarkdownView } from "~/components/markdown";
+import { Support } from "~/components/support";
 import { i18n } from "~/i18n.server";
 import { NoteNotFoundError } from "~/repositories/notes";
 import { measure } from "~/utils/measure";
@@ -94,8 +95,11 @@ export default function Article() {
 	let { body } = useLoaderData<typeof loader>();
 
 	return (
-		<article className="dark:prose-dark prose prose-blue mx-auto max-w-screen-sm sm:prose-lg">
-			<MarkdownView content={body} />
+		<article className="mx-auto mb-8 flex max-w-screen-md flex-col gap-8">
+			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
+				<MarkdownView content={body} />
+			</div>
+			<Support />
 		</article>
 	);
 }

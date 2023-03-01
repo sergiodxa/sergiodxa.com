@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
+import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
 import { measure } from "~/utils/measure";
@@ -44,6 +45,8 @@ export default function Component() {
 					<MarkdownView content={tutorial?.content} />
 				</div>
 			</div>
+
+			<Support />
 
 			<Suspense fallback={null}>
 				<Await resolve={recommendations} errorElement={null}>

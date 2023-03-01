@@ -129,6 +129,11 @@ export default {
 		related: { title: "Related tutorials" },
 	},
 
+	support: {
+		title: "Do you like my content?",
+		cta: "Sponsor me on GitHub",
+	},
+
 	error: {
 		NOT_FOUND: "404 Not Found",
 		NOTE_NOT_FOUND: "The article {{path}} was not found",
