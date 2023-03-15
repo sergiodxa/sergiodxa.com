@@ -4,6 +4,7 @@ import { redirect, defer } from "@remix-run/cloudflare";
 import { Await, Link, useAsyncValue, useLoaderData } from "@remix-run/react";
 import clsx from "clsx";
 import { Suspense } from "react";
+import { Trans } from "react-i18next";
 import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
@@ -156,24 +157,30 @@ function Recommendations() {
 					let to = `/tutorials?${searchParams.toString()}`;
 
 					return (
-						<div key={slug}>
-							<ul className="flex flex-nowrap items-center gap-1 truncate">
-								<li key={tag} className="contents">
-									<Link
-										to={to}
-										className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800"
-									>
-										{tag}
-									</Link>
-								</li>
-							</ul>
-
+						<div key={slug} className="flex flex-col gap-2">
 							<Link
 								to={`/tutorials/${slug}`}
-								className="mt-4 block no-underline line-clamp-2"
+								className="block text-blue-900 underline line-clamp-2 visited:text-violet-900"
 							>
-								<p className="text-xl font-semibold text-gray-900">{title}</p>
+								<p className="text-xl font-semibold">{title}</p>
 							</Link>
+
+							<Trans
+								t={t}
+								parent="p"
+								className="py-0.5 text-sm font-medium"
+								i18nKey="reason"
+								values={{ tag }}
+								components={{
+									anchor: (
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<Link
+											to={to}
+											className="text-blue-800 underline visited:text-violet-800"
+										/>
+									),
+								}}
+							/>
 						</div>
 					);
 				})}

@@ -126,7 +126,10 @@ export default {
 			edit: "Edit on GitHub",
 		},
 		tags: "Used",
-		related: { title: "Related tutorials" },
+		related: {
+			title: "Related tutorials",
+			reason: "Because both uses <anchor>{{tag}}</anchor>",
+		},
 	},
 
 	support: {

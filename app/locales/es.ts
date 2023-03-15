@@ -132,7 +132,10 @@ export default {
 			edit: "Editar en GitHub",
 		},
 		tags: "Usé",
-		related: { title: "Relacionados" },
+		related: {
+			title: "Relacionados",
+			reason: "Porque ambos usan {{tag}}",
+		},
 	},
 
 	error: {
