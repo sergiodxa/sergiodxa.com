@@ -1,10 +1,3 @@
-# sergiodxa.dev
+# sergiodxa.com
 
-The new sergiodxa.com, this is still in development!
-
-## Stack
-
-- Remix
-- React
-- TailwindCSS
-- Remix i18next
+The code behind sergiodxa.com
