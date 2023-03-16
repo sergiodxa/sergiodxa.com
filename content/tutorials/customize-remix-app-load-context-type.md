@@ -1,6 +1,6 @@
 #@remix-run/server-runtime@1.6.8 #@remix-run/node@1.6.8 #@remix-run/cloudflare@1.6.8
 
-# Customize Remix `AppLoadContext` type
+# Customize Remix AppLoadContext type
 
 If you're using the `getLoadContext` function in your HTTP servers to pass data to your Remix app, you may notice that the `context` object is missing the properties you're setting.
 
