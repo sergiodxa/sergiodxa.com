@@ -1,42 +1,39 @@
 {
-  "name": "sergiodxa.com",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "attilabuti.vscode-mjml",
-        "bierner.jsdoc-markdown-highlighting",
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "github.copilot",
-        "github.vscode-pull-request-github",
-        "mikestead.dotenv",
-        "ms-vscode-remote.remote-containers"
-      ],
-      "settings": {
-        "[javascript]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
-        "[javascriptreact]": {
-          "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-        },
-        "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-        "[typescript]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
-        "[typescriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "editor.formatOnPaste": true,
-        "editor.formatOnSave": true,
-        "editor.tabSize": 2,
-        "eslint.format.enable": true,
-        "files.associations": {
-          "*.js": "javascriptreact",
-          "*.ts": "typescriptreact"
-        }
-      }
-    },
+	"name": "sergiodxa.com",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"attilabuti.vscode-mjml",
+				"bierner.jsdoc-markdown-highlighting",
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"github.copilot",
+				"github.vscode-pull-request-github",
+				"mikestead.dotenv"
+			],
+			"settings": {
+				"[javascript]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
+				"[javascriptreact]": {
+					"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+				},
+				"[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+				"[typescript]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
+				"[typescriptreact]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				},
+				"editor.formatOnPaste": true,
+				"editor.formatOnSave": true,
+				"editor.tabSize": 2,
+				"eslint.format.enable": true,
+				"files.associations": {
+					"*.js": "javascriptreact",
+					"*.ts": "typescriptreact"
+				}
+			}
+		},
 
-    "codespaces": {
-      "openFiles": [
-        "README.md"
-      ]
-    }
-  }
+		"codespaces": {
+			"openFiles": ["README.md"]
+		}
+	}
 }
