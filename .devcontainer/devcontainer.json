@@ -9,7 +9,8 @@
         "esbenp.prettier-vscode",
         "github.copilot",
         "github.vscode-pull-request-github",
-        "mikestead.dotenv"
+        "mikestead.dotenv",
+        "ms-vscode-remote.remote-containers"
       ],
       "settings": {
         "[javascript]": { "editor.defaultFormatter": "dbaeumer.vscode-eslint" },
