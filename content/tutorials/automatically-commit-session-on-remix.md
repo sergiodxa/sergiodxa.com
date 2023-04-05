@@ -221,7 +221,7 @@ export async function onRequest(context) {
 
   response.headers.append(
     "Set-Cookie",
-    await sessionStorage.commitSession(loadContext.session)
+    await sessionStorage.commitSession(session)
   );
 
   return response;
