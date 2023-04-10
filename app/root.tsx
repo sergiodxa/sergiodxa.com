@@ -4,6 +4,7 @@ import type {
 	MetaFunction,
 	SerializeFrom,
 } from "@remix-run/cloudflare";
+import type { ShouldRevalidateFunction } from "@remix-run/react";
 import type { ReactNode } from "react";
 
 import {
@@ -14,7 +15,6 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
-	ShouldRevalidateFunction,
 	useCatch,
 	useLoaderData,
 } from "@remix-run/react";
