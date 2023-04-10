@@ -14,6 +14,7 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	ShouldRevalidateFunction,
 	useCatch,
 	useLoaderData,
 } from "@remix-run/react";
@@ -64,6 +65,14 @@ export function loader({ request, context }: LoaderArgs) {
 		);
 	});
 }
+
+export let shouldRevalidate: ShouldRevalidateFunction = ({
+	defaultShouldRevalidate,
+	formData,
+}) => {
+	if (formData) return false;
+	return defaultShouldRevalidate;
+};
 
 export let meta: MetaFunction = ({ data }) => {
 	let { locale } = (data as SerializeFrom<typeof loader>) ?? {};
