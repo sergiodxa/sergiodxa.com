@@ -28,7 +28,7 @@ However, once support becomes more widespread, this is a great way to delete all
 export async function action() {
   return json(data, {
     headers: {
-      "Clear-Site-Data": "cookies
+      "Clear-Site-Data": "cookies"
     },
   });
 }
