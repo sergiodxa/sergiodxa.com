@@ -6,6 +6,7 @@ import type {
 } from "remix-utils";
 import type { Thing } from "schema-dts";
 import type { BookmarksRepo } from "~/repositories/bookmarks";
+import type { CollectedNotes } from "~/repositories/collected-notes";
 import type { GithubRepository } from "~/repositories/github";
 import type { KVTutorialRepository } from "~/repositories/kv-tutorial";
 import type { NotesRepo } from "~/repositories/notes";
@@ -39,6 +40,7 @@ declare global {
 		};
 
 		export interface Repos {
+			cn: InstanceType<typeof CollectedNotes>;
 			notes: NotesRepo;
 			bookmarks: BookmarksRepo;
 			github: GithubRepository;
