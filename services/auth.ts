@@ -1,8 +1,9 @@
 import type { IGitHubService } from "./gh";
+import type { SessionStorage } from "@remix-run/cloudflare";
 import type { TypedSessionStorage } from "remix-utils";
 import type { Env } from "~/server/env";
 
-import { createCloudflareKVSessionStorage } from "@remix-run/cloudflare";
+import { createWorkersKVSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 import { createTypedSessionStorage } from "remix-utils";
@@ -38,7 +39,7 @@ export class AuthService implements IAuthService {
 	#authenticator: Authenticator<User>;
 
 	constructor(kv: KVNamespace, env: Env, hostname: string, gh: IGitHubService) {
-		let sessionStorage = createCloudflareKVSessionStorage({
+		let sessionStorage = createWorkersKVSessionStorage({
 			cookie: {
 				name: "sid",
 				httpOnly: true,
@@ -55,9 +56,12 @@ export class AuthService implements IAuthService {
 			schema: SessionSchema,
 		});
 
-		this.#authenticator = new Authenticator<User>(this.#sessionStorage, {
-			throwOnError: true,
-		});
+		this.#authenticator = new Authenticator<User>(
+			this.#sessionStorage as SessionStorage,
+			{
+				throwOnError: true,
+			}
+		);
 
 		let callbackURL = new URL(env.GITHUB_CALLBACK_URL);
 		callbackURL.hostname = hostname;
