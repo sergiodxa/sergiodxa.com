@@ -226,7 +226,7 @@ function Header() {
 						<NavLink to="/" className="hidden flex-shrink-0 md:block">
 							<span className="sr-only">{t("header.title")}</span>
 							<img
-								className="aspect-square h-10 h-10"
+								className="aspect-square h-10"
 								width={40}
 								height={40}
 								src={avatarHref}
