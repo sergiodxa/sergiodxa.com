@@ -28,7 +28,6 @@ import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
-import { measure } from "~/utils/measure";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
 export let links: LinksFunction = () => {
@@ -47,7 +46,7 @@ export let links: LinksFunction = () => {
 };
 
 export function loader({ request, context }: LoaderArgs) {
-	return measure("root#loader", async () => {
+	return context.time("root#loader", async () => {
 		removeTrailingSlash(new URL(request.url));
 
 		let locale = await i18n.getLocale(request);

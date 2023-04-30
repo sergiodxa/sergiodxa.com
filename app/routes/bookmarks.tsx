@@ -6,10 +6,9 @@ import { jsonHash } from "remix-utils";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
-import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
-	return measure("routes/bookmarks#loader", async () => {
+	return context.time("routes/bookmarks#loader", async () => {
 		void context.services.log.http(request);
 
 		return jsonHash({

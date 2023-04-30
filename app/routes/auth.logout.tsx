@@ -3,10 +3,9 @@ import type { DataFunctionArgs } from "@remix-run/cloudflare";
 import { Form } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { measure } from "~/utils/measure";
 
 export async function loader(_: DataFunctionArgs) {
-	return measure("routes/auth.logout#loader", async () => {
+	return _.context.time("routes/auth.logout#loader", async () => {
 		return await _.context.services.auth.authenticator.isAuthenticated(
 			_.request,
 			{ successRedirect: "/" }
@@ -15,7 +14,7 @@ export async function loader(_: DataFunctionArgs) {
 }
 
 export async function action(_: DataFunctionArgs) {
-	return measure("routes/login#action", async () => {
+	return _.context.time("routes/login#action", async () => {
 		return await _.context.services.auth.authenticator.logout(_.request, {
 			redirectTo: "/",
 		});

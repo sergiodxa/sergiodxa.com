@@ -17,6 +17,7 @@ import type { CollectedNotesWebhookService } from "~/services/cn-webhook";
 import type { FeedService } from "~/services/feed";
 import type { IGitHubService } from "~/services/gh";
 import type { ILoggingService } from "~/services/logging";
+import type { Measurer } from "~/services/measure";
 import type { ReadNoteService } from "~/services/read-note";
 import type { TutorialsService } from "~/services/tutorials";
 
@@ -62,5 +63,6 @@ declare module "@remix-run/server-runtime" {
 		env: Env;
 		services: SDX.Services;
 		repos: SDX.Repos;
+		time: Measurer["time"];
 	}
 }

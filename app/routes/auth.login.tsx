@@ -5,10 +5,9 @@ import { json } from "@remix-run/cloudflare";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { measure } from "~/utils/measure";
 
 export function loader(_: DataFunctionArgs) {
-	return measure("routes/login#loader", async () => {
+	return _.context.time("routes/login#loader", async () => {
 		let session = await _.context.services.auth.sessionStorage.getSession(
 			_.request.headers.get("Cookie")
 		);
@@ -18,7 +17,7 @@ export function loader(_: DataFunctionArgs) {
 }
 
 export function action(_: DataFunctionArgs) {
-	return measure("routes/login#action", async () => {
+	return _.context.time("routes/login#action", async () => {
 		return await _.context.services.auth.authenticator.authenticate(
 			"github",
 			_.request,

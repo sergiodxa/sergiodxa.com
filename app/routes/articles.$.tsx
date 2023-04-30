@@ -14,10 +14,9 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { i18n } from "~/i18n.server";
 import { NoteNotFoundError } from "~/repositories/notes";
-import { measure } from "~/utils/measure";
 
 export function loader({ request, context, params }: LoaderArgs) {
-	return measure("routes/articles.$id#loader", async () => {
+	return context.time("routes/articles.$id#loader", async () => {
 		void context.services.log.http(request);
 
 		let path = params["*"];

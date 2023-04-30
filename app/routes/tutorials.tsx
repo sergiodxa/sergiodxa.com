@@ -11,10 +11,9 @@ import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
-import { measure } from "~/utils/measure";
 
 export function loader(_: DataFunctionArgs) {
-	return measure("routes/tutorials#loader", async () => {
+	return _.context.time("routes/tutorials#loader", async () => {
 		void _.context.services.log.http(_.request);
 
 		let url = new URL(_.request.url);

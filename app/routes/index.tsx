@@ -6,10 +6,9 @@ import { useLoaderData } from "@remix-run/react";
 import { Feed } from "~/components/feed";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
-import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
-	return measure("routes/index#loader", async () => {
+	return context.time("routes/index#loader", async () => {
 		void context.services.log.http(request);
 
 		let headers = new Headers({

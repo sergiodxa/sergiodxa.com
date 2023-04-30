@@ -2,10 +2,8 @@ import type { LoaderArgs } from "@remix-run/cloudflare";
 
 import { z } from "zod";
 
-import { measure } from "~/utils/measure";
-
 export function loader(_: LoaderArgs) {
-	return measure("routes/auth.$provider.callback#loader", async () => {
+	return _.context.time("routes/auth.$provider.callback#loader", async () => {
 		let provider = z.enum(["github"]).parse(_.params.provider);
 
 		return await _.context.services.auth.authenticator.authenticate(

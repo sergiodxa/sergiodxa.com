@@ -11,18 +11,17 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
-import { measure } from "~/utils/measure";
 
 type LoaderData = SerializeFrom<typeof loader>;
 type RecommendationsList = Awaited<LoaderData["recommendations"]>;
 
 export async function loader(_: DataFunctionArgs) {
-	return measure("routes/tutorials.$slug#loader", async () => {
+	return _.context.time("routes/tutorials.$slug#loader", async () => {
 		let { slug } = z.object({ slug: z.string() }).parse(_.params);
 
 		if (slug.endsWith(".md")) {
 			slug = slug.slice(0, -3);
-			return redirect(`/tutorials/${slug}`);
+			throw redirect(`/tutorials/${slug}`);
 		}
 
 		let recommendations = _.context.services.tutorials.recommendations(slug);

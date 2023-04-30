@@ -11,10 +11,9 @@ import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
-import { measure } from "~/utils/measure";
 
 export function loader({ request, context }: LoaderArgs) {
-	return measure("routes/articles#loader", async () => {
+	return context.time("routes/articles#loader", async () => {
 		void context.services.log.http(request);
 
 		let url = new URL(request.url);
