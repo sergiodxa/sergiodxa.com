@@ -10,13 +10,15 @@ import { Schemas } from "~/utils/schemas";
 
 export let handle: SDX.Handle = { hydrate: true };
 
-export async function action({ request }: DataFunctionArgs) {
-	let { content } = await Schemas.formData()
-		.pipe(z.object({ content: z.string() }))
-		.promise()
-		.parse(request.formData());
+export async function action({ request, context }: DataFunctionArgs) {
+	return context.time("routes/write#action", async () => {
+		let { content } = await Schemas.formData()
+			.pipe(z.object({ content: z.string() }))
+			.promise()
+			.parse(request.formData());
 
-	return json({ content: parseMarkdown(content) });
+		return json({ content: parseMarkdown(content) });
+	});
 }
 
 export default function Component() {
