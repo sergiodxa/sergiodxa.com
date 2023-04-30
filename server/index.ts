@@ -19,8 +19,8 @@ import { Measurer } from "~/services/measure";
 import { ReadNoteService } from "~/services/read-note";
 import { TutorialsService } from "~/services/tutorials";
 
-const handleRequest = (measurer: Measurer) =>
-	createPagesFunctionHandler({
+function handleRequest(measurer: Measurer) {
+	return createPagesFunctionHandler({
 		build,
 		mode: process.env.NODE_ENV,
 		getLoadContext(context): AppLoadContext {
@@ -68,6 +68,7 @@ const handleRequest = (measurer: Measurer) =>
 			return { env, services, repos, time: measurer.time.bind(measurer) };
 		},
 	});
+}
 
 export async function onRequest(context: EventContext<any, any, any>) {
 	let measurer = new Measurer();
