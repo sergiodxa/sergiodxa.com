@@ -40,11 +40,18 @@ export default function Component() {
 		[content, submit]
 	);
 
-	useEffect(() => {
+	useEffect(function restoreDraftContent() {
 		let saved = localStorage.getItem("write");
 		if (!saved) return;
 		setSavedContent(saved);
 	}, []);
+
+	useEffect(
+		function saveDraftContent() {
+			localStorage.setItem("write", content);
+		},
+		[content]
+	);
 
 	return (
 		<main
@@ -60,7 +67,6 @@ export default function Component() {
 						onClick={() => {
 							if (savedContent) setContent(savedContent);
 							setSavedContent(null);
-							localStorage.removeItem("write");
 						}}
 					>
 						Restore
