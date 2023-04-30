@@ -21,7 +21,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 
 		let path = params["*"];
 
-		if (!path) return redirect("/articles");
+		if (!path) throw redirect("/articles");
 
 		try {
 			let note = await context.services.notes.read.perform(path);
@@ -60,7 +60,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 				);
 			}
 
-			return redirect("/articles");
+			throw redirect("/articles");
 		}
 	});
 }
