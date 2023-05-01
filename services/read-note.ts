@@ -51,18 +51,15 @@ export class ReadNoteService extends Service {
 		let cached = await this.kv.get(`note:${path}`, "json");
 		if (cached) return NoteSchema.parse(cached);
 
-		let note = await this.repos.cn.request("GET /:sitePath/:notePath", {
-			variables: { params: { sitePath: "sergiodxa", notePath: path! } },
-		});
-
+		let note = await this.repos.notes.fetchNoteByPath(path);
 		let result: z.infer<typeof NoteSchema> = NoteSchema.parse({
 			path,
 			body: this.parseBody(note.body),
 			title: note.title,
 			headline: note.headline,
 			wordCount: note.body.split(/\s+/).length,
-			datePublished: note.createdAt,
-			dateModified: note.updatedAt,
+			datePublished: note.created_at,
+			dateModified: note.updated_at,
 		});
 
 		await this.kv.put(`note:${path}`, JSON.stringify(result), {

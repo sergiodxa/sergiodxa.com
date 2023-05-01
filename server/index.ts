@@ -4,7 +4,6 @@ import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
 import * as build from "@remix-run/dev/server-build";
 
 import { BookmarksRepo } from "~/repositories/bookmarks";
-import { CollectedNotes } from "~/repositories/collected-notes";
 import { GithubRepository } from "~/repositories/github";
 import { KVTutorialRepository } from "~/repositories/kv-tutorial";
 import { NotesRepo } from "~/repositories/notes";
@@ -32,7 +31,6 @@ function handleRequest(measurer: Measurer) {
 
 			// Repositories to interact with the database
 			let repos: SDX.Repos = {
-				cn: new CollectedNotes(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
 				notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
 				bookmarks: new BookmarksRepo(
 					env.AIRTABLE_API_KEY,
