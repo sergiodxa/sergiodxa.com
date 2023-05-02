@@ -1,13 +1,19 @@
 import type { SelectionType } from "./get-selection";
 import type { Dispatch, RefObject } from "react";
 
-import { createRef, createContext, useContext, useReducer } from "react";
+import {
+	useCallback,
+	createRef,
+	createContext,
+	useContext,
+	useReducer,
+} from "react";
 
 import { getSelected } from "./get-selected";
 import { setSelectionRange } from "./set-selection-range";
 import { updateContent } from "./update-content";
 
-type EditorState = {
+export type EditorState = {
 	value: string;
 };
 
@@ -15,17 +21,10 @@ export type Updater = (selected: string) => string;
 export type Handler = (selection: SelectionType) => SelectionType;
 
 type Actions =
-	| {
-			type: "write";
-			payload: { value: string };
-	  }
+	| { type: "write"; payload: { value: string } }
 	| {
 			type: "update";
-			payload: {
-				selection: SelectionType;
-				updater: Updater;
-				handler: Handler;
-			};
+			payload: { selection: SelectionType; updater: Updater; handler: Handler };
 	  };
 
 const initialState: EditorState = {
@@ -58,7 +57,7 @@ export function useEditor(element: HTMLTextAreaElement | null) {
 	}, initialState);
 }
 
-export let Provider = context.Provider;
+export const Provider = context.Provider;
 
 export function useDispatch() {
 	return useContext(context).dispatch;
@@ -70,4 +69,14 @@ export function useState() {
 
 export function useElement() {
 	return useContext(context).element!;
+}
+
+export function useUpdate() {
+	let dispatch = useDispatch();
+	return useCallback(
+		(payload: Extract<Actions, { type: "update" }>["payload"]) => {
+			dispatch({ type: "update", payload });
+		},
+		[dispatch]
+	);
 }

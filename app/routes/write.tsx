@@ -6,10 +6,9 @@ import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
+import { Editor } from "~/editor";
 import { parseMarkdown } from "~/md.server";
 import { Schemas } from "~/utils/schemas";
-
-import { Editor } from "./editor";
 
 export let handle: SDX.Handle = { hydrate: true };
 
@@ -52,9 +51,7 @@ export default function Component() {
 	return (
 		<main
 			className="mx-auto grid min-h-[calc(100vh-90px-32px)] max-w-screen-xl gap-4 sm:grid-cols-2"
-			style={{
-				gridTemplateRows: savedContent ? "auto auto 1fr" : "auto 1fr",
-			}}
+			style={{ gridTemplateRows: savedContent ? "auto 1fr" : "1fr" }}
 		>
 			{savedContent && (
 				<aside className="col-span-2">
