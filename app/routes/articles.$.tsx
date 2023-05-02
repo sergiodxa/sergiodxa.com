@@ -3,11 +3,10 @@ import type {
 	MetaFunction,
 	SerializeFrom,
 } from "@remix-run/cloudflare";
-import type { ThrownResponse } from "@remix-run/react";
 import type { Article as SchemaArticle } from "schema-dts";
 
 import { redirect } from "@remix-run/cloudflare";
-import { useCatch, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { jsonHash } from "remix-utils";
 
 import { MarkdownView } from "~/components/markdown";
@@ -99,15 +98,6 @@ export default function Article() {
 				<MarkdownView content={body} />
 			</div>
 			<Support />
-		</article>
-	);
-}
-
-export function CatchBoundary() {
-	let caught = useCatch<ThrownResponse<404, { message: string }>>();
-	return (
-		<article className="dark:prose-dark prose prose-blue mx-auto max-w-screen-sm sm:prose-lg">
-			<h1>{caught.data.message}</h1>
 		</article>
 	);
 }

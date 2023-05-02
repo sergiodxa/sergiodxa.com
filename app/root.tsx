@@ -8,6 +8,8 @@ import type { ShouldRevalidateFunction } from "@remix-run/react";
 import type { ReactNode } from "react";
 
 import {
+	isRouteErrorResponse,
+	useRouteError,
 	Form,
 	Links,
 	LiveReload,
@@ -15,10 +17,9 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
-	useCatch,
 	useLoaderData,
+	NavLink,
 } from "@remix-run/react";
-import { NavLink } from "@remix-run/react/dist/components";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { StructuredData, useShouldHydrate, jsonHash } from "remix-utils";
@@ -116,20 +117,23 @@ export default function App() {
 	);
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-	if (process.env.NODE_ENV === "development") console.error(error);
-	return (
-		<Document locale={useLocale()} title="Error!">
-			Unexpected error
-		</Document>
-	);
-}
+export function ErrorBoundary() {
+	let locale = useLocale();
+	let error = useRouteError();
 
-export function CatchBoundary() {
-	let caught = useCatch();
+	if (process.env.NODE_ENV === "development") console.error(error);
+
+	if (isRouteErrorResponse(error)) {
+		return (
+			<Document locale={locale} title={error.statusText}>
+				{error.statusText}
+			</Document>
+		);
+	}
+
 	return (
-		<Document locale={useLocale()} title={caught.statusText}>
-			{caught.statusText}
+		<Document locale={locale} title="Error!">
+			Unexpected error
 		</Document>
 	);
 }

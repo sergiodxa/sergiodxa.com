@@ -10,4 +10,7 @@ export default {
 		"./repositories/**/*",
 		"./entities/**/*",
 	],
+	future: {
+		v2_errorBoundary: true,
+	},
 };
