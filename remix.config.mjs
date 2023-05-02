@@ -1,5 +1,5 @@
 /** @type {import('@remix-run/dev').AppConfig} */
-module.exports = {
+export default {
 	serverBuildTarget: "cloudflare-pages",
 	server: "./server/index.ts",
 	devServerBroadcastDelay: 2000,
