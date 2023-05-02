@@ -1,7 +1,7 @@
 import type {
 	DataFunctionArgs,
-	MetaFunction,
-	SerializeFrom,
+	V2_MetaFunction,
+	V2_MetaDescriptor,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
@@ -34,14 +34,18 @@ export function loader(_: DataFunctionArgs) {
 				term: query,
 				page,
 				tutorials,
-				async meta() {
+				async meta(): Promise<V2_MetaDescriptor[]> {
 					let t = await i18n.getFixedT(_.request);
 
-					let meta = { title: t("tutorials.meta.title.default") };
+					let meta: V2_MetaDescriptor[] = [];
 
-					if (query !== "") {
-						meta.title = t("tutorials.meta.title.search", {
-							query: decodeURIComponent(query),
+					if (query === "") {
+						meta.push({ title: t("tutorials.meta.title.default") });
+					} else {
+						meta.push({
+							title: t("tutorials.meta.title.search", {
+								query: decodeURIComponent(query),
+							}),
 						});
 					}
 
@@ -53,10 +57,9 @@ export function loader(_: DataFunctionArgs) {
 	});
 }
 
-export let meta: MetaFunction = ({ data }) => {
-	if (!data) return {};
-	let { meta } = data as SerializeFrom<typeof loader>;
-	return meta;
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) return [];
+	return data.meta;
 };
 
 export default function Component() {

@@ -1,9 +1,8 @@
 import type {
 	LoaderArgs,
-	MetaFunction,
-	SerializeFrom,
+	V2_MetaFunction,
+	V2_MetaDescriptor,
 } from "@remix-run/cloudflare";
-import type { Article as SchemaArticle } from "schema-dts";
 
 import { redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -39,13 +38,29 @@ export function loader({ request, context, params }: LoaderArgs) {
 							dateModified: note.dateModified.toISOString(),
 						};
 					},
-					async meta() {
+					async meta(): Promise<V2_MetaDescriptor[]> {
 						let t = await i18n.getFixedT(request);
 
-						return {
-							title: t("article.meta.title", { note: note.title }),
-							description: note.headline,
-						};
+						return [
+							{ title: t("article.meta.title", { note: note.title }) },
+							{ name: "description", content: note.headline },
+							{
+								"script:ld+json": {
+									"@context": "https://schema.org",
+									"@type": "Article",
+									headline: note.title,
+									description: note.headline,
+									author: {
+										"@type": "Person",
+										name: "Sergio Xalambrí",
+										url: "https://sergiodxa.com/about",
+									},
+									wordCount: note.wordCount,
+									datePublished: note.datePublished.toISOString(),
+									dateModified: note.dateModified.toISOString(),
+								},
+							},
+						];
 					},
 				},
 				{ headers }
@@ -64,29 +79,9 @@ export function loader({ request, context, params }: LoaderArgs) {
 	});
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) return {};
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) return [];
 	return data.meta;
-};
-
-export let handle: SDX.Handle<SerializeFrom<typeof loader>, SchemaArticle> = {
-	structuredData({ data }) {
-		if (!data) return [];
-		return {
-			"@context": "https://schema.org",
-			"@type": "Article",
-			headline: data.meta.title,
-			description: data.meta.description,
-			author: {
-				"@type": "Person",
-				name: "Sergio Xalambrí",
-				url: "https://sergiodxa.com/about",
-			},
-			wordCount: data.structuredData.wordCount,
-			datePublished: data.structuredData.datePublished,
-			dateModified: data.structuredData.dateModified,
-		};
-	},
 };
 
 export default function Article() {

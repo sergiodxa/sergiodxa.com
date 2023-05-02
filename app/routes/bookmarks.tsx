@@ -1,4 +1,8 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/cloudflare";
+import type {
+	LoaderArgs,
+	V2_MetaDescriptor,
+	V2_MetaFunction,
+} from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
 import { jsonHash } from "remix-utils";
@@ -13,17 +17,17 @@ export function loader({ request, context }: LoaderArgs) {
 
 		return jsonHash({
 			bookmarks: context.services.bookmarks.perform(),
-			async meta() {
+			async meta(): Promise<V2_MetaDescriptor[]> {
 				let t = await i18n.getFixedT(request);
 
-				return { title: t("bookmarks.meta.title") };
+				return [{ title: t("bookmarks.meta.title") }];
 			},
 		});
 	});
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) return {};
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) return [];
 	return data.meta;
 };
 

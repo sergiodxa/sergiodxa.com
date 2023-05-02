@@ -1,9 +1,4 @@
-import type {
-	LinksFunction,
-	LoaderArgs,
-	MetaFunction,
-	SerializeFrom,
-} from "@remix-run/cloudflare";
+import type { LinksFunction, LoaderArgs } from "@remix-run/cloudflare";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 import type { ReactNode } from "react";
 
@@ -74,32 +69,6 @@ export let shouldRevalidate: ShouldRevalidateFunction = ({
 	return defaultShouldRevalidate;
 };
 
-export let meta: MetaFunction = ({ data }) => {
-	let { locale } = (data as SerializeFrom<typeof loader>) ?? {};
-	return {
-		"apple-mobile-web-app-capable": "yes",
-		"apple-mobile-web-app-status-bar-style": "black-transparent",
-		"apple-mobile-web-app-title": "Sergio Xalambrí",
-		"mobile-web-app-capable": "yes",
-		"og:locale": locale,
-		"og:site_name": "Sergio Xalambrí",
-		"og:type": "website",
-		"theme-color": "#c0c0c0",
-		"twitter:card": "summary_large_image",
-		"twitter:creator": "@sergiodxa",
-		"twitter:site": "@sergiodxa",
-		"X-UA-Compatible": "IE=edge,chrome=1",
-		author: "Sergio Xalambrí",
-		HandheldFriendly: "True",
-		language: locale,
-		MobileOptimized: "320",
-		pagename: "Sergio Xalambrí",
-		title: "Sergio Xalambrí",
-		description: "The blog of sergiodxa",
-		viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
-	};
-};
-
 export let handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
@@ -155,6 +124,32 @@ function Document({
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
 				{title ? <title>{title}</title> : null}
+				<meta name="apple-mobile-web-app-capable" content="yes" />
+				<meta
+					name="apple-mobile-web-app-status-bar-style"
+					content="black-transparent"
+				/>
+				<meta name="apple-mobile-web-app-title" content="Sergio Xalambrí" />
+				<meta name="mobile-web-app-capable" content="yes" />
+				<meta name="og:locale" content={locale} />
+				<meta name="og:site_name" content="Sergio Xalambrí" />
+				<meta name="og:type" content="website" />
+				<meta name="theme-color" content="#c0c0c0" />
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta name="twitter:creator" content="@sergiodxa" />
+				<meta name="twitter:site" content="@sergiodxa" />
+				<meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+				<meta name="author" content="Sergio Xalambrí" />
+				<meta name="HandheldFriendly" content="True" />
+				<meta name="language" content={locale} />
+				<meta name="MobileOptimized" content="320" />
+				<meta name="pagename" content="Sergio Xalambrí" />
+				<meta name="title" content="Sergio Xalambrí" />
+				<meta name="description" content="The blog of sergiodxa" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1, viewport-fit=cover"
+				/>
 				<Meta />
 				<Links />
 				<link href="https://github.com/sergiodxa" rel="me authn" />
