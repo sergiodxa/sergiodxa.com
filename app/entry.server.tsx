@@ -1,4 +1,4 @@
-import type { EntryContext } from "@remix-run/cloudflare";
+import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare";
 
 import { RemixServer } from "@remix-run/react";
 import { createInstance } from "i18next";
@@ -10,15 +10,15 @@ import { preloadLinkedAssets } from "remix-utils";
 import { i18n } from "~/i18n.server";
 import en from "~/locales/en";
 import es from "~/locales/es";
-import { measure } from "~/utils/measure";
 
 export default function handleRequest(
 	request: Request,
 	status: number,
 	headers: Headers,
-	context: EntryContext
+	context: EntryContext,
+	{ time }: AppLoadContext
 ) {
-	return measure("entry.server#handleRequest", async () => {
+	return time("entry.server#handleRequest", async () => {
 		let instance = createInstance().use(initReactI18next);
 
 		let lng = await i18n.getLocale(request);
@@ -47,9 +47,7 @@ export default function handleRequest(
 			}
 		);
 
-		if (isbot(request.headers.get("user-agent"))) {
-			await body.allReady;
-		}
+		if (isbot(request.headers.get("user-agent"))) await body.allReady;
 
 		headers.set("Content-Type", "text/html");
 
