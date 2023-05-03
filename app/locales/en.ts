@@ -137,6 +137,10 @@ export default {
 		cta: "Sponsor me on GitHub",
 	},
 
+	notFound: {
+		title: "404 Not Found",
+	},
+
 	error: {
 		NOT_FOUND: "404 Not Found",
 		NOTE_NOT_FOUND: "The article {{path}} was not found",
