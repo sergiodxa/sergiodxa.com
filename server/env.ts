@@ -6,11 +6,11 @@ export let EnvSchema = z.object({
 	AIRTABLE_TABLE_ID: z.string().min(1),
 	BASE_URL: z.string().min(1).url(),
 	CF_PAGES: z
-		.string()
+		.literal("1")
 		.optional()
-		.transform((v) => {
-			console.log(v);
-			if (v) return "production";
+		.transform(Boolean)
+		.transform((isCFPages) => {
+			if (isCFPages) return "production";
 			return "development";
 		}),
 	CN_EMAIL: z.string().min(1).email(),
