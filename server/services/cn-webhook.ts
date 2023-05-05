@@ -1,6 +1,6 @@
 import type { z } from "zod";
 
-import { NoteEventSchema } from "~/entities/note";
+import { NoteEventSchema } from "~/server/entities/note";
 
 import { Service } from "./service";
 

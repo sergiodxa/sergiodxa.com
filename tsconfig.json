@@ -1,15 +1,12 @@
 {
 	"include": [
-		"entities/**/*.ts",
-		"repositories/**/*.ts",
-		"server/env.ts",
-		"server/index.ts",
-		"services/**/*.ts",
-		"test/**/*.ts",
-		"test/**/*.tsx",
+		"functions/[[remix]].ts",
 		"types/*.d.ts",
 		"app/**/*.ts",
-		"app/**/*.tsx"
+		"app/**/*.tsx",
+		"server/**/*.ts",
+		"test/**/*.ts",
+		"test/**/*.tsx"
 	],
 	"exclude": ["scripts/migrate.ts"],
 	"compilerOptions": {
@@ -26,10 +23,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["./app/*"],
-			"~/entities/*": ["./entities/*"],
-			"~/repositories/*": ["./repositories/*"],
+			"~/build": ["./types/build.d.ts", "./dist/worker/index.js"],
 			"~/server/*": ["./server/*"],
-			"~/services/*": ["./services/*"],
 			"~/test/*": ["./test/*"]
 		},
 		"noEmit": true

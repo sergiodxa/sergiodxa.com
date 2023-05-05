@@ -1,5 +1,5 @@
-import { NoteSchema } from "~/entities/note";
-import { Repository } from "~/repositories/repository";
+import { NoteSchema } from "~/server/entities/note";
+import { Repository } from "~/server/repositories/repository";
 
 export interface INotesRepo extends Repository<typeof NoteSchema> {}
 

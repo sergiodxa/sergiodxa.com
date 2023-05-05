@@ -16,10 +16,8 @@ export class Measurer {
 
 	async toHeaders(headers = new Headers()) {
 		for (let { name, duration } of this.#measures) {
-			headers.append(
-				"Server-Timing",
-				`${encodeURIComponent(name)};dur=${duration}`
-			);
+			if (name.includes("/")) name = encodeURIComponent(name);
+			headers.append("Server-Timing", `${name};dur=${duration}`);
 		}
 		return headers;
 	}

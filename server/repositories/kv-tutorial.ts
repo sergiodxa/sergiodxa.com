@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { TutorialSchema } from "~/entities/tutorial";
+import { TutorialSchema } from "~/server/entities/tutorial";
 
 import { KVRepository } from "./repository";
 

@@ -11,16 +11,15 @@ import { i18n } from "~/i18n.server";
 import en from "~/locales/en";
 import es from "~/locales/es";
 
-export default function handleRequest(
+export default async function handleRequest(
 	request: Request,
 	status: number,
 	headers: Headers,
 	context: EntryContext,
 	{ time }: AppLoadContext
 ) {
-	return time("entry.server#handleRequest", async () => {
+	let instance = await time("setup-i18next", async () => {
 		let instance = createInstance().use(initReactI18next);
-
 		let lng = await i18n.getLocale(request);
 		let ns = i18n.getRouteNamespaces(context);
 
@@ -34,6 +33,10 @@ export default function handleRequest(
 			interpolation: { escapeValue: false },
 		});
 
+		return instance;
+	});
+
+	let body = await time("start-rendering", async () => {
 		let body = await renderToReadableStream(
 			<I18nextProvider i18n={instance}>
 				<RemixServer context={context} url={request.url} />
@@ -49,10 +52,14 @@ export default function handleRequest(
 
 		if (isbot(request.headers.get("user-agent"))) await body.allReady;
 
-		headers.set("Content-Type", "text/html");
-
-		preloadLinkedAssets(context, headers);
-
-		return new Response(body, { headers, status });
+		return body;
 	});
+
+	headers.set("Content-Type", "text/html");
+
+	await time("preload-linked-asssets", async () => {
+		return preloadLinkedAssets(context, headers);
+	});
+
+	return new Response(body, { headers, status });
 }

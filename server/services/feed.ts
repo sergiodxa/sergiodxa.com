@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { BookmarkSchema } from "~/entities/bookmark";
-import { NoteSchema } from "~/entities/note";
+import { BookmarkSchema } from "~/server/entities/bookmark";
+import { NoteSchema } from "~/server/entities/note";
 
 import { Service } from "./service";
 

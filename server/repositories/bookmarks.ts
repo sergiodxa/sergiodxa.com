@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { BookmarkSchema } from "~/entities/bookmark";
-import { Repository } from "~/repositories/repository";
+import { BookmarkSchema } from "~/server/entities/bookmark";
+import { Repository } from "~/server/repositories/repository";
 
 export interface IBookmarksRepo extends Repository<typeof BookmarkSchema> {
 	fetchBookmarks(): Promise<z.infer<z.ZodArray<typeof BookmarkSchema>>>;
