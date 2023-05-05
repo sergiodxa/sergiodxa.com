@@ -1,9 +1,9 @@
 import { parse, transform } from "@markdoc/markdoc";
 import { describe, test, vi } from "vitest";
 
-import { TutorialSchema } from "~/entities/tutorial";
-import { GithubRepository } from "~/repositories/github";
-import { TutorialsService } from "~/services/tutorials";
+import { TutorialSchema } from "~/server/entities/tutorial";
+import { GithubRepository } from "~/server/repositories/github";
+import { TutorialsService } from "~/server/services/tutorials";
 
 let repos = {
 	tutorials: {
@@ -11,7 +11,7 @@ let repos = {
 		read: vi.fn(),
 		save: vi.fn(),
 	},
-	github: new GithubRepository(),
+	github: new GithubRepository(""),
 };
 
 describe(TutorialsService.name, () => {

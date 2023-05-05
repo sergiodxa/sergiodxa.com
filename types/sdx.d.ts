@@ -5,22 +5,23 @@ import type {
 	StructuredDataFunction,
 } from "remix-utils";
 import type { Thing } from "schema-dts";
-import type { BookmarksRepo } from "~/repositories/bookmarks";
-import type { CollectedNotes } from "~/repositories/collected-notes";
-import type { GithubRepository } from "~/repositories/github";
-import type { KVTutorialRepository } from "~/repositories/kv-tutorial";
-import type { NotesRepo } from "~/repositories/notes";
 import type { Env } from "~/server/env";
-import type { ArchiveService } from "~/services/archive";
-import type { IAuthService } from "~/services/auth";
-import type { BookmarksService } from "~/services/bookmarks";
-import type { CollectedNotesWebhookService } from "~/services/cn-webhook";
-import type { FeedService } from "~/services/feed";
-import type { IGitHubService } from "~/services/gh";
-import type { ILoggingService } from "~/services/logging";
-import type { Measurer } from "~/services/measure";
-import type { ReadNoteService } from "~/services/read-note";
-import type { TutorialsService } from "~/services/tutorials";
+import type { BookmarksRepo } from "~/server/repositories/bookmarks";
+import type { CollectedNotes } from "~/server/repositories/collected-notes";
+import type { GithubRepository } from "~/server/repositories/github";
+import type { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
+import type { NotesRepo } from "~/server/repositories/notes";
+import type { ArchiveService } from "~/server/services/archive";
+import type { IAuthService } from "~/server/services/auth";
+import type { BookmarksService } from "~/server/services/bookmarks";
+import type { CollectedNotesWebhookService } from "~/server/services/cn-webhook";
+import type { FeedService } from "~/server/services/feed";
+import type { IGitHubService } from "~/server/services/gh";
+import type { ILoggingService } from "~/server/services/logging";
+import type { Measurer } from "~/server/services/measure";
+import type { ArticlesService } from "~/server/services/new/articles";
+import type { ReadNoteService } from "~/server/services/read-note";
+import type { TutorialsService } from "~/server/services/tutorials";
 
 interface HydrateFunction<LoaderData> {
 	(data: LoaderData): boolean;
@@ -56,6 +57,9 @@ declare global {
 			gh: IGitHubService;
 			log: ILoggingService;
 			tutorials: TutorialsService;
+			new: {
+				articles: ArticlesService;
+			};
 		}
 	}
 }

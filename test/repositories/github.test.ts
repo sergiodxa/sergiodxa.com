@@ -3,10 +3,10 @@ import { describe, expect } from "vitest";
 import {
 	GitHubFileNotFoundError,
 	GithubRepository,
-} from "~/repositories/github";
+} from "~/server/repositories/github";
 
 describe(GithubRepository.name, () => {
-	let repo = new GithubRepository();
+	let repo = new GithubRepository("");
 
 	describe(repo.getMarkdownFile.name, () => {
 		test("should throw if the file doesn't exists", async () => {

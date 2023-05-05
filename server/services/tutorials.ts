@@ -3,7 +3,7 @@ import type { Scalar, Tag } from "@markdoc/markdoc";
 import * as semver from "semver";
 import { z } from "zod";
 
-import { TutorialSchema } from "~/entities/tutorial";
+import { TutorialSchema } from "~/server/entities/tutorial";
 
 import { Service } from "./service";
 

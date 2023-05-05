@@ -11,7 +11,7 @@ import { jsonHash } from "remix-utils";
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { i18n } from "~/i18n.server";
-import { NoteNotFoundError } from "~/repositories/notes";
+import { NoteNotFoundError } from "~/server/repositories/notes";
 
 export function loader({ request, context, params }: LoaderArgs) {
 	return context.time("routes/articles.$id#loader", async () => {

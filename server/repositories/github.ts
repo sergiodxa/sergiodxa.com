@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/core";
 import { z } from "zod";
 
-import { MarkdownSchema } from "~/entities/markdown";
+import { MarkdownSchema } from "~/server/entities/markdown";
 
 export class GithubRepository {
 	#gh: Octokit;

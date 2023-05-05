@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-export let envSchema = z.object({
+export let EnvSchema = z.object({
 	AIRTABLE_API_KEY: z.string().min(1),
 	AIRTABLE_BASE: z.string().min(1),
 	AIRTABLE_TABLE_ID: z.string().min(1),
 	BASE_URL: z.string().min(1).url(),
+	CF_PAGES: z.boolean().optional().default(false),
 	CN_EMAIL: z.string().min(1).email(),
 	CN_SITE: z.string().min(1),
 	CN_TOKEN: z.string().min(1),
@@ -25,4 +26,4 @@ export let envSchema = z.object({
 		.default("development"),
 });
 
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof EnvSchema>;
