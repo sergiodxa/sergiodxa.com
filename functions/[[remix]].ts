@@ -1,4 +1,5 @@
 import { createRequestHandler } from "@remix-run/cloudflare";
+import { z } from "zod";
 
 import * as build from "~/build";
 import { EnvSchema } from "~/server/env";
@@ -22,70 +23,75 @@ import { TutorialsService } from "~/server/services/tutorials";
 let remixHandler: ReturnType<typeof createRequestHandler>;
 
 export const onRequest: PagesFunction<Env> = async (ctx) => {
-	let env = EnvSchema.parse(ctx.env);
+	try {
+		let env = EnvSchema.parse(ctx.env);
 
-	if (!remixHandler) {
-		remixHandler = createRequestHandler(
-			build,
-			env.CF_PAGES ? "production" : "development"
-		);
-	}
+		if (!remixHandler) {
+			remixHandler = createRequestHandler(
+				build,
+				env.CF_PAGES ? "production" : "development"
+			);
+		}
 
-	let { hostname } = new URL(ctx.request.url);
+		let { hostname } = new URL(ctx.request.url);
 
-	// Repositories to interact with the database
-	let repos: SDX.Repos = {
-		cn: new CollectedNotes(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
-		notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
-		bookmarks: new BookmarksRepo(
-			env.AIRTABLE_API_KEY,
-			env.AIRTABLE_BASE,
-			env.AIRTABLE_TABLE_ID
-		),
-		github: new GithubRepository(env.GITHUB_TOKEN),
-		tutorials: new KVTutorialRepository(ctx.env.tutorials),
-	};
-
-	// Injected services objects to interact with third-party services
-	let services: SDX.Services = {
-		notes: {
-			read: new ReadNoteService(repos, ctx.env.cn),
-			webhook: new CollectedNotesWebhookService(repos, ctx.env.cn),
-		},
-		archive: new ArchiveService(repos, ctx.env.cn),
-		feed: new FeedService(repos, {
-			airtable: ctx.env.airtable,
-			cn: ctx.env.cn,
-			tutorials: ctx.env.tutorials,
-		}),
-		auth: new AuthService(
-			ctx.env.auth,
-			env,
-			hostname,
-			new GitHubService(ctx.env.gh, env.GITHUB_TOKEN)
-		),
-		bookmarks: new BookmarksService(repos, ctx.env.airtable),
-		gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
-		log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
-		tutorials: new TutorialsService(repos),
-		new: {
-			articles: new ArticlesService(
-				`${env.CN_EMAIL} ${env.CN_TOKEN}`,
-				env.CN_SITE
+		// Repositories to interact with the database
+		let repos: SDX.Repos = {
+			cn: new CollectedNotes(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+			notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
+			bookmarks: new BookmarksRepo(
+				env.AIRTABLE_API_KEY,
+				env.AIRTABLE_BASE,
+				env.AIRTABLE_TABLE_ID
 			),
-		},
-	};
+			github: new GithubRepository(env.GITHUB_TOKEN),
+			tutorials: new KVTutorialRepository(ctx.env.tutorials),
+		};
 
-	let measurer = new Measurer();
+		// Injected services objects to interact with third-party services
+		let services: SDX.Services = {
+			notes: {
+				read: new ReadNoteService(repos, ctx.env.cn),
+				webhook: new CollectedNotesWebhookService(repos, ctx.env.cn),
+			},
+			archive: new ArchiveService(repos, ctx.env.cn),
+			feed: new FeedService(repos, {
+				airtable: ctx.env.airtable,
+				cn: ctx.env.cn,
+				tutorials: ctx.env.tutorials,
+			}),
+			auth: new AuthService(
+				ctx.env.auth,
+				env,
+				hostname,
+				new GitHubService(ctx.env.gh, env.GITHUB_TOKEN)
+			),
+			bookmarks: new BookmarksService(repos, ctx.env.airtable),
+			gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
+			log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
+			tutorials: new TutorialsService(repos),
+			new: {
+				articles: new ArticlesService(
+					`${env.CN_EMAIL} ${env.CN_TOKEN}`,
+					env.CN_SITE
+				),
+			},
+		};
 
-	let response = await remixHandler(ctx.request, {
-		env,
-		services,
-		repos,
-		time: measurer.time.bind(measurer),
-	});
+		let measurer = new Measurer();
 
-	measurer.toHeaders(response.headers);
+		let response = await remixHandler(ctx.request, {
+			env,
+			services,
+			repos,
+			time: measurer.time.bind(measurer),
+		});
 
-	return response;
+		measurer.toHeaders(response.headers);
+
+		return response;
+	} catch (error) {
+		if (error instanceof z.ZodError) console.log(error.issues);
+		throw error;
+	}
 };
