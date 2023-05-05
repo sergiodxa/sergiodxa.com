@@ -1,10 +1,11 @@
 /** @type {import('@remix-run/dev').AppConfig} */
 export default {
-	serverBuildTarget: "cloudflare-pages",
-	serverBuildPath: "dist/worker/index.js",
-	serverDependenciesToBundle: [/~/],
 	devServerBroadcastDelay: 2000,
 	ignoredRouteFiles: ["**/.*"],
+	serverBuildPath: "dist/worker/index.js",
+	serverBuildTarget: "cloudflare-pages",
+	serverDependenciesToBundle: [/~/],
+	serverModuleFormat: "esm",
 	watchPaths: ["./server/**/*.ts"],
 	future: {
 		v2_errorBoundary: true,
