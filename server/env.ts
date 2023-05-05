@@ -5,7 +5,11 @@ export let EnvSchema = z.object({
 	AIRTABLE_BASE: z.string().min(1),
 	AIRTABLE_TABLE_ID: z.string().min(1),
 	BASE_URL: z.string().min(1).url(),
-	CF_PAGES: z.boolean().optional().default(false),
+	CF_PAGES: z
+		.boolean()
+		.optional()
+		.default(false)
+		.transform((v) => (v ? "production" : "development")),
 	CN_EMAIL: z.string().min(1).email(),
 	CN_SITE: z.string().min(1),
 	CN_TOKEN: z.string().min(1),
@@ -17,13 +21,6 @@ export let EnvSchema = z.object({
 	GITHUB_TOKEN: z.string().min(1),
 	GITHUB_USERNAME: z.string().min(1),
 	LOGTAIL_SOURCE_TOKEN: z.string().min(1),
-	NODE_ENV: z
-		.union([
-			z.literal("test"),
-			z.literal("development"),
-			z.literal("production"),
-		])
-		.default("development"),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
