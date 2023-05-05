@@ -1,4 +1,5 @@
 import { createRequestHandler } from "@remix-run/cloudflare";
+import * as Sentry from "@sentry/remix";
 import { z } from "zod";
 
 import * as build from "~/build";
@@ -25,6 +26,10 @@ let remixHandler: ReturnType<typeof createRequestHandler>;
 export const onRequest: PagesFunction<Env> = async (ctx) => {
 	try {
 		let env = EnvSchema.parse(ctx.env);
+
+		if (env.DSN) {
+			Sentry.init({ dsn: env.DSN, integrations: [], tracesSampleRate: 1.0 });
+		}
 
 		if (!remixHandler) {
 			remixHandler = createRequestHandler(
