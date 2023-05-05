@@ -10,7 +10,10 @@ node_modules
 /app/styles/tailwind.css
 /server/build
 /public/build
-/functions
+/functions/_assets
+/functions/\[\[path\]\].js
+/functions/\[\[path\]\].js.map
 .dev.vars
 .DS_Store
 /coverage
+/dist

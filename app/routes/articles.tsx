@@ -1,7 +1,7 @@
 import type {
 	LoaderArgs,
-	MetaFunction,
-	SerializeFrom,
+	V2_MetaFunction,
+	V2_MetaDescriptor,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
@@ -30,13 +30,15 @@ export function loader({ request, context }: LoaderArgs) {
 				term,
 				page,
 				notes: context.services.archive.perform(page, term),
-				async meta() {
+				async meta(): Promise<V2_MetaDescriptor[]> {
 					let t = await i18n.getFixedT(request);
 
-					let meta = { title: t("articles.meta.title.default") };
+					let meta: V2_MetaDescriptor[] = [];
 
-					if (term !== "") {
-						meta.title = t("articles.meta.title.search", { term });
+					if (term === "") {
+						meta.push({ title: t("articles.meta.title.default") });
+					} else {
+						meta.push({ title: t("articles.meta.title.search", { term }) });
 					}
 
 					return meta;
@@ -47,10 +49,9 @@ export function loader({ request, context }: LoaderArgs) {
 	});
 }
 
-export let meta: MetaFunction = ({ data }) => {
-	if (!data) return {};
-	let { meta } = data as SerializeFrom<typeof loader>;
-	return meta;
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	if (!data) return [];
+	return data.meta;
 };
 
 export default function Articles() {
