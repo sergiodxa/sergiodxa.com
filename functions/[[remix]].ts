@@ -23,7 +23,7 @@ import { TutorialsService } from "~/server/services/tutorials";
 
 let remixHandler: ReturnType<typeof createRequestHandler>;
 
-export const onRequest: PagesFunction<Env> = async (ctx) => {
+export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 	try {
 		let env = EnvSchema.parse(ctx.env);
 
