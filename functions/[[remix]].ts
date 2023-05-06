@@ -96,6 +96,7 @@ export const onRequest: PagesFunction<Env> = async (ctx) => {
 
 		return response;
 	} catch (error) {
+		Sentry.captureException(error);
 		if (error instanceof z.ZodError) console.log(error.issues);
 		throw error;
 	}
