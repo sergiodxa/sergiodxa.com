@@ -1,5 +1,6 @@
 import { createRequestHandler } from "@remix-run/cloudflare";
 import * as Sentry from "@sentry/remix";
+import { getClientIPAddress } from "remix-utils";
 import { z } from "zod";
 
 import * as build from "~/build";
@@ -25,11 +26,25 @@ let remixHandler: ReturnType<typeof createRequestHandler>;
 
 export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 	try {
-		let env = EnvSchema.parse(ctx.env);
+		if (ctx.env.DSN) {
+			Sentry.init({
+				dsn: ctx.env.DSN,
+				tracesSampleRate: 1.0,
+				allowUrls: ["*.sergiodxa.com"],
+				attachStacktrace: true,
+				beforeSend(event) {
+					if (event.request?.url?.includes("sentry")) return null;
+					event.user = {};
 
-		if (env.DSN) {
-			Sentry.init({ dsn: env.DSN, integrations: [], tracesSampleRate: 1.0 });
+					let ip = getClientIPAddress(ctx.request.headers);
+					if (ip) event.user.ip_address = ip;
+
+					return event;
+				},
+			});
 		}
+
+		let env = EnvSchema.parse(ctx.env);
 
 		if (!remixHandler) {
 			remixHandler = createRequestHandler(
