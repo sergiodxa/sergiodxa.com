@@ -25,7 +25,6 @@ export let EnvSchema = z.object({
 	GITHUB_USERNAME: z.string().min(1),
 	LOGTAIL_SOURCE_TOKEN: z.string().min(1),
 	DSN: z.string().url().optional(),
-	FAIL: z.string().url(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
