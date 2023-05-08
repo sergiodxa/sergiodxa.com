@@ -19,6 +19,7 @@ import { GitHubService } from "~/server/services/gh";
 import { LoggingService } from "~/server/services/logging";
 import { Measurer } from "~/server/services/measure";
 import { ArticlesService } from "~/server/services/new/articles";
+import { TutorialsService as NewTutorialsService } from "~/server/services/new/tutorials";
 import { ReadNoteService } from "~/server/services/read-note";
 import { TutorialsService } from "~/server/services/tutorials";
 
@@ -91,10 +92,8 @@ export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 			log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
 			tutorials: new TutorialsService(repos),
 			new: {
-				articles: new ArticlesService(
-					`${env.CN_EMAIL} ${env.CN_TOKEN}`,
-					env.CN_SITE
-				),
+				articles: new ArticlesService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+				tutorials: new NewTutorialsService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
 			},
 		};
 
