@@ -20,5 +20,5 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           projectName: sergiodxa
-          directory: .
+          directory: public
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
