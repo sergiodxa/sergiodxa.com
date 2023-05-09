@@ -35,12 +35,11 @@
 	"dependencies": {
 		"@heroicons/react": "^2.0.17",
 		"@markdoc/markdoc": "^0.2.1",
-		"@metronome-sh/cloudflare-pages": "^5.6.1",
-		"@metronome-sh/react": "^5.6.1",
 		"@octokit/core": "^4.1.0",
 		"@remix-run/cloudflare": "^1.16.0",
 		"@remix-run/cloudflare-pages": "^1.16.0",
 		"@remix-run/react": "^1.16.0",
+		"@sentry/remix": "^7.51.0",
 		"@sergiodxa/api-client": "^1.0.2",
 		"@tailwindcss/forms": "^0.5.3",
 		"@tailwindcss/line-clamp": "^0.4.2",

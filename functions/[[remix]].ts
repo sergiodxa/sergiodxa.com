@@ -1,4 +1,6 @@
 import { createRequestHandler } from "@remix-run/cloudflare";
+import * as Sentry from "@sentry/remix";
+import { getClientIPAddress } from "remix-utils";
 import { z } from "zod";
 
 import * as build from "~/build";
@@ -17,13 +19,32 @@ import { GitHubService } from "~/server/services/gh";
 import { LoggingService } from "~/server/services/logging";
 import { Measurer } from "~/server/services/measure";
 import { ArticlesService } from "~/server/services/new/articles";
+import { TutorialsService as NewTutorialsService } from "~/server/services/new/tutorials";
 import { ReadNoteService } from "~/server/services/read-note";
 import { TutorialsService } from "~/server/services/tutorials";
 
 let remixHandler: ReturnType<typeof createRequestHandler>;
 
-export const onRequest: PagesFunction<Env> = async (ctx) => {
+export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 	try {
+		if (ctx.env.DSN) {
+			Sentry.init({
+				dsn: ctx.env.DSN,
+				tracesSampleRate: 1.0,
+				allowUrls: ["*.sergiodxa.com"],
+				attachStacktrace: true,
+				beforeSend(event) {
+					if (event.request?.url?.includes("sentry")) return null;
+					event.user = {};
+
+					let ip = getClientIPAddress(ctx.request.headers);
+					if (ip) event.user.ip_address = ip;
+
+					return event;
+				},
+			});
+		}
+
 		let env = EnvSchema.parse(ctx.env);
 
 		if (!remixHandler) {
@@ -71,10 +92,8 @@ export const onRequest: PagesFunction<Env> = async (ctx) => {
 			log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
 			tutorials: new TutorialsService(repos),
 			new: {
-				articles: new ArticlesService(
-					`${env.CN_EMAIL} ${env.CN_TOKEN}`,
-					env.CN_SITE
-				),
+				articles: new ArticlesService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+				tutorials: new NewTutorialsService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
 			},
 		};
 
@@ -91,6 +110,7 @@ export const onRequest: PagesFunction<Env> = async (ctx) => {
 
 		return response;
 	} catch (error) {
+		Sentry.captureException(error);
 		if (error instanceof z.ZodError) console.log(error.issues);
 		throw error;
 	}

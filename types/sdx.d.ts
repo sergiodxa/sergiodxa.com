@@ -20,6 +20,7 @@ import type { IGitHubService } from "~/server/services/gh";
 import type { ILoggingService } from "~/server/services/logging";
 import type { Measurer } from "~/server/services/measure";
 import type { ArticlesService } from "~/server/services/new/articles";
+import type { TutorialsService as NewTutorialsService } from "~/server/services/new/tutorials";
 import type { ReadNoteService } from "~/server/services/read-note";
 import type { TutorialsService } from "~/server/services/tutorials";
 
@@ -57,9 +58,7 @@ declare global {
 			gh: IGitHubService;
 			log: ILoggingService;
 			tutorials: TutorialsService;
-			new: {
-				articles: ArticlesService;
-			};
+			new: { articles: ArticlesService; tutorials: NewTutorialsService };
 		}
 	}
 }
