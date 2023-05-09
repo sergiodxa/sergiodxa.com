@@ -2,7 +2,7 @@ import { installGlobals } from "@remix-run/node";
 import dotenv from "dotenv";
 import { afterAll, afterEach, beforeAll } from "vitest";
 
-import { server } from "../../mocks";
+import { server } from "./mocks";
 
 import "@testing-library/jest-dom/extend-expect";
 

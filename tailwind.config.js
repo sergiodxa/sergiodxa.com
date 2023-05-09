@@ -1,3 +1,4 @@
+/** @type {import("tailwindcss").Config} */
 module.exports = {
 	content: ["./app/**/*.{ts,tsx}"],
 
@@ -31,9 +32,5 @@ module.exports = {
 		},
 	},
 
-	plugins: [
-		require("@tailwindcss/typography"),
-		require("@tailwindcss/forms"),
-		require("@tailwindcss/line-clamp"),
-	],
+	plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };
