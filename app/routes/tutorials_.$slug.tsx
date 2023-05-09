@@ -1,4 +1,9 @@
-import type { DataFunctionArgs, SerializeFrom } from "@remix-run/cloudflare";
+import type {
+	DataFunctionArgs,
+	SerializeFrom,
+	V2_MetaDescriptor,
+	V2_MetaFunction,
+} from "@remix-run/cloudflare";
 
 import { redirect, defer } from "@remix-run/cloudflare";
 import { Await, Link, useAsyncValue, useLoaderData } from "@remix-run/react";
@@ -11,6 +16,7 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
+import { i18n } from "~/i18n.server";
 
 type LoaderData = SerializeFrom<typeof loader>;
 type RecommendationsList = Awaited<LoaderData["recommendations"]>;
@@ -27,9 +33,19 @@ export async function loader(_: DataFunctionArgs) {
 		let recommendations = _.context.services.tutorials.recommendations(slug);
 		let tutorial = await _.context.services.tutorials.read(slug);
 
-		return defer({ tutorial, recommendations });
+		let t = await i18n.getFixedT(_.request);
+
+		let meta: V2_MetaDescriptor[] = [
+			{ title: t("tutorial.document.title", { title: tutorial.title }) },
+		];
+
+		return defer({ tutorial, recommendations, meta });
 	});
 }
+
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	return data?.meta ?? [];
+};
 
 export default function Component() {
 	let { tutorial, recommendations } = useLoaderData<typeof loader>();

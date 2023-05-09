@@ -127,6 +127,9 @@ export default {
 	},
 
 	tutorial: {
+		document: {
+			title: 'Cómo "{{title}}" por sergiodxa',
+		},
 		header: {
 			eyebrown: "Cómo",
 			edit: "Editar en GitHub",
