@@ -128,7 +128,7 @@ export default {
 
 	tutorial: {
 		document: {
-			title: 'Cómo "{{title}}" por sergiodxa',
+			title: "Cómo {{title}} por sergiodxa",
 		},
 		header: {
 			eyebrown: "Cómo",
