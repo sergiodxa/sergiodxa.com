@@ -30,15 +30,10 @@ interface HydrateFunction<LoaderData> {
 
 declare global {
 	namespace SDX {
-		export type Handle<
-			LoaderData = unknown,
-			StructuredDataThing extends Thing = Thing
-		> = {
+		export type Handle<LoaderData = unknown> = {
 			i18n?: string | string[];
 			hydrate?: boolean | HydrateFunction<LoaderData>;
 			scripts?: ExternalScriptsFunction;
-			dynamicLinks?: DynamicLinksFunction<LoaderData>;
-			structuredData?: StructuredDataFunction<LoaderData, StructuredDataThing>;
 		};
 
 		export interface Repos {
