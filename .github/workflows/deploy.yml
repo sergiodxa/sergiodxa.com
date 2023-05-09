@@ -1,0 +1,24 @@
+name: Deploy
+
+on: [push]
+
+jobs:
+  cloudflare:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Cloudflare Pages
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: bahmutov/npm-install@v1
+      - run: npm run build
+
+      - uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: sergiodxa
+          directory: public
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
