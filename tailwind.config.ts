@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import("tailwindcss").Config} */
+export default {
 	content: ["./app/**/*.{ts,tsx}"],
 
 	darkMode: "media",
@@ -31,9 +32,5 @@ module.exports = {
 		},
 	},
 
-	plugins: [
-		require("@tailwindcss/typography"),
-		require("@tailwindcss/forms"),
-		require("@tailwindcss/line-clamp"),
-	],
+	plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };
