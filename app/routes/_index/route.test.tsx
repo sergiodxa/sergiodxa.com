@@ -1,6 +1,8 @@
+import type { AppLoadContext } from "@remix-run/cloudflare";
+
 import { describe, expect } from "vitest";
+
 import { loader } from "./route";
-import { AppLoadContext } from "@remix-run/cloudflare";
 
 describe(loader.name, () => {
 	test("returns feed data", async () => {
