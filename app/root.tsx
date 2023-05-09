@@ -250,7 +250,7 @@ function Header() {
 						{!user?.isSponsor ? (
 							<a
 								href="https://github.com/sponsors/sergiodxa"
-								className="block flex-shrink-0 flex-grow rounded-md border border-transparent bg-white py-2 px-4 text-center text-base font-medium text-blue-600 hover:bg-blue-50"
+								className="block flex-shrink-0 flex-grow rounded-md border border-transparent bg-white px-4 py-2 text-center text-base font-medium text-blue-600 hover:bg-blue-50"
 							>
 								{t("nav.sponsor")}
 							</a>
@@ -260,7 +260,7 @@ function Header() {
 							<Form method="post" action="/auth/login" className="contents">
 								<button
 									type="submit"
-									className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+									className="hidden rounded-md border border-transparent bg-blue-500 px-4 py-2 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
 								>
 									{t("nav.login")}
 								</button>
@@ -269,7 +269,7 @@ function Header() {
 							<Form method="post" action="/auth/logout" className="contents">
 								<button
 									type="submit"
-									className="hidden rounded-md border border-transparent bg-blue-500 py-2 px-4 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
+									className="hidden rounded-md border border-transparent bg-blue-500 px-4 py-2 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
 								>
 									{t("nav.logout")}
 								</button>

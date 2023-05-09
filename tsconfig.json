@@ -21,6 +21,7 @@
 		"allowJs": true,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
+		"skipLibCheck": true,
 		"paths": {
 			"~/*": ["./app/*"],
 			"~/build": ["./types/build.d.ts", "./dist/worker/index.js"],

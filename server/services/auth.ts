@@ -43,7 +43,7 @@ export class AuthService implements IAuthService {
 			cookie: {
 				name: "sid",
 				httpOnly: true,
-				secure: env.NODE_ENV === "production",
+				secure: env.CF_PAGES === "production",
 				sameSite: "lax",
 				path: "/",
 				secrets: [env.COOKIE_SESSION_SECRET],

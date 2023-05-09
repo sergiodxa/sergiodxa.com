@@ -1,10 +1,5 @@
 import "@remix-run/server-runtime";
-import type {
-	DynamicLinksFunction,
-	ExternalScriptsFunction,
-	StructuredDataFunction,
-} from "remix-utils";
-import type { Thing } from "schema-dts";
+import type { ExternalScriptsFunction } from "remix-utils";
 import type { Env } from "~/server/env";
 import type { BookmarksRepo } from "~/server/repositories/bookmarks";
 import type { CollectedNotes } from "~/server/repositories/collected-notes";
@@ -30,15 +25,10 @@ interface HydrateFunction<LoaderData> {
 
 declare global {
 	namespace SDX {
-		export type Handle<
-			LoaderData = unknown,
-			StructuredDataThing extends Thing = Thing
-		> = {
+		export type Handle<LoaderData = unknown> = {
 			i18n?: string | string[];
 			hydrate?: boolean | HydrateFunction<LoaderData>;
 			scripts?: ExternalScriptsFunction;
-			dynamicLinks?: DynamicLinksFunction<LoaderData>;
-			structuredData?: StructuredDataFunction<LoaderData, StructuredDataThing>;
 		};
 
 		export interface Repos {
