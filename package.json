@@ -58,7 +58,7 @@
 		"zod": "^3.20.2"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^3.18.0",
+		"@cloudflare/workers-types": "^3.19.0",
 		"@faker-js/faker": "^7.6.0",
 		"@remix-run/dev": "^1.16.0",
 		"@remix-run/eslint-config": "^1.16.0",
