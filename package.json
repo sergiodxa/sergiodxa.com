@@ -15,7 +15,7 @@
 		"start": "cross-env NODE_ENV=production npm run wrangler",
 		"wrangler": "wrangler pages dev ./public --kv airtable --kv cn --kv gh --kv auth --kv tutorials",
 		"typecheck": "tsc --noEmit --project tsconfig.json",
-		"lint": "eslint .",
+		"lint": "eslint --ext .ts,.tsx app/ server/ types/ functions/",
 		"lint:fix": "npm run lint -- --fix",
 		"test": "vitest",
 		"test:coverage": "vitest --coverage",
