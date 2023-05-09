@@ -23,7 +23,7 @@ import avatarHref from "~/assets/avatar.png";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
-import tailwindUrl from "~/tailwind.css";
+import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
 export let links: LinksFunction = () => {
