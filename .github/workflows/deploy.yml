@@ -1,21 +1,10 @@
+name: Deploy
+
 on: [push]
 
 jobs:
-  build:
-    name: Build
+  cloudflare:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
-      - uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: build
-
-  publish:
-    runs-on: ubuntu-latest
-    needs: build
     permissions:
       contents: read
       deployments: write
@@ -23,10 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
+      - uses: bahmutov/npm-install@v1
+      - run: npm run build
 
       - uses: cloudflare/pages-action@v1
         with:
