@@ -1,10 +1,5 @@
 import "@remix-run/server-runtime";
-import type {
-	DynamicLinksFunction,
-	ExternalScriptsFunction,
-	StructuredDataFunction,
-} from "remix-utils";
-import type { Thing } from "schema-dts";
+import type { ExternalScriptsFunction } from "remix-utils";
 import type { Env } from "~/server/env";
 import type { BookmarksRepo } from "~/server/repositories/bookmarks";
 import type { CollectedNotes } from "~/server/repositories/collected-notes";

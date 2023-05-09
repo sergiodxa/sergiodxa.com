@@ -159,7 +159,7 @@ function Recommendations() {
 						<div key={slug} className="flex flex-col gap-2">
 							<Link
 								to={`/tutorials/${slug}`}
-								className="block text-blue-900 underline line-clamp-2 visited:text-violet-900"
+								className="line-clamp-2 block text-blue-900 underline visited:text-violet-900"
 							>
 								<p className="text-xl font-semibold">{title}</p>
 							</Link>
