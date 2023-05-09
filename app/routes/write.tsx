@@ -1,4 +1,8 @@
-import type { DataFunctionArgs } from "@remix-run/cloudflare";
+import type {
+	DataFunctionArgs,
+	V2_MetaDescriptor,
+	V2_MetaFunction,
+} from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { useFetcher } from "@remix-run/react";
@@ -7,10 +11,19 @@ import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
 import { Editor } from "~/editor";
+import { i18n } from "~/i18n.server";
 import { parseMarkdown } from "~/md.server";
 import { Schemas } from "~/utils/schemas";
 
 export let handle: SDX.Handle = { hydrate: true };
+
+export async function loader({ request }: DataFunctionArgs) {
+	let t = await i18n.getFixedT(request);
+
+	let meta: V2_MetaDescriptor[] = [{ title: t("write.title") }];
+
+	return json({ meta });
+}
 
 export async function action({ request, context }: DataFunctionArgs) {
 	let markdown = await context.time("parseFormData", async () => {
@@ -27,6 +40,10 @@ export async function action({ request, context }: DataFunctionArgs) {
 
 	return json({ content });
 }
+
+export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+	return data?.meta ?? [];
+};
 
 export default function Component() {
 	let { submit, data } = useFetcher<typeof action>();

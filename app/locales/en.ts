@@ -145,4 +145,8 @@ export default {
 		NOT_FOUND: "404 Not Found",
 		NOTE_NOT_FOUND: "The article {{path}} was not found",
 	},
+
+	write: {
+		title: "Write something new",
+	},
 };
