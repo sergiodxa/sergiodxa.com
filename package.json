@@ -7,6 +7,7 @@
 		"node": "16"
 	},
 	"scripts": {
+		"ci": "npm run build & npm run lint & npm run test -- --run && npm run typecheck",
 		"predev": "npm run build",
 		"dev:app": "remix watch",
 		"dev:http": "cross-env NODE_ENV=development npm run wrangler",
