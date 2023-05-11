@@ -1,8 +1,6 @@
 import type { Handler, Updater } from "./use-editor";
 import type { ReactNode } from "react";
 
-import { CodeBracketIcon, LinkIcon } from "@heroicons/react/20/solid";
-
 import { getSelection } from "./get-selection";
 import { useUpdate, useElement } from "./use-editor";
 
@@ -36,7 +34,7 @@ export namespace Button {
 				updater={(selected) => `**${selected}**`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 2 })}
 			>
-				Bold
+				<Icon name="bold" />
 			</MenuItem>
 		);
 	}
@@ -47,7 +45,7 @@ export namespace Button {
 				updater={(selected) => `_${selected}_`}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 1 })}
 			>
-				Italic
+				<Icon name="italic" />
 			</MenuItem>
 		);
 	}
@@ -60,7 +58,7 @@ export namespace Button {
 				}}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 10 })}
 			>
-				<LinkIcon aria-hidden className="h-5 w-5" />
+				<Icon name="link" />
 			</MenuItem>
 		);
 	}
@@ -71,7 +69,7 @@ export namespace Button {
 				updater={(selected) => `\`${selected}\``}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 1 })}
 			>
-				<CodeBracketIcon aria-hidden className="h-5 w-5" />
+				<Icon name="code" />
 			</MenuItem>
 		);
 	}
@@ -82,7 +80,7 @@ export namespace Button {
 				updater={(selected) => `> ${selected}`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 2 })}
 			>
-				Quote
+				<Icon name="quote" />
 			</MenuItem>
 		);
 	}
@@ -93,8 +91,16 @@ export namespace Button {
 				updater={(selected) => `![${selected}](https://)`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 10 })}
 			>
-				Image
+				<Icon name="image" />
 			</MenuItem>
+		);
+	}
+
+	function Icon({ name }: { name: string }) {
+		return (
+			<svg width={20} height={20}>
+				<use href={`/icons?name=${name}#${name}`} />
+			</svg>
 		);
 	}
 }
