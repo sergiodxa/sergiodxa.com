@@ -47,7 +47,7 @@ export function Editor({ value, onChange }: EditorProps) {
 						let value = event.currentTarget.value;
 						dispatch({ type: "write", payload: { value } });
 					}}
-					className="h-full w-full resize-none"
+					className="h-full w-full resize-none font-mono"
 				/>
 			</div>
 		</Provider>
