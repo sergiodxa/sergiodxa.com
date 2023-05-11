@@ -52,14 +52,23 @@ export function Editor() {
 	return (
 		<Provider value={providerValue}>
 			<div className="grid h-[calc(100vh-90px-32px)] gap-4 sm:grid-cols-2">
-				<div className="flex h-full flex-col gap-2">
-					<div role="menubar" className="flex h-6 items-center gap-2">
-						<Button.Bold />
-						<Button.Italic />
-						<Button.Link />
-						<Button.Code />
-						<Button.Quote />
-						<Button.Image />
+				<div className="flex h-full flex-col rounded-md border border-neutral-300 bg-white">
+					<div role="menubar" className="flex items-center justify-between p-2">
+						<div className="flex items-center gap-x-1 text-gray-700">
+							<svg width={16} height={16}>
+								<use href="/icons?name=markdown#markdown" />
+							</svg>
+							<span className="text-xs">Markdown is supported</span>
+						</div>
+
+						<div className="flex items-center justify-end">
+							<Button.Bold />
+							<Button.Italic />
+							<Button.Link />
+							<Button.Code />
+							<Button.Quote />
+							<Button.Image />
+						</div>
 					</div>
 
 					<textarea
@@ -69,7 +78,7 @@ export function Editor() {
 							let value = event.currentTarget.value;
 							dispatch({ type: "write", payload: { value } });
 						}}
-						className="w-full flex-grow resize-none font-mono"
+						className="mx-2 mb-2 flex-grow resize-none rounded-md border-none font-mono ring-blue-600 focus:outline-none focus:ring-2"
 					/>
 				</div>
 

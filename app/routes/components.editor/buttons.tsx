@@ -18,6 +18,7 @@ export namespace Button {
 			<button
 				type="button"
 				role="menuitem"
+				className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-neutral-200"
 				onClick={() => {
 					let selection = getSelection(element.current!);
 					update({ selection, updater, handler });
@@ -98,7 +99,7 @@ export namespace Button {
 
 	function Icon({ name }: { name: string }) {
 		return (
-			<svg width={20} height={20}>
+			<svg width={16} height={16}>
 				<use href={`/icons?name=${name}#${name}`} />
 			</svg>
 		);
