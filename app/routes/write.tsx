@@ -90,7 +90,7 @@ export default function Component() {
 					setContent(value);
 					localStorage.setItem("write", value);
 				}}
-				className="resize-none"
+				className="resize-none font-mono"
 			/>
 
 			<div className="prose prose-blue max-w-prose">
