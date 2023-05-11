@@ -28,7 +28,7 @@ type Actions =
 	  };
 
 const initialState: EditorState = {
-	value: "hola mundo",
+	value: "",
 };
 
 const context = createContext<{
