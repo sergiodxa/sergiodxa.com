@@ -23,6 +23,7 @@ type RecommendationsList = Awaited<LoaderData["recommendations"]>;
 
 export async function loader(_: DataFunctionArgs) {
 	return _.context.time("routes/tutorials.$slug#loader", async () => {
+		let locale = await i18n.getLocale(_.request);
 		let { slug } = z.object({ slug: z.string() }).parse(_.params);
 
 		if (slug.endsWith(".md")) {
@@ -44,6 +45,13 @@ export async function loader(_: DataFunctionArgs) {
 				{ title },
 				{ property: "og:title", content: title },
 				{ property: "og:type", content: "article" },
+				{ property: "og:url", content: _.request.url },
+				{ property: "og:site_name", content: "Sergio Xalambrí" },
+				{ property: "og:locale", content: locale },
+				{ property: "twitter:card", content: "summary" },
+				{ property: "twitter:creator", content: "@sergiodxa" },
+				{ property: "twitter:site", content: "@sergiodxa" },
+				{ property: "twitter:title", content: title },
 			];
 		}
 	});
