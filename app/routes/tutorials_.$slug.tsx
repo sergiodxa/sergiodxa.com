@@ -35,11 +35,17 @@ export async function loader(_: DataFunctionArgs) {
 
 		let t = await i18n.getFixedT(_.request);
 
-		let meta: V2_MetaDescriptor[] = [
-			{ title: t("tutorial.document.title", { title: tutorial.title }) },
-		];
+		return defer({ tutorial, recommendations, meta: getMeta() });
 
-		return defer({ tutorial, recommendations, meta });
+		function getMeta(): V2_MetaDescriptor[] {
+			let title = t("tutorial.document.title", { title: tutorial.title });
+
+			return [
+				{ title },
+				{ property: "og:title", content: title },
+				{ property: "og:type", content: "article" },
+			];
+		}
 	});
 }
 
