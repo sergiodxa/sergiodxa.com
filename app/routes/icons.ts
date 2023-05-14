@@ -28,6 +28,7 @@ export async function loader({ request }: DataFunctionArgs) {
 	return new Response(body, {
 		headers: {
 			"Content-Type": "image/svg+xml",
+			"Cache-Control": "public, s-maxage=31536000, max-age=60, immutable",
 		},
 	});
 }
