@@ -18,7 +18,7 @@ First, we need to create a new form with the inputs using the names we need for 
   <input type="email" name="user[email]" />
 
   <input type="text" name="friends[0] />
-  <input type="text" name="friends[2] />
+  <input type="text" name="friends[1] />
 
   <input type="text" name="companies[0][name]" />
   <input type="url" name="companies[0][website]" />
