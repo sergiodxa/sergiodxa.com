@@ -145,7 +145,20 @@ export default {
 		NOT_FOUND: "404 No encontrado",
 		NOTE_NOT_FOUND: "El artículo {{path}} no se pudo encontrar",
 	},
+
 	write: {
 		title: "Escribí algo nuevo",
+	},
+
+	editor: {
+		button: {
+			bold: "Negrita",
+			italic: "Italica",
+			link: "Enlace",
+			code: "Código",
+			quote: "Cita",
+			image: "Imágen",
+			heading: "Encabezado",
+		},
 	},
 };
