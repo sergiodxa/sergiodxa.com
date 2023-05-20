@@ -164,4 +164,18 @@ export default {
 			heading: "Heading",
 		},
 	},
+
+	og: {
+		page: {
+			home: "sergiodxa.com",
+		},
+
+		tutorial: {
+			eyebrown: "How to",
+		},
+
+		notFound: {
+			title: '"{{slug}}" doesn\'t exists on sergiodxa.com',
+		},
+	},
 };
