@@ -1,6 +1,18 @@
 import type { Handler, Updater } from "./use-editor";
 import type { ReactNode } from "react";
 
+import {
+	BoldIcon,
+	ItalicIcon,
+	LinkIcon,
+	CodeIcon,
+	QuoteIcon,
+	ImageIcon,
+	HeadingIcon,
+} from "lucide-react";
+
+import { useT } from "~/helpers/use-i18n.hook";
+
 import { getSelection } from "./get-selection";
 import { useUpdate, useElement } from "./use-editor";
 
@@ -30,28 +42,33 @@ export namespace Button {
 	}
 
 	export function Bold() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => `**${selected}**`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 2 })}
 			>
-				<Icon name="bold" />
+				<BoldIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.bold")}</span>
 			</MenuItem>
 		);
 	}
 
 	export function Italic() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => `_${selected}_`}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 1 })}
 			>
-				<Icon name="italic" />
+				<ItalicIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.italic")}</span>
 			</MenuItem>
 		);
 	}
 
 	export function Link() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => {
@@ -59,49 +76,61 @@ export namespace Button {
 				}}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 10 })}
 			>
-				<Icon name="link" />
+				<LinkIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.italic")}</span>
 			</MenuItem>
 		);
 	}
 
 	export function Code() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => `\`${selected}\``}
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 1 })}
 			>
-				<Icon name="code" />
+				<CodeIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.code")}</span>
 			</MenuItem>
 		);
 	}
 
 	export function Quote() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => `> ${selected}`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 2 })}
 			>
-				<Icon name="quote" />
+				<QuoteIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.quote")}</span>
 			</MenuItem>
 		);
 	}
 
 	export function Image() {
+		let t = useT("translation", "editor");
 		return (
 			<MenuItem
 				updater={(selected) => `![${selected}](https://)`}
 				handler={({ start, end }) => ({ start: 2 + start, end: end + 10 })}
 			>
-				<Icon name="image" />
+				<ImageIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.image")}</span>
 			</MenuItem>
 		);
 	}
 
-	function Icon({ name }: { name: string }) {
+	export function Heading() {
+		let t = useT("translation", "editor");
 		return (
-			<svg width={16} height={16}>
-				<use href={`/icons?name=${name}#${name}`} />
-			</svg>
+			<MenuItem
+				updater={(selected) => `## ${selected}`}
+				handler={({ start, end }) => ({ start, end: end + 3 })}
+			>
+				<HeadingIcon className="h-4 w-4" aria-hidden />
+				<span className="sr-only">{t("button.heading")}</span>
+			</MenuItem>
 		);
 	}
 }
