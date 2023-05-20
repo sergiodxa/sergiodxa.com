@@ -77,7 +77,7 @@ export namespace Button {
 				handler={({ start, end }) => ({ start: 1 + start, end: end + 10 })}
 			>
 				<LinkIcon className="h-4 w-4" aria-hidden />
-				<span className="sr-only">{t("button.italic")}</span>
+				<span className="sr-only">{t("button.link")}</span>
 			</MenuItem>
 		);
 	}
