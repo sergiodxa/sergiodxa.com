@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unknown-property */
 import type { DataFunctionArgs } from "@remix-run/cloudflare";
-import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import type { SatoriOptions } from "satori";
 
@@ -14,21 +13,16 @@ import { i18n } from "~/i18n.server";
 import { Schemas } from "~/utils/schemas";
 
 import { Card } from "./cards";
-import { NotFound } from "./cards/not-found";
-import { Tutorial } from "./cards/tutorial";
 import bold from "./fonts/bold.ttf";
 import regular from "./fonts/regular.ttf";
 
-declare module "react" {
-	interface HTMLAttributes<T> {
-		tw?: string;
-	}
-}
-
-let wasm = initWasm(fetch("https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm"));
+let wasmInitialized = false;
 
 export async function loader({ request, context }: DataFunctionArgs) {
-	await wasm;
+	if (!wasmInitialized) {
+		await initWasm(fetch("https://unpkg.com/@resvg/resvg-wasm/index_bg.wasm"));
+		wasmInitialized = true;
+	}
 
 	let locale = await i18n.getLocale(request);
 	let t = await i18n.getFixedT(locale);
@@ -47,99 +41,45 @@ export async function loader({ request, context }: DataFunctionArgs) {
 
 	if (type === "page") {
 		if (slug === "/") {
-			let svg = await render(
+			let png = await render(
 				url,
 				<Card avatarURL={avatarURL} locale={locale} title={t("og.page.home")} />
 			);
-
-			let png = new Resvg(svg).render().asPng();
-
 			return image(png, { type: "image/png" });
 		}
 	}
 
 	if (type === "tutorial") {
 		let { title } = await context.services.tutorials.read(slug);
-		return await tutorial({ t, locale, baseURL: url, title });
+
+		let png = await render(
+			url,
+			<Card avatarURL={avatarURL} locale={locale} title={title} />
+		);
+
+		return image(png, { type: "image/png" });
 	}
 
-	return await notFound({ t, locale, baseURL: url, slug });
-}
+	let png = await render(
+		url,
+		<Card
+			avatarURL={avatarURL}
+			locale={locale}
+			title={t("og.notFound.title")}
+		/>
+	);
 
-function svg(body: string, init: ResponseInit = {}) {
-	return new Response(body, {
-		...init,
-		headers: {
-			"content-type": "image/svg+xml",
-			...init?.headers,
-		},
-	});
+	return image(png, { type: "image/png" });
 }
 
 async function render(baseURL: URL, element: ReactNode) {
-	return await satori(element, {
+	let svg = await satori(element, {
 		width: 1200,
 		height: 630,
 		debug: process.env.NODE_ENV === "development",
 		fonts: await getFonts(baseURL),
 	});
-}
-
-type TutorialOptions = {
-	t: TFunction;
-	locale: string;
-	baseURL: URL;
-	title: string;
-};
-
-async function tutorial({ t, locale, baseURL, title }: TutorialOptions) {
-	let avatarURL = new URL(avatar, baseURL);
-
-	return svg(
-		await satori(
-			<Tutorial avatarURL={avatarURL} t={t} locale={locale} title={title} />,
-			{
-				width: 1200,
-				height: 630,
-				debug: process.env.NODE_ENV === "development",
-				fonts: await getFonts(baseURL),
-			}
-		),
-		{
-			headers: {
-				"cache-control": "no-cache, max-age=0",
-			},
-		}
-	);
-}
-
-type NotFoundOptions = {
-	t: TFunction;
-	locale: string;
-	baseURL: URL;
-	slug: string;
-};
-
-async function notFound({ t, locale, baseURL, slug }: NotFoundOptions) {
-	let avatarURL = new URL(avatar, baseURL);
-
-	return svg(
-		await satori(
-			<NotFound avatarURL={avatarURL} slug={slug} t={t} locale={locale} />,
-			{
-				width: 1200,
-				height: 630,
-				debug: process.env.NODE_ENV === "development",
-				fonts: await getFonts(baseURL),
-			}
-		),
-		{
-			status: 404,
-			headers: {
-				"cache-control": "no-cache, max-age=0",
-			},
-		}
-	);
+	return new Resvg(svg).render().asPng();
 }
 
 async function getFonts(baseURL: URL): Promise<SatoriOptions["fonts"]> {
