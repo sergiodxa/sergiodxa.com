@@ -68,6 +68,7 @@ export function Editor() {
 							<Button.Code />
 							<Button.Quote />
 							<Button.Image />
+							<Button.Heading />
 						</div>
 					</div>
 

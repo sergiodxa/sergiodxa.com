@@ -5,10 +5,10 @@ import type { ReactNode } from "react";
 
 import { BookmarkIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
-import clsx from "clsx";
 import { Trans } from "react-i18next";
 
 import { useLocale } from "~/helpers/use-i18n.hook";
+import { cn } from "~/utils/cn";
 
 interface FeedItem<Type extends string, Payload> {
 	id: string;
@@ -165,7 +165,7 @@ function Item({
 				<div className="relative flex space-x-3">
 					<div>
 						<span
-							className={clsx(
+							className={cn(
 								iconColor,
 								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white"
 							)}

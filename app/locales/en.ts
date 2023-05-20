@@ -152,4 +152,16 @@ export default {
 	write: {
 		title: "Write something new",
 	},
+
+	editor: {
+		button: {
+			bold: "Bold",
+			italic: "Italic",
+			link: "Link",
+			code: "Code",
+			quote: "Quote",
+			image: "Image",
+			heading: "Heading",
+		},
+	},
 };

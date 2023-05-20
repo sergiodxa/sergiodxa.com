@@ -7,7 +7,6 @@ import type {
 
 import { redirect, defer } from "@remix-run/cloudflare";
 import { Await, Link, useAsyncValue, useLoaderData } from "@remix-run/react";
-import clsx from "clsx";
 import { Suspense } from "react";
 import { Trans } from "react-i18next";
 import { z } from "zod";
@@ -17,6 +16,7 @@ import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
 import { i18n } from "~/i18n.server";
+import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
 type RecommendationsList = Awaited<LoaderData["recommendations"]>;
@@ -173,7 +173,7 @@ function Recommendations() {
 			</header>
 
 			<div
-				className={clsx("grid grid-cols-1 gap-4", {
+				className={cn("grid grid-cols-1 gap-4", {
 					"md:grid-cols-1": recommendations.length === 1,
 					"md:grid-cols-2": recommendations.length === 2,
 					"md:grid-cols-3": recommendations.length >= 3,
