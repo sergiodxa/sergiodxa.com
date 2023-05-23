@@ -1,4 +1,4 @@
-import { createRequestHandler } from "@remix-run/cloudflare";
+import { createRequestHandler, logDevReady } from "@remix-run/cloudflare";
 import * as Sentry from "@sentry/remix";
 import { getClientIPAddress } from "remix-utils";
 import { z } from "zod";
@@ -24,6 +24,10 @@ import { ReadNoteService } from "~/server/services/read-note";
 import { TutorialsService } from "~/server/services/tutorials";
 
 let remixHandler: ReturnType<typeof createRequestHandler>;
+
+if (process.env.NODE_ENV === "development") {
+	logDevReady(build);
+}
 
 export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 	try {
