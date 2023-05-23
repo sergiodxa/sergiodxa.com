@@ -9,8 +9,6 @@
 	"scripts": {
 		"ci": "npm run build & npm run lint & npm run test -- --run && npm run typecheck",
 		"predev": "npm run build",
-		"dev:app": "remix watch",
-		"dev:http": "cross-env NODE_ENV=development npm run wrangler",
 		"dev": "remix dev -c \"npm run wrangler\"",
 		"build": "remix build",
 		"start": "cross-env NODE_ENV=production npm run wrangler",
@@ -22,7 +20,7 @@
 		"test:coverage": "vitest --coverage",
 		"script": "ts-node --require tsconfig-paths/register",
 		"script:download": "npm run script -- scripts/download.ts",
-		"update:remix": "npm i @remix-run/cloudflare@latest @remix-run/cloudflare-pages@latest @remix-run/react@latest @remix-run/dev@latest @remix-run/eslint-config@latest @remix-run/node@latest"
+		"update:remix": "npx upgrade-remix"
 	},
 	"eslintIgnore": [
 		"/node_modules",
@@ -90,7 +88,6 @@
 		"get-port": "^6.1.2",
 		"happy-dom": "^9.18.3",
 		"msw": "^1.2.1",
-		"pm2": "^5.3.0",
 		"pptr-testing-library": "^0.7.0",
 		"prettier": "^2.8.8",
 		"prettier-plugin-tailwindcss": "^0.2.8",
