@@ -22,7 +22,7 @@ import {
 } from "@remix-run/react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { StructuredData, useShouldHydrate, jsonHash } from "remix-utils";
+import { useShouldHydrate, jsonHash } from "remix-utils";
 
 import avatarHref from "~/assets/avatar.png";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
@@ -174,12 +174,11 @@ function Document({
 					rel="pingback"
 					href="https://webmention.io/sergiodxa.com/xmlrpc"
 				/>
-				<StructuredData />
 			</head>
 			<body className="bg-neutral-50 font-sans text-neutral-900">
 				{children}
 				<ScrollRestoration />
-				{shouldHydrate ? (
+				{shouldHydrate || process.env.NODE_ENV === "development" ? (
 					<Scripts />
 				) : (
 					<script
