@@ -57,7 +57,7 @@ export class AuthService implements IAuthService {
 		});
 
 		this.#authenticator = new Authenticator<User>(
-			this.#sessionStorage as SessionStorage,
+			this.#sessionStorage as unknown as SessionStorage,
 			{
 				throwOnError: true,
 			}
