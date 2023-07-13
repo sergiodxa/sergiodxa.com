@@ -1,12 +1,12 @@
 import type { KeyPrefix, Namespace } from "i18next";
-import type { DefaultNamespace } from "react-i18next/TransWithoutContext";
+import type { _DefaultNamespace } from "react-i18next/TransWithoutContext";
 
 import { useTranslation } from "react-i18next";
 
 export function useT<
-	N extends Namespace = DefaultNamespace,
+	N extends Namespace = _DefaultNamespace,
 	TKPrefix extends KeyPrefix<N> = undefined
->(ns?: N | Readonly<N>, keyPrefix?: TKPrefix) {
+>(ns?: string, keyPrefix?: TKPrefix) {
 	return useTranslation(ns, { keyPrefix }).t;
 }
 
