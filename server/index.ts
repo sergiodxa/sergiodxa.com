@@ -2,6 +2,7 @@ import { logDevReady } from "@remix-run/cloudflare";
 import * as build from "@remix-run/dev/server-build";
 import * as Sentry from "@sentry/remix";
 import { Hono } from "hono";
+import { basicAuth } from "hono/basic-auth";
 import { handle } from "hono/cloudflare-pages";
 import { logger } from "hono/logger";
 import { remix } from "remix-hono/cloudflare";
@@ -32,86 +33,94 @@ type ContextEnv = { Bindings: RuntimeEnv };
 
 const server = new Hono<ContextEnv>();
 
+server.use("/write", (context, next) => {
+  let { WRITE_PASSWORD } = EnvSchema.parse(context.env);
+  return basicAuth({ username: "sergiodxa", password: WRITE_PASSWORD })(
+    context,
+    next
+  );
+});
+
 server.use(
-	"*",
-	logger(),
-	remix<ContextEnv>({
-		build,
-		mode: process.env.NODE_ENV as "development" | "production",
-		getLoadContext(ctx) {
-			if (ctx.env.DSN) {
-				Sentry.init({
-					dsn: ctx.env.DSN,
-					tracesSampleRate: 1.0,
-					allowUrls: ["*.sergiodxa.com"],
-					attachStacktrace: true,
-					beforeSend(event) {
-						if (event.request?.url?.includes("sentry")) return null;
-						event.user = {};
+  "*",
+  logger(),
+  remix<ContextEnv>({
+    build,
+    mode: process.env.NODE_ENV as "development" | "production",
+    getLoadContext(ctx) {
+      if (ctx.env.DSN) {
+        Sentry.init({
+          dsn: ctx.env.DSN,
+          tracesSampleRate: 1.0,
+          allowUrls: ["*.sergiodxa.com"],
+          attachStacktrace: true,
+          beforeSend(event) {
+            if (event.request?.url?.includes("sentry")) return null;
+            event.user = {};
 
-						let ip = getClientIPAddress(ctx.req.headers);
-						if (ip) event.user.ip_address = ip;
+            let ip = getClientIPAddress(ctx.req.headers);
+            if (ip) event.user.ip_address = ip;
 
-						return event;
-					},
-				});
-			}
+            return event;
+          },
+        });
+      }
 
-			let env = EnvSchema.parse(ctx.env);
+      let env = EnvSchema.parse(ctx.env);
 
-			let { hostname } = new URL(ctx.req.url);
+      let { hostname } = new URL(ctx.req.url);
 
-			// Repositories to interact with the database
-			let repos: SDX.Repos = {
-				cn: new CollectedNotes(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
-				notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
-				bookmarks: new BookmarksRepo(
-					env.AIRTABLE_API_KEY,
-					env.AIRTABLE_BASE,
-					env.AIRTABLE_TABLE_ID,
-				),
-				github: new GithubRepository(env.GITHUB_TOKEN),
-				tutorials: new KVTutorialRepository(ctx.env.tutorials),
-			};
+      // Repositories to interact with the database
+      let repos: SDX.Repos = {
+        cn: new CollectedNotes(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+        notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
+        bookmarks: new BookmarksRepo(
+          env.AIRTABLE_API_KEY,
+          env.AIRTABLE_BASE,
+          env.AIRTABLE_TABLE_ID
+        ),
+        github: new GithubRepository(env.GITHUB_TOKEN),
+        tutorials: new KVTutorialRepository(ctx.env.tutorials),
+      };
 
-			// Injected services objects to interact with third-party services
-			let services: SDX.Services = {
-				notes: {
-					read: new ReadNoteService(repos, ctx.env.cn),
-					webhook: new CollectedNotesWebhookService(repos, ctx.env.cn),
-				},
-				archive: new ArchiveService(repos, ctx.env.cn),
-				feed: new FeedService(repos, {
-					airtable: ctx.env.airtable,
-					cn: ctx.env.cn,
-					tutorials: ctx.env.tutorials,
-				}),
-				auth: new AuthService(
-					ctx.env.auth,
-					env,
-					hostname,
-					new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
-				),
-				bookmarks: new BookmarksService(repos, ctx.env.airtable),
-				gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
-				log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
-				tutorials: new TutorialsService(repos),
-				new: {
-					articles: new ArticlesService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
-					tutorials: new NewTutorialsService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
-				},
-			};
+      // Injected services objects to interact with third-party services
+      let services: SDX.Services = {
+        notes: {
+          read: new ReadNoteService(repos, ctx.env.cn),
+          webhook: new CollectedNotesWebhookService(repos, ctx.env.cn),
+        },
+        archive: new ArchiveService(repos, ctx.env.cn),
+        feed: new FeedService(repos, {
+          airtable: ctx.env.airtable,
+          cn: ctx.env.cn,
+          tutorials: ctx.env.tutorials,
+        }),
+        auth: new AuthService(
+          ctx.env.auth,
+          env,
+          hostname,
+          new GitHubService(ctx.env.gh, env.GITHUB_TOKEN)
+        ),
+        bookmarks: new BookmarksService(repos, ctx.env.airtable),
+        gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
+        log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
+        tutorials: new TutorialsService(repos),
+        new: {
+          articles: new ArticlesService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+          tutorials: new NewTutorialsService(`${env.CN_EMAIL} ${env.CN_TOKEN}`),
+        },
+      };
 
-			let measurer = new Measurer();
+      let measurer = new Measurer();
 
-			return {
-				env,
-				services,
-				repos,
-				time: measurer.time.bind(measurer),
-			};
-		},
-	}),
+      return {
+        env,
+        services,
+        repos,
+        time: measurer.time.bind(measurer),
+      };
+    },
+  })
 );
 
 export const onRequest = handle(server);
