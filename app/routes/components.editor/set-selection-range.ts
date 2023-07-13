@@ -7,7 +7,7 @@ import type { SelectionType } from "./get-selection";
  */
 export function setSelectionRange(
 	field: HTMLTextAreaElement,
-	selection: SelectionType
+	selection: SelectionType,
 ) {
 	field.setSelectionRange(selection.start, selection.end, "forward");
 	return null;

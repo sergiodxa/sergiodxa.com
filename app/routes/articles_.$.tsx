@@ -63,14 +63,14 @@ export function loader({ request, context, params }: LoaderArgs) {
 						];
 					},
 				},
-				{ headers }
+				{ headers },
 			);
 		} catch (error) {
 			if (error instanceof NoteNotFoundError) {
 				let t = await i18n.getFixedT(request);
 				throw jsonHash(
 					{ message: t("error.NOTE_NOT_FOUND", { path }) },
-					{ status: 404 }
+					{ status: 404 },
 				);
 			}
 

@@ -10,7 +10,7 @@ import type { SelectionType } from "./get-selection";
 export function updateContent(
 	content: string,
 	selection: SelectionType,
-	updated: string
+	updated: string,
 ) {
 	return (
 		content.slice(0, selection.start) + updated + content.slice(selection.end)

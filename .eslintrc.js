@@ -3,17 +3,16 @@ module.exports = {
 		"import",
 		"jsx-a11y",
 		"prefer-let",
-		"prettier",
 		"react-hooks",
 		"react",
 	],
 	extends: [
+    "prettier",
 		"@remix-run/eslint-config",
 		"plugin:import/errors",
 		"plugin:import/typescript",
 		"plugin:import/warnings",
 		"plugin:jsx-a11y/recommended",
-		"plugin:prettier/recommended",
 		"plugin:react-hooks/recommended",
 		"plugin:react/recommended",
 	],
@@ -23,9 +22,13 @@ module.exports = {
 	},
 	rules: {
 		"prefer-const": "off",
-		"prefer-let/prefer-let": 2,
-		"no-unused-vars": "off",
+    "no-unused-vars": "off",
 		"no-var": "off",
+
+    "no-useless-constructor": "off",
+    
+		"prefer-let/prefer-let": 2,
+
 		"react/function-component-definition": [
 			"error",
 			{
@@ -38,6 +41,7 @@ module.exports = {
 		"react/no-unescaped-entities": "off",
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "error",
+
 		"jsx-a11y/anchor-is-valid": "off",
 
 		"import/order": [

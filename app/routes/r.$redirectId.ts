@@ -20,7 +20,7 @@ export async function loader({ params }: LoaderArgs) {
 		invariant(redirectId, "The redirectId is required");
 		invariant(
 			Object.keys(REDIRECTS).includes(redirectId),
-			`The redirectId "${redirectId}" is not valid`
+			`The redirectId "${redirectId}" is not valid`,
 		);
 
 		return redirect(REDIRECTS[redirectId as keyof typeof REDIRECTS]);

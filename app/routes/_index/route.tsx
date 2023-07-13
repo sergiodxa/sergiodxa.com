@@ -49,7 +49,7 @@ export default function Index() {
 			} as const;
 		}),
 	].sort(
-		(a, b) => b.payload.createdAt.getTime() - a.payload.createdAt.getTime()
+		(a, b) => b.payload.createdAt.getTime() - a.payload.createdAt.getTime(),
 	);
 
 	return (

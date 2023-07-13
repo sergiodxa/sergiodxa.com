@@ -15,7 +15,7 @@ export function createChangeEvent(
 	selected: string,
 	selection: SelectionType,
 	markdown: string,
-	native: ChangeEvent<HTMLTextAreaElement>
+	native: ChangeEvent<HTMLTextAreaElement>,
 ) {
 	return { selected, selection, markdown, native };
 }

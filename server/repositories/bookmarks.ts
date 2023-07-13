@@ -28,7 +28,7 @@ export class BookmarksRepo
 	constructor(
 		private apiKey: string,
 		private base: string,
-		private tableId: string
+		private tableId: string,
 	) {
 		super();
 	}
@@ -58,7 +58,7 @@ export class BookmarksRepo
 					url: record.fields.url,
 					created_at: record.createdTime,
 				};
-			})
+			}),
 		);
 	}
 }

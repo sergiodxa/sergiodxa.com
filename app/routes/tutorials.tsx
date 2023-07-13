@@ -52,7 +52,7 @@ export function loader(_: DataFunctionArgs) {
 					return meta;
 				},
 			},
-			{ headers }
+			{ headers },
 		);
 	});
 }

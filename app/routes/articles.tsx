@@ -44,7 +44,7 @@ export function loader({ request, context }: LoaderArgs) {
 					return meta;
 				},
 			},
-			{ headers }
+			{ headers },
 		);
 	});
 }

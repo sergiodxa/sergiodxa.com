@@ -1,7 +1,7 @@
 import { NoteSchema } from "~/server/entities/note";
 import { Repository } from "~/server/repositories/repository";
 
-export interface INotesRepo extends Repository<typeof NoteSchema> {}
+export type INotesRepo = Repository<typeof NoteSchema>;
 
 export class NotesRepo
 	extends Repository<typeof NoteSchema>
@@ -14,7 +14,7 @@ export class NotesRepo
 	constructor(
 		private email: string,
 		private token: string,
-		private site: string
+		private site: string,
 	) {
 		super();
 	}

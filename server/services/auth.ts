@@ -60,7 +60,7 @@ export class AuthService implements IAuthService {
 			this.#sessionStorage as unknown as SessionStorage,
 			{
 				throwOnError: true,
-			}
+			},
 		);
 
 		let callbackURL = new URL(env.GITHUB_CALLBACK_URL);
@@ -82,8 +82,8 @@ export class AuthService implements IAuthService {
 						githubId: profile._json.node_id,
 						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 					};
-				}
-			)
+				},
+			),
 		);
 	}
 

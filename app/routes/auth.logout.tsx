@@ -8,7 +8,7 @@ export async function loader(_: DataFunctionArgs) {
 	return _.context.time("routes/auth.logout#loader", async () => {
 		return await _.context.services.auth.authenticator.isAuthenticated(
 			_.request,
-			{ successRedirect: "/" }
+			{ successRedirect: "/" },
 		);
 	});
 }

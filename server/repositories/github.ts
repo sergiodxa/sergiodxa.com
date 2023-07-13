@@ -14,7 +14,7 @@ export class GithubRepository {
 
 		try {
 			let response = await fetch(
-				`https://raw.githubusercontent.com/sergiodxa/sergiodxa.com/main/${path}`
+				`https://raw.githubusercontent.com/sergiodxa/sergiodxa.com/main/${path}`,
 			);
 
 			if (!response.ok) throw new GitHubFileNotFoundError(path);
@@ -48,7 +48,7 @@ export class GithubRepository {
 					owner: "sergiodxa",
 					repo: "sergiodxa.com",
 					path: `content/${path}`,
-				}
+				},
 			);
 
 			return z

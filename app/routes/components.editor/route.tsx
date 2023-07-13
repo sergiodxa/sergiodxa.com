@@ -24,7 +24,7 @@ export async function action({ request, context }: DataFunctionArgs) {
 	});
 
 	let content = await context.time("parseMarkdown", async () =>
-		parseMarkdown(markdown)
+		parseMarkdown(markdown),
 	);
 
 	return json({ content });
@@ -45,7 +45,7 @@ export function Editor() {
 	useEffect(() => {
 		submit(
 			{ content: stateValue },
-			{ action: "/components/editor", method: "post" }
+			{ action: "/components/editor", method: "post" },
 		);
 	}, [submit, stateValue]);
 

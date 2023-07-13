@@ -5,7 +5,10 @@ import { Service } from "./service";
 const BookmarkSchema = z.object({ title: z.string(), url: z.string() });
 
 export class BookmarksService extends Service {
-	constructor(repos: SDX.Repos, private kv: KVNamespace) {
+	constructor(
+		repos: SDX.Repos,
+		private kv: KVNamespace,
+	) {
 		super(repos);
 	}
 

@@ -5,7 +5,10 @@ import { NoteEventSchema } from "~/server/entities/note";
 import { Service } from "./service";
 
 export class CollectedNotesWebhookService extends Service {
-	constructor(repos: SDX.Repos, private kv: KVNamespace) {
+	constructor(
+		repos: SDX.Repos,
+		private kv: KVNamespace,
+	) {
 		super(repos);
 	}
 
@@ -35,7 +38,7 @@ export class CollectedNotesWebhookService extends Service {
 		await Promise.all(
 			keys
 				.map((key) => this.kv.delete(key))
-				.concat(this.kv.delete("feed:notes"))
+				.concat(this.kv.delete("feed:notes")),
 		);
 	}
 }

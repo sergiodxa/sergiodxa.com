@@ -61,11 +61,11 @@ export function loader({ request, context }: LoaderArgs) {
 				},
 				async user() {
 					return await context.services.auth.authenticator.isAuthenticated(
-						request
+						request,
 					);
 				},
 			},
-			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
+			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
 		);
 	});
 }

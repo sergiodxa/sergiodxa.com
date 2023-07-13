@@ -16,7 +16,7 @@ export async function loader({ params }: LoaderArgs) {
 		invariant(project, "The project is required");
 		invariant(
 			Object.keys(PROJECTS).includes(project),
-			`The project "${project}" is not supported`
+			`The project "${project}" is not supported`,
 		);
 
 		return redirect(PROJECTS[project as keyof typeof PROJECTS]);

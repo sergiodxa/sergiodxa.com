@@ -15,21 +15,21 @@ describe("Schemas", () => {
 
 		test("parses a URLSearchParams with a single value", () => {
 			expect(
-				Schemas.searchParams().parse(new URLSearchParams("foo=bar"))
+				Schemas.searchParams().parse(new URLSearchParams("foo=bar")),
 			).toEqual({ foo: "bar" });
 		});
 
 		test("parses a URLSearchParams with multiple values", () => {
 			expect(
-				Schemas.searchParams().parse(new URLSearchParams("foo=bar&foo=baz"))
+				Schemas.searchParams().parse(new URLSearchParams("foo=bar&foo=baz")),
 			).toEqual({ foo: ["bar", "baz"] });
 		});
 
 		test("parses a URLSearchParams with multiple values and a single value", () => {
 			expect(
 				Schemas.searchParams().parse(
-					new URLSearchParams("foo=bar&foo=baz&bar=qux")
-				)
+					new URLSearchParams("foo=bar&foo=baz&bar=qux"),
+				),
 			).toEqual({ foo: ["bar", "baz"], bar: "qux" });
 		});
 
@@ -39,9 +39,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.number().nullable().default(1),
-						})
+						}),
 					)
-					.parse(new URLSearchParams("foo=123"))
+					.parse(new URLSearchParams("foo=123")),
 			).toEqual({ foo: 123 });
 		});
 
@@ -51,9 +51,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.number().array(),
-						})
+						}),
 					)
-					.parse(new URLSearchParams("foo=123&foo=456"))
+					.parse(new URLSearchParams("foo=123&foo=456")),
 			).toEqual({ foo: [123, 456] });
 		});
 
@@ -63,9 +63,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.boolean().nullable().default(true),
-						})
+						}),
 					)
-					.parse(new URLSearchParams("foo=true"))
+					.parse(new URLSearchParams("foo=true")),
 			).toEqual({ foo: true });
 		});
 	});
@@ -119,9 +119,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.number().nullable().default(1),
-						})
+						}),
 					)
-					.parse(formData)
+					.parse(formData),
 			).toEqual({ foo: 123 });
 		});
 
@@ -135,9 +135,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.number().array(),
-						})
+						}),
 					)
-					.parse(formData)
+					.parse(formData),
 			).toEqual({ foo: [123, 456] });
 		});
 
@@ -150,9 +150,9 @@ describe("Schemas", () => {
 					.pipe(
 						z.object({
 							foo: z.coerce.boolean().nullable().default(true),
-						})
+						}),
 					)
-					.parse(formData)
+					.parse(formData),
 			).toEqual({ foo: true });
 		});
 	});
