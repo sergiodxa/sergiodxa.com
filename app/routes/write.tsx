@@ -26,7 +26,7 @@ export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 export default function Component() {
 	return (
 		<main className="mx-auto max-w-screen-xl">
-			<Editor />
+			<Editor key="editor" />
 		</main>
 	);
 }

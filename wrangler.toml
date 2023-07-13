@@ -1,0 +1,24 @@
+name = "sergiodxa"
+compatibility_date = "2023-06-22"
+
+kv_namespaces = [
+  { binding = "airtable", id = "airtable@sergiodxa.com", preview_id = "airtable@sergiodxa.com" },
+  { binding = "cn", id = "collectednotes@sergiodxa.com", preview_id = "collectednotes@sergiodxa.com" },
+  { binding = "gh", id = "github@sergiodxa.com", preview_id = "github@sergiodxa.com" },
+  { binding = "auth", id = "auth@sergiodxa.com", preview_id = "auth@sergiodxa.com" },
+  { binding = "tutorials", id = "tutorials@sergiodxa.com", preview_id = "tutorials@sergiodxa.com" },
+]
+
+# r2_buckets = [
+#   { binding = "BUCKET", bucket_name = "campaigns", preview_bucket_name = "campaigns" }
+# ]
+
+# [[services]]
+# binding = "SVG_GENERATOR"
+# service = "svg-generator"
+# environment = "production"
+
+# [[services]]
+# binding = "SVG_TO_PNG"
+# service = "svg-to-png"
+# environment = "production"
