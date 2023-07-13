@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 export function useT<
 	N extends Namespace = _DefaultNamespace,
-	TKPrefix extends KeyPrefix<N> = undefined
+	TKPrefix extends KeyPrefix<N> = undefined,
 >(ns?: string, keyPrefix?: TKPrefix) {
 	return useTranslation(ns, { keyPrefix }).t;
 }

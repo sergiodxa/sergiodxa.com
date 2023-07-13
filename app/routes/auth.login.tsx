@@ -9,7 +9,7 @@ import { useT } from "~/helpers/use-i18n.hook";
 export function loader(_: DataFunctionArgs) {
 	return _.context.time("routes/login#loader", async () => {
 		let session = await _.context.services.auth.sessionStorage.getSession(
-			_.request.headers.get("Cookie")
+			_.request.headers.get("Cookie"),
 		);
 		let error = session.get("auth:error");
 		return json({ error });
@@ -21,7 +21,7 @@ export function action(_: DataFunctionArgs) {
 		return await _.context.services.auth.authenticator.authenticate(
 			"github",
 			_.request,
-			{ successRedirect: "/", failureRedirect: "/login," }
+			{ successRedirect: "/", failureRedirect: "/login," },
 		);
 	});
 }

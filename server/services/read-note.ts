@@ -43,7 +43,10 @@ const NoteSchema = z.object({
 });
 
 export class ReadNoteService extends Service {
-	constructor(repos: SDX.Repos, private kv: KVNamespace) {
+	constructor(
+		repos: SDX.Repos,
+		private kv: KVNamespace,
+	) {
 		super(repos);
 	}
 
@@ -89,7 +92,7 @@ export class ReadNoteService extends Service {
 							return new Tag(
 								`h${node.attributes["level"]}`,
 								{ ...attributes, id },
-								children
+								children,
 							);
 						}
 
@@ -97,7 +100,7 @@ export class ReadNoteService extends Service {
 							new Tag(
 								`h${node.attributes["level"]}`,
 								{ ...attributes, id },
-								children
+								children,
 							),
 						]);
 					},

@@ -1,6 +1,6 @@
 export async function measure<Result>(
 	key: string,
-	callback: () => Result | Promise<Result>
+	callback: () => Result | Promise<Result>,
 ) {
 	let start = Date.now();
 

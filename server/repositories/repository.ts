@@ -6,7 +6,7 @@ export abstract class Repository<Schema extends z.ZodSchema> {
 
 export abstract class DatabaseRepositroy<
 	Schema extends z.ZodSchema,
-	Entity extends z.infer<Schema> = z.infer<Schema>
+	Entity extends z.infer<Schema> = z.infer<Schema>,
 > extends Repository<Schema> {
 	protected abstract tableName: string;
 

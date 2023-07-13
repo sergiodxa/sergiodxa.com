@@ -15,7 +15,10 @@ export interface IGitHubService {
 export class GitHubService implements IGitHubService {
 	private octokit: Octokit;
 
-	constructor(private kv: KVNamespace, auth: string) {
+	constructor(
+		private kv: KVNamespace,
+		auth: string,
+	) {
 		this.octokit = new Octokit({ auth });
 	}
 
@@ -30,7 +33,7 @@ export class GitHubService implements IGitHubService {
 				repo: "content",
 				path: `articles/${slug}.md`,
 				mediaType: { format: "raw" },
-			}
+			},
 		);
 
 		let result = z.string().parse(data);

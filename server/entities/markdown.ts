@@ -57,7 +57,7 @@ export const MarkdownSchema = z
 				tags: z.string().array(),
 			}),
 			body: RenderableTreeNodeSchema,
-		})
+		}),
 	);
 
 export type Markdown = z.infer<typeof MarkdownSchema>;

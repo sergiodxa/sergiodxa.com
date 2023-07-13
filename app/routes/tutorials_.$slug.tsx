@@ -95,7 +95,7 @@ function Header() {
 	let t = useT("translation", "tutorial.header");
 
 	let editUrl = new URL(
-		`https://github.com/sergiodxa/sergiodxa.com/edit/main/content/tutorials/${tutorial.slug}.md`
+		`https://github.com/sergiodxa/sergiodxa.com/edit/main/content/tutorials/${tutorial.slug}.md`,
 	);
 
 	return (

@@ -9,13 +9,16 @@ const ArchiveSchema = z.object({
 });
 
 export class ArchiveService extends Service {
-	constructor(repos: SDX.Repos, private kv: KVNamespace) {
+	constructor(
+		repos: SDX.Repos,
+		private kv: KVNamespace,
+	) {
 		super(repos);
 	}
 
 	async perform(
 		page = 1,
-		term: string | null = null
+		term: string | null = null,
 	): Promise<z.infer<z.ZodArray<typeof ArchiveSchema>>> {
 		if (term) return await this.cachedSearch(term, page);
 		return await this.cachedLatest(page);

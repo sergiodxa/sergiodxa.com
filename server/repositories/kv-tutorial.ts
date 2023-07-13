@@ -37,7 +37,7 @@ export class KVTutorialRepository extends KVRepository {
 						tags: key.metadata?.tags,
 						title: key.metadata?.title,
 					};
-				})
+				}),
 			);
 	}
 

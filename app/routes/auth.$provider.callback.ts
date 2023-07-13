@@ -9,7 +9,7 @@ export function loader(_: LoaderArgs) {
 		return await _.context.services.auth.authenticator.authenticate(
 			provider,
 			_.request,
-			{ successRedirect: "/", failureRedirect: "/auth/login" }
+			{ successRedirect: "/", failureRedirect: "/auth/login" },
 		);
 	});
 }

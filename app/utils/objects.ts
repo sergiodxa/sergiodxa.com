@@ -3,7 +3,7 @@
  */
 export function hasOwn<This extends Record<string, unknown>>(
 	object: This,
-	property: keyof This
+	property: keyof This,
 ): boolean {
 	return Object.prototype.hasOwnProperty.call(object, property);
 }
@@ -15,18 +15,18 @@ export function hasOwn<This extends Record<string, unknown>>(
  */
 export function pick<
 	Input extends Record<string, unknown>,
-	Picked extends keyof Input
+	Picked extends keyof Input,
 >(object: Input, keys: Array<Picked>): Pick<Input, Picked>;
 export function pick<
 	Input extends Record<string, unknown>,
-	Picked extends keyof Input
+	Picked extends keyof Input,
 >(object: Input[], keys: Array<Picked>): Pick<Input, Picked>[];
 export function pick<
 	Input extends Record<string, unknown>,
-	Picked extends keyof Input
+	Picked extends keyof Input,
 >(
 	object: Input | Input[],
-	keys: Array<Picked>
+	keys: Array<Picked>,
 ): Pick<Input, Picked> | Pick<Input, Picked>[] {
 	if (Array.isArray(object)) {
 		return object.map((item) => pick(item, keys));
@@ -34,8 +34,8 @@ export function pick<
 
 	return Object.fromEntries(
 		Object.entries(object).filter(([key]) =>
-			keys.includes(key as unknown as Picked)
-		)
+			keys.includes(key as unknown as Picked),
+		),
 	) as Pick<Input, Picked>;
 }
 
@@ -50,18 +50,18 @@ export function pick<
  */
 export function omit<
 	Input extends Record<string, unknown>,
-	Omitted extends keyof Input
+	Omitted extends keyof Input,
 >(object: Input, keys: Array<Omitted>): Omit<Input, Omitted>;
 export function omit<
 	Input extends Record<string, unknown>,
-	Omitted extends keyof Input
+	Omitted extends keyof Input,
 >(object: Input[], keys: Array<Omitted>): Omit<Input, Omitted>[];
 export function omit<
 	Input extends Record<string, unknown>,
-	Omitted extends keyof Input
+	Omitted extends keyof Input,
 >(
 	object: Input | Input[],
-	keys: Array<Omitted>
+	keys: Array<Omitted>,
 ): Omit<Input, Omitted> | Omit<Input, Omitted>[] {
 	if (Array.isArray(object)) {
 		return object.map((item) => omit(item, keys));
@@ -69,7 +69,7 @@ export function omit<
 
 	return Object.fromEntries(
 		Object.entries(object).filter(
-			([key]) => !keys.includes(key as unknown as Omitted)
-		)
+			([key]) => !keys.includes(key as unknown as Omitted),
+		),
 	) as Omit<Input, Omitted>;
 }

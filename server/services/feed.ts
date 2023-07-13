@@ -37,7 +37,7 @@ export class FeedService extends Service {
 			airtable: KVNamespace;
 			cn: KVNamespace;
 			tutorials: KVNamespace;
-		}
+		},
 	) {
 		super(repos);
 	}

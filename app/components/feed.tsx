@@ -167,7 +167,7 @@ function Item({
 						<span
 							className={cn(
 								iconColor,
-								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white"
+								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white",
 							)}
 						>
 							{icon}

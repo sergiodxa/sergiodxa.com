@@ -68,7 +68,7 @@ server.use(
 				bookmarks: new BookmarksRepo(
 					env.AIRTABLE_API_KEY,
 					env.AIRTABLE_BASE,
-					env.AIRTABLE_TABLE_ID
+					env.AIRTABLE_TABLE_ID,
 				),
 				github: new GithubRepository(env.GITHUB_TOKEN),
 				tutorials: new KVTutorialRepository(ctx.env.tutorials),
@@ -90,7 +90,7 @@ server.use(
 					ctx.env.auth,
 					env,
 					hostname,
-					new GitHubService(ctx.env.gh, env.GITHUB_TOKEN)
+					new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
 				),
 				bookmarks: new BookmarksService(repos, ctx.env.airtable),
 				gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
@@ -111,7 +111,7 @@ server.use(
 				time: measurer.time.bind(measurer),
 			};
 		},
-	})
+	}),
 );
 
 export const onRequest = handle(server);

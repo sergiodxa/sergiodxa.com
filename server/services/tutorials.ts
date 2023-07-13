@@ -79,7 +79,7 @@ export class TutorialsService extends Service {
 			if (techInQuery.version) {
 				query = query.replace(
 					`tech:${techInQuery.name}@${techInQuery.version}`,
-					""
+					"",
 				);
 			} else {
 				query = query.replace(`tech:${techInQuery.name}`, "");
@@ -125,7 +125,7 @@ export class TutorialsService extends Service {
 		if (tutorial) return tutorial;
 
 		let { file } = await this.repos.github.getMarkdownFile(
-			`tutorials/${slug}.md`
+			`tutorials/${slug}.md`,
 		);
 
 		let result = TutorialSchema.parse({

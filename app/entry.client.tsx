@@ -35,7 +35,7 @@ function hydrate(instance: i18n) {
 				<StrictMode>
 					<RemixBrowser />
 				</StrictMode>
-			</I18nextProvider>
+			</I18nextProvider>,
 		);
 	});
 }

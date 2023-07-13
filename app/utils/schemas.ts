@@ -24,7 +24,7 @@ export namespace Schemas {
 					z.tuple([
 						z.string(),
 						FormDataEntryValueSchema.or(FormDataEntryValueSchema.array()),
-					])
+					]),
 				)
 				.transform((entries) => Object.fromEntries(entries))
 				.parse(entries);

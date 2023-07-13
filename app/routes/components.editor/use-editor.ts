@@ -77,6 +77,6 @@ export function useUpdate() {
 		(payload: Extract<Actions, { type: "update" }>["payload"]) => {
 			dispatch({ type: "update", payload });
 		},
-		[dispatch]
+		[dispatch],
 	);
 }

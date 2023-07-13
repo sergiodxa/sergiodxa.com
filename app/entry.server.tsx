@@ -16,7 +16,7 @@ export default async function handleRequest(
 	status: number,
 	headers: Headers,
 	context: EntryContext,
-	{ time }: AppLoadContext
+	{ time }: AppLoadContext,
 ) {
 	let instance = await time("setup-i18next", async () => {
 		let instance = createInstance().use(initReactI18next);
@@ -47,7 +47,7 @@ export default async function handleRequest(
 					console.error(error);
 					status = 500;
 				},
-			}
+			},
 		);
 
 		if (isbot(request.headers.get("user-agent"))) await body.allReady;
