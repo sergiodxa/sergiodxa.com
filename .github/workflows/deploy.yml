@@ -1,14 +1,14 @@
 name: Deploy
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
-  cloudflare:
+  website:
+    name: Website
     runs-on: ubuntu-latest
     permissions:
       contents: read
       deployments: write
-    name: Cloudflare Pages
     steps:
       - uses: actions/checkout@v3
 
