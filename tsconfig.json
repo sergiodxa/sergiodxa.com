@@ -13,7 +13,7 @@
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"jsx": "react-jsx",
-		"moduleResolution": "Node16",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"target": "ES2019",
 		"strict": true,
