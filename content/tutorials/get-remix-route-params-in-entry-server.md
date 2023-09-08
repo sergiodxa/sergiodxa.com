@@ -1,6 +1,6 @@
 #@remix-run/node@1.19.3 #@remix-run/cloudflare@1.19.3
 
-## Get Remix route params `entry.server`
+# Get Remix route params `entry.server`
 
 If you have a parameter like the locale `/:locale/*` that you want to get in entry.server for any reason, you can use the `EntryContext` object in `handleRequest` to access this information.
 
