@@ -1,16 +1,16 @@
 #@remix-run/react@2.0.1
 
-# Access loaders data in Remix
+# Access the Loader Data in Remix
 
-If you're using Remix, you may have noticed that the loader data is not passed to the components as props. This is because the loader data stored by Remix in an internal context which allows you to access it in any component and not just the route component itself.
+If you're using Remix, you may have noticed that the loader data is not passed to the components as props. This is because the loader data is stored by Remix in an internal context, which allows you to access it in any component and not just the route component itself.
 
-By doing this Remix gives you the power to avoid prop drilling in many cases, but also opens the door to a possible issue, what happens if your component A calls `useLoaderData` but it's used in two routes?
+By doing this, Remix gives you the power to avoid prop drilling in many cases, but also opens the door to a possible issue. What happens if your component A calls `useLoaderData` but it's used in two routes?
 
-The hook will give you access to the route's loader data, this means if you have two routes, let's say `routes/dashboard` and `routes/_index` and both render the same component depending which renders the component is what the hook will return.
+The hook will give you access to the route's loader data. This means if you have two routes, let's say `routes/dashboard` and `routes/_index`, and both render the same component, what the hook will return depends on which route renders the component.
 
-If `routes/dashboard` renders our component, then the hook will gives you `routes/dashboard` loader's data.
+If `routes/dashboard` renders our component, then the hook will give you `routes/dashboard` loader's data.
 
-If `routes/_index` renders our component, then the hook will gives you `routes/_index` loader's data.
+If `routes/_index` renders our component, then the hook will give you `routes/_index` loader's data.
 
 If both have a similar shape, then you may not notice the difference, but if they have different shapes, then you may get an error.
 
@@ -18,7 +18,7 @@ This is why I have started to use the following rules:
 
 ## Route Component
 
-For the component of the route (the one you export default) I use `useLoaderData` directly, there's no risk here since the loader and the component are on the same file.
+For the component of the route (the one you export by default), I use `useLoaderData` directly. There's no risk here since the loader and the component are in the same file.
 
 ```ts
 // app/routes/dashboard.tsx
@@ -33,9 +33,9 @@ export default function Component() {
 }
 ```
 
-## Components in the Route file
+## Components in the Route File
 
-For other components in the same file of the route I also use `useLoaderData` to get the loader's data.
+For other components in the same file as the route, I also use `useLoaderData` to get the loader's data.
 
 ```ts
 // app/routes/dashboard.tsx
@@ -54,11 +54,11 @@ function SomethingElse() {
 }
 ```
 
-This is also safe because we know our component is not exported so only our route component, or other components inside this file, can render it.
+This is also safe because we know our component is not exported, so only our route component, or other components inside this file, can render it.
 
-## Components in the Route folder
+## Components in the Route Folder
 
-If you're using the Remix v2 file system convention, you can change your route files to be folders with a `route.tsx` file inside, this allows for co-location of other files.
+If you're using the Remix v2 file system convention, you can change your route files to be folders with a `route.tsx` file inside. This allows for co-location of other files.
 
 ```diff
 - routes/dashboard.tsx
@@ -77,11 +77,11 @@ export function SomethingElse() {
 }
 ```
 
-While this component could be imported by other routes, I consider this file local to the route and avoid importing it, if I eventually need it somewhere else I will move it to a shared folder like `app/components` and stop using `useLoaderData`.
+While this component could be imported by other routes, I consider this file local to the route and avoid importing it. If I eventually need it somewhere else, I will move it to a shared folder like `app/components` and stop using `useLoaderData`.
 
 ## Shared Components
 
-For components outside the route (e.g. in `app/components``) I use props to pass any loader data.
+For components outside the route (e.g., in `app/components`), I use props to pass any loader data.
 
 ```ts
 // app/components/something-else.tsx
@@ -94,7 +94,7 @@ export function SomethingElse(props: SomethingElseProps) {
 }
 ```
 
-Here I define exactly the props I need so I don't infer from the loaders or even the DB or API responses, this way I can change the loader or the API and my component won't break.
+Here I define exactly the props I need, so I don't infer from the loaders or even the DB or API responses. This way I can change the loader or the API, and my component won't break.
 
 ```ts
 // app/routes/dashboard/route.tsx
@@ -109,13 +109,13 @@ export default function Component() {
 }
 ```
 
-If I ever change what `loaderData` looks like I can just adjust the props I pass to my component without having to change the component itself.
+If I ever change what `loaderData` looks like, I can just adjust the props I pass to my component without having to change the component itself.
 
-## Child Routes accessing Parent Routes
+## Child Routes Accessing Parent Routes
 
-Sometimes you want to access some value returned by a parent route, for example, if you have a dashboard with a list of items and you want to show the details of one of those items in a separate route.
+Sometimes you want to access some value returned by a parent route. For example, if you have a dashboard with a list of items and you want to show the details of one of those items in a separate route.
 
-In that case you have four possible options.
+In that case, you have four possible options:
 
 1. Create a custom context to pass the values
 2. Use Outlet context to pass the values
@@ -141,23 +141,23 @@ export default function Component() {
 }
 ```
 
-While not totally safe because we're depending on the parent route to always be the same, it's unlikely that we will change the parent route, and if we do, we will also change the child route code.
+While not totally safe because we're depending on the parent route to always be the same, it's unlikely that we will change the parent route. And if we do, we will also change the child route code.
 
-## Parent Routes accessing Child Routes
+## Parent Routes Accessing Child Routes
 
-Remix allows you to access the child route data from the parent route, here we can't use a custom context or the Outlet context, but we can still use `useRouteLoaderData` and `useMatches`.
+Remix allows you to access the child route data from the parent route. Here we can't use a custom context or the Outlet context, but we can still use `useRouteLoaderData` and `useMatches`.
 
-So the first instinct would be to just reach `useRouteLoaderData` and call it a day, but this is not totally safe, because we don't know which child route will be rendered, what happens if we run this:
+So the first instinct would be to just use `useRouteLoaderData` and call it a day, but this is not totally safe. Because we don't know which child route will be rendered, what happens if we run this:
 
 ```ts
 useRouteLoaderData<typeof dashboardUserLoader>("routes/dashboard.user");
 ```
 
-But we're rendering `routes/dashboard.articles`? We will get an `undefined` value on runtime. So now we need to add `| undefined` to our generic.
+But we're rendering `routes/dashboard.articles`? We will get an `undefined` value at runtime. So now we need to add `| undefined` to our generic.
 
-And what happens if we want to access the loader data of whatever child is rendered? If we use `useRouteLoaderData` we will have to add one call per child route.
+And what happens if we want to access the loader data of whatever child is rendered? If we use `useRouteLoaderData`, we will have to add one call per child route.
 
-Instead we can use `useMatches` and find the child route that matches our pattern, this way we can get the loader data of whatever child is rendered.
+Instead, we can use `useMatches` and find the child route that matches our pattern. This way, we can get the loader data of whatever child is rendered.
 
 ```ts
 // app/routes/dashboard.tsx
@@ -173,7 +173,7 @@ export default function Component() {
 }
 ```
 
-Now `childMatch` will give me the last match, you can adjust that to use `Array#find` or `-2` or another way to grab it, the idea is that you find the correct child route. Once you have the match object you can do `match.data` to get the route's loader data. I recommend here to do some runtime validation to ensure the data you need is there.
+Now `childMatch` will give me the last match. You can adjust that to use `Array#find` or `-2` or another way to grab it; the idea is that you find the correct child route. Once you have the match object, you can do `match.data` to get the route's loader data. I recommend here to do some runtime validation to ensure the data you need is there.
 
 ```ts
 if (!match.data) throw new Error("No data found"); // or handle it somehow
@@ -182,9 +182,9 @@ if (!("something" in match.data)) throw new Error("Missing something"); // also 
 // and use match.data.something at the end
 ```
 
-## Child Routes accessing Parent Routes States
+## Child Routes Accessing Parent Routes States
 
-Finally, if you want to pass some state from a parent route to a child route, I would use Outlet context to do so.
+Finally, if you want to pass some state from a parent route to a child route, I would use the Outlet context to do so.
 
 ```tsx
 // app/routes/dashboard.tsx
@@ -210,4 +210,4 @@ export default function Component() {
 }
 ```
 
-So I only use Outlet context to pass values that didn't come from a loader, like this state or even a callback.
+So I only use the Outlet context to pass values that didn't come from a loader, like this state or even a callback.
