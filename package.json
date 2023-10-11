@@ -5,7 +5,7 @@
   "license": "",
   "type": "module",
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "scripts": {
     "ci": "npm run build & npm run lint & npm run test -- --run && npm run typecheck",
