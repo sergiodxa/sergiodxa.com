@@ -8,30 +8,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run build
 
   typecheck:
     name: Typechecker
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - run: npm run typecheck
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run typecheck
 
   test:
     name: Unit and Integration Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - run: npm run test -- --coverage
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run test:coverage
 
   lint:
     name: Linter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
-      - run: npm run lint
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run build
+      - run: bun run lint
