@@ -6,6 +6,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
       - uses: oven-sh/setup-bun@v1
@@ -15,7 +16,7 @@ jobs:
   typecheck:
     name: Typechecker
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
       - uses: oven-sh/setup-bun@v1
@@ -25,6 +26,7 @@ jobs:
   test:
     name: Unit and Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
       - uses: oven-sh/setup-bun@v1
@@ -34,6 +36,7 @@ jobs:
   lint:
     name: Linter
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
       - uses: oven-sh/setup-bun@v1
