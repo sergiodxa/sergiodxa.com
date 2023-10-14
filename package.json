@@ -23,6 +23,14 @@
 		"update:remix": "npx upgrade-remix",
 		"cf:logs": "wrangler pages deployment tail --project-name sergiodxa"
 	},
+	"lint-stage": {
+		"*.{ts,tsx}": [
+			"eslint --fix"
+		],
+		"*": [
+			"prettier --ignore-unknown"
+		]
+	},
 	"eslintIgnore": [
 		"/node_modules",
 		"/server/build",
@@ -88,6 +96,7 @@
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"get-port": "^7.0.0",
 		"happy-dom": "^10.2.0",
+		"lint-staged": "^14.0.1",
 		"msw": "^1.2.2",
 		"pptr-testing-library": "^0.7.0",
 		"prettier": "^3.0.3",
