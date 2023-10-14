@@ -5,7 +5,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";

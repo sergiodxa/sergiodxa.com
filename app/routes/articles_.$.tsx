@@ -6,7 +6,7 @@ import type {
 
 import { redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
