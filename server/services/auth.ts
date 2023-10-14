@@ -1,12 +1,12 @@
 import type { IGitHubService } from "./gh";
 import type { SessionStorage } from "@remix-run/cloudflare";
-import type { TypedSessionStorage } from "remix-utils";
+import type { TypedSessionStorage } from "remix-utils/typed-session";
 import type { Env } from "~/server/env";
 
 import { createWorkersKVSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
-import { createTypedSessionStorage } from "remix-utils";
+import { createTypedSessionStorage } from "remix-utils/typed-session";
 import { z } from "zod";
 
 const UserSchema = z.object({
