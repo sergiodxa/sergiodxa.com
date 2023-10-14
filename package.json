@@ -1,8 +1,8 @@
 {
 	"private": true,
 	"name": "sergiodxa.com",
-	"description": "",
-	"license": "",
+	"description": "The code behind sergiodxa.com",
+	"license": "MIT",
 	"type": "module",
 	"engines": {
 		"node": "18"
