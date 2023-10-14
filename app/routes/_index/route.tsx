@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/cloudflare";
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -7,7 +7,7 @@ import { Feed } from "~/components/feed";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 
-export function loader({ request, context }: LoaderArgs) {
+export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/index#loader", async () => {
 		void context.services.log.http(request);
 

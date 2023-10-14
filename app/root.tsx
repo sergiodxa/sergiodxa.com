@@ -1,8 +1,8 @@
 import type {
 	LinksFunction,
-	LoaderArgs,
-	V2_MetaDescriptor,
-	V2_MetaFunction,
+	LoaderFunctionArgs,
+	MetaDescriptor,
+	MetaFunction,
 } from "@remix-run/cloudflare";
 import type { ShouldRevalidateFunction } from "@remix-run/react";
 import type { ReactNode } from "react";
@@ -46,7 +46,7 @@ export let links: LinksFunction = () => {
 	];
 };
 
-export function loader({ request, context }: LoaderArgs) {
+export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("root#loader", async () => {
 		removeTrailingSlash(new URL(request.url));
 
@@ -55,7 +55,7 @@ export function loader({ request, context }: LoaderArgs) {
 		return jsonHash(
 			{
 				locale,
-				async meta(): Promise<V2_MetaDescriptor[]> {
+				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(locale);
 					return [{ title: t("header.title") }];
 				},
@@ -70,7 +70,7 @@ export function loader({ request, context }: LoaderArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	return data?.meta ?? [];
 };
 

@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/cloudflare";
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 
 import { redirect } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
@@ -13,7 +13,7 @@ const REDIRECTS = {
 		"https://sergiodxa.com/articles/loader-vs-route-cache-headers-in-remix",
 };
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
 	try {
 		let { redirectId } = params;
 
