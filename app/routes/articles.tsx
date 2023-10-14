@@ -1,18 +1,18 @@
 import type {
-	LoaderArgs,
-	V2_MetaFunction,
-	V2_MetaDescriptor,
+	LoaderFunctionArgs,
+	MetaFunction,
+	MetaDescriptor,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
 
-export function loader({ request, context }: LoaderArgs) {
+export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/articles#loader", async () => {
 		void context.services.log.http(request);
 
@@ -30,10 +30,10 @@ export function loader({ request, context }: LoaderArgs) {
 				term,
 				page,
 				notes: context.services.archive.perform(page, term),
-				async meta(): Promise<V2_MetaDescriptor[]> {
+				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(request);
 
-					let meta: V2_MetaDescriptor[] = [];
+					let meta: MetaDescriptor[] = [];
 
 					if (term === "") {
 						meta.push({ title: t("articles.meta.title.default") });
@@ -49,7 +49,7 @@ export function loader({ request, context }: LoaderArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return [];
 	return data.meta;
 };

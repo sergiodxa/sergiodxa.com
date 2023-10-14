@@ -1,19 +1,19 @@
 import type {
-	LoaderArgs,
-	V2_MetaFunction,
-	V2_MetaDescriptor,
+	LoaderFunctionArgs,
+	MetaFunction,
+	MetaDescriptor,
 } from "@remix-run/cloudflare";
 
 import { redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { i18n } from "~/i18n.server";
 import { NoteNotFoundError } from "~/server/repositories/notes";
 
-export function loader({ request, context, params }: LoaderArgs) {
+export function loader({ request, context, params }: LoaderFunctionArgs) {
 	return context.time("routes/articles.$id#loader", async () => {
 		void context.services.log.http(request);
 
@@ -38,7 +38,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 							dateModified: note.dateModified.toISOString(),
 						};
 					},
-					async meta(): Promise<V2_MetaDescriptor[]> {
+					async meta(): Promise<MetaDescriptor[]> {
 						let t = await i18n.getFixedT(request);
 
 						return [
@@ -79,7 +79,7 @@ export function loader({ request, context, params }: LoaderArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return [];
 	return data.meta;
 };

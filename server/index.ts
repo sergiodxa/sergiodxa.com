@@ -5,8 +5,8 @@ import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 import { handle } from "hono/cloudflare-pages";
 import { logger } from "hono/logger";
-import { remix } from "remix-hono/cloudflare";
-import { getClientIPAddress } from "remix-utils";
+import { remix } from "remix-hono/handler";
+import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 
 import { EnvSchema } from "~/server/env";
 import { BookmarksRepo } from "~/server/repositories/bookmarks";

@@ -1,5 +1,5 @@
 import "@remix-run/server-runtime";
-import type { ExternalScriptsFunction } from "remix-utils";
+import type { ExternalScriptsFunction } from "remix-utils/external-scripts";
 import type { Env } from "~/server/env";
 import type { BookmarksRepo } from "~/server/repositories/bookmarks";
 import type { CollectedNotes } from "~/server/repositories/collected-notes";

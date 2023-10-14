@@ -1,11 +1,11 @@
 import type {
 	DataFunctionArgs,
-	V2_MetaFunction,
-	V2_MetaDescriptor,
+	MetaFunction,
+	MetaDescriptor,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
@@ -34,10 +34,10 @@ export function loader(_: DataFunctionArgs) {
 				term: query,
 				page,
 				tutorials,
-				async meta(): Promise<V2_MetaDescriptor[]> {
+				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(_.request);
 
-					let meta: V2_MetaDescriptor[] = [];
+					let meta: MetaDescriptor[] = [];
 
 					if (query === "") {
 						meta.push({ title: t("tutorials.meta.title.default") });
@@ -57,7 +57,7 @@ export function loader(_: DataFunctionArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return [];
 	return data.meta;
 };

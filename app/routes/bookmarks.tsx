@@ -1,23 +1,23 @@
 import type {
-	LoaderArgs,
-	V2_MetaDescriptor,
-	V2_MetaFunction,
+	LoaderFunctionArgs,
+	MetaDescriptor,
+	MetaFunction,
 } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils";
+import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
 
-export function loader({ request, context }: LoaderArgs) {
+export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/bookmarks#loader", async () => {
 		void context.services.log.http(request);
 
 		return jsonHash({
 			bookmarks: context.services.bookmarks.perform(),
-			async meta(): Promise<V2_MetaDescriptor[]> {
+			async meta(): Promise<MetaDescriptor[]> {
 				let t = await i18n.getFixedT(request);
 
 				return [{ title: t("bookmarks.meta.title") }];
@@ -26,7 +26,7 @@ export function loader({ request, context }: LoaderArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	if (!data) return [];
 	return data.meta;
 };

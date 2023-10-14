@@ -1,7 +1,7 @@
 import type {
 	DataFunctionArgs,
-	V2_MetaDescriptor,
-	V2_MetaFunction,
+	MetaDescriptor,
+	MetaFunction,
 } from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
@@ -14,12 +14,12 @@ export let handle: SDX.Handle = { hydrate: true };
 export async function loader({ request }: DataFunctionArgs) {
 	let t = await i18n.getFixedT(request);
 
-	let meta: V2_MetaDescriptor[] = [{ title: t("write.title") }];
+	let meta: MetaDescriptor[] = [{ title: t("write.title") }];
 
 	return json({ meta });
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	return data?.meta ?? [];
 };
 

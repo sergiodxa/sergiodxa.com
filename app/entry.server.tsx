@@ -5,7 +5,7 @@ import { createInstance } from "i18next";
 import isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-import { preloadLinkedAssets } from "remix-utils";
+import { preloadLinkedAssets } from "remix-utils/preload-route-assets";
 
 import { i18n } from "~/i18n.server";
 import en from "~/locales/en";

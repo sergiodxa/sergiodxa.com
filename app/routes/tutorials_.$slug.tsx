@@ -1,8 +1,8 @@
 import type {
 	DataFunctionArgs,
 	SerializeFrom,
-	V2_MetaDescriptor,
-	V2_MetaFunction,
+	MetaDescriptor,
+	MetaFunction,
 } from "@remix-run/cloudflare";
 
 import { redirect, defer } from "@remix-run/cloudflare";
@@ -38,7 +38,7 @@ export async function loader(_: DataFunctionArgs) {
 
 		return defer({ tutorial, recommendations, meta: getMeta() });
 
-		function getMeta(): V2_MetaDescriptor[] {
+		function getMeta(): MetaDescriptor[] {
 			let title = t("tutorial.document.title", { title: tutorial.title });
 
 			return [
@@ -57,7 +57,7 @@ export async function loader(_: DataFunctionArgs) {
 	});
 }
 
-export let meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	return data?.meta ?? [];
 };
 

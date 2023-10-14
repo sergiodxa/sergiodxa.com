@@ -3,7 +3,8 @@ import { z } from "zod";
 import { isEmpty } from "./arrays";
 
 export namespace Schemas {
-	export let FormDataEntryValueSchema = z
+	// eslint-disable-next-line prefer-let/prefer-let
+	export const FormDataEntryValueSchema = z
 		.union([z.string(), z.instanceof(File)])
 		.nullable();
 
