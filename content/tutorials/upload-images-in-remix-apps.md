@@ -1,8 +1,8 @@
 #react@18.2.0 #@remix-run/node@2.1.0 #@remix-run/react@2.1.0
 
-# Upload images in a Remix application
+# Upload Images in a Remix Application
 
-If you want to add file upload to let users send you images, e.g. for an avatar, Remix gives you a few (still unstable for some reason) tools to do so.
+If you want to add file upload to let users send you images, e.g., for an avatar, Remix provides a few (still unstable for some reason) tools to do so.
 
 > tl;dr: Here's a repository with an app using this code:
 > https://github.com/sergiodxa/remix-demo-file-upload
@@ -22,11 +22,11 @@ import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 ```
 
-Now, let's use them in an action function. We will use `unstable_parseMultipartFormData` instead of `request.formData()` to parse the request body, this way we can use an upload handler to save the uploaded files.
+Now, let's use them in an action function. We'll use `unstable_parseMultipartFormData` instead of `request.formData()` to parse the request body, allowing us to use an upload handler to save the uploaded files.
 
-As our upload handler we'll compose `unstable_createFileUploadHandler` to save the files to disk and `unstable_createMemoryUploadHandler` to let any other FormData entry to be kept in memory.
+As our upload handler, we'll compose `unstable_createFileUploadHandler` to save the files to disk and `unstable_createMemoryUploadHandler` to keep any other FormData entry in memory.
 
-The return of our action will be a JSON with the list of files we just uploaded, including the name and the URL.
+The return of our action will be a JSON object with the list of files we just uploaded, including the name and the URL.
 
 ```ts
 export async function action({ request }: ActionFunctionArgs) {
@@ -40,8 +40,8 @@ export async function action({ request }: ActionFunctionArgs) {
         },
         // Store the images in the public/img folder
         directory: "./public/img",
-        // By default `unstable_createFileUploadHandler` add a number to the file
-        // names if there's another with the same name, by disabling it we replace
+        // By default, `unstable_createFileUploadHandler` adds a number to the file
+        // names if there's another with the same name; by disabling it, we replace
         // the old file
         avoidFileConflicts: false,
         // Use the actual filename as the final filename
@@ -62,11 +62,11 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 ```
 
-Now, let's create a hook to contain our logic, we don't really need it to be a hook but for the sake of the example, and to reduce code block size we will do it.
+Now, let's create a hook to contain our logic. We don't really need it to be a hook, but for the sake of the example and to reduce code block size, we'll make it one.
 
-This hook will use a [Remix's fetcher](https://remix.run/docs/en/main/hooks/use-fetcher) to let us upload the files from the browser.
+This hook will use a [Remix fetcher](https://remix.run/docs/en/main/hooks/use-fetcher) to let us upload the files from the browser.
 
-We will expose the `fetcher.submit`, the `fetcher.state` as `isUploading` if it's not `idle`, and the list of images combining the ones we're uploading and the ones we already uploaded.
+We'll expose `submit`, `isUploading` if the state is not `idle`, and the list of images combining the ones we're uploading and the ones we've already uploaded.
 
 ```ts
 function useFileUpload() {
@@ -78,7 +78,7 @@ function useFileUpload() {
     ?.filter((value: unknown): value is File => value instanceof File)
     .map((file) => {
       let name = file.name;
-      // This line is important, this will create an Object URL, which is a `blob:` URL string
+      // This line is important; it will create an Object URL, which is a `blob:` URL string
       // We'll need this to render the image in the browser as it's being uploaded
       let url = URL.createObjectURL(file);
       return { name, url };
@@ -116,7 +116,7 @@ export default function Component() {
         <input
           name="file"
           type="file"
-          // We hide the input so we can use our own label as trigger
+          // We hide the input so we can use our own label as a trigger
           style={{ display: "none" }}
           onChange={(event) => submit(event.currentTarget.files)}
         />
@@ -124,7 +124,7 @@ export default function Component() {
 
       <ul>
         {/*
-         * Here we render the list of images including the ones we're uploading
+         * Here we render the list of images, including the ones we're uploading
          * and the ones we've already uploaded
          */}
         {images.map((file) => {
@@ -136,9 +136,9 @@ export default function Component() {
 }
 ```
 
-Finally, we need to create a component to render the images. We will use a component to let revoke the object URL and blur the image while it's being uploaded.
+Finally, we need to create a component to render the images. We'll use a component to revoke the object URL and blur the image while it's being uploaded.
 
-Something important is that the `key` needs to be the same between the uploading image and the already uploaded one, this will let use keep the same Image component instance and let us do a simple effect once the image is loaded, for this we use the `file.name` and it's the reason we disabled `avoidFileConflicts` in the upload handler, another option could be to create a unique ID client-side before the upload.
+Something important is that the `key` needs to be the same between the uploading image and the already uploaded one. This will let us keep the same Image component instance and allow us to do a simple effect once the image is loaded. For this, we use `file.name`, and it's the reason we disabled `avoidFileConflicts` in the upload handler. Another option could be to create a unique ID client-side before the upload.
 
 ```tsx
 function Image({ name, url }: { name: string; url: string }) {
@@ -160,7 +160,7 @@ function Image({ name, url }: { name: string; url: string }) {
       width={320}
       height={240}
       style={{
-        // Some styles, here we apply a blur filter when it's being uploaded
+        // Some styles; here we apply a blur filter when it's being uploaded
         transition: "filter 300ms ease",
         filter: url.startsWith("blob:") ? "blur(4px)" : "blur(0)",
       }}
@@ -169,4 +169,4 @@ function Image({ name, url }: { name: string; url: string }) {
 }
 ```
 
-With this, if the user clicks the label or drop a file it will trigger the file input which will make our file upload logic to run.
+With this, if the user clicks the label or drops a file, it will trigger the file input, which will initiate our file upload logic.
