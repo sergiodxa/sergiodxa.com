@@ -5,7 +5,7 @@
 If you want to add file upload to let users send you images, e.g., for an avatar, Remix provides a few (still unstable for some reason) tools to do so.
 
 > tl;dr: Here's a repository with an app using this code:
-> https://github.com/sergiodxa/remix-demo-file-upload
+> [https://github.com/sergiodxa/remix-demo-file-upload](https://github.com/sergiodxa/remix-demo-file-upload)
 
 Let's start by importing the file upload functions and other things we'll need.
 
