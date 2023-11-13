@@ -55,6 +55,7 @@
 		"hono": "^3.7.6",
 		"i18next": "^23.5.1",
 		"i18next-browser-languagedetector": "^7.1.0",
+		"is-ip": "^5.0.1",
 		"isbot": "^3.6.12",
 		"lucide-react": "^0.259.0",
 		"nprogress": "^0.2.0",
