@@ -26,6 +26,7 @@ import { jsonHash } from "remix-utils/json-hash";
 import { useShouldHydrate } from "remix-utils/use-should-hydrate";
 
 import avatarHref from "~/assets/avatar.png";
+import sansFont from "~/fonts/sans.woff2";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
 import globalStylesUrl from "~/styles/global.css";
@@ -35,8 +36,11 @@ import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 export let links: LinksFunction = () => {
 	return [
 		{ rel: "preconnect", href: "https://static.cloudflareinsights.com" },
+		{ rel: "preload", href: sansFont, as: "font" },
+		{ rel: "preload", as: "style", href: "/fonts/sans" },
 		{ rel: "preload", as: "style", href: tailwindUrl },
 		{ rel: "preload", as: "style", href: globalStylesUrl },
+		{ rel: "stylesheet", href: "/fonts/sans" },
 		{ rel: "stylesheet", href: tailwindUrl },
 		{ rel: "stylesheet", href: globalStylesUrl },
 		{

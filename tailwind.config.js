@@ -6,6 +6,23 @@ module.exports = {
 
 	theme: {
 		extend: {
+			fontFamily: {
+				sans: [
+					"Mona Sans",
+					"ui-sans-serif",
+					"system-ui",
+					"-apple-system",
+					"BlinkMacSystemFont",
+					"Inter",
+					"Segoe UI",
+					"Roboto",
+					"sans-serif",
+					"Apple Color Emoji",
+					"Segoe UI Emoji",
+					"Segoe UI Symbol",
+					"Noto Color Emoji",
+				],
+			},
 			maxWidth: {
 				prose: "65ch",
 			},
