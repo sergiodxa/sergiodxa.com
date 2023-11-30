@@ -2,7 +2,7 @@
 
 # Delete a Cookie using Remix cookie helpers
 
-If we have set a cookie and we need to tell the browser to delete it, we can do that with a simple trick, we can set the cookie value to an empty string and set the expiration date to the past.
+If we have set a cookie and we need to tell the browser to delete it, we can do that with a simple trick, we can set the cookie value to an empty string and set the max age to one second.
 
 ```ts
 import { cookie } from "~/cookie";
@@ -11,7 +11,7 @@ export async function action() {
   return json(data, {
     headers: {
       "Set-Cookie": await cookie.serialize("", {
-        expires: new Date(0),
+        maxAge: 1
       }),
     },
   });
