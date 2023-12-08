@@ -22,4 +22,4 @@ return (
 
 Now when the HTML tag is rendered it will start prefetching the data, and once the user finally clicks the link it will be ready.
 
-If you want to see a demo app, here's the code https://github.com/sergiodxa/remix-demo-prefetch-fetcher.
+If you want to see a demo app, here's the code [sergiodxa/remix-demo-prefetch-fetcher](https://github.com/sergiodxa/remix-demo-prefetch-fetcher).
