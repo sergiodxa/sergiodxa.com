@@ -35,8 +35,8 @@ export class GitHub {
 			let content = atob(response.data.content);
 
 			return z
-				.object({ path: z.string(), file: MarkdownSchema })
-				.parse({ path, file: content });
+				.object({ path: z.string(), file: MarkdownSchema, content: z.string() })
+				.parse({ path, file: content, content });
 		} catch (error) {
 			if (
 				error instanceof Error &&
