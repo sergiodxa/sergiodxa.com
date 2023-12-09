@@ -110,12 +110,55 @@ export class Tutorial {
 			}
 		} else console.info("Cache Hit: /tutorials");
 
-		if (query) {
-			console.info('Filtering Tutorials by Query: "%s"', query);
-			return tutorials.filter((tutorial) => {
-				for (let word of query.toLowerCase().split(" ")) {
-					if (tutorial.title.toLowerCase().includes(word)) return true;
+		// If there's no search query, return all tutorials
+		query = query?.toLowerCase(); // Normalize the query
+		if (!query) return tutorials;
+
+		// If after trimming the query is empty, return all tutorials
+		if (query.trim().length === 0) return tutorials;
+
+		console.info('Filtering Tutorials by Query: "%s"', query);
+
+		let techsInQuery = findTechnologiesInString(query);
+
+		for (let techInQuery of techsInQuery) {
+			if (techInQuery.version) {
+				query = query.replace(
+					`tech:${techInQuery.name}@${techInQuery.version}`,
+					"",
+				);
+			} else {
+				query = query.replace(`tech:${techInQuery.name}`, "");
+			}
+
+			tutorials = tutorials.filter((tutorial) => {
+				for (let tagInTutorial of tutorial.tags) {
+					let techInTutorial = getPackageNameAndVersion(tagInTutorial);
+					if (techInQuery.name.includes("*")) {
+						if (
+							!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
+						) {
+							continue;
+						}
+					} else if (techInTutorial.name !== techInQuery.name) {
+						continue;
+					}
+					if (!techInQuery.version) return true;
+					if (semver.gte(techInTutorial.version, techInQuery.version)) {
+						return true;
+					}
 				}
+
+				return false;
+			});
+		}
+
+		for (let word of query.trim()) {
+			tutorials = tutorials.filter((tutorial) => {
+				let title = tutorial.title.toLowerCase();
+
+				if (title.includes(word)) return true;
+
 				return false;
 			});
 		}
@@ -200,4 +243,21 @@ function dedupeBySlug(items: Recommendation[]): Recommendation[] {
 	}
 
 	return result;
+}
+
+/**
+ * can find the technologies name and version from a string
+ * @example
+ * this.#findTechnologiesInString(`hello world tech:@remix-run/react@1.10.0 tech:react@18 tech:@types/react-dom@18.5`)
+ */
+function findTechnologiesInString(value: string) {
+	if (!value.includes("tech:")) return [];
+
+	return value
+		.split(" ")
+		.filter((value) => value.includes("tech:"))
+		.map((value) => {
+			value = value.slice("tech:".length);
+			return getPackageNameAndVersion(value);
+		});
 }
