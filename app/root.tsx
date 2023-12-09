@@ -33,6 +33,8 @@ import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
+import { SessionStorage } from "./modules/session.server";
+
 export let links: LinksFunction = () => {
 	return [
 		{ rel: "preconnect", href: "https://static.cloudflareinsights.com" },
@@ -65,8 +67,10 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 					return [{ title: t("header.title") }];
 				},
 				async user() {
-					return await context.services.auth.authenticator.isAuthenticated(
+					return await SessionStorage.readUser(
+						{ kv: context.kv.auth },
 						request,
+						context.env.COOKIE_SESSION_SECRET,
 					);
 				},
 			},

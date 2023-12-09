@@ -55,7 +55,7 @@ declare global {
 
 declare module "@remix-run/server-runtime" {
 	export interface AppLoadContext {
-		kv: Record<"tutorials", KVNamespace>;
+		kv: Record<"tutorials" | "auth", KVNamespace>;
 		waitUntil(promise: Promise<unknown>): void;
 		env: Env;
 		services: SDX.Services;

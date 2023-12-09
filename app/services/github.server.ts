@@ -1,5 +1,6 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/core";
+import { z } from "zod";
 
 export class GitHub {
 	private octokit: Octokit;
@@ -67,6 +68,20 @@ export class GitHub {
 
 			throw error;
 		}
+	}
+
+	async isSponsoringMe(id: string) {
+		let result = await this.octokit.graphql(`query {
+	node(id: "${id}") {
+		... on Sponsorable {
+			isSponsoringViewer
+		}
+	}
+}`);
+
+		return z
+			.object({ node: z.object({ isSponsoringViewer: z.boolean() }) })
+			.parse(result).node.isSponsoringViewer;
 	}
 }
 

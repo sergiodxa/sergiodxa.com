@@ -1,24 +1,29 @@
-import type { DataFunctionArgs } from "@remix-run/cloudflare";
-
+import {
+	json,
+	type ActionFunctionArgs,
+	type LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
 import { Form } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
+import { SessionStorage } from "~/modules/session.server";
 
-export async function loader(_: DataFunctionArgs) {
-	return _.context.time("routes/auth.logout#loader", async () => {
-		return await _.context.services.auth.authenticator.isAuthenticated(
-			_.request,
-			{ successRedirect: "/" },
-		);
-	});
+export async function loader(_: LoaderFunctionArgs) {
+	await SessionStorage.requireUser(
+		{ kv: _.context.kv.auth },
+		_.request,
+		_.context.env.COOKIE_SESSION_SECRET,
+	);
+
+	return json(null);
 }
 
-export async function action(_: DataFunctionArgs) {
-	return _.context.time("routes/login#action", async () => {
-		return await _.context.services.auth.authenticator.logout(_.request, {
-			redirectTo: "/",
-		});
-	});
+export async function action(_: ActionFunctionArgs) {
+	return await SessionStorage.logout(
+		{ kv: _.context.kv.auth },
+		_.request,
+		_.context.env.COOKIE_SESSION_SECRET,
+	);
 }
 
 export default function Component() {
