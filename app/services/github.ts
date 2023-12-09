@@ -1,8 +1,5 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/core";
-import { z } from "zod";
-
-import { MarkdownSchema } from "~/server/entities/markdown";
 
 export class GitHub {
 	private octokit: Octokit;
@@ -32,11 +29,7 @@ export class GitHub {
 			if (Array.isArray(response.data)) throw new GitHubError("Not a file");
 			if (response.data.type !== "file") throw new GitHubError("Not a file");
 
-			let content = atob(response.data.content);
-
-			return z
-				.object({ path: z.string(), file: MarkdownSchema, content: z.string() })
-				.parse({ path, file: content, content });
+			return atob(response.data.content);
 		} catch (error) {
 			if (
 				error instanceof Error &&
