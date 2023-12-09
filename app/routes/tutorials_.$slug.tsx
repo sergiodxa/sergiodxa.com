@@ -16,6 +16,8 @@ import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
 import { i18n } from "~/i18n.server";
+import { Tutorial } from "~/models/tutorial.server";
+import { GitHub } from "~/services/github";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
@@ -31,12 +33,26 @@ export async function loader(_: DataFunctionArgs) {
 			throw redirect(`/tutorials/${slug}`);
 		}
 
-		let recommendations = _.context.services.tutorials.recommendations(slug);
-		let tutorial = await _.context.services.tutorials.read(slug);
+		// let recommendations = _.context.services.tutorials.recommendations(slug);
+
+		let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
+		let tutorial = await Tutorial.show(
+			{ gh, kv: _.context.kv.tutorials },
+			slug,
+		);
 
 		let t = await i18n.getFixedT(_.request);
 
-		return defer({ tutorial, recommendations, meta: getMeta() });
+		return defer({
+			tutorial: {
+				slug: tutorial.slug,
+				tags: [],
+				title: tutorial.title,
+				content: tutorial.body,
+			},
+			recommendations: Promise.resolve([]),
+			meta: getMeta(),
+		});
 
 		function getMeta(): MetaDescriptor[] {
 			let title = t("tutorial.document.title", { title: tutorial.title });
@@ -69,7 +85,7 @@ export default function Component() {
 	return (
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
-				<Versions />
+				{/* <Versions /> */}
 				<div>
 					<Header />
 					<MarkdownView content={tutorial?.content} />
