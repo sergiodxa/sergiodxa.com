@@ -42,22 +42,20 @@ export class Tutorial {
 
 		let list = await kv.list({ prefix: "tutorial:", limit: 1000 });
 
-		for (let key in list.keys) {
-			let item = list.keys[key];
-
-			if (!item.metadata) {
-				console.info("Missing Metadata in Key: %s", key);
-				await kv.delete(key);
+		for (let key of list.keys) {
+			if (!key.metadata) {
+				console.info("Missing Metadata in Key: %s", key.name);
+				await kv.delete(key.name);
 				continue;
 			}
 
 			let result = AttributesSchema.extend({
 				slug: z.string(),
-			}).safeParse(item.metadata);
+			}).safeParse(key.metadata);
 
 			if (!result.success) {
-				console.info("Invalid Metadata in Key: %s", key);
-				await kv.delete(key);
+				console.info("Invalid Metadata in Key: %s", key.name);
+				await kv.delete(key.name);
 				continue;
 			}
 
