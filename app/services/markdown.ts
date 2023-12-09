@@ -80,8 +80,4 @@ export class Markdown {
 	toJSON() {
 		return { body: this.body, attributes: this.attributes };
 	}
-
-	static revive(body: Body, attributes: Attributes) {
-		return new Markdown(body, attributes);
-	}
 }
