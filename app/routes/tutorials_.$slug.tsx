@@ -46,7 +46,7 @@ export async function loader(_: DataFunctionArgs) {
 		return defer({
 			tutorial: {
 				slug: tutorial.slug,
-				tags: [],
+				tags: tutorial.tags,
 				title: tutorial.title,
 				content: tutorial.body,
 			},
@@ -88,7 +88,7 @@ export default function Component() {
 	return (
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
-				{/* <Versions /> */}
+				<Versions />
 				<div>
 					<Header />
 					<MarkdownView content={tutorial?.content} />
