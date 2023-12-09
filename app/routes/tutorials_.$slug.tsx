@@ -50,7 +50,10 @@ export async function loader(_: DataFunctionArgs) {
 				title: tutorial.title,
 				content: tutorial.body,
 			},
-			recommendations: Promise.resolve([]),
+			recommendations: tutorial.recommendations({
+				gh,
+				kv: _.context.kv.tutorials,
+			}),
 			meta: getMeta(),
 		});
 

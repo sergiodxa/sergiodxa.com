@@ -1,10 +1,17 @@
 import type { GitHub } from "~/services/github";
 import type { Attributes } from "~/services/markdown";
 
+import * as semver from "semver";
 import { z } from "zod";
 
 import { AttributesSchema, Markdown } from "~/services/markdown";
 import { isEmpty } from "~/utils/arrays";
+
+interface Recommendation {
+	title: string;
+	tag: string;
+	slug: string;
+}
 
 export class Tutorial {
 	private constructor(
@@ -32,6 +39,36 @@ export class Tutorial {
 			tags: this.tags,
 			body: this.body,
 		};
+	}
+
+	async recommendations({ gh, kv }: { gh: GitHub; kv: KVNamespace }) {
+		let list = await Tutorial.list({ gh, kv });
+
+		if (isEmpty(list)) return [];
+
+		// Remove the current tutorial from the list of tutorials
+		list = list.filter((item) => !item.slug.includes(this.slug));
+
+		let result: Recommendation[] = [];
+
+		for (let item of list) {
+			for (let tag of shuffle(this.tags)) {
+				let { name, version } = getPackageNameAndVersion(tag);
+
+				let match = shuffle(item.tags).find((itemTag) => {
+					let { name: itemName, version: itemVersion } =
+						getPackageNameAndVersion(itemTag);
+					if (itemName !== name) return false;
+					return semver.gte(version, itemVersion);
+				});
+
+				if (match) {
+					result.push({ title: item.title, tag: match, slug: item.slug });
+				}
+			}
+		}
+
+		return shuffle(dedupeBySlug(result)).slice(0, 3);
 	}
 
 	static async list(
@@ -126,4 +163,41 @@ export class Tutorial {
 	private static slugToPath(slug: string) {
 		return `tutorials/${slug}.md`;
 	}
+}
+
+function shuffle<Value>(list: Value[]) {
+	let result = [...list];
+
+	for (let i = result.length - 1; i > 0; i--) {
+		let j = Math.floor(Math.random() * (i + 1));
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+
+	return result;
+}
+
+function getPackageNameAndVersion(tag: string) {
+	if (!tag.startsWith("@")) {
+		let [name, version] = tag.split("@");
+		return { name, version };
+	}
+
+	let [, name, version] = tag.split("@");
+	return { name: `@${name}`, version };
+}
+
+function dedupeBySlug(items: Recommendation[]): Recommendation[] {
+	let result: Recommendation[] = [];
+
+	for (let item of items) {
+		if (!result.find((resultItem) => resultItem.slug === item.slug)) {
+			result.push(item);
+
+			if (result.length >= 3) break;
+
+			continue;
+		}
+	}
+
+	return result;
 }
