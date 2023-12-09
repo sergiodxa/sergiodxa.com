@@ -74,7 +74,8 @@ export class Tutorial {
 		} else console.info("Cache Hit: /tutorials");
 
 		if (query) {
-			tutorials.filter((tutorial) => {
+			console.info('Filtering Tutorials by Query: "%s"', query);
+			return tutorials.filter((tutorial) => {
 				for (let word of query.toLowerCase().split(" ")) {
 					if (tutorial.title.toLowerCase().includes(word)) return true;
 				}
