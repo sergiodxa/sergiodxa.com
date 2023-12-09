@@ -1,10 +1,10 @@
-import type { GitHub } from "~/services/github";
-import type { Attributes } from "~/services/markdown";
+import type { Attributes } from "~/models/markdown.server";
+import type { GitHub } from "~/services/github.server";
 
 import * as semver from "semver";
 import { z } from "zod";
 
-import { AttributesSchema, Markdown } from "~/services/markdown";
+import { AttributesSchema, Markdown } from "~/models/markdown.server";
 import { isEmpty } from "~/utils/arrays";
 
 interface Recommendation {

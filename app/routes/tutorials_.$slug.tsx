@@ -17,7 +17,7 @@ import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
 import { i18n } from "~/i18n.server";
 import { Tutorial } from "~/models/tutorial.server";
-import { GitHub } from "~/services/github";
+import { GitHub } from "~/services/github.server";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
