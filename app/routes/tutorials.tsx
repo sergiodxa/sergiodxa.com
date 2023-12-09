@@ -11,6 +11,8 @@ import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
+import { Tutorial } from "~/models/tutorial.server";
+import { GitHub } from "~/services/github";
 
 export function loader(_: DataFunctionArgs) {
 	return _.context.time("routes/tutorials#loader", async () => {
@@ -21,19 +23,24 @@ export function loader(_: DataFunctionArgs) {
 		let query = url.searchParams.get("q") ?? "";
 		let page = Number(url.searchParams.get("page") ?? 1);
 
+		let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
+
+		let tutorials = await Tutorial.list(
+			{ gh, kv: _.context.kv.tutorials },
+			query,
+		);
+
 		let headers = new Headers({
 			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 		});
-
-		let tutorials = query
-			? _.context.services.tutorials.search({ query, page })
-			: _.context.services.tutorials.list({ page });
 
 		return jsonHash(
 			{
 				term: query,
 				page,
-				tutorials,
+				tutorials: tutorials.map((tutorial) => {
+					return { slug: tutorial.slug, title: tutorial.title };
+				}),
 				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(_.request);
 
@@ -63,25 +70,8 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function Component() {
-	let { tutorials, term, page } = useLoaderData<typeof loader>();
+	let { tutorials, term } = useLoaderData<typeof loader>();
 	let t = useT("translation", "tutorials");
-
-	if (tutorials.page.size === 0) {
-		return (
-			<main className="mx-auto max-w-screen-sm space-y-4">
-				<h2 className="text-3xl font-bold">{t("404")}</h2>
-				<p>{t("empty", { page })}</p>
-			</main>
-		);
-	}
-
-	let prevLink = term
-		? `/tutorials?q=${term}&page=${page - 1}`
-		: `/tutorials?page=${page - 1}`;
-
-	let nextLink = term
-		? `/tutorials?q=${term}&page=${page + 1}`
-		: `/tutorials?page=${page + 1}`;
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
@@ -91,7 +81,7 @@ export default function Component() {
 				<SearchForm t={t} defaultValue={term} />
 
 				<ul className="space-y-2">
-					{tutorials.items.map((tutorial) => (
+					{tutorials.map((tutorial) => (
 						<li key={tutorial.slug} className="list-inside list-disc">
 							<Link to={`/tutorials/${tutorial.slug}`} prefetch="intent">
 								{tutorial.title}
@@ -100,23 +90,6 @@ export default function Component() {
 					))}
 				</ul>
 			</div>
-
-			<footer className="flex w-full justify-evenly">
-				{tutorials.page.prev && (
-					<>
-						<Link to={prevLink} prefetch="intent">
-							{t("pagination.prev")}
-						</Link>
-					</>
-				)}
-				{tutorials.page.next && (
-					<>
-						<Link to={nextLink} prefetch="intent">
-							{t("pagination.next")}
-						</Link>
-					</>
-				)}
-			</footer>
 		</main>
 	);
 }

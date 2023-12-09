@@ -25,7 +25,10 @@ export let EnvSchema = z.object({
 	GITHUB_USERNAME: z.string().min(1),
 	LOGTAIL_SOURCE_TOKEN: z.string().min(1),
 	DSN: z.string().url().optional(),
-  WRITE_PASSWORD: z.string(),
+	WRITE_PASSWORD: z.string(),
+
+	GH_APP_ID: z.string().min(1),
+	GH_APP_PEM: z.string().min(1),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

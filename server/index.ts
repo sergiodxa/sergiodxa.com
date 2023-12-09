@@ -124,6 +124,8 @@ server.use(
 			let measurer = new Measurer();
 
 			return {
+				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
+				kv: { tutorials: ctx.env.tutorials },
 				env,
 				services,
 				repos,
