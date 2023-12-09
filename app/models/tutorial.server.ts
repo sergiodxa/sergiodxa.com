@@ -1,5 +1,5 @@
-import type { Attributes } from "~/entities/markdown";
 import type { GitHub } from "~/services/github";
+import type { Attributes } from "~/services/markdown";
 
 import { z } from "zod";
 
