@@ -101,7 +101,6 @@ export class Tutorial {
 
 		if (isEmpty(tutorials)) {
 			console.info("Cache Miss: /tutorials");
-
 			let filePaths = await gh.listMarkdownFiles("tutorials");
 			for await (let filePath of filePaths) {
 				let slug = Tutorial.pathToSlug(filePath);
@@ -111,59 +110,11 @@ export class Tutorial {
 		} else console.info("Cache Hit: /tutorials");
 
 		// If there's no search query, return all tutorials
-		query = query?.toLowerCase(); // Normalize the query
+		query = query?.toLowerCase().trim(); // Normalize the query
 		if (!query) return tutorials;
 
-		// If after trimming the query is empty, return all tutorials
-		if (query.trim().length === 0) return tutorials;
-
 		console.info('Filtering Tutorials by Query: "%s"', query);
-
-		let techsInQuery = findTechnologiesInString(query);
-
-		for (let techInQuery of techsInQuery) {
-			if (techInQuery.version) {
-				query = query.replace(
-					`tech:${techInQuery.name}@${techInQuery.version}`,
-					"",
-				);
-			} else {
-				query = query.replace(`tech:${techInQuery.name}`, "");
-			}
-
-			tutorials = tutorials.filter((tutorial) => {
-				for (let tagInTutorial of tutorial.tags) {
-					let techInTutorial = getPackageNameAndVersion(tagInTutorial);
-					if (techInQuery.name.includes("*")) {
-						if (
-							!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
-						) {
-							continue;
-						}
-					} else if (techInTutorial.name !== techInQuery.name) {
-						continue;
-					}
-					if (!techInQuery.version) return true;
-					if (semver.gte(techInTutorial.version, techInQuery.version)) {
-						return true;
-					}
-				}
-
-				return false;
-			});
-		}
-
-		for (let word of query.trim()) {
-			tutorials = tutorials.filter((tutorial) => {
-				let title = tutorial.title.toLowerCase();
-
-				if (title.includes(word)) return true;
-
-				return false;
-			});
-		}
-
-		return tutorials;
+		return search(tutorials, query);
 	}
 
 	static async show(
@@ -260,4 +211,49 @@ function findTechnologiesInString(value: string) {
 			value = value.slice("tech:".length);
 			return getPackageNameAndVersion(value);
 		});
+}
+
+function search(list: Array<Attributes & { slug: string }>, query: string) {
+	let techsInQuery = findTechnologiesInString(query);
+
+	for (let techInQuery of techsInQuery) {
+		if (techInQuery.version) {
+			query = query.replace(
+				`tech:${techInQuery.name}@${techInQuery.version}`,
+				"",
+			);
+		} else {
+			query = query.replace(`tech:${techInQuery.name}`, "");
+		}
+
+		list = list.filter((item) => {
+			for (let tagInTutorial of item.tags) {
+				let techInTutorial = getPackageNameAndVersion(tagInTutorial);
+				if (techInQuery.name.includes("*")) {
+					if (
+						!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
+					) {
+						continue;
+					}
+				} else if (techInTutorial.name !== techInQuery.name) {
+					continue;
+				}
+				if (!techInQuery.version) return true;
+				if (semver.gte(techInTutorial.version, techInQuery.version)) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}
+
+	for (let word of query.trim()) {
+		list = list.filter((item) => {
+			let title = item.title.toLowerCase();
+			return title.includes(word);
+		});
+	}
+
+	return list;
 }
