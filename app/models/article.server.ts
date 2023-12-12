@@ -59,6 +59,16 @@ export class Article {
 
 		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
 
+		await Promise.all(
+			results.map((result) => {
+				return cache.set(
+					`article:${result.path}`,
+					JSON.stringify(result.content),
+					{ expirationTtl: 3600 },
+				);
+			}),
+		);
+
 		return results;
 	}
 
@@ -84,6 +94,16 @@ export class Article {
 			.parse(cn.searchNotes(term, page));
 
 		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
+
+		await Promise.all(
+			results.map((result) => {
+				return cache.set(
+					`article:${result.path}`,
+					JSON.stringify(result.content),
+					{ expirationTtl: 3600 },
+				);
+			}),
+		);
 
 		return results;
 	}
