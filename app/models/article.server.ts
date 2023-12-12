@@ -32,7 +32,7 @@ export class Article {
 	}
 
 	toJSON() {
-		return { path: this.path, content: this.content };
+		return { path: this.path, title: this.title, content: this.content };
 	}
 
 	static async list({ cache, cn }: Services, page = 1) {
