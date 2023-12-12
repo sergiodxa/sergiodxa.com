@@ -125,7 +125,11 @@ server.use(
 
 			return {
 				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
-				kv: { tutorials: ctx.env.tutorials, auth: ctx.env.auth },
+				kv: {
+					cn: ctx.env.cn,
+					auth: ctx.env.auth,
+					tutorials: ctx.env.tutorials,
+				},
 				env,
 				services,
 				repos,
