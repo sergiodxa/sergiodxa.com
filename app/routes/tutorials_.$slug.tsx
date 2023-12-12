@@ -33,8 +33,6 @@ export async function loader(_: DataFunctionArgs) {
 			throw redirect(`/tutorials/${slug}`);
 		}
 
-		// let recommendations = _.context.services.tutorials.recommendations(slug);
-
 		let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
 		let tutorial = await Tutorial.show(
 			{ gh, kv: _.context.kv.tutorials },
