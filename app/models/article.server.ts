@@ -20,7 +20,7 @@ const ArchiveSchema = z.object({
 export class Article {
 	private constructor(
 		readonly path: string,
-		readonly content: Markdown,
+		private readonly content: Markdown,
 	) {}
 
 	get title() {
