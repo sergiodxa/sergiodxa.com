@@ -26,7 +26,7 @@ export const AttributesSchema = z.object({
 	tags: z.string().array(),
 });
 
-const MarkdownSchema = z
+export const MarkdownSchema = z
 	.string()
 	.transform((content) => {
 		if (content.startsWith("# ")) {
