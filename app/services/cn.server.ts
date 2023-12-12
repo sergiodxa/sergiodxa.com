@@ -24,33 +24,6 @@ export const NoteSchema = z.object({
 	url: z.string(),
 });
 
-const NotesReorderedEventSchema = z.object({
-	event: z.literal("notes-reordered"),
-	data: z.object({ notes: NoteSchema.array() }),
-});
-
-const NoteUpdatedEventSchema = z.object({
-	event: z.literal("note-updated"),
-	data: z.object({ note: NoteSchema }),
-});
-
-const NoteCreatedEventSchema = z.object({
-	event: z.literal("note-created"),
-	data: z.object({ note: NoteSchema }),
-});
-
-const NoteDeletedEventSchema = z.object({
-	event: z.literal("note-deleted"),
-	data: z.object({ note: NoteSchema }),
-});
-
-export const NoteEventSchema = z.union([
-	NotesReorderedEventSchema,
-	NoteUpdatedEventSchema,
-	NoteCreatedEventSchema,
-	NoteDeletedEventSchema,
-]);
-
 export class CollectedNotes {
 	private BASE_URL = new URL("https://collectednotes.com/");
 
