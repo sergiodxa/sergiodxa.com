@@ -28,6 +28,7 @@ export async function loader(_: DataFunctionArgs) {
 		.map((tutorial) => {
 			return `<item>
 		<title>${tutorial.title}</title>
+		<description><a href="https://sergiodxa.com/tutorials/${tutorial.slug}">Read it on the web</a></description>
 		<link>https://sergiodxa.com/tutorials/${tutorial.slug}</link>
 		<guid>${tutorial.slug}</guid>
 	</item>`;
