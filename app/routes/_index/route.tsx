@@ -33,6 +33,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 						} as const;
 					});
 				},
+
 				async bookmarks() {
 					let bookmarks = await Feed.bookmarks(context);
 					return bookmarks.map((bookmark) => {
@@ -47,6 +48,23 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 						} as const;
 					});
 				},
+
+				async tutorials() {
+					let tutorials = await Feed.tutorials(context);
+					return tutorials
+						.filter((tutorial) => tutorial.createdAt)
+						.map((tutorial) => {
+							return {
+								id: String(tutorial.slug),
+								type: "tutorial",
+								payload: {
+									title: tutorial.title,
+									link: `/tutorials/${tutorial.slug}`,
+									createdAt: new Date(tutorial.createdAt!).getTime(),
+								},
+							} as const;
+						});
+				},
 			},
 			{ headers },
 		);
@@ -54,10 +72,10 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-	let { articles, bookmarks } = useLoaderData<typeof loader>();
+	let { articles, bookmarks, tutorials } = useLoaderData<typeof loader>();
 	let t = useT("translation", "home");
 
-	let feed = [...articles, ...bookmarks].sort(
+	let feed = [...articles, ...bookmarks, ...tutorials].sort(
 		(a, b) => b.payload.createdAt - a.payload.createdAt,
 	);
 
