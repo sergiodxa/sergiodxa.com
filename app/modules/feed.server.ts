@@ -17,7 +17,19 @@ export class Feed {
 			context.env.AIRTABLE_TABLE_ID,
 		);
 
-		return Bookmark.list({ cache, airtable });
+		let bookmarks = await Bookmark.list({ cache, airtable });
+
+		return bookmarks.map((bookmark) => {
+			return {
+				id: String(bookmark.id),
+				type: "bookmark",
+				payload: {
+					title: bookmark.title,
+					link: bookmark.url,
+					createdAt: new Date(bookmark.createdAt).getTime(),
+				},
+			} as const;
+		});
 	}
 
 	static async articles(context: AppLoadContext) {
@@ -28,13 +40,39 @@ export class Feed {
 			context.env.CN_SITE,
 		);
 
-		return Article.list({ cache, cn }, 1);
+		let articles = await Article.list({ cache, cn }, 1);
+
+		return articles.map((article) => {
+			return {
+				id: String(article.path),
+				type: "article",
+				payload: {
+					title: article.title,
+					link: `/articles/${article.path}`,
+					createdAt: new Date(article.createdAt).getTime(),
+				},
+			} as const;
+		});
 	}
 
 	static async tutorials(context: AppLoadContext) {
 		let kv = context.kv.tutorials;
 		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
 
-		return Tutorial.list({ kv, gh });
+		let tutorials = await Tutorial.list({ kv, gh });
+
+		return tutorials
+			.filter((tutorial) => tutorial.createdAt)
+			.map((tutorial) => {
+				return {
+					id: String(tutorial.slug),
+					type: "tutorial",
+					payload: {
+						title: tutorial.title,
+						link: `/tutorials/${tutorial.slug}`,
+						createdAt: new Date(tutorial.createdAt!).getTime(),
+					},
+				} as const;
+			});
 	}
 }

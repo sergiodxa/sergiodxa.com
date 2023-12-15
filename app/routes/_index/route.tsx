@@ -19,52 +19,9 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 		return jsonHash(
 			{
-				async articles() {
-					let articles = await Feed.articles(context);
-					return articles.map((article) => {
-						return {
-							id: String(article.path),
-							type: "article",
-							payload: {
-								title: article.title,
-								link: `/articles/${article.path}`,
-								createdAt: new Date(article.createdAt).getTime(),
-							},
-						} as const;
-					});
-				},
-
-				async bookmarks() {
-					let bookmarks = await Feed.bookmarks(context);
-					return bookmarks.map((bookmark) => {
-						return {
-							id: String(bookmark.id),
-							type: "bookmark",
-							payload: {
-								title: bookmark.title,
-								link: bookmark.url,
-								createdAt: new Date(bookmark.createdAt).getTime(),
-							},
-						} as const;
-					});
-				},
-
-				async tutorials() {
-					let tutorials = await Feed.tutorials(context);
-					return tutorials
-						.filter((tutorial) => tutorial.createdAt)
-						.map((tutorial) => {
-							return {
-								id: String(tutorial.slug),
-								type: "tutorial",
-								payload: {
-									title: tutorial.title,
-									link: `/tutorials/${tutorial.slug}`,
-									createdAt: new Date(tutorial.createdAt!).getTime(),
-								},
-							} as const;
-						});
-				},
+				articles: Feed.articles(context),
+				bookmarks: Feed.bookmarks(context),
+				tutorials: Feed.tutorials(context),
 			},
 			{ headers },
 		);
