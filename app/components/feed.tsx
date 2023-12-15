@@ -19,13 +19,13 @@ interface FeedItem<Type extends string, Payload> {
 type Props = {
 	t: TFunction;
 	items: Array<
-		| FeedItem<"article", { title: string; link: string; createdAt: Date }>
-		| FeedItem<"tutorial", { title: string; link: string; createdAt: Date }>
-		| FeedItem<"bookmark", { title: string; link: string; createdAt: Date }>
+		| FeedItem<"article", { title: string; link: string; createdAt: number }>
+		| FeedItem<"tutorial", { title: string; link: string; createdAt: number }>
+		| FeedItem<"bookmark", { title: string; link: string; createdAt: number }>
 	>;
 };
 
-export function Feed({ t, items }: Props) {
+export function FeedList({ t, items }: Props) {
 	return (
 		<ol aria-label={t("feed.title") as string}>
 			{items.map((item, index) => {
@@ -56,7 +56,7 @@ export function Feed({ t, items }: Props) {
 								<PencilIcon className="h-5 w-5 text-white" aria-hidden="true" />
 							}
 							iconColor="bg-amber-500"
-							createdAt={item.payload.createdAt}
+							createdAt={new Date(item.payload.createdAt)}
 						/>
 					);
 				}
@@ -88,7 +88,7 @@ export function Feed({ t, items }: Props) {
 								<PencilIcon className="h-5 w-5 text-white" aria-hidden="true" />
 							}
 							iconColor="bg-amber-500"
-							createdAt={item.payload.createdAt}
+							createdAt={new Date(item.payload.createdAt)}
 						/>
 					);
 				}
@@ -124,7 +124,7 @@ export function Feed({ t, items }: Props) {
 								/>
 							}
 							iconColor="bg-blue-400"
-							createdAt={item.payload.createdAt}
+							createdAt={new Date(item.payload.createdAt)}
 						/>
 					);
 				}

@@ -20,11 +20,7 @@ export class GitHub {
 		try {
 			let response = await this.octokit.request(
 				"GET /repos/{owner}/{repo}/contents/{path}",
-				{
-					owner: "sergiodxa",
-					repo: "sergiodxa.com",
-					path,
-				},
+				{ owner: "sergiodxa", repo: "sergiodxa.com", path },
 			);
 
 			if (Array.isArray(response.data)) throw new GitHubError("Not a file");

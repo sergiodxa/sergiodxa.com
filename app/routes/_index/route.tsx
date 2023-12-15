@@ -1,11 +1,12 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 
-import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
+import { jsonHash } from "remix-utils/json-hash";
 
-import { Feed } from "~/components/feed";
+import { FeedList } from "~/components/feed";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
+import { Feed } from "~/modules/feed.server";
 import { Logger } from "~/modules/logger.server";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
@@ -16,48 +17,55 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
 		});
 
-		let { notes, bookmarks, tutorials } = await context.services.feed.perform();
-
-		return json({ notes, bookmarks, tutorials }, { headers });
+		return jsonHash(
+			{
+				async articles() {
+					let articles = await Feed.articles(context);
+					return articles.map((article) => {
+						return {
+							id: String(article.path),
+							type: "article",
+							payload: {
+								title: article.title,
+								link: `/articles/${article.path}`,
+								createdAt: new Date(article.createdAt).getTime(),
+							},
+						} as const;
+					});
+				},
+				async bookmarks() {
+					let bookmarks = await Feed.bookmarks(context);
+					return bookmarks.map((bookmark) => {
+						return {
+							id: String(bookmark.id),
+							type: "bookmark",
+							payload: {
+								title: bookmark.title,
+								link: bookmark.url,
+								createdAt: new Date(bookmark.createdAt).getTime(),
+							},
+						} as const;
+					});
+				},
+			},
+			{ headers },
+		);
 	});
 }
 
 export default function Index() {
-	let { notes, bookmarks } = useLoaderData<typeof loader>();
+	let { articles, bookmarks } = useLoaderData<typeof loader>();
 	let t = useT("translation", "home");
 
-	let feed = [
-		...notes.map((note) => {
-			return {
-				id: String(note.id),
-				type: "article",
-				payload: {
-					title: note.title,
-					link: `/articles/${note.path}`,
-					createdAt: new Date(note.created_at),
-				},
-			} as const;
-		}),
-		...bookmarks.map((bookmark) => {
-			return {
-				id: String(bookmark.id),
-				type: "bookmark",
-				payload: {
-					title: bookmark.title,
-					link: bookmark.url,
-					createdAt: new Date(bookmark.created_at),
-				},
-			} as const;
-		}),
-	].sort(
-		(a, b) => b.payload.createdAt.getTime() - a.payload.createdAt.getTime(),
+	let feed = [...articles, ...bookmarks].sort(
+		(a, b) => b.payload.createdAt - a.payload.createdAt,
 	);
 
 	return (
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-8">
 			<PageHeader t={t} />
 
-			<Feed t={t} items={feed} />
+			<FeedList t={t} items={feed} />
 		</main>
 	);
 }
