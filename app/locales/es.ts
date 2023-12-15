@@ -118,6 +118,10 @@ export default {
 			},
 		},
 
+		subscribe: {
+			cta: "Suscribite a mis tutoriales usando <link>RSS</link>.",
+		},
+
 		pagination: {
 			first: "Más nuevos",
 			prev: "Siguientes",

@@ -5,6 +5,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
+import { Trans } from "react-i18next";
 import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
@@ -70,7 +71,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function Component() {
-	let { tutorials, term } = useLoaderData<typeof loader>();
+	let { term } = useLoaderData<typeof loader>();
 	let t = useT("translation", "tutorials");
 
 	return (
@@ -78,18 +79,41 @@ export default function Component() {
 			<PageHeader t={t} />
 
 			<div className="space-y-4">
+				<Subscribe />
 				<SearchForm t={t} defaultValue={term} />
-
-				<ul className="space-y-2">
-					{tutorials.map((tutorial) => (
-						<li key={tutorial.slug} className="list-inside list-disc">
-							<Link to={`/tutorials/${tutorial.slug}`} prefetch="intent">
-								{tutorial.title}
-							</Link>
-						</li>
-					))}
-				</ul>
+				<List />
 			</div>
 		</main>
+	);
+}
+
+function List() {
+	let { tutorials } = useLoaderData<typeof loader>();
+	return (
+		<ul className="space-y-2">
+			{tutorials.map((tutorial) => (
+				<li key={tutorial.slug} className="list-inside list-disc">
+					<Link to={`/tutorials/${tutorial.slug}`} prefetch="intent">
+						{tutorial.title}
+					</Link>
+				</li>
+			))}
+		</ul>
+	);
+}
+
+function Subscribe() {
+	let t = useT("translation", "tutorials.subscribe");
+	return (
+		<Trans
+			t={t}
+			parent="p"
+			className="text-lg text-gray-800"
+			i18nKey="cta"
+			components={{
+				// eslint-disable-next-line jsx-a11y/anchor-has-content
+				rss: <a href="/tutorials.rss" />,
+			}}
+		/>
 	);
 }

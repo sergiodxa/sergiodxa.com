@@ -112,6 +112,10 @@ export default {
 			},
 		},
 
+		subscribe: {
+			cta: "Subscribe to my tutorials using <rss>RSS</rss>.",
+		},
+
 		pagination: {
 			first: "Newest",
 			prev: "Newer",
