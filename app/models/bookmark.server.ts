@@ -33,7 +33,6 @@ export class Bookmark {
 	}
 
 	static async list({ cache, airtable }: Services) {
-		console.log("Bookmark.list");
 		let cached = await cache.get("bookmarks");
 
 		if (cached) {
@@ -47,7 +46,7 @@ export class Bookmark {
 
 			if (result.success) return result.data;
 			else {
-				console.info("Invalid cache: /bookmarks");
+				console.info("Invalid Cache: /bookmarks");
 				await cache.delete("bookmarks");
 			}
 		} else console.info("Cache Miss: /bookmarks");
