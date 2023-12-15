@@ -11,12 +11,7 @@ import { remix } from "remix-hono/handler";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 
 import { EnvSchema } from "~/server/env";
-import { BookmarksRepo } from "~/server/repositories/bookmarks";
-import { GithubRepository } from "~/server/repositories/github";
-import { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
-import { NotesRepo } from "~/server/repositories/notes";
-import { FeedService } from "~/server/services/feed";
-import { Measurer } from "~/server/services/measure";
+import { Measurer } from "~/server/measure";
 
 if (process.env.NODE_ENV === "development") logDevReady(build);
 
@@ -67,27 +62,6 @@ server.use(
 
 			let env = EnvSchema.parse(ctx.env);
 
-			// Repositories to interact with the database
-			let repos: SDX.Repos = {
-				notes: new NotesRepo(env.CN_EMAIL, env.CN_TOKEN, env.CN_SITE),
-				bookmarks: new BookmarksRepo(
-					env.AIRTABLE_API_KEY,
-					env.AIRTABLE_BASE,
-					env.AIRTABLE_TABLE_ID,
-				),
-				github: new GithubRepository(env.GITHUB_TOKEN),
-				tutorials: new KVTutorialRepository(ctx.env.tutorials),
-			};
-
-			// Injected services objects to interact with third-party services
-			let services: SDX.Services = {
-				feed: new FeedService(repos, {
-					airtable: ctx.env.airtable,
-					cn: ctx.env.cn,
-					tutorials: ctx.env.tutorials,
-				}),
-			};
-
 			let measurer = new Measurer();
 
 			return {
@@ -99,7 +73,6 @@ server.use(
 					tutorials: ctx.env.tutorials,
 				},
 				env,
-				services,
 				time: measurer.time.bind(measurer),
 			};
 		},
