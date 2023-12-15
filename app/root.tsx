@@ -277,7 +277,7 @@ function Header() {
 							</a>
 						) : null}
 
-						{user === null ? (
+						{!user ? (
 							<Form method="post" action="/auth/login" className="contents">
 								<button
 									type="submit"
