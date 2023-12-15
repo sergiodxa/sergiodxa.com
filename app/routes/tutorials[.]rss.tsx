@@ -29,8 +29,15 @@ export async function loader(_: LoaderFunctionArgs) {
 		.map((tutorial) => {
 			return `<item>
 		<title>${tutorial.title}</title>
-		<description><a href="https://sergiodxa.com/tutorials/${tutorial.slug}">Read it on the web</a></description>
+		<description><a href="https://sergiodxa.com/tutorials/${
+			tutorial.slug
+		}">Read it on the web</a></description>
 		<link>https://sergiodxa.com/tutorials/${tutorial.slug}</link>
+		${
+			tutorial.createdAt
+				? `<pubDate>${new Date(tutorial.createdAt).toUTCString()}</pubDate>`
+				: ""
+		}
 		<guid>${tutorial.slug}</guid>
 	</item>`;
 		})
