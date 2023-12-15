@@ -26,7 +26,9 @@ export class GitHub {
 			if (Array.isArray(response.data)) throw new GitHubError("Not a file");
 			if (response.data.type !== "file") throw new GitHubError("Not a file");
 
-			return atob(response.data.content);
+			let createdAt = await this.fetchFileFirstCommitDate(path);
+
+			return { content: atob(response.data.content), createdAt };
 		} catch (error) {
 			if (
 				error instanceof Error &&
@@ -63,6 +65,28 @@ export class GitHub {
 			}
 
 			throw error;
+		}
+	}
+
+	async fetchFileFirstCommitDate(path: string) {
+		try {
+			// Fetch commits for the file
+			let response = await this.octokit.request(
+				"GET /repos/{owner}/{repo}/commits",
+				{
+					owner: "sergiodxa",
+					repo: "sergiodxa.com",
+					path,
+				},
+			);
+
+			// The commits are in reverse chronological order
+			let commits = response.data;
+
+			// The date of the first commit is the creation date of the file
+			return commits.at(-1)?.commit.author?.date;
+		} catch {
+			return null;
 		}
 	}
 

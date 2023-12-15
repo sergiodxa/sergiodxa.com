@@ -7,6 +7,8 @@ import { z } from "zod";
 import { AttributesSchema, Markdown } from "~/models/markdown.server";
 import { isEmpty } from "~/utils/arrays";
 
+type Nullable<T> = T | null | undefined;
+
 interface Recommendation {
 	title: string;
 	tag: string;
@@ -16,6 +18,7 @@ interface Recommendation {
 export class Tutorial {
 	private constructor(
 		public readonly slug: string,
+		public readonly createdAt: Nullable<string>,
 		private file: Markdown,
 	) {}
 
@@ -38,6 +41,7 @@ export class Tutorial {
 			title: this.title,
 			tags: this.tags,
 			body: this.body,
+			createdAt: this.createdAt,
 		};
 	}
 
@@ -75,7 +79,9 @@ export class Tutorial {
 		{ gh, kv }: { gh: GitHub; kv: KVNamespace },
 		query?: string,
 	) {
-		let tutorials: Array<Attributes & { slug: string }> = [];
+		let tutorials: Array<
+			Attributes & { slug: string; createdAt: Nullable<string> }
+		> = [];
 
 		let list = await kv.list({ prefix: "tutorial:", limit: 1000 });
 
@@ -88,6 +94,7 @@ export class Tutorial {
 
 			let result = AttributesSchema.extend({
 				slug: z.string(),
+				createdAt: z.string().datetime().nullable(),
 			}).safeParse(key.metadata);
 
 			if (!result.success) {
@@ -105,7 +112,12 @@ export class Tutorial {
 			for await (let filePath of filePaths) {
 				let slug = Tutorial.pathToSlug(filePath);
 				let tutorial = await Tutorial.show({ gh, kv }, slug);
-				tutorials.push({ slug, title: tutorial.title, tags: tutorial.tags });
+				tutorials.push({
+					slug,
+					title: tutorial.title,
+					tags: tutorial.tags,
+					createdAt: tutorial.createdAt,
+				});
 			}
 		} else console.info("Cache Hit: /tutorials");
 
@@ -121,25 +133,28 @@ export class Tutorial {
 		{ gh, kv }: { gh: GitHub; kv: KVNamespace },
 		slug: string,
 	): Promise<Tutorial> {
-		let cached = await kv.get<Markdown>(Tutorial.slugToKey(slug), "json");
+		await kv.delete(Tutorial.slugToKey(slug));
+		let cached = await kv.get<Tutorial>(Tutorial.slugToKey(slug), "json");
 
 		if (cached) {
 			console.info("Cache Hit: /tutorials/%s", slug);
 			try {
-				let markdown = new Markdown(cached.body, cached.attributes);
-				return new Tutorial(slug, markdown);
+				let markdown = new Markdown(cached.body, cached.file.attributes);
+				return new Tutorial(slug, cached.createdAt, markdown);
 			} catch {
 				await kv.delete(Tutorial.slugToKey(slug));
 			}
 		} else console.info("Cache Miss: /tutorials/%s", slug);
 
-		let content = await gh.fetchMarkdownFile(`tutorials/${slug}.md`);
+		let { content, createdAt } = await gh.fetchMarkdownFile(
+			`tutorials/${slug}.md`,
+		);
 
 		let markdown = new Markdown(content);
-		let tutorial = new Tutorial(slug, markdown);
+		let tutorial = new Tutorial(slug, createdAt, markdown);
 
-		await kv.put(Tutorial.slugToKey(slug), JSON.stringify(markdown), {
-			metadata: { slug, tags: tutorial.tags, title: tutorial.title },
+		await kv.put(Tutorial.slugToKey(slug), JSON.stringify(tutorial), {
+			metadata: { slug, tags: tutorial.tags, title: tutorial.title, createdAt },
 			expirationTtl: 60 * 60 * 24 * 7,
 		});
 
@@ -213,7 +228,10 @@ function findTechnologiesInString(value: string) {
 		});
 }
 
-function search(list: Array<Attributes & { slug: string }>, query: string) {
+function search(
+	list: Array<Attributes & { slug: string; createdAt: Nullable<string> }>,
+	query: string,
+) {
 	let techsInQuery = findTechnologiesInString(query);
 
 	for (let techInQuery of techsInQuery) {

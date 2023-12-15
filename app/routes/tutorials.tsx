@@ -41,7 +41,11 @@ export function loader(_: DataFunctionArgs) {
 				term: query,
 				page,
 				tutorials: tutorials.map((tutorial) => {
-					return { slug: tutorial.slug, title: tutorial.title };
+					return {
+						slug: tutorial.slug,
+						title: tutorial.title,
+						createdAt: tutorial.createdAt,
+					};
 				}),
 				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(_.request);
