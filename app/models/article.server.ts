@@ -3,7 +3,12 @@ import type { CollectedNotes } from "~/services/cn.server";
 
 import { z } from "zod";
 
-import { Markdown, MarkdownSchema } from "./markdown.server";
+import {
+	AttributesSchema,
+	BodySchema,
+	Markdown,
+	MarkdownSchema,
+} from "./markdown.server";
 
 interface Services {
 	cache: Cache;
@@ -11,15 +16,16 @@ interface Services {
 }
 
 const ArchiveSchema = z.object({
-	id: z.number(),
 	title: z.string(),
 	path: z.string(),
-	body: z.string(),
+	content: z.object({ attributes: AttributesSchema, body: BodySchema }),
+	createdAt: z.string().datetime(),
 });
 
 export class Article {
 	private constructor(
 		readonly path: string,
+		readonly createdAt: string,
 		private readonly content: Markdown,
 	) {}
 
@@ -32,7 +38,12 @@ export class Article {
 	}
 
 	toJSON() {
-		return { path: this.path, title: this.title, content: this.content };
+		return {
+			path: this.path,
+			title: this.title,
+			content: { attributes: this.content.attributes, body: this.body },
+			createdAt: this.createdAt,
+		};
 	}
 
 	static async list({ cache, cn }: Services, page = 1) {
@@ -41,21 +52,34 @@ export class Article {
 		let cached = await cache.get(key);
 
 		if (cached) {
-			let result = ArchiveSchema.transform(({ path, body }) => {
-				return new Article(path, new Markdown(body));
+			console.info("Cache Hit /articles");
+
+			let result = ArchiveSchema.transform(({ path, createdAt, content }) => {
+				return new Article(
+					path,
+					createdAt,
+					new Markdown(content.body, content.attributes),
+				);
 			})
 				.array()
 				.safeParse(JSON.parse(cached));
-			if (result.success) return result.data;
-			else await cache.delete(key);
-		}
 
-		let results = await ArchiveSchema.transform(({ path, body }) => {
-			return new Article(path, new Markdown(body));
-		})
-			.array()
-			.promise()
-			.parse(cn.fetchNotes(page));
+			if (result.success) return result.data;
+			else {
+				console.info("Invalid Cache: /articles");
+				await cache.delete(key);
+			}
+		} else console.info("Cache Miss /articles");
+
+		let list = await cn.fetchNotes(page);
+
+		let results = list.map((article) => {
+			return new Article(
+				article.path,
+				new Date(article.created_at).toISOString(),
+				new Markdown(article.body),
+			);
+		});
 
 		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
 
@@ -77,21 +101,34 @@ export class Article {
 		let cached = await cache.get(key);
 
 		if (cached) {
-			let result = ArchiveSchema.transform(({ path, body }) => {
-				return new Article(path, new Markdown(body));
+			console.info("Cache Hit /articles?q=%s", term);
+			let result = ArchiveSchema.transform(({ path, createdAt, content }) => {
+				return new Article(
+					path,
+					createdAt,
+					new Markdown(content.body, content.attributes),
+				);
 			})
 				.array()
 				.safeParse(JSON.parse(cached));
-			if (result.success) return result.data;
-			else await cache.delete(key);
-		}
 
-		let results = await ArchiveSchema.transform(({ path, body }) => {
-			return new Article(path, new Markdown(body));
-		})
-			.array()
-			.promise()
-			.parse(cn.searchNotes(term, page));
+			if (result.success) return result.data;
+			else {
+				console.log(result.error.message);
+				console.info("Invalid Cache: /articles?q=%s");
+				await cache.delete(key);
+			}
+		} else console.info("Cache Miss /articles?q=%s", term);
+
+		let found = await cn.searchNotes(term, page);
+
+		let results = found.map((article) => {
+			return new Article(
+				article.path,
+				new Date(article.created_at).toISOString(),
+				new Markdown(article.body),
+			);
+		});
 
 		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
 
@@ -114,19 +151,27 @@ export class Article {
 		let cached = await cache.get(key);
 
 		if (cached) {
-			let result = MarkdownSchema.safeParse(JSON.parse(cached));
+			let result = MarkdownSchema.and(
+				z.object({ createdAt: z.string().datetime() }),
+			).safeParse(JSON.parse(cached));
+
 			if (result.success) {
 				return new Article(
 					path,
+					result.data.createdAt,
 					new Markdown(result.data.body, result.data.attributes),
 				);
 			} else await cache.delete(key);
 		}
 
-		let { title, body } = await cn.fetchNoteByPath(path);
+		let { title, body, created_at } = await cn.fetchNoteByPath(path);
 
 		let markdown = new Markdown(`# ${title}\n${body}`);
-		let tutorial = new Article(path, markdown);
+		let tutorial = new Article(
+			path,
+			new Date(created_at).toISOString(),
+			markdown,
+		);
 
 		await cache.set(key, JSON.stringify(markdown), { expirationTtl: 3600 });
 

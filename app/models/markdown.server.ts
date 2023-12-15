@@ -19,7 +19,7 @@ const ScalarSchema: z.ZodType<Scalar> = z.union([
 	z.record(z.lazy(() => ScalarSchema)),
 ]);
 
-const BodySchema = z.union([TagSchema, ScalarSchema]);
+export const BodySchema = z.union([TagSchema, ScalarSchema]);
 
 export const AttributesSchema = z.object({
 	title: z.string().min(1).max(140),
