@@ -119,7 +119,7 @@ export default {
 		},
 
 		subscribe: {
-			cta: "Suscribite a mis tutoriales usando <link>RSS</link>.",
+			cta: "Suscribite a mis tutoriales usando <rss>RSS</rss>.",
 		},
 
 		pagination: {
