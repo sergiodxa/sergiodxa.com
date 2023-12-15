@@ -6,7 +6,6 @@ import type { GithubRepository } from "~/server/repositories/github";
 import type { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
 import type { NotesRepo } from "~/server/repositories/notes";
 import type { FeedService } from "~/server/services/feed";
-import type { ILoggingService } from "~/server/services/logging";
 import type { Measurer } from "~/server/services/measure";
 
 interface HydrateFunction<LoaderData> {
@@ -30,7 +29,6 @@ declare global {
 
 		export interface Services {
 			feed: FeedService;
-			log: ILoggingService;
 		}
 	}
 }

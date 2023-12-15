@@ -3,10 +3,11 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { xml } from "remix-utils/responses";
 
 import { Tutorial } from "~/models/tutorial.server";
+import { Logger } from "~/modules/logger.server";
 import { GitHub } from "~/services/github.server";
 
 export async function loader(_: LoaderFunctionArgs) {
-	void _.context.services.log.http(_.request);
+	void new Logger(_.context.env.LOGTAIL_SOURCE_TOKEN).http(_.request);
 
 	let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
 	let tutorials = await Tutorial.list({ gh, kv: _.context.kv.tutorials });

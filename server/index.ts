@@ -16,7 +16,6 @@ import { GithubRepository } from "~/server/repositories/github";
 import { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
 import { NotesRepo } from "~/server/repositories/notes";
 import { FeedService } from "~/server/services/feed";
-import { LoggingService } from "~/server/services/logging";
 import { Measurer } from "~/server/services/measure";
 
 if (process.env.NODE_ENV === "development") logDevReady(build);
@@ -87,7 +86,6 @@ server.use(
 					cn: ctx.env.cn,
 					tutorials: ctx.env.tutorials,
 				}),
-				log: new LoggingService(env.LOGTAIL_SOURCE_TOKEN),
 			};
 
 			let measurer = new Measurer();

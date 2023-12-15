@@ -12,12 +12,13 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { i18n } from "~/i18n.server";
 import { Article } from "~/models/article.server";
+import { Logger } from "~/modules/logger.server";
 import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
 
 export function loader({ request, context, params }: LoaderFunctionArgs) {
 	return context.time("routes/articles.$id#loader", async () => {
-		void context.services.log.http(request);
+		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
 
 		let path = params["*"];
 

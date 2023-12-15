@@ -6,10 +6,11 @@ import { useLoaderData } from "@remix-run/react";
 import { Feed } from "~/components/feed";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
+import { Logger } from "~/modules/logger.server";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/index#loader", async () => {
-		void context.services.log.http(request);
+		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
 
 		let headers = new Headers({
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",

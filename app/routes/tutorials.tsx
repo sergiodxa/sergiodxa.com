@@ -13,11 +13,12 @@ import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { i18n } from "~/i18n.server";
 import { Tutorial } from "~/models/tutorial.server";
+import { Logger } from "~/modules/logger.server";
 import { GitHub } from "~/services/github.server";
 
 export function loader(_: DataFunctionArgs) {
 	return _.context.time("routes/tutorials#loader", async () => {
-		void _.context.services.log.http(_.request);
+		void new Logger(_.context.env.LOGTAIL_SOURCE_TOKEN).http(_.request);
 
 		let url = new URL(_.request.url);
 

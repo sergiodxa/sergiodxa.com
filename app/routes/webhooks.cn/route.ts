@@ -1,12 +1,13 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 
+import { Logger } from "~/modules/logger.server";
 import { Cache } from "~/services/cache.server";
 
 import { Schema } from "./schemas";
 
 export function action({ request, context }: ActionFunctionArgs) {
 	return context.time("routes/webhooks/cn#action", async () => {
-		void context.services.log.http(request);
+		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
 
 		let cache = new Cache(context.kv.cn);
 
