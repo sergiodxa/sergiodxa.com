@@ -5,7 +5,6 @@ import type { BookmarksRepo } from "~/server/repositories/bookmarks";
 import type { GithubRepository } from "~/server/repositories/github";
 import type { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
 import type { NotesRepo } from "~/server/repositories/notes";
-import type { CollectedNotesWebhookService } from "~/server/services/cn-webhook";
 import type { FeedService } from "~/server/services/feed";
 import type { ILoggingService } from "~/server/services/logging";
 import type { Measurer } from "~/server/services/measure";
@@ -30,7 +29,6 @@ declare global {
 		}
 
 		export interface Services {
-			// notes: { webhook: CollectedNotesWebhookService };
 			feed: FeedService;
 			log: ILoggingService;
 		}

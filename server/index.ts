@@ -15,7 +15,6 @@ import { BookmarksRepo } from "~/server/repositories/bookmarks";
 import { GithubRepository } from "~/server/repositories/github";
 import { KVTutorialRepository } from "~/server/repositories/kv-tutorial";
 import { NotesRepo } from "~/server/repositories/notes";
-import { CollectedNotesWebhookService } from "~/server/services/cn-webhook";
 import { FeedService } from "~/server/services/feed";
 import { LoggingService } from "~/server/services/logging";
 import { Measurer } from "~/server/services/measure";
@@ -83,9 +82,6 @@ server.use(
 
 			// Injected services objects to interact with third-party services
 			let services: SDX.Services = {
-				notes: {
-					webhook: new CollectedNotesWebhookService(repos, ctx.env.cn),
-				},
 				feed: new FeedService(repos, {
 					airtable: ctx.env.airtable,
 					cn: ctx.env.cn,
