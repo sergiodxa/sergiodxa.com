@@ -42,6 +42,7 @@ export let links: LinksFunction = () => {
 		{ rel: "preload", as: "style", href: "/fonts/sans" },
 		{ rel: "preload", as: "style", href: tailwindUrl },
 		{ rel: "preload", as: "style", href: globalStylesUrl },
+		{ rel: "preload", as: "image", href: avatarHref },
 		{ rel: "stylesheet", href: "/fonts/sans" },
 		{ rel: "stylesheet", href: tailwindUrl },
 		{ rel: "stylesheet", href: globalStylesUrl },
