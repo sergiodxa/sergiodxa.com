@@ -153,6 +153,7 @@ function Item({
 	createdAt,
 }: FeedItemProps) {
 	let locale = useLocale();
+
 	return (
 		<li>
 			<div className="relative pb-8">
@@ -176,7 +177,7 @@ function Item({
 					<div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
 						{body}
 
-						<div className="whitespace-nowrap text-right text-sm text-gray-500">
+						<div className="whitespace-nowrap text-right text-sm tabular-nums text-gray-500">
 							<time dateTime={createdAt.toISOString()}>
 								{createdAt.toLocaleDateString(locale, {
 									month: "short",

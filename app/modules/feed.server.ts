@@ -8,7 +8,35 @@ import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
 import { GitHub } from "~/services/github.server";
 
+interface FeedBookmark {
+	id: string;
+	type: "bookmark";
+	payload: { title: string; link: string; createdAt: number };
+}
+
+interface FeedArticle {
+	id: string;
+	type: "article";
+	payload: { title: string; link: string; createdAt: number };
+}
+
+interface FeedTutorial {
+	id: string;
+	type: "tutorial";
+	payload: { title: string; link: string; createdAt: number };
+}
+
 export class Feed {
+	static sort(
+		articles: FeedArticle[],
+		bookmarks: FeedBookmark[],
+		tutorials: FeedTutorial[],
+	) {
+		return [...articles, ...bookmarks, ...tutorials].sort(
+			(a, b) => b.payload.createdAt - a.payload.createdAt,
+		);
+	}
+
 	static async bookmarks(context: AppLoadContext) {
 		let cache = new Cache(context.kv.airtable);
 		let airtable = new Airtable(
