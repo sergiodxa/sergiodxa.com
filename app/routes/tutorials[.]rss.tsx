@@ -6,11 +6,11 @@ import { Tutorial } from "~/models/tutorial.server";
 import { Logger } from "~/modules/logger.server";
 import { GitHub } from "~/services/github.server";
 
-export async function loader(_: LoaderFunctionArgs) {
-	void new Logger(_.context.env.LOGTAIL_SOURCE_TOKEN).http(_.request);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+	void new Logger(context).http(request);
 
-	let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
-	let tutorials = await Tutorial.list({ gh, kv: _.context.kv.tutorials });
+	let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+	let tutorials = await Tutorial.list({ gh, kv: context.kv.tutorials });
 
 	let headers = new Headers();
 	headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");

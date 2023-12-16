@@ -11,7 +11,7 @@ import { Logger } from "~/modules/logger.server";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/index#loader", async () => {
-		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
+		void new Logger(context).http(request);
 
 		let headers = new Headers({
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",

@@ -18,7 +18,7 @@ import { CollectedNotes } from "~/services/cn.server";
 
 export function loader({ request, context, params }: LoaderFunctionArgs) {
 	return context.time("routes/articles.$id#loader", async () => {
-		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
+		void new Logger(context).http(request);
 
 		let path = params["*"];
 

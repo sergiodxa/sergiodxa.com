@@ -1,7 +1,7 @@
 import type {
-	DataFunctionArgs,
 	MetaFunction,
 	MetaDescriptor,
+	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
@@ -16,19 +16,19 @@ import { Tutorial } from "~/models/tutorial.server";
 import { Logger } from "~/modules/logger.server";
 import { GitHub } from "~/services/github.server";
 
-export function loader(_: DataFunctionArgs) {
-	return _.context.time("routes/tutorials#loader", async () => {
-		void new Logger(_.context.env.LOGTAIL_SOURCE_TOKEN).http(_.request);
+export function loader({ request, context }: LoaderFunctionArgs) {
+	return context.time("routes/tutorials#loader", async () => {
+		void new Logger(context).http(request);
 
-		let url = new URL(_.request.url);
+		let url = new URL(request.url);
 
 		let query = url.searchParams.get("q") ?? "";
 		let page = Number(url.searchParams.get("page") ?? 1);
 
-		let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
+		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
 
 		let tutorials = await Tutorial.list(
-			{ gh, kv: _.context.kv.tutorials },
+			{ gh, kv: context.kv.tutorials },
 			query,
 		);
 
@@ -48,7 +48,7 @@ export function loader(_: DataFunctionArgs) {
 					};
 				}),
 				async meta(): Promise<MetaDescriptor[]> {
-					let t = await i18n.getFixedT(_.request);
+					let t = await i18n.getFixedT(request);
 
 					let meta: MetaDescriptor[] = [];
 

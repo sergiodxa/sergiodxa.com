@@ -17,7 +17,7 @@ import { Cache } from "~/services/cache.server";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/bookmarks#loader", async () => {
-		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
+		void new Logger(context).http(request);
 
 		let airtable = new Airtable(
 			context.env.AIRTABLE_API_KEY,

@@ -1,10 +1,12 @@
+import type { AppLoadContext } from "@remix-run/cloudflare";
+
 import { BetterStack } from "~/services/betterstack";
 
 export class Logger {
 	protected betterStack: BetterStack;
 
-	constructor(token: string) {
-		this.betterStack = new BetterStack(token);
+	constructor(context: AppLoadContext) {
+		this.betterStack = new BetterStack(context.env.LOGTAIL_SOURCE_TOKEN);
 	}
 
 	async info(message: string) {

@@ -7,7 +7,7 @@ import { Schema } from "./schemas";
 
 export function action({ request, context }: ActionFunctionArgs) {
 	return context.time("routes/webhooks/cn#action", async () => {
-		void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
+		void new Logger(context).http(request);
 
 		let cache = new Cache(context.kv.cn);
 

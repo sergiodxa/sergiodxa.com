@@ -17,7 +17,7 @@ import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-	void new Logger(context.env.LOGTAIL_SOURCE_TOKEN).http(request);
+	void new Logger(context).http(request);
 
 	let url = new URL(request.url);
 

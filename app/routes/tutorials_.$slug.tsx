@@ -1,8 +1,8 @@
 import type {
-	DataFunctionArgs,
 	SerializeFrom,
 	MetaDescriptor,
 	MetaFunction,
+	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
 import { redirect, defer } from "@remix-run/cloudflare";
@@ -23,23 +23,20 @@ import { cn } from "~/utils/cn";
 type LoaderData = SerializeFrom<typeof loader>;
 type RecommendationsList = Awaited<LoaderData["recommendations"]>;
 
-export async function loader(_: DataFunctionArgs) {
-	return _.context.time("routes/tutorials.$slug#loader", async () => {
-		let locale = await i18n.getLocale(_.request);
-		let { slug } = z.object({ slug: z.string() }).parse(_.params);
+export async function loader({ request, params, context }: LoaderFunctionArgs) {
+	return context.time("routes/tutorials.$slug#loader", async () => {
+		let locale = await i18n.getLocale(request);
+		let { slug } = z.object({ slug: z.string() }).parse(params);
 
 		if (slug.endsWith(".md")) {
 			slug = slug.slice(0, -3);
 			throw redirect(`/tutorials/${slug}`);
 		}
 
-		let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
-		let tutorial = await Tutorial.show(
-			{ gh, kv: _.context.kv.tutorials },
-			slug,
-		);
+		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+		let tutorial = await Tutorial.show({ gh, kv: context.kv.tutorials }, slug);
 
-		let t = await i18n.getFixedT(_.request);
+		let t = await i18n.getFixedT(request);
 
 		return defer({
 			tutorial: {
@@ -50,7 +47,7 @@ export async function loader(_: DataFunctionArgs) {
 			},
 			recommendations: tutorial.recommendations({
 				gh,
-				kv: _.context.kv.tutorials,
+				kv: context.kv.tutorials,
 			}),
 			meta: getMeta(),
 		});
@@ -62,7 +59,7 @@ export async function loader(_: DataFunctionArgs) {
 				{ title },
 				{ property: "og:title", content: title },
 				{ property: "og:type", content: "article" },
-				{ property: "og:url", content: _.request.url },
+				{ property: "og:url", content: request.url },
 				{ property: "og:site_name", content: "Sergio Xalambrí" },
 				{ property: "og:locale", content: locale },
 				{ property: "twitter:card", content: "summary" },
