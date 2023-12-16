@@ -98,6 +98,7 @@ export class Tutorial {
 			}).safeParse(key.metadata);
 
 			if (!result.success) {
+				console.log(result.error.message);
 				console.info("Invalid Metadata in Key: %s", key.name);
 				await kv.delete(key.name);
 				continue;

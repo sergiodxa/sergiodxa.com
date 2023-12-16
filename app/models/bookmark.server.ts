@@ -46,6 +46,7 @@ export class Bookmark {
 
 			if (result.success) return result.data;
 			else {
+				console.log(result.error.message);
 				console.info("Invalid Cache: /bookmarks");
 				await cache.delete("bookmarks");
 			}

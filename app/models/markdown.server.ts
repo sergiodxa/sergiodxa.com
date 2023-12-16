@@ -1,6 +1,7 @@
 import type { Scalar, Tag } from "@markdoc/markdoc";
 
 import { parse, transform } from "@markdoc/markdoc";
+import fm from "front-matter";
 import { z } from "zod";
 
 const TagSchema: z.ZodType<Tag> = z.object({
@@ -68,7 +69,9 @@ export class Markdown {
 	constructor(body: Body, attributes: Attributes);
 	constructor(...args: [string] | [Body, Attributes]) {
 		if (args.length === 1) {
-			let { body, attributes } = MarkdownSchema.parse(args.at(0));
+			let content = args.at(0);
+			if (!content) throw new Error("The Markdown content is empty.");
+			let { body, attributes } = MarkdownSchema.parse(fm(content).body.trim());
 			this.body = body;
 			this.attributes = attributes;
 		} else {
