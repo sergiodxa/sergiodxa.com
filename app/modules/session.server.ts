@@ -1,12 +1,9 @@
+import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { TypedSessionStorage } from "remix-utils/typed-session";
 
 import { createWorkersKVSessionStorage, redirect } from "@remix-run/cloudflare";
 import { createTypedSessionStorage } from "remix-utils/typed-session";
 import { z } from "zod";
-
-interface Services {
-	kv: KVNamespace;
-}
 
 export const UserSchema = z.object({
 	username: z.string(),
@@ -30,10 +27,10 @@ export class SessionStorage {
 	public commit: TypedSessionStorage<typeof SessionSchema>["commitSession"];
 	public destroy: TypedSessionStorage<typeof SessionSchema>["destroySession"];
 
-	constructor(services: Services, secret = "s3cr3t") {
+	constructor(context: AppLoadContext) {
 		this.sessionStorage = createTypedSessionStorage({
 			sessionStorage: createWorkersKVSessionStorage({
-				kv: services.kv,
+				kv: context.kv.auth,
 				cookie: {
 					name: "sdx:session",
 					path: "/",
@@ -41,7 +38,7 @@ export class SessionStorage {
 					httpOnly: true,
 					sameSite: "lax",
 					secure: process.env.NODE_ENV === "production",
-					secrets: [secret],
+					secrets: [context.env.COOKIE_SESSION_SECRET ?? "s3cr3t"],
 				},
 			}),
 			schema: SessionSchema,
@@ -52,31 +49,27 @@ export class SessionStorage {
 		this.destroy = this.sessionStorage.destroySession;
 	}
 
-	static async logout(services: Services, request: Request, secret = "s3cr3t") {
-		let sessionStorage = new SessionStorage(services, secret);
+	static async logout(context: AppLoadContext, request: Request) {
+		let sessionStorage = new SessionStorage(context);
 		let session = await sessionStorage.read(request.headers.get("cookie"));
 		throw redirect("/", {
 			headers: { "set-cookie": await sessionStorage.destroy(session) },
 		});
 	}
 
-	static async readUser(
-		services: Services,
-		request: Request,
-		secret = "s3cr3t",
-	) {
-		let sessionStorage = new SessionStorage(services, secret);
+	static async readUser(context: AppLoadContext, request: Request) {
+		let sessionStorage = new SessionStorage(context);
 		let session = await sessionStorage.read(request.headers.get("cookie"));
 		return session.get("user");
 	}
 
 	static async requireUser(
-		services: Services,
+		context: AppLoadContext,
 		request: Request,
-		secret = "s3cr3t",
+		returnTo = "/auth/login",
 	) {
-		let maybeUser = await this.readUser(services, request, secret);
-		if (!maybeUser) throw redirect("/auth/login");
+		let maybeUser = await this.readUser(context, request);
+		if (!maybeUser) throw redirect(returnTo);
 		return maybeUser;
 	}
 }

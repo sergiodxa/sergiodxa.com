@@ -1,14 +1,11 @@
 import type { User } from "./session.server";
-import type { GitHub } from "../services/github.server";
-import type { SessionStorage } from "@remix-run/cloudflare";
+import type { AppLoadContext, SessionStorage } from "@remix-run/cloudflare";
 
 import { createCookieSessionStorage } from "@remix-run/cloudflare";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 
-interface Services {
-	gh: GitHub;
-}
+import { GitHub } from "~/services/github.server";
 
 export class Auth {
 	protected authenticator: Authenticator<User>;
@@ -16,12 +13,7 @@ export class Auth {
 
 	public authenticate: Authenticator<User>["authenticate"];
 
-	constructor(
-		services: Services,
-		clientID: string,
-		clientSecret: string,
-		sessionSecret = "s3cr3t",
-	) {
+	constructor(context: AppLoadContext) {
 		this.sessionStorage = createCookieSessionStorage({
 			cookie: {
 				name: "sdx:auth",
@@ -30,7 +22,7 @@ export class Auth {
 				httpOnly: true,
 				sameSite: "lax",
 				secure: process.env.NODE_ENV === "production",
-				secrets: [sessionSecret],
+				secrets: [context.env.COOKIE_SESSION_SECRET],
 			},
 		});
 
@@ -39,11 +31,13 @@ export class Auth {
 			sessionKey: "token",
 		});
 
+		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+
 		this.authenticator.use(
 			new GitHubStrategy(
 				{
-					clientID,
-					clientSecret,
+					clientID: context.env.GITHUB_CLIENT_ID,
+					clientSecret: context.env.GITHUB_CLIENT_SECRET,
 					callbackURL: "/auth/github/callback",
 				},
 				async ({ profile }) => {
@@ -53,7 +47,7 @@ export class Auth {
 						email: profile._json.email ?? profile.emails?.at(0) ?? null,
 						avatar: profile._json.avatar_url,
 						githubId: profile._json.node_id,
-						isSponsor: await services.gh.isSponsoringMe(profile._json.node_id),
+						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 					};
 				},
 			),

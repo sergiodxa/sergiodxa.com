@@ -1,4 +1,7 @@
-import type { DataFunctionArgs } from "@remix-run/cloudflare";
+import type {
+	ActionFunctionArgs,
+	LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { Form } from "@remix-run/react";
@@ -6,28 +9,17 @@ import { Form } from "@remix-run/react";
 import { useT } from "~/helpers/use-i18n.hook";
 import { Auth } from "~/modules/auth.server";
 import { SessionStorage } from "~/modules/session.server";
-import { GitHub } from "~/services/github.server";
 
-export async function loader(_: DataFunctionArgs) {
-	let user = await SessionStorage.readUser(
-		{ kv: _.context.kv.auth },
-		_.request,
-		_.context.env.COOKIE_SESSION_SECRET,
-	);
+export async function loader({ request, context }: LoaderFunctionArgs) {
+	let user = await SessionStorage.readUser(context, request);
 	if (!user) return json(null);
 	throw redirect("/");
 }
 
-export async function action(_: DataFunctionArgs) {
-	let gh = new GitHub(_.context.env.GH_APP_ID, _.context.env.GH_APP_PEM);
+export async function action({ request, context }: ActionFunctionArgs) {
+	let auth = new Auth(context);
 
-	let auth = new Auth(
-		{ gh },
-		_.context.env.GITHUB_CLIENT_ID,
-		_.context.env.GITHUB_CLIENT_SECRET,
-	);
-
-	return await auth.authenticate("github", _.request, {
+	return await auth.authenticate("github", request, {
 		successRedirect: "/auth/github/callback",
 		failureRedirect: "/auth/login",
 	});

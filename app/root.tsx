@@ -68,11 +68,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 					return [{ title: t("header.title") }];
 				},
 				async user() {
-					return await SessionStorage.readUser(
-						{ kv: context.kv.auth },
-						request,
-						context.env.COOKIE_SESSION_SECRET,
-					);
+					return await SessionStorage.readUser(context, request);
 				},
 			},
 			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
@@ -288,7 +284,12 @@ function Header() {
 								</button>
 							</Form>
 						) : (
-							<Form method="post" action="/auth/logout" className="contents">
+							<Form
+								method="post"
+								action="/auth/logout"
+								reloadDocument
+								className="contents"
+							>
 								<button
 									type="submit"
 									className="hidden rounded-md border border-transparent bg-blue-500 px-4 py-2 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"

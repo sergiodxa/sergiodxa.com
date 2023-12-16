@@ -8,22 +8,13 @@ import { Form } from "@remix-run/react";
 import { useT } from "~/helpers/use-i18n.hook";
 import { SessionStorage } from "~/modules/session.server";
 
-export async function loader(_: LoaderFunctionArgs) {
-	await SessionStorage.requireUser(
-		{ kv: _.context.kv.auth },
-		_.request,
-		_.context.env.COOKIE_SESSION_SECRET,
-	);
-
+export async function loader({ request, context }: LoaderFunctionArgs) {
+	await SessionStorage.requireUser(context, request);
 	return json(null);
 }
 
-export async function action(_: ActionFunctionArgs) {
-	return await SessionStorage.logout(
-		{ kv: _.context.kv.auth },
-		_.request,
-		_.context.env.COOKIE_SESSION_SECRET,
-	);
+export async function action({ request, context }: ActionFunctionArgs) {
+	return await SessionStorage.logout(context, request);
 }
 
 export default function Component() {
