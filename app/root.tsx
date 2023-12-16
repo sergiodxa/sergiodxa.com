@@ -29,11 +29,10 @@ import avatarHref from "~/assets/avatar.png";
 import sansFont from "~/fonts/sans.woff2";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
 import { i18n, localeCookie } from "~/i18n.server";
+import { SessionStorage } from "~/modules/session.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
-
-import { SessionStorage } from "./modules/session.server";
 
 export let links: LinksFunction = () => {
 	return [
