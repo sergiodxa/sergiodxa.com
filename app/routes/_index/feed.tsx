@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-redundant-roles */
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
+import type { Feed } from "~/modules/feed.server";
 
 import { BookmarkIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
@@ -10,19 +11,9 @@ import { Trans } from "react-i18next";
 import { useLocale } from "~/helpers/use-i18n.hook";
 import { cn } from "~/utils/cn";
 
-interface FeedItem<Type extends string, Payload> {
-	id: string;
-	type: Type;
-	payload: Payload;
-}
-
 type Props = {
 	t: TFunction;
-	items: Array<
-		| FeedItem<"article", { title: string; link: string; createdAt: number }>
-		| FeedItem<"tutorial", { title: string; link: string; createdAt: number }>
-		| FeedItem<"bookmark", { title: string; link: string; createdAt: number }>
-	>;
+	items: ReturnType<typeof Feed.sort>;
 };
 
 export function FeedList({ t, items }: Props) {

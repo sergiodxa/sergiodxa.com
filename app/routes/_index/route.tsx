@@ -21,6 +21,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 			Feed.bookmarks(context),
 			Feed.tutorials(context),
 		]);
+
 		return json(
 			{
 				items: Feed.sort(articles, bookmarks, tutorials),

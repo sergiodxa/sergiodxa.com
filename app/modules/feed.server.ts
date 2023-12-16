@@ -8,29 +8,11 @@ import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
 import { GitHub } from "~/services/github.server";
 
-interface FeedBookmark {
-	id: string;
-	type: "bookmark";
-	payload: { title: string; link: string; createdAt: number };
-}
-
-interface FeedArticle {
-	id: string;
-	type: "article";
-	payload: { title: string; link: string; createdAt: number };
-}
-
-interface FeedTutorial {
-	id: string;
-	type: "tutorial";
-	payload: { title: string; link: string; createdAt: number };
-}
-
 export class Feed {
 	static sort(
-		articles: FeedArticle[],
-		bookmarks: FeedBookmark[],
-		tutorials: FeedTutorial[],
+		articles: Array<Awaited<ReturnType<typeof Feed.articles>>[number]>,
+		bookmarks: Array<Awaited<ReturnType<typeof Feed.bookmarks>>[number]>,
+		tutorials: Array<Awaited<ReturnType<typeof Feed.tutorials>>[number]>,
 	) {
 		return [...articles, ...bookmarks, ...tutorials].sort(
 			(a, b) => b.payload.createdAt - a.payload.createdAt,
