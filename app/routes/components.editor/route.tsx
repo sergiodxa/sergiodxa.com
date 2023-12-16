@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
-import { parseMarkdown } from "~/md.server";
+import { Markdown } from "~/modules/md.server";
 import { Schemas } from "~/utils/schemas";
 
 import { Button } from "./buttons";
@@ -24,7 +24,7 @@ export async function action({ request, context }: DataFunctionArgs) {
 	});
 
 	let content = await context.time("parseMarkdown", async () =>
-		parseMarkdown(markdown),
+		Markdown.parse(markdown),
 	);
 
 	return json({ content });
