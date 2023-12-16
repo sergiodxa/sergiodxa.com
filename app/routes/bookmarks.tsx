@@ -9,8 +9,8 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
-import { i18n } from "~/i18n.server";
 import { Bookmark } from "~/models/bookmark.server";
+import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { Airtable } from "~/services/airtable.server";
 import { Cache } from "~/services/cache.server";
@@ -30,7 +30,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		return jsonHash({
 			bookmarks: Bookmark.list({ airtable, cache }),
 			async meta(): Promise<MetaDescriptor[]> {
-				let t = await i18n.getFixedT(request);
+				let t = await new I18n().getFixedT(request);
 
 				return [{ title: t("bookmarks.meta.title") }];
 			},

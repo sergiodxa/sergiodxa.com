@@ -10,8 +10,8 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
-import { i18n } from "~/i18n.server";
 import { Article } from "~/models/article.server";
+import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
@@ -23,6 +23,8 @@ export function loader({ request, context, params }: LoaderFunctionArgs) {
 		let path = params["*"];
 
 		if (!path) throw redirect("/articles");
+
+		let i18n = new I18n();
 
 		try {
 			let cache = new Cache(context.kv.cn);

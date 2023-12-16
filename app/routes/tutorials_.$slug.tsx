@@ -15,8 +15,8 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
-import { i18n } from "~/i18n.server";
 import { Tutorial } from "~/models/tutorial.server";
+import { I18n } from "~/modules/i18n.server";
 import { GitHub } from "~/services/github.server";
 import { cn } from "~/utils/cn";
 
@@ -25,6 +25,8 @@ type RecommendationsList = Awaited<LoaderData["recommendations"]>;
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	return context.time("routes/tutorials.$slug#loader", async () => {
+		let i18n = new I18n();
+
 		let locale = await i18n.getLocale(request);
 		let { slug } = z.object({ slug: z.string() }).parse(params);
 

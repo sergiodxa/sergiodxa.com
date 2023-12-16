@@ -28,7 +28,7 @@ import { useShouldHydrate } from "remix-utils/use-should-hydrate";
 import avatarHref from "~/assets/avatar.png";
 import sansFont from "~/fonts/sans.woff2";
 import { useDirection, useLocale, useT } from "~/helpers/use-i18n.hook";
-import { i18n, localeCookie } from "~/i18n.server";
+import { I18n } from "~/modules/i18n.server";
 import { SessionStorage } from "~/modules/session.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
@@ -57,6 +57,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("root#loader", async () => {
 		removeTrailingSlash(new URL(request.url));
 
+		let i18n = new I18n();
 		let locale = await i18n.getLocale(request);
 
 		return jsonHash(
@@ -70,7 +71,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 					return await SessionStorage.readUser(context, request);
 				},
 			},
-			{ headers: { "Set-Cookie": await localeCookie.serialize(locale) } },
+			{ headers: { "Set-Cookie": await i18n.saveCookie(locale) } },
 		);
 	});
 }

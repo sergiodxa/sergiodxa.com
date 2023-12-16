@@ -10,8 +10,8 @@ import { jsonHash } from "remix-utils/json-hash";
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
-import { i18n } from "~/i18n.server";
 import { Article } from "~/models/article.server";
+import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { Cache } from "~/services/cache.server";
 import { CollectedNotes } from "~/services/cn.server";
@@ -52,7 +52,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			},
 
 			async meta(): Promise<MetaDescriptor[]> {
-				let t = await i18n.getFixedT(request);
+				let t = await new I18n().getFixedT(request);
 
 				let meta: MetaDescriptor[] = [];
 

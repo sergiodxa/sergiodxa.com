@@ -7,9 +7,9 @@ import { renderToReadableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { preloadLinkedAssets } from "remix-utils/preload-route-assets";
 
-import { i18n } from "~/i18n.server";
 import en from "~/locales/en";
 import es from "~/locales/es";
+import { I18n } from "~/modules/i18n.server";
 
 export default async function handleRequest(
 	request: Request,
@@ -20,15 +20,16 @@ export default async function handleRequest(
 ) {
 	let instance = await time("setup-i18next", async () => {
 		let instance = createInstance().use(initReactI18next);
+
+		let i18n = new I18n();
 		let lng = await i18n.getLocale(request);
-		let ns = i18n.getRouteNamespaces(context);
 
 		await instance.init({
 			supportedLngs: ["es", "en"],
 			fallbackLng: "en",
 			react: { useSuspense: false },
 			lng,
-			ns,
+			ns: ["translation"],
 			resources: { en: { translation: en }, es: { translation: es } },
 			interpolation: { escapeValue: false },
 		});
