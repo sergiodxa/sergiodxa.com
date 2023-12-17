@@ -45,7 +45,19 @@ export class Tutorial {
 		};
 	}
 
-	async recommendations({ gh, kv }: { gh: GitHub; kv: KVNamespace }) {
+	public async cache(kv: KVNamespace, ttl: number) {
+		await kv.put(Tutorial.slugToKey(this.slug), JSON.stringify(this), {
+			expirationTtl: ttl,
+			metadata: {
+				slug: this.slug,
+				tags: this.tags,
+				title: this.title,
+				createdAt: this.createdAt,
+			},
+		});
+	}
+
+	public async recommendations({ gh, kv }: { gh: GitHub; kv: KVNamespace }) {
 		let list = await Tutorial.list({ gh, kv });
 
 		if (isEmpty(list)) return [];
@@ -154,10 +166,7 @@ export class Tutorial {
 		let markdown = new Markdown(content);
 		let tutorial = new Tutorial(slug, createdAt, markdown);
 
-		await kv.put(Tutorial.slugToKey(slug), JSON.stringify(tutorial), {
-			metadata: { slug, tags: tutorial.tags, title: tutorial.title, createdAt },
-			expirationTtl: 60 * 60 * 24 * 7,
-		});
+		await tutorial.cache(kv, 60 * 60 * 24 * 7);
 
 		return tutorial;
 	}
