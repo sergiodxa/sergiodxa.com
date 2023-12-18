@@ -1,6 +1,11 @@
-import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare";
+import type {
+	AppLoadContext,
+	EntryContext,
+	HandleErrorFunction,
+} from "@remix-run/cloudflare";
 
-import { RemixServer } from "@remix-run/react";
+import { RemixServer, isRouteErrorResponse } from "@remix-run/react";
+import { isErrorResponse } from "@remix-run/react/dist/data";
 import { createInstance } from "i18next";
 import isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
@@ -64,3 +69,10 @@ export default async function handleRequest(
 
 	return new Response(body, { headers, status });
 }
+
+export const handleError: HandleErrorFunction = async (error, { request }) => {
+	if (request.signal.aborted) return;
+	if (isErrorResponse(error)) return;
+	if (isRouteErrorResponse(error)) return console.error(error);
+	console.error(error);
+};
