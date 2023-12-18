@@ -1,7 +1,8 @@
-import type {
-	LoaderFunctionArgs,
-	MetaFunction,
-	MetaDescriptor,
+import {
+	type LoaderFunctionArgs,
+	type MetaFunction,
+	type MetaDescriptor,
+	json,
 } from "@remix-run/cloudflare";
 
 import { Link, useLoaderData } from "@remix-run/react";
@@ -28,45 +29,46 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
 
-	return jsonHash(
-		{
-			term,
-			page,
-
-			async articles() {
-				let cache = new Cache(context.kv.cn);
-				let cn = new CollectedNotes(
-					context.env.CN_EMAIL,
-					context.env.CN_TOKEN,
-					context.env.CN_SITE,
-				);
-
-				let articles =
-					term === ""
-						? await Article.list({ cache, cn }, page)
-						: await Article.search({ cache, cn }, term, page);
-
-				return articles.map((article) => {
-					return { path: article.path, title: article.title };
-				});
-			},
-
-			async meta(): Promise<MetaDescriptor[]> {
-				let t = await new I18n().getFixedT(request);
-
-				let meta: MetaDescriptor[] = [];
-
-				if (term === "") {
-					meta.push({ title: t("articles.meta.title.default") });
-				} else {
-					meta.push({ title: t("articles.meta.title.search", { term }) });
-				}
-
-				return meta;
-			},
-		},
-		{ headers },
+	let cache = new Cache(context.kv.cn);
+	let cn = new CollectedNotes(
+		context.env.CN_EMAIL,
+		context.env.CN_TOKEN,
+		context.env.CN_SITE,
 	);
+
+	let t = await new I18n().getFixedT(request);
+
+	try {
+		let articles =
+			term === ""
+				? await Article.list({ cache, cn }, page)
+				: await Article.search({ cache, cn }, term, page);
+
+		let meta: MetaDescriptor[] = [];
+
+		if (term === "") {
+			meta.push({ title: t("articles.meta.title.default") });
+		} else {
+			meta.push({ title: t("articles.meta.title.search", { term }) });
+		}
+
+		return json(
+			{
+				term,
+				page,
+				meta,
+				articles: articles.map((article) => {
+					return { path: article.path, title: article.title };
+				}),
+			},
+			{ headers },
+		);
+	} catch (error) {
+		if (error instanceof Error) {
+			throw json({ message: error.message }, 500);
+		}
+		throw error;
+	}
 }
 
 export let meta: MetaFunction<typeof loader> = ({ data }) => {

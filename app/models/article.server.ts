@@ -8,7 +8,8 @@ import {
 	BodySchema,
 	Markdown,
 	MarkdownSchema,
-} from "./markdown.server";
+} from "~/models/markdown.server";
+import { hasAny } from "~/utils/arrays";
 
 interface Services {
 	cache: Cache;
@@ -71,29 +72,35 @@ export class Article {
 			}
 		} else console.info("Cache Miss /articles");
 
-		let list = await cn.fetchNotes(page);
+		try {
+			let list = await cn.fetchNotes(page, AbortSignal.timeout(5000));
 
-		let results = list.map((article) => {
-			return new Article(
-				article.path,
-				new Date(article.created_at).toISOString(),
-				new Markdown(article.body),
-			);
-		});
-
-		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
-
-		await Promise.all(
-			results.map((result) => {
-				return cache.set(
-					`article:${result.path}`,
-					JSON.stringify(result.content),
-					{ expirationTtl: 3600 },
+			let results = list.map((article) => {
+				return new Article(
+					article.path,
+					new Date(article.created_at).toISOString(),
+					new Markdown(article.body),
 				);
-			}),
-		);
+			});
 
-		return results;
+			if (hasAny(results)) {
+				await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
+
+				await Promise.all(
+					results.map((result) => {
+						return cache.set(
+							`article:${result.path}`,
+							JSON.stringify(result.content),
+							{ expirationTtl: 3600 },
+						);
+					}),
+				);
+			}
+
+			return results;
+		} catch (error) {
+			throw new Error("Failed to fetch articles");
+		}
 	}
 
 	static async search({ cache, cn }: Services, term: string, page = 1) {
@@ -120,7 +127,7 @@ export class Article {
 			}
 		} else console.info("Cache Miss /articles?q=%s", term);
 
-		let found = await cn.searchNotes(term, page);
+		let found = await cn.searchNotes(term, page, AbortSignal.timeout(5000));
 
 		let results = found.map((article) => {
 			return new Article(
@@ -130,17 +137,19 @@ export class Article {
 			);
 		});
 
-		await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
+		if (hasAny(results)) {
+			await cache.set(key, JSON.stringify(results), { expirationTtl: 3600 });
 
-		await Promise.all(
-			results.map((result) => {
-				return cache.set(
-					`article:${result.path}`,
-					JSON.stringify(result.content),
-					{ expirationTtl: 3600 },
-				);
-			}),
-		);
+			await Promise.all(
+				results.map((result) => {
+					return cache.set(
+						`article:${result.path}`,
+						JSON.stringify(result.content),
+						{ expirationTtl: 3600 },
+					);
+				}),
+			);
+		}
 
 		return results;
 	}

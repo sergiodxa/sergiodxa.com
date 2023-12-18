@@ -33,27 +33,27 @@ export class CollectedNotes {
 		private site: string,
 	) {}
 
-	async fetchNotes(page = 1) {
+	async fetchNotes(page = 1, signal = new AbortSignal()) {
 		let url = new URL(`sites/${this.site}/notes`, this.BASE_URL);
 
 		url.searchParams.set("page", page.toString());
 		url.searchParams.set("visibility", "public_site");
 
-		let response = await this.fetch(url);
+		let response = await this.fetch(url, signal);
 
 		let data = await response.json();
 
 		return NoteSchema.array().parse(data);
 	}
 
-	async searchNotes(term: string, page = 1) {
+	async searchNotes(term: string, page = 1, signal = new AbortSignal()) {
 		let url = new URL(`sites/${this.site}/notes/search`, this.BASE_URL);
 
 		url.searchParams.set("page", page.toString());
 		url.searchParams.set("term", term);
 		url.searchParams.set("visibility", "public_site");
 
-		let response = await this.fetch(url);
+		let response = await this.fetch(url, signal);
 
 		if (!response.ok) return [];
 
@@ -62,10 +62,10 @@ export class CollectedNotes {
 		return NoteSchema.array().parse(data);
 	}
 
-	async fetchNoteByPath(path: string) {
+	async fetchNoteByPath(path: string, signal = new AbortSignal()) {
 		let url = new URL(`${this.site}/${path}.json`, this.BASE_URL);
 
-		let response = await this.fetch(url);
+		let response = await this.fetch(url, signal);
 
 		if (!response.ok) throw new Error(`Note not found: ${path}`);
 
@@ -74,8 +74,9 @@ export class CollectedNotes {
 		return NoteSchema.parse(data);
 	}
 
-	private async fetch(url: URL) {
+	private async fetch(url: URL, signal?: AbortSignal) {
 		return fetch(url.toString(), {
+			signal,
 			headers: {
 				Accept: "application/json",
 				Authorization: `${this.email} ${this.token}`,
