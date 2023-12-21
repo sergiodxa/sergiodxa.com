@@ -5,6 +5,10 @@ export function hasAny<Value>(list: Value[]): boolean {
 	return list.length > 0;
 }
 
+export function hasMany<Value>(list: Value[]): boolean {
+	return list.length > 1;
+}
+
 /**
  * Check if an array is empty
  */
