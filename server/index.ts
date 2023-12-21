@@ -39,6 +39,7 @@ server.use(
 		})(context, next);
 	},
 	remix<ContextEnv>({
+		// @ts-expect-error This is expected due an old version of remix-hono
 		build,
 		mode: process.env.NODE_ENV as "development" | "production",
 		getLoadContext(ctx) {
