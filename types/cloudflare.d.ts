@@ -6,6 +6,7 @@ interface RuntimeEnv {
 	cn: KVNamespace;
 	gh: KVNamespace;
 	tutorials: KVNamespace;
+	DB: D1Database;
 	DSN?: string | undefined;
 	[key: string]: unknown;
 }
