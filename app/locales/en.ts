@@ -67,6 +67,15 @@ export default {
 
 	article: { meta: { title: "{{note}} by sergiodxa" } },
 
+	likes: {
+		meta: { title: "Like of sergiodxa" },
+
+		header: {
+			title: "Likes",
+			description: "Links that I read and liked.",
+		},
+	},
+
 	bookmarks: {
 		meta: { title: "Bookmarks of sergiodxa" },
 
@@ -166,6 +175,46 @@ export default {
 			quote: "Quote",
 			image: "Image",
 			heading: "Heading",
+		},
+	},
+
+	cms: {
+		users: {
+			search: { label: "What're you looking for?", cta: "Search" },
+			table: {
+				header: {
+					name: "Name",
+					role: "Role",
+					email: "Email",
+					createdAt: "Date Created",
+					updatedAt: "Last Update",
+				},
+			},
+		},
+
+		likes: {
+			search: { label: "What're you looking for?", cta: "Search" },
+			table: {
+				header: {
+					title: "Title",
+					url: "URL",
+					createdAt: "Date Created",
+					updatedAt: "Last Update",
+				},
+			},
+		},
+
+		posts: {
+			search: { label: "What're you looking for?", cta: "Search" },
+			table: {
+				header: {
+					slug: "Slug",
+					status: "Status",
+					authorId: "Author ID",
+					createdAt: "Date Created",
+					updatedAt: "Last Update",
+				},
+			},
 		},
 	},
 };
