@@ -46,60 +46,65 @@ export class Auth {
 				async ({ profile }) => {
 					console.log("Authenticating user");
 
-					let connection = await db.query.connections.findFirst({
-						with: { user: true },
-						where: and(
-							eq(Tables.connections.providerName, "github"),
-							eq(Tables.connections.providerId, profile._json.node_id),
-						),
-					});
+					try {
+						let connection = await db.query.connections.findFirst({
+							with: { user: true },
+							where: and(
+								eq(Tables.connections.providerName, "github"),
+								eq(Tables.connections.providerId, profile._json.node_id),
+							),
+						});
 
-					if (connection) console.log("Connection found in DB");
-					else console.log("Connection not found in DB");
+						if (connection) console.log("Connection found in DB");
+						else console.log("Connection not found in DB");
 
-					let user = connection?.user;
+						let user = connection?.user;
 
-					if (user) console.log("User found in DB");
-					else console.log("User not found in DB");
+						if (user) console.log("User found in DB");
+						else console.log("User not found in DB");
 
-					if (user) {
-						console.log("Returning user from DB", user.id);
+						if (user) {
+							console.log("Returning user from DB", user.id);
+							return {
+								displayName: user.displayName,
+								email: user.email,
+								githubId: profile._json.node_id,
+								isSponsor: await gh.isSponsoringMe(profile._json.node_id),
+							};
+						}
+
+						console.log("Inserting user into DB");
+
+						let result = await db
+							.insert(Tables.users)
+							.values({
+								displayName: profile._json.name,
+								email: profile._json.email,
+								role: "user",
+							})
+							.returning()
+							.onConflictDoNothing({ target: Tables.users.email });
+
+						console.log("Inserting connection into DB");
+
+						await db.insert(Tables.connections).values({
+							userId: result.at(0)!.id,
+							providerName: "github",
+							providerId: profile._json.node_id,
+						});
+
+						console.log("Returning user from DB", result.at(0)!.id);
+
 						return {
-							displayName: user.displayName,
-							email: user.email,
+							displayName: result.at(0)!.displayName,
+							email: result.at(0)!.email,
 							githubId: profile._json.node_id,
 							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 						};
+					} catch (exception) {
+						console.log(exception);
+						throw exception;
 					}
-
-					console.log("Inserting user into DB");
-
-					let result = await db
-						.insert(Tables.users)
-						.values({
-							displayName: profile._json.name,
-							email: profile._json.email,
-							role: "user",
-						})
-						.returning()
-						.onConflictDoNothing({ target: Tables.users.email });
-
-					console.log("Inserting connection into DB");
-
-					await db.insert(Tables.connections).values({
-						userId: result.at(0)!.id,
-						providerName: "github",
-						providerId: profile._json.node_id,
-					});
-
-					console.log("Returning user from DB", result.at(0)!.id);
-
-					return {
-						displayName: result.at(0)!.displayName,
-						email: result.at(0)!.email,
-						githubId: profile._json.node_id,
-						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
-					};
 				},
 			),
 		);
