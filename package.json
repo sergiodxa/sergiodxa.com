@@ -21,7 +21,14 @@
     "script": "ts-node --require tsconfig-paths/register",
     "script:download": "bun run script -- scripts/download.ts",
     "update:remix": "npx upgrade-remix",
-    "cf:logs": "wrangler pages deployment tail --project-name sergiodxa"
+    "cf:logs": "wrangler pages deployment tail --project-name sergiodxa",
+    "db:create": "wrangler d1 create",
+    "db:drop": "wrangler d1 delete",
+    "db:list": "wrangler d1 list",
+    "db:run": "wrangler d1 execute",
+    "db:migration:create": "wrangler d1 migrations create",
+    "db:migration:list": "wrangler d1 migrations list",
+    "db:migration:run": "wrangler d1 migrations apply"
   },
   "lint-stage": {
     "*.{ts,tsx}": [
@@ -52,6 +59,7 @@
     "clsx": "^1.1.1",
     "collected-notes": "^2.3.0",
     "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.29.1",
     "front-matter": "^4.0.2",
     "hono": "^3.7.6",
     "i18next": "^23.5.1",
@@ -88,6 +96,7 @@
     "@vitejs/plugin-react": "^4.0.3",
     "@vitest/coverage-v8": "^0.33.0",
     "cross-env": "^7.0.3",
+    "drizzle-kit": "^0.20.7",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -108,7 +117,7 @@
     "typescript": "^5.2.2",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.33.0",
-    "wrangler": "^3.2.0"
+    "wrangler": "3.22.1"
   },
   "sideEffects": false
 }

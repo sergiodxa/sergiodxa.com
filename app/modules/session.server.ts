@@ -6,10 +6,8 @@ import { createTypedSessionStorage } from "remix-utils/typed-session";
 import { z } from "zod";
 
 export const UserSchema = z.object({
-	username: z.string(),
 	displayName: z.string(),
 	email: z.string().email().nullable(),
-	avatar: z.string().url(),
 	githubId: z.string().min(1),
 	isSponsor: z.boolean(),
 });

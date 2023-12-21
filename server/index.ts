@@ -39,6 +39,7 @@ server.use(
 		})(context, next);
 	},
 	remix<ContextEnv>({
+		// @ts-expect-error This is expected due an old version of remix-hono
 		build,
 		mode: process.env.NODE_ENV as "development" | "production",
 		getLoadContext(ctx) {
@@ -65,13 +66,14 @@ server.use(
 			let measurer = new Measurer();
 
 			return {
-				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
+				db: ctx.env.DB,
 				kv: {
 					cn: ctx.env.cn,
 					auth: ctx.env.auth,
 					airtable: ctx.env.airtable,
 					tutorials: ctx.env.tutorials,
 				},
+				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
 				env,
 				time: measurer.time.bind(measurer),
 			};

@@ -19,6 +19,7 @@ declare global {
 
 declare module "@remix-run/server-runtime" {
 	export interface AppLoadContext {
+		db: D1Database;
 		kv: Record<"tutorials" | "airtable" | "auth" | "cn", KVNamespace>;
 		waitUntil(promise: Promise<unknown>): void;
 		env: Env;
