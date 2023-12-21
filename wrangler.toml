@@ -13,7 +13,7 @@ kv_namespaces = [
 [[d1_databases]]
 binding = "DB"
 database_name = "db"
-database_id = "3a9d1e87-4545-4484-8287-48412a264e8d"
+database_id = "f6bb2533-9284-4427-83e6-ea12c6630026"
 
 # r2_buckets = [
 #   { binding = "BUCKET", bucket_name = "campaigns", preview_bucket_name = "campaigns" }
