@@ -21,7 +21,14 @@
     "script": "ts-node --require tsconfig-paths/register",
     "script:download": "bun run script -- scripts/download.ts",
     "update:remix": "npx upgrade-remix",
-    "cf:logs": "wrangler pages deployment tail --project-name sergiodxa"
+    "cf:logs": "wrangler pages deployment tail --project-name sergiodxa",
+    "db:create": "wrangler d1 create",
+    "db:drop": "wrangler d1 delete",
+    "db:list": "wrangler d1 list",
+    "db:run": "wrangler d1 execute",
+    "db:migration:create": "wrangler d1 migrations create",
+    "db:migration:list": "wrangler d1 migrations list",
+    "db:migration:run": "wrangler d1 migrations apply"
   },
   "lint-stage": {
     "*.{ts,tsx}": [
@@ -108,7 +115,7 @@
     "typescript": "^5.2.2",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.33.0",
-    "wrangler": "^3.2.0"
+    "wrangler": "3.22.1"
   },
   "sideEffects": false
 }

@@ -1,5 +1,6 @@
 name = "sergiodxa"
 compatibility_date = "2023-06-22"
+node_compat = true
 
 kv_namespaces = [
   { binding = "airtable", id = "7be9035dc2c04b2581e0a85ec1af46bb", preview_id = "airtable@sergiodxa.com" },
@@ -8,6 +9,11 @@ kv_namespaces = [
   { binding = "auth", id = "fda5fdfe90e74e2b82dd0ccd49346c27", preview_id = "auth@sergiodxa.com" },
   { binding = "tutorials", id = "35d8114ec66b41a3b1fb1723df61282f", preview_id = "tutorials@sergiodxa.com" },
 ]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "db"
+database_id = "3a9d1e87-4545-4484-8287-48412a264e8d"
 
 # r2_buckets = [
 #   { binding = "BUCKET", bucket_name = "campaigns", preview_bucket_name = "campaigns" }
