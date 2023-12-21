@@ -2,9 +2,11 @@ import type { User } from "./session.server";
 import type { AppLoadContext, SessionStorage } from "@remix-run/cloudflare";
 
 import { createCookieSessionStorage } from "@remix-run/cloudflare";
+import { and, eq } from "drizzle-orm";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 
+import { Database, Tables } from "~/services/db.server";
 import { GitHub } from "~/services/github.server";
 
 export class Auth {
@@ -31,6 +33,7 @@ export class Auth {
 			sessionKey: "token",
 		});
 
+		let db = Database(context.db);
 		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
 
 		this.authenticator.use(
@@ -41,11 +44,44 @@ export class Auth {
 					callbackURL: "/auth/github/callback",
 				},
 				async ({ profile }) => {
+					let connection = await db.query.connections.findFirst({
+						with: { user: true },
+						where: and(
+							eq(Tables.connections.providerName, "github"),
+							eq(Tables.connections.providerId, profile._json.node_id),
+						),
+					});
+
+					let user = connection?.user;
+
+					if (user) {
+						return {
+							displayName: user.displayName,
+							email: user.email,
+							githubId: profile._json.node_id,
+							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
+						};
+					}
+
+					let result = await db
+						.insert(Tables.users)
+						.values({
+							displayName: profile._json.name,
+							email: profile._json.email,
+							role: "user",
+						})
+						.returning()
+						.onConflictDoNothing({ target: Tables.users.email });
+
+					await db.insert(Tables.connections).values({
+						userId: result.at(0)!.id,
+						providerName: "github",
+						providerId: profile._json.node_id,
+					});
+
 					return {
-						displayName: profile._json.name,
-						username: profile._json.login,
-						email: profile._json.email ?? profile.emails?.at(0) ?? null,
-						avatar: profile._json.avatar_url,
+						displayName: result.at(0)!.displayName,
+						email: result.at(0)!.email,
 						githubId: profile._json.node_id,
 						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 					};
