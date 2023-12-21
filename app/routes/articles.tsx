@@ -4,9 +4,7 @@ import {
 	type MetaDescriptor,
 	json,
 } from "@remix-run/cloudflare";
-
 import { Link, useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
