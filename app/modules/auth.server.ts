@@ -44,6 +44,8 @@ export class Auth {
 					callbackURL: "/auth/github/callback",
 				},
 				async ({ profile }) => {
+					console.log("Authenticating user");
+
 					let connection = await db.query.connections.findFirst({
 						with: { user: true },
 						where: and(
@@ -52,9 +54,16 @@ export class Auth {
 						),
 					});
 
+					if (connection) console.log("Connection found in DB");
+					else console.log("Connection not found in DB");
+
 					let user = connection?.user;
 
+					if (user) console.log("User found in DB");
+					else console.log("User not found in DB");
+
 					if (user) {
+						console.log("Returning user from DB", user.id);
 						return {
 							displayName: user.displayName,
 							email: user.email,
@@ -62,6 +71,8 @@ export class Auth {
 							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 						};
 					}
+
+					console.log("Inserting user into DB");
 
 					let result = await db
 						.insert(Tables.users)
@@ -73,11 +84,15 @@ export class Auth {
 						.returning()
 						.onConflictDoNothing({ target: Tables.users.email });
 
+					console.log("Inserting connection into DB");
+
 					await db.insert(Tables.connections).values({
 						userId: result.at(0)!.id,
 						providerName: "github",
 						providerId: profile._json.node_id,
 					});
+
+					console.log("Returning user from DB", result.at(0)!.id);
 
 					return {
 						displayName: result.at(0)!.displayName,
