@@ -33,7 +33,7 @@ export class CollectedNotes {
 		private site: string,
 	) {}
 
-	async fetchNotes(page = 1, signal = new AbortSignal()) {
+	async fetchNotes(page = 1, signal?: AbortSignal) {
 		let url = new URL(`sites/${this.site}/notes`, this.BASE_URL);
 
 		url.searchParams.set("page", page.toString());
@@ -46,7 +46,7 @@ export class CollectedNotes {
 		return NoteSchema.array().parse(data);
 	}
 
-	async searchNotes(term: string, page = 1, signal = new AbortSignal()) {
+	async searchNotes(term: string, page = 1, signal?: AbortSignal) {
 		let url = new URL(`sites/${this.site}/notes/search`, this.BASE_URL);
 
 		url.searchParams.set("page", page.toString());
@@ -62,7 +62,7 @@ export class CollectedNotes {
 		return NoteSchema.array().parse(data);
 	}
 
-	async fetchNoteByPath(path: string, signal = new AbortSignal()) {
+	async fetchNoteByPath(path: string, signal?: AbortSignal) {
 		let url = new URL(`${this.site}/${path}.json`, this.BASE_URL);
 
 		let response = await this.fetch(url, signal);
