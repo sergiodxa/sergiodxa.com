@@ -176,7 +176,8 @@ export class Article {
 		let { title, body, created_at } = await cn.fetchNoteByPath(path);
 
 		let markdown = new Markdown(`# ${title}\n${body}`);
-		let tutorial = new Article(
+
+		let article = new Article(
 			path,
 			new Date(created_at).toISOString(),
 			markdown,
@@ -184,6 +185,6 @@ export class Article {
 
 		await cache.set(key, JSON.stringify(markdown), { expirationTtl: 3600 });
 
-		return tutorial;
+		return article;
 	}
 }
