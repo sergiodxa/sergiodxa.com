@@ -51,7 +51,9 @@ export namespace Tables {
 	});
 }
 
-export function Database(d1: D1Database) {
+export type Database = ReturnType<typeof database>;
+
+export function database(d1: D1Database) {
 	return drizzle(d1, {
 		schema: {
 			users: Tables.users,

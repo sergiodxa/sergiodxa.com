@@ -5,8 +5,9 @@ import { createCookieSessionStorage } from "@remix-run/cloudflare";
 import { and, eq } from "drizzle-orm";
 import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
+import { z } from "zod";
 
-import { Database, Tables } from "~/services/db.server";
+import { database, Tables } from "~/services/db.server";
 import { GitHub } from "~/services/github.server";
 
 export class Auth {
@@ -33,7 +34,7 @@ export class Auth {
 			sessionKey: "token",
 		});
 
-		let db = Database(context.db);
+		let db = database(context.db);
 		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
 
 		this.authenticator.use(
@@ -66,6 +67,8 @@ export class Auth {
 						if (user) {
 							console.log("Returning user from DB", user.id);
 							return {
+								id: user.id,
+								role: z.enum(["admin", "user"]).catch("user").parse(user.role),
 								displayName: user.displayName,
 								email: user.email,
 								githubId: profile._json.node_id,
@@ -85,19 +88,24 @@ export class Auth {
 							.returning()
 							.onConflictDoNothing({ target: Tables.users.email });
 
+						user = result.at(0);
+						if (!user) throw new Error("User not found");
+
 						console.log("Inserting connection into DB");
 
 						await db.insert(Tables.connections).values({
-							userId: result.at(0)!.id,
+							userId: user.id,
 							providerName: "github",
 							providerId: profile._json.node_id,
 						});
 
-						console.log("Returning user from DB", result.at(0)!.id);
+						console.log("Returning user from DB", user.id);
 
 						return {
-							displayName: result.at(0)!.displayName,
-							email: result.at(0)!.email,
+							id: user.id,
+							role: z.enum(["admin", "user"]).catch("user").parse(user.role),
+							displayName: user.displayName,
+							email: user.email,
 							githubId: profile._json.node_id,
 							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 						};
