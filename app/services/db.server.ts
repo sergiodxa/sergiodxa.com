@@ -1,29 +1,90 @@
+import type { UUID } from "~/utils/uuid";
+
 import { relations } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
+import { generateUUID } from "~/utils/uuid";
+
 export namespace Tables {
-	let id = text("id", { mode: "text" })
+	let UUID_LENGTH = 36;
+
+	let id = text("id", { mode: "text", length: UUID_LENGTH })
+		.$type<UUID>()
 		.primaryKey()
 		.unique()
 		.notNull()
-		.$defaultFn(() => crypto.randomUUID());
+		.$defaultFn(() => generateUUID());
+
+	let createdAt = integer("created_at", { mode: "timestamp_ms" })
+		.notNull()
+		.$defaultFn(() => new Date());
+
+	let updatedAt = integer("updated_at", { mode: "timestamp_ms" })
+		.notNull()
+		.$defaultFn(() => new Date());
 
 	export let users = sqliteTable("users", {
 		id,
-		displayName: text("displayName", { mode: "text" }).notNull(),
-		email: text("email", { mode: "text" }).notNull(),
-		role: text("role", { mode: "text" }).notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" })
+		// Timestamps
+		createdAt,
+		updatedAt,
+		// Attributes
+		role: text("role", { enum: ["guess", "admin"] })
 			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
+			.default("guess"),
+		email: text("email", { mode: "text", length: 320 }).notNull(),
+		avatar: text("avatar", { mode: "text", length: 2048 }).notNull(),
+		username: text("username", { mode: "text", length: 39 }).notNull(),
+		displayName: text("display_name", { mode: "text", length: 255 }).notNull(),
 	});
 
-	export type User = typeof users.$inferSelect;
-	export type InsertUser = typeof users.$inferInsert;
+	export let connections = sqliteTable("connections", {
+		id,
+		// Timestamps
+		createdAt,
+		updatedAt,
+		// Relations
+		userId: text("user_id", { mode: "text", length: UUID_LENGTH })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		// Attributes
+		providerId: text("provider_id", { mode: "text", length: 255 }).notNull(),
+		providerName: text("provider_name", {
+			mode: "text",
+			length: 255,
+		}).notNull(),
+	});
+
+	export let posts = sqliteTable("posts", {
+		id,
+		// Timestamps
+		createdAt,
+		updatedAt,
+		// Relations
+		authorId: text("author_id", { mode: "text", length: UUID_LENGTH })
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		// Attributes
+		type: text("type", {
+			enum: ["like", "tutorial", "article"],
+			length: 255,
+		}).notNull(),
+	});
+
+	export let postMeta = sqliteTable("post_meta", {
+		id,
+		// Timestamps
+		createdAt,
+		updatedAt,
+		// Relations
+		postId: text("post_id", { mode: "text", length: UUID_LENGTH })
+			.notNull()
+			.references(() => posts.id, { onDelete: "cascade" }),
+		// Attribures
+		key: text("key", { mode: "text", length: 255 }).notNull(),
+		value: text("value", { mode: "text" }).notNull(),
+	});
 
 	export let usersRelation = relations(users, ({ many }) => {
 		return {
@@ -31,24 +92,6 @@ export namespace Tables {
 			posts: many(posts),
 		};
 	});
-
-	export let connections = sqliteTable("connections", {
-		id,
-		userId: text("user_id", { mode: "text" })
-			.notNull()
-			.references(() => users.id, { onDelete: "cascade" }),
-		providerId: text("provider_id", { mode: "text" }).notNull(),
-		providerName: text("provider_name", { mode: "text" }).notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-	});
-
-	export type Connection = typeof connections.$inferSelect;
-	export type InsertConnection = typeof connections.$inferInsert;
 
 	export let connectionsRelation = relations(connections, ({ one }) => {
 		return {
@@ -59,58 +102,12 @@ export namespace Tables {
 		};
 	});
 
-	export let locales = sqliteTable("locales", {
-		id,
-		name: text("name", { mode: "text" }).notNull(),
-		code: text("code", { mode: "text" }).notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-	});
-
-	export type Locale = typeof locales.$inferSelect;
-	export type InsertLocale = typeof locales.$inferInsert;
-
-	export let postTypes = sqliteTable("post_types", {
-		id,
-		name: text("name", { mode: "text" }).notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-	});
-
-	export type PostType = typeof postTypes.$inferSelect;
-	export type InsertPostType = typeof postTypes.$inferInsert;
-
-	export let postTypeRelation = relations(postTypes, ({ many }) => {
+	export let postRelation = relations(posts, ({ one, many }) => {
 		return {
-			posts: many(posts),
+			author: one(users, { fields: [posts.authorId], references: [users.id] }),
+			meta: many(postMeta),
 		};
 	});
-
-	export let postMeta = sqliteTable("post_meta", {
-		id,
-		key: text("key", { mode: "text" }).notNull(),
-		value: text("value", { mode: "text" }).notNull(),
-		postId: text("post_id", { mode: "text" })
-			.notNull()
-			.references(() => posts.id, { onDelete: "cascade" }),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-	});
-
-	export type PostMeta = typeof postMeta.$inferSelect;
-	export type InsertPostMeta = typeof postMeta.$inferInsert;
 
 	export let postMetaRelation = relations(postMeta, ({ one }) => {
 		return {
@@ -118,35 +115,17 @@ export namespace Tables {
 		};
 	});
 
-	export let posts = sqliteTable("posts", {
-		id,
-		authorId: text("author_id", { mode: "text" })
-			.notNull()
-			.references(() => users.id, { onDelete: "cascade" }),
-		typeId: text("type_id", { mode: "text" })
-			.notNull()
-			.references(() => postTypes.id, { onDelete: "cascade" }),
-		createdAt: integer("created_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-		updatedAt: integer("updated_at", { mode: "timestamp" })
-			.notNull()
-			.$defaultFn(() => new Date()),
-	});
+	export type SelectUser = typeof users.$inferSelect;
+	export type InsertUser = typeof users.$inferInsert;
 
-	export type Post = typeof posts.$inferSelect;
+	export type SelectConnection = typeof connections.$inferSelect;
+	export type InsertConnection = typeof connections.$inferInsert;
+
+	export type SelectPost = typeof posts.$inferSelect;
 	export type InsertPost = typeof posts.$inferInsert;
 
-	export let postRelation = relations(posts, ({ one, many }) => {
-		return {
-			author: one(users, { fields: [posts.authorId], references: [users.id] }),
-			type: one(postTypes, {
-				fields: [posts.typeId],
-				references: [postTypes.id],
-			}),
-			meta: many(postMeta),
-		};
-	});
+	export type SelectPostMeta = typeof postMeta.$inferSelect;
+	export type InsertPostMeta = typeof postMeta.$inferInsert;
 }
 
 export type Database = ReturnType<typeof database>;
@@ -158,9 +137,6 @@ export function database(d1: D1Database) {
 			usersRelation: Tables.usersRelation,
 			connections: Tables.connections,
 			connectionsRelation: Tables.connectionsRelation,
-			locales: Tables.locales,
-			postTypes: Tables.postTypes,
-			postTypeRelation: Tables.postTypeRelation,
 			postMeta: Tables.postMeta,
 			postMetaRelation: Tables.postMetaRelation,
 			posts: Tables.posts,
