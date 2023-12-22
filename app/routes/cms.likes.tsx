@@ -1,10 +1,16 @@
+import type { ValidationErrors } from "@react-types/shared";
 import type {
 	ActionFunctionArgs,
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
-import { useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
+import {
+	useActionData,
+	useLoaderData,
+	useSearchParams,
+	useSubmit,
+} from "@remix-run/react";
 import { parameterize } from "inflected";
 import {
 	Button,
@@ -56,7 +62,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	let formData = await request.formData();
 
 	if (formData.get("intent") !== INTENT.importBookmarks) {
-		return json({ errors: { intent: "Invalid intent" } }, 400);
+		return json<ValidationErrors>(
+			{ intent: `Invalid intent ${formData.get("intent")}` },
+			400,
+		);
 	}
 
 	let airtable = new Airtable(
@@ -69,36 +78,45 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let bookmarks = await Bookmark.list({ airtable, cache });
 
-	let db = database(context.db);
+	try {
+		let db = database(context.db);
 
-	await db.delete(Tables.postMeta).execute();
-	await db.delete(Tables.posts).execute();
-	await db.delete(Tables.postTypes).execute();
+		await db.delete(Tables.postMeta).execute();
+		await db.delete(Tables.posts).execute();
+		await db.delete(Tables.postTypes).execute();
 
-	await db
-		.insert(Tables.postTypes)
-		.values({ name: "likes" })
-		.onConflictDoNothing()
-		.execute();
+		await db
+			.insert(Tables.postTypes)
+			.values({ name: "likes" })
+			.onConflictDoNothing()
+			.execute();
 
-	await Promise.all(
-		bookmarks.map((bookmark) => {
-			return Like.create(
-				{ db },
-				{
-					slug: parameterize(bookmark.title),
-					status: "published",
-					authorId: user.id,
-					createdAt: new Date(bookmark.createdAt),
-					updatedAt: new Date(bookmark.createdAt),
-					title: bookmark.title,
-					url: new URL(bookmark.url),
-				},
-			);
-		}),
-	);
+		await Promise.all(
+			bookmarks.map((bookmark) => {
+				return Like.create(
+					{ db },
+					{
+						slug: parameterize(bookmark.title),
+						status: "published",
+						authorId: user.id,
+						createdAt: new Date(bookmark.createdAt),
+						updatedAt: new Date(bookmark.createdAt),
+						title: bookmark.title,
+						url: new URL(bookmark.url),
+					},
+				);
+			}),
+		);
+		throw redirect("/cms/likes");
+	} catch (exception) {
+		if (exception instanceof Response) throw exception;
+		if (exception instanceof Error) {
+			return json({ error: exception.message }, 400);
+		}
 
-	return redirect("/cms/likes");
+		console.log(exception);
+		throw exception;
+	}
 }
 
 export default function Component() {
@@ -189,10 +207,16 @@ function LikesTable() {
 
 function ImportBookmarks() {
 	let submit = useSubmit();
+	let actionData = useActionData<typeof action>();
 	let t = useT("translation", "cms.likes.import");
 
 	return (
-		<Form method="post" onSubmit={(event) => submit(event.currentTarget)}>
+		<Form
+			method="post"
+			onSubmit={(event) => submit(event.currentTarget)}
+			validationErrors={actionData}
+		>
+			{actionData?.error ? <span>{actionData.error}</span> : null}
 			<input type="hidden" name="intent" value={INTENT.importBookmarks} />
 			<Button
 				type="submit"
