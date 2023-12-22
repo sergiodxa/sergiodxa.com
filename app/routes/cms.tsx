@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 import { SessionStorage } from "~/modules/session.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-	let user = await SessionStorage.requireUser(context, request, "/login");
+	let user = await SessionStorage.requireUser(context, request, "/auth/login");
 	return json({ user });
 }
 
