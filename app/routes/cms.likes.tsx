@@ -7,11 +7,12 @@ import type {
 import { json, redirect } from "@remix-run/cloudflare";
 import {
 	useActionData,
+	useFetcher,
 	useLoaderData,
 	useSearchParams,
 	useSubmit,
 } from "@remix-run/react";
-import { parameterize } from "inflected";
+import { useEffect } from "react";
 import {
 	Button,
 	Cell,
@@ -25,6 +26,7 @@ import {
 	TableBody,
 	TableHeader,
 } from "react-aria-components";
+import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Bookmark } from "~/models/bookmark.server";
@@ -35,7 +37,9 @@ import { Airtable } from "~/services/airtable.server";
 import { Cache } from "~/services/cache.server";
 import { Tables, database } from "~/services/db.server";
 
-const INTENT = { importBookmarks: "IMPORT_BOOKMARKS" };
+const INTENT = { importBookmarks: "IMPORT_BOOKMARKS", delete: "DELETE_LIKE" };
+
+export const handle: SDX.Handle = { hydrate: true };
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let likes = await Like.list({ db: database(context.db) });
@@ -61,61 +65,74 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let formData = await request.formData();
 
-	if (formData.get("intent") !== INTENT.importBookmarks) {
-		return json<ValidationErrors>(
-			{ intent: `Invalid intent ${formData.get("intent")}` },
-			400,
-		);
+	let intent = formData.get("intent");
+
+	if (!intent) {
+		return json<ValidationErrors>({ error: "Missing intent" }, 400);
 	}
 
-	let airtable = new Airtable(
-		context.env.AIRTABLE_API_KEY,
-		context.env.AIRTABLE_BASE,
-		context.env.AIRTABLE_TABLE_ID,
-	);
+	if (formData.get("intent") === INTENT.importBookmarks) {
+		let airtable = new Airtable(
+			context.env.AIRTABLE_API_KEY,
+			context.env.AIRTABLE_BASE,
+			context.env.AIRTABLE_TABLE_ID,
+		);
 
-	let cache = new Cache(context.kv.airtable);
+		let cache = new Cache(context.kv.airtable);
 
-	let bookmarks = await Bookmark.list({ airtable, cache });
+		let bookmarks = await Bookmark.list({ airtable, cache });
 
-	try {
+		try {
+			let db = database(context.db);
+
+			await db.delete(Tables.postMeta).execute();
+			await db.delete(Tables.posts).execute();
+			await db.delete(Tables.postTypes).execute();
+
+			await db
+				.insert(Tables.postTypes)
+				.values({ name: "likes" })
+				.onConflictDoNothing()
+				.execute();
+
+			await Promise.all(
+				bookmarks.map((bookmark) => {
+					return Like.create(
+						{ db },
+						{
+							authorId: user.id,
+							createdAt: new Date(bookmark.createdAt),
+							updatedAt: new Date(bookmark.createdAt),
+							title: bookmark.title,
+							url: new URL(bookmark.url),
+						},
+					);
+				}),
+			);
+
+			throw redirect("/cms/likes");
+		} catch (exception) {
+			if (exception instanceof Response) throw exception;
+			if (exception instanceof Error) {
+				return json({ error: exception.message }, 400);
+			}
+
+			console.log(exception);
+			throw exception;
+		}
+	}
+
+	if (intent === INTENT.delete) {
+		let id = z.string().parse(formData.get("id"));
+
 		let db = database(context.db);
 
-		await db.delete(Tables.postMeta).execute();
-		await db.delete(Tables.posts).execute();
-		await db.delete(Tables.postTypes).execute();
+		await Like.destroy({ db }, id);
 
-		await db
-			.insert(Tables.postTypes)
-			.values({ name: "likes" })
-			.onConflictDoNothing()
-			.execute();
-
-		for await (let bookmark of bookmarks) {
-			await Like.create(
-				{ db },
-				{
-					slug: parameterize(bookmark.title),
-					status: "published",
-					authorId: user.id,
-					createdAt: new Date(bookmark.createdAt),
-					updatedAt: new Date(bookmark.createdAt),
-					title: bookmark.title,
-					url: new URL(bookmark.url),
-				},
-			);
-		}
-
-		throw redirect("/cms/likes");
-	} catch (exception) {
-		if (exception instanceof Response) throw exception;
-		if (exception instanceof Error) {
-			return json({ error: exception.message }, 400);
-		}
-
-		console.log(exception);
-		throw exception;
+		return json(null);
 	}
+
+	return json<ValidationErrors>({ intent: `Invalid intent ${intent}` }, 400);
 }
 
 export default function Component() {
@@ -142,7 +159,10 @@ function SearchForm() {
 		<Form
 			method="get"
 			action="/cms/likes"
-			onSubmit={(event) => submit(event.currentTarget)}
+			onSubmit={(event) => {
+				event.preventDefault();
+				submit(event.currentTarget);
+			}}
 			className="flex gap-4"
 		>
 			<SearchField
@@ -185,6 +205,7 @@ function LikesTable() {
 				</Column>
 				<Column className="text-right">{t("header.createdAt")}</Column>
 				<Column className="text-right">{t("header.updatedAt")}</Column>
+				<Column className="text-center">{t("header.actions")}</Column>
 			</TableHeader>
 
 			<TableBody>
@@ -196,6 +217,9 @@ function LikesTable() {
 							</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.createdAt}</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.updatedAt}</Cell>
+							<Cell>
+								<DeleteForm id={like.id} />
+							</Cell>
 						</Row>
 					);
 				})}
@@ -212,8 +236,11 @@ function ImportBookmarks() {
 	return (
 		<Form
 			method="post"
-			onSubmit={(event) => submit(event.currentTarget)}
-			validationErrors={actionData}
+			onSubmit={(event) => {
+				event.preventDefault();
+				submit(event.currentTarget);
+			}}
+			validationErrors={actionData ?? undefined}
 		>
 			{actionData?.error ? <span>{actionData.error}</span> : null}
 			<input type="hidden" name="intent" value={INTENT.importBookmarks} />
@@ -222,6 +249,37 @@ function ImportBookmarks() {
 				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
 			>
 				{t("cta")}
+			</Button>
+		</Form>
+	);
+}
+
+function DeleteForm({ id }: { id: string }) {
+	let fetcher = useFetcher<typeof action>();
+	let t = useT("translation", "cms.likes.delete");
+
+	useEffect(() => {
+		if (fetcher.data?.error) alert(fetcher.data.error);
+	}, [fetcher]);
+
+	let isDeleting = fetcher.state !== "idle";
+
+	return (
+		<Form
+			method="post"
+			onSubmit={(event) => {
+				event.preventDefault();
+				fetcher.submit(event.currentTarget);
+			}}
+		>
+			<input type="hidden" name="intent" value={INTENT.delete} />
+			<input type="hidden" name="id" value={id} />
+
+			<Button
+				type="submit"
+				className="block flex-shrink-0 rounded-md border-2 border-red-600 bg-red-100 px-4 py-2 text-center text-base font-medium text-red-900"
+			>
+				{isDeleting ? t("pending") : t("cta")}
 			</Button>
 		</Form>
 	);

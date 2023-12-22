@@ -7,8 +7,6 @@ import { hasMany } from "~/utils/arrays";
 
 export interface PostAttributes {
 	readonly id: string;
-	readonly slug: string;
-	readonly status: string;
 	readonly authorId: string;
 	readonly typeId: string;
 	readonly createdAt: Date;
@@ -23,8 +21,6 @@ interface Services {
 
 export class Post {
 	readonly id: string;
-	readonly slug: string;
-	readonly status: string;
 	// Relations
 	readonly authorId: string;
 	readonly typeId: string;
@@ -36,8 +32,6 @@ export class Post {
 
 	constructor(input: Post | PostAttributes) {
 		this.id = input.id;
-		this.slug = input.slug;
-		this.status = input.status;
 		this.authorId = input.authorId;
 		this.typeId = input.typeId;
 		this.createdAt = input.createdAt;
@@ -49,8 +43,6 @@ export class Post {
 		return {
 			// Attributes
 			id: this.id,
-			slug: this.slug,
-			status: this.status,
 			// Relations
 			authorId: this.authorId,
 			typeId: this.typeId,
@@ -67,7 +59,7 @@ export class Post {
 	static async list({ db }: Services, type?: Tables.PostType["name"]) {
 		let result = await db.query.postTypes.findMany({
 			with: {
-				posts: { with: { meta: true }, orderBy: asc(Tables.posts.slug) },
+				posts: { with: { meta: true }, orderBy: asc(Tables.posts.createdAt) },
 			},
 			where: type ? eq(Tables.postTypes.name, type) : undefined,
 		});
@@ -80,8 +72,6 @@ export class Post {
 				return new Post({
 					// Post attributes
 					id: post.id,
-					slug: post.slug,
-					status: post.status,
 					authorId: post.authorId,
 					typeId: post.typeId,
 					createdAt: post.createdAt,
@@ -98,15 +88,15 @@ export class Post {
 			});
 	}
 
-	static async show({ db }: Services, slug: Tables.Post["slug"]) {
+	static async show({ db }: Services, id: Tables.Post["id"]) {
 		let result = await db.query.postTypes.findFirst({
 			with: {
-				posts: { with: { meta: true }, where: eq(Tables.posts.slug, slug) },
+				posts: { with: { meta: true }, where: eq(Tables.posts.id, id) },
 			},
 		});
 
 		if (!result || hasMany(result.posts)) {
-			throw new Error(`Couldn't find post with slug ${slug}`);
+			throw new Error(`Couldn't find post with Id ${id}`);
 		}
 
 		let post = result.posts.at(0);
@@ -116,10 +106,9 @@ export class Post {
 		return new Post({
 			// Post attributes
 			id: post.id,
-			slug: post.slug,
-			status: post.status,
 			authorId: post.authorId,
 			typeId: post.typeId,
+			// Timestamps
 			createdAt: post.createdAt,
 			updatedAt: post.updatedAt,
 			// Meta
@@ -151,8 +140,6 @@ export class Post {
 			.insert(Tables.posts)
 			.values({
 				id,
-				slug: input.slug,
-				status: input.status,
 				authorId: input.authorId,
 				typeId: postType.id,
 				createdAt: input.createdAt,
@@ -171,6 +158,15 @@ export class Post {
 			}),
 		);
 
-		return await Post.show({ db }, input.slug);
+		return await Post.show({ db }, id);
+	}
+
+	static async destroy({ db }: Services, id: Tables.Post["id"]) {
+		let result = await db
+			.delete(Tables.posts)
+			.where(eq(Tables.posts.id, id))
+			.execute();
+
+		if (!result.success && result.error) throw new Error(result.error);
 	}
 }

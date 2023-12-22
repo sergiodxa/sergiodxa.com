@@ -21,8 +21,6 @@ CREATE TABLE post_meta (
 
 CREATE TABLE posts (
   id VARCHAR(255) UNIQUE PRIMARY KEY,
-  slug VARCHAR(255) NOT NULL,
-  status VARCHAR(255) NOT NULL,
   author_id VARCHAR(255) NOT NULL,
   type_id VARCHAR(255) NOT NULL,
   -- Timestamps

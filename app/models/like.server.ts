@@ -23,10 +23,6 @@ export class Like {
 		return this.post.id;
 	}
 
-	get slug() {
-		return this.post.slug;
-	}
-
 	get title() {
 		return this.post.meta.title;
 	}
@@ -57,8 +53,8 @@ export class Like {
 		return posts.map((post) => new Like(post));
 	}
 
-	static async show({ db }: Services, slug: Tables.Post["slug"]) {
-		let post = await Post.show({ db }, slug);
+	static async show({ db }: Services, id: Tables.Post["id"]) {
+		let post = await Post.show({ db }, id);
 		return new Like(post);
 	}
 
@@ -72,5 +68,9 @@ export class Like {
 		});
 
 		return new Like(post);
+	}
+
+	static async destroy({ db }: Services, id: Tables.Post["id"]) {
+		await Post.destroy({ db }, id);
 	}
 }
