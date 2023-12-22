@@ -16,7 +16,7 @@ CREATE TABLE post_meta (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- Relations
-  CONSTRAINT fk_post_meta_post_id FOREIGN KEY (post_id) REFERENCES posts (id)
+  CONSTRAINT fk_post_meta_post_id FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE
 );
 
 CREATE TABLE posts (
@@ -29,6 +29,6 @@ CREATE TABLE posts (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- Relations
-  CONSTRAINT fk_posts_author_id FOREIGN KEY (author_id) REFERENCES users (id),
-  CONSTRAINT fk_posts_type_id FOREIGN KEY (type_id) REFERENCES post_types (id)
+  CONSTRAINT fk_posts_author_id FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT fk_posts_type_id FOREIGN KEY (type_id) REFERENCES post_types (id) ON DELETE CASCADE
 );

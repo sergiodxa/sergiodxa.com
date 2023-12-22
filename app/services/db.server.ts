@@ -36,7 +36,7 @@ export namespace Tables {
 		id,
 		userId: text("user_id", { mode: "text" })
 			.notNull()
-			.references(() => users.id),
+			.references(() => users.id, { onDelete: "cascade" }),
 		providerId: text("provider_id", { mode: "text" }).notNull(),
 		providerName: text("provider_name", { mode: "text" }).notNull(),
 		createdAt: integer("created_at", { mode: "timestamp" })
@@ -100,7 +100,7 @@ export namespace Tables {
 		value: text("value", { mode: "text" }).notNull(),
 		postId: text("post_id", { mode: "text" })
 			.notNull()
-			.references(() => posts.id),
+			.references(() => posts.id, { onDelete: "cascade" }),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date()),
@@ -120,14 +120,12 @@ export namespace Tables {
 
 	export let posts = sqliteTable("posts", {
 		id,
-		slug: text("slug", { mode: "text" }).notNull(),
-		status: text("status", { mode: "text" }).notNull(),
 		authorId: text("author_id", { mode: "text" })
 			.notNull()
-			.references(() => users.id),
+			.references(() => users.id, { onDelete: "cascade" }),
 		typeId: text("type_id", { mode: "text" })
 			.notNull()
-			.references(() => postTypes.id),
+			.references(() => postTypes.id, { onDelete: "cascade" }),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date()),
