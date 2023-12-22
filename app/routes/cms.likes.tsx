@@ -91,22 +91,21 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			.onConflictDoNothing()
 			.execute();
 
-		await Promise.all(
-			bookmarks.map((bookmark) => {
-				return Like.create(
-					{ db },
-					{
-						slug: parameterize(bookmark.title),
-						status: "published",
-						authorId: user.id,
-						createdAt: new Date(bookmark.createdAt),
-						updatedAt: new Date(bookmark.createdAt),
-						title: bookmark.title,
-						url: new URL(bookmark.url),
-					},
-				);
-			}),
-		);
+		for await (let bookmark of bookmarks) {
+			await Like.create(
+				{ db },
+				{
+					slug: parameterize(bookmark.title),
+					status: "published",
+					authorId: user.id,
+					createdAt: new Date(bookmark.createdAt),
+					updatedAt: new Date(bookmark.createdAt),
+					title: bookmark.title,
+					url: new URL(bookmark.url),
+				},
+			);
+		}
+
 		throw redirect("/cms/likes");
 	} catch (exception) {
 		if (exception instanceof Response) throw exception;
