@@ -27,7 +27,7 @@ import { I18n } from "~/modules/i18n.server";
 import { SessionStorage } from "~/modules/session.server";
 import { Airtable } from "~/services/airtable.server";
 import { Cache } from "~/services/cache.server";
-import { database } from "~/services/db.server";
+import { Tables, database } from "~/services/db.server";
 
 const INTENT = { importBookmarks: "IMPORT_BOOKMARKS" };
 
@@ -69,10 +69,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let bookmarks = await Bookmark.list({ airtable, cache });
 
+	let db = database(context.db);
+
+	await db.delete(Tables.postMeta).execute();
+	await db.delete(Tables.posts).execute();
+	await db.delete(Tables.postTypes).execute();
+
+	await db.insert(Tables.postTypes).values({ name: "likes" }).execute();
+
 	await Promise.all(
 		bookmarks.map((bookmark) => {
 			return Like.create(
-				{ db: database(context.db) },
+				{ db },
 				{
 					slug: parameterize(bookmark.title),
 					status: "published",
