@@ -145,9 +145,12 @@ export class Post {
 
 		if (!postType) throw new Error(`Missing post type ${type}`);
 
-		let [post] = await db
+		let id = crypto.randomUUID();
+
+		let result = await db
 			.insert(Tables.posts)
 			.values({
+				id,
 				slug: input.slug,
 				status: input.status,
 				authorId: input.authorId,
@@ -155,21 +158,19 @@ export class Post {
 				createdAt: input.createdAt,
 				updatedAt: input.updatedAt,
 			})
-			.returning()
-			.onConflictDoNothing({ target: Tables.posts.slug })
 			.execute();
 
-		if (!post) throw new Error("Failed to insert post");
+		if (!result.success && result.error) throw new Error(result.error);
 
 		await Promise.all(
 			Object.entries(input.meta).map(async ([key, value]) => {
 				await db
 					.insert(Tables.postMeta)
-					.values({ postId: post.id, key, value })
+					.values({ postId: id, key, value })
 					.execute();
 			}),
 		);
 
-		return new Post({ ...post, meta: input.meta });
+		return await Post.show({ db }, input.slug);
 	}
 }
