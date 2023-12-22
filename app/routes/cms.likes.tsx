@@ -26,7 +26,6 @@ import {
 	TableBody,
 	TableHeader,
 } from "react-aria-components";
-import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Bookmark } from "~/models/bookmark.server";
@@ -36,6 +35,7 @@ import { SessionStorage } from "~/modules/session.server";
 import { Airtable } from "~/services/airtable.server";
 import { Cache } from "~/services/cache.server";
 import { Tables, database } from "~/services/db.server";
+import { assertUUID } from "~/utils/uuid";
 
 const INTENT = { importBookmarks: "IMPORT_BOOKMARKS", delete: "DELETE_LIKE" };
 
@@ -87,13 +87,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 			await db.delete(Tables.postMeta).execute();
 			await db.delete(Tables.posts).execute();
-			await db.delete(Tables.postTypes).execute();
-
-			await db
-				.insert(Tables.postTypes)
-				.values({ name: "likes" })
-				.onConflictDoNothing()
-				.execute();
 
 			await Promise.all(
 				bookmarks.map((bookmark) => {
@@ -123,7 +116,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	}
 
 	if (intent === INTENT.delete) {
-		let id = z.string().parse(formData.get("id"));
+		let id = formData.get("id");
+		assertUUID(id);
 
 		let db = database(context.db);
 
