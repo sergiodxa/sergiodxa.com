@@ -195,11 +195,13 @@ export default {
 		likes: {
 			search: { label: "What're you looking for?", cta: "Search" },
 			import: { cta: "Import Bookmarks" },
+			delete: { cta: "Delete", pending: "Deleting" },
 			table: {
 				header: {
 					title: "Title",
 					createdAt: "Date Created",
 					updatedAt: "Last Update",
+					actions: "Actions",
 				},
 			},
 		},
