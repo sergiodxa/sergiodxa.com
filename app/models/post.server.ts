@@ -156,7 +156,7 @@ export class Post {
 				updatedAt: input.updatedAt,
 			})
 			.returning()
-			.onConflictDoNothing()
+			.onConflictDoNothing({ target: Tables.posts.slug })
 			.execute();
 
 		if (!post) throw new Error("Failed to insert post");
