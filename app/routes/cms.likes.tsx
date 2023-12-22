@@ -193,7 +193,9 @@ function LikesTable() {
 					return (
 						<Row key={like.id}>
 							<Cell>{like.title}</Cell>
-							<Cell>{like.url}</Cell>
+							<Cell>
+								<a href={like.url}>Visit</a>
+							</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.createdAt}</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.updatedAt}</Cell>
 						</Row>
