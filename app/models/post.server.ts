@@ -143,15 +143,7 @@ export class Post {
 			where: eq(Tables.postTypes.name, type),
 		});
 
-		if (!postType) {
-			let result = await db
-				.insert(Tables.postTypes)
-				.values({ name: type })
-				.returning()
-				.execute();
-			postType = result.at(0);
-			if (!postType) throw new Error("Failed to insert post type");
-		}
+		if (!postType) throw new Error(`Missing post type ${type}`);
 
 		let [post] = await db
 			.insert(Tables.posts)
