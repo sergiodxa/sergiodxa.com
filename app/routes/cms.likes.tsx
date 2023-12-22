@@ -75,7 +75,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	await db.delete(Tables.posts).execute();
 	await db.delete(Tables.postTypes).execute();
 
-	await db.insert(Tables.postTypes).values({ name: "likes" }).execute();
+	await db
+		.insert(Tables.postTypes)
+		.values({ name: "likes" })
+		.onConflictDoNothing()
+		.execute();
 
 	await Promise.all(
 		bookmarks.map((bookmark) => {
