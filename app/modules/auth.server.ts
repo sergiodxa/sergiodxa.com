@@ -45,45 +45,40 @@ export class Auth {
 					callbackURL: "/auth/github/callback",
 				},
 				async ({ profile }) => {
-					console.log("Authenticating user");
-
 					try {
 						let connection = await db.query.connections.findFirst({
-							with: { user: true },
+							with: {
+								user: {
+									columns: {
+										createdAt: false,
+										updatedAt: false,
+									},
+								},
+							},
 							where: and(
 								eq(Tables.connections.providerName, "github"),
 								eq(Tables.connections.providerId, profile._json.node_id),
 							),
 						});
 
-						if (connection) console.log("Connection found in DB");
-						else console.log("Connection not found in DB");
-
 						let user = connection?.user;
 
-						if (user) console.log("User found in DB");
-						else console.log("User not found in DB");
-
 						if (user) {
-							console.log("Returning user from DB", user.id);
 							return {
-								id: user.id,
-								role: z.enum(["admin", "user"]).catch("user").parse(user.role),
-								displayName: user.displayName,
-								email: user.email,
+								...user,
 								githubId: profile._json.node_id,
 								isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 							};
 						}
 
-						console.log("Inserting user into DB");
-
 						let result = await db
 							.insert(Tables.users)
 							.values({
-								displayName: profile._json.name,
+								role: "guess",
 								email: profile._json.email,
-								role: "user",
+								avatar: z.string().url().parse(profile._json.avatar_url),
+								username: profile._json.login,
+								displayName: profile._json.name,
 							})
 							.returning()
 							.onConflictDoNothing({ target: Tables.users.email });
@@ -91,21 +86,19 @@ export class Auth {
 						user = result.at(0);
 						if (!user) throw new Error("User not found");
 
-						console.log("Inserting connection into DB");
-
 						await db.insert(Tables.connections).values({
 							userId: user.id,
 							providerName: "github",
 							providerId: profile._json.node_id,
 						});
 
-						console.log("Returning user from DB", user.id);
-
 						return {
 							id: user.id,
-							role: z.enum(["admin", "user"]).catch("user").parse(user.role),
-							displayName: user.displayName,
+							role: user.role,
 							email: user.email,
+							avatar: user.avatar,
+							username: user.username,
+							displayName: user.displayName,
 							githubId: profile._json.node_id,
 							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 						};

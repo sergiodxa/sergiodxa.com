@@ -7,9 +7,11 @@ import { z } from "zod";
 
 export const UserSchema = z.object({
 	id: z.string().uuid(),
-	role: z.enum(["admin", "user"]),
-	displayName: z.string(),
-	email: z.string().email().nullable(),
+	role: z.enum(["admin", "guess"]),
+	email: z.string().email().max(320),
+	avatar: z.string().url().max(2048),
+	username: z.string().min(1).max(39),
+	displayName: z.string().min(1).max(255),
 	githubId: z.string().min(1),
 	isSponsor: z.boolean(),
 });
