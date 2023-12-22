@@ -198,7 +198,6 @@ export default {
 			table: {
 				header: {
 					title: "Title",
-					url: "URL",
 					createdAt: "Date Created",
 					updatedAt: "Last Update",
 				},

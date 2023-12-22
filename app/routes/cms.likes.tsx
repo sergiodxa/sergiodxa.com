@@ -183,7 +183,6 @@ function LikesTable() {
 				<Column className="text-left" isRowHeader>
 					{t("header.title")}
 				</Column>
-				<Column className="text-left">{t("header.url")}</Column>
 				<Column className="text-right">{t("header.createdAt")}</Column>
 				<Column className="text-right">{t("header.updatedAt")}</Column>
 			</TableHeader>
@@ -192,9 +191,8 @@ function LikesTable() {
 				{likes.map((like) => {
 					return (
 						<Row key={like.id}>
-							<Cell>{like.title}</Cell>
 							<Cell>
-								<a href={like.url}>Visit</a>
+								<a href={like.url}>{like.title}</a>
 							</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.createdAt}</Cell>
 							<Cell className="flex-shrink-0 text-right">{like.updatedAt}</Cell>
