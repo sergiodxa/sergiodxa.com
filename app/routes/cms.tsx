@@ -10,9 +10,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 export default function Component() {
 	return (
-		<>
-			<h1>CMS</h1>
+		<main className="mx-auto flex max-w-screen-xl flex-col gap-8">
+			<h1 className="text-xl font-bold">CMS</h1>
 			<Outlet />
-		</>
+		</main>
 	);
 }

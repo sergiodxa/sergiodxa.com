@@ -1,5 +1,11 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import type {
+	ActionFunctionArgs,
+	LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
+
+import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
+import { parameterize } from "inflected";
 import {
 	Button,
 	Cell,
@@ -15,24 +21,86 @@ import {
 } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
+import { Bookmark } from "~/models/bookmark.server";
 import { Like } from "~/models/like.server";
+import { I18n } from "~/modules/i18n.server";
+import { SessionStorage } from "~/modules/session.server";
+import { Airtable } from "~/services/airtable.server";
+import { Cache } from "~/services/cache.server";
 import { database } from "~/services/db.server";
+
+const INTENT = { importBookmarks: "IMPORT_BOOKMARKS" };
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let likes = await Like.list({ db: database(context.db) });
+	let locale = await new I18n().getLocale(request);
+
 	return json({
-		likes: likes.map((like) => like.toJSON()),
+		likes: likes.map((like) => {
+			return {
+				...like.toJSON(),
+				createdAt: like.createdAt.toLocaleString(locale, {
+					dateStyle: "medium",
+				}),
+				updatedAt: like.updatedAt.toLocaleString(locale, {
+					dateStyle: "medium",
+				}),
+			};
+		}),
 	});
+}
+
+export async function action({ request, context }: ActionFunctionArgs) {
+	let user = await SessionStorage.requireUser(context, request, "/auth/login");
+
+	let formData = await request.formData();
+
+	if (formData.get("intent") !== INTENT.importBookmarks) {
+		return json({ errors: { intent: "Invalid intent" } }, 400);
+	}
+
+	let airtable = new Airtable(
+		context.env.AIRTABLE_API_KEY,
+		context.env.AIRTABLE_BASE,
+		context.env.AIRTABLE_TABLE_ID,
+	);
+
+	let cache = new Cache(context.kv.airtable);
+
+	let bookmarks = await Bookmark.list({ airtable, cache });
+
+	await Promise.all(
+		bookmarks.map((bookmark) => {
+			return Like.create(
+				{ db: database(context.db) },
+				{
+					slug: parameterize(bookmark.title),
+					status: "published",
+					authorId: user.id,
+					createdAt: new Date(bookmark.createdAt),
+					updatedAt: new Date(bookmark.createdAt),
+					title: bookmark.title,
+					url: new URL(bookmark.url),
+				},
+			);
+		}),
+	);
+
+	return redirect("/cms/likes");
 }
 
 export default function Component() {
 	return (
-		<main className="mx-auto flex max-w-screen-xl flex-col gap-8">
-			<h2 className="text-3xl font-bold">Likes</h2>
+		<>
+			<header className="flex justify-between">
+				<h2 className="text-3xl font-bold">Likes</h2>
+
+				<ImportBookmarks />
+			</header>
 
 			<SearchForm />
 			<LikesTable />
-		</main>
+		</>
 	);
 }
 
@@ -97,12 +165,29 @@ function LikesTable() {
 						<Row key={like.id}>
 							<Cell>{like.title}</Cell>
 							<Cell>{like.url}</Cell>
-							<Cell className="text-right">{like.createdAt}</Cell>
-							<Cell className="text-right">{like.updatedAt}</Cell>
+							<Cell className="flex-shrink-0 text-right">{like.createdAt}</Cell>
+							<Cell className="flex-shrink-0 text-right">{like.updatedAt}</Cell>
 						</Row>
 					);
 				})}
 			</TableBody>
 		</Table>
+	);
+}
+
+function ImportBookmarks() {
+	let submit = useSubmit();
+	let t = useT("translation", "cms.likes.import");
+
+	return (
+		<Form method="post" onSubmit={(event) => submit(event.currentTarget)}>
+			<input type="hidden" name="intent" value={INTENT.importBookmarks} />
+			<Button
+				type="submit"
+				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
+			>
+				{t("cta")}
+			</Button>
+		</Form>
 	);
 }

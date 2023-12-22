@@ -194,6 +194,7 @@ export default {
 
 		likes: {
 			search: { label: "What're you looking for?", cta: "Search" },
+			import: { cta: "Import Bookmarks" },
 			table: {
 				header: {
 					title: "Title",

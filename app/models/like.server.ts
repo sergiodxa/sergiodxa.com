@@ -19,12 +19,28 @@ export class Like {
 		this.post = post instanceof Post ? post : new Post(post);
 	}
 
+	get id() {
+		return this.post.id;
+	}
+
+	get slug() {
+		return this.post.slug;
+	}
+
 	get title() {
 		return this.post.meta.title;
 	}
 
 	get url() {
 		return new URL(this.post.meta.url);
+	}
+
+	get createdAt() {
+		return this.post.createdAt;
+	}
+
+	get updatedAt() {
+		return this.post.updatedAt;
 	}
 
 	toJSON() {

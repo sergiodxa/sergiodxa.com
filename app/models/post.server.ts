@@ -136,7 +136,8 @@ export class Post {
 	static async create(
 		{ db }: Services,
 		type: Tables.PostType["name"],
-		input: Omit<PostAttributes, "id" | "createdAt" | "updatedAt" | "typeId">,
+		input: Omit<PostAttributes, "id" | "typeId"> &
+			Partial<Pick<PostAttributes, "createdAt" | "updatedAt">>,
 	) {
 		let postType = await db.query.postTypes.findFirst({
 			where: eq(Tables.postTypes.name, type),
@@ -159,8 +160,11 @@ export class Post {
 				status: input.status,
 				authorId: input.authorId,
 				typeId: postType.id,
+				createdAt: input.createdAt,
+				updatedAt: input.updatedAt,
 			})
 			.returning()
+			.onConflictDoNothing()
 			.execute();
 
 		if (!post) throw new Error("Failed to insert post");
