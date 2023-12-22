@@ -66,7 +66,7 @@ export class Like {
 		{ db }: Services,
 		input: Omit<LikeAttributes, "id" | "meta" | "typeId">,
 	) {
-		let post = await Post.create({ db }, "like", {
+		let post = await Post.create({ db }, "likes", {
 			...input,
 			meta: { title: input.title, url: input.url.toString() },
 		});
