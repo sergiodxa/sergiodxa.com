@@ -106,5 +106,5 @@ export class GitHub {
 }
 
 export class GitHubError extends Error {
-	name = "GitHubError";
+	override name = "GitHubError";
 }
