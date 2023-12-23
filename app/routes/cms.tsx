@@ -1,10 +1,11 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { json, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { Outlet } from "react-router";
 
 import { SessionStorage } from "~/modules/session.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
+	if (user.role !== "admin") throw redirect("/");
 	return json({ user });
 }
 
