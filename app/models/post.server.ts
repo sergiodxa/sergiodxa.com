@@ -6,7 +6,23 @@ import { desc, eq } from "drizzle-orm";
 import { Tables } from "~/services/db.server";
 import { generateUUID } from "~/utils/uuid";
 
-export interface PostAttributes {
+export interface BaseMeta {
+	[key: string]: unknown;
+}
+
+export type ModelAttributes<Model> = Model extends {
+	toJSON(): infer Attributes;
+}
+	? Attributes
+	: never;
+
+export type PostAttributes<Meta extends BaseMeta> = ModelAttributes<Post<Meta>>;
+
+interface Services {
+	db: Database;
+}
+
+export class Post<Meta extends BaseMeta> {
 	readonly id: string;
 	// Attributes
 	readonly type: "like" | "tutorial" | "article";
@@ -16,26 +32,9 @@ export interface PostAttributes {
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 	// Meta
-	readonly meta: Record<string, string>;
-}
+	public meta: Meta;
 
-interface Services {
-	db: Database;
-}
-
-export class Post {
-	readonly id: string;
-	// Attributes
-	readonly type: string;
-	// Relations
-	readonly authorId: string;
-	// Timestamps
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-	// Meta
-	public meta: Record<string, string>;
-
-	constructor(input: Post | PostAttributes) {
+	constructor(input: Post<Meta> | PostAttributes<Meta>) {
 		this.id = input.id;
 		this.authorId = input.authorId;
 		this.type = input.type;
@@ -54,6 +53,8 @@ export class Post {
 			// Timestamps
 			createdAt: this.createdAt,
 			updatedAt: this.updatedAt,
+			// Meta
+			meta: this.meta,
 		};
 	}
 
@@ -61,7 +62,10 @@ export class Post {
 		return JSON.stringify(this.toJSON());
 	}
 
-	static async list({ db }: Services, type?: Tables.SelectPost["type"]) {
+	static async list<Meta extends BaseMeta>(
+		{ db }: Services,
+		type?: Tables.SelectPost["type"],
+	) {
 		let posts = await db.query.posts.findMany({
 			with: { meta: true },
 			orderBy: desc(Tables.posts.createdAt),
@@ -71,7 +75,7 @@ export class Post {
 		if (!posts) throw new Error("There are no post types.");
 
 		return posts.map((post) => {
-			return new Post({
+			return new this({
 				id: post.id,
 				// Attributes
 				type: post.type,
@@ -81,18 +85,14 @@ export class Post {
 				createdAt: post.createdAt,
 				updatedAt: post.updatedAt,
 				// Meta
-				meta: post.meta.reduce(
-					(acc, meta) => {
-						acc[meta.key] = meta.value;
-						return acc;
-					},
-					{} as Record<string, string>,
-				),
+				meta: post.meta.reduce((acc, meta) => {
+					return { ...acc, [meta.key]: meta.value };
+				}, {} as Meta),
 			});
 		});
 	}
 
-	static async show({ db }: Services, id: UUID) {
+	static async show<Meta extends BaseMeta>({ db }: Services, id: UUID) {
 		let post = await db.query.posts.findFirst({
 			with: { meta: true },
 			where: eq(Tables.posts.id, id),
@@ -102,7 +102,7 @@ export class Post {
 			throw new Error(`Couldn't find post with Id ${id}`);
 		}
 
-		return new Post({
+		return new this({
 			id: post.id,
 			// Attributes
 			type: post.type,
@@ -112,26 +112,36 @@ export class Post {
 			createdAt: post.createdAt,
 			updatedAt: post.updatedAt,
 			// Meta
-			meta: post.meta.reduce(
-				(acc, meta) => {
-					acc[meta.key] = meta.value;
-					return acc;
-				},
-				{} as Record<string, string>,
-			),
+			meta: post.meta.reduce((acc, meta) => {
+				return { ...acc, [meta.key]: meta.value };
+			}, {} as Meta),
 		});
 	}
 
-	static async create(
+	static async destroy({ db }: Services, id: UUID) {
+		let result = await db
+			.delete(Tables.posts)
+			.where(eq(Tables.posts.id, id))
+			.execute();
+
+		if (!result.success && result.error) throw new Error(result.error);
+	}
+
+	static async create<Meta extends BaseMeta>(
 		{ db }: Services,
-		input: Omit<Tables.InsertPost, "id">,
-		meta: Record<string, string>,
+		{
+			authorId,
+			type,
+			createdAt,
+			updatedAt,
+			...meta
+		}: Omit<Tables.InsertPost, "id"> & Meta,
 	) {
 		let id = generateUUID();
 
 		let result = await db
 			.insert(Tables.posts)
-			.values({ ...input, id })
+			.values({ id, type, authorId, createdAt, updatedAt })
 			.execute();
 
 		if (!result.success && result.error) throw new Error(result.error);
@@ -145,15 +155,6 @@ export class Post {
 			}),
 		);
 
-		return await Post.show({ db }, id);
-	}
-
-	static async destroy({ db }: Services, id: UUID) {
-		let result = await db
-			.delete(Tables.posts)
-			.where(eq(Tables.posts.id, id))
-			.execute();
-
-		if (!result.success && result.error) throw new Error(result.error);
+		return await Post.show<Meta>({ db }, id);
 	}
 }

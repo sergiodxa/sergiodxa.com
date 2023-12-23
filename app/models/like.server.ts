@@ -1,3 +1,4 @@
+import type { BaseMeta, PostAttributes } from "~/models/post.server";
 import type { Database, Tables } from "~/services/db.server";
 
 import { Post } from "~/models/post.server";
@@ -6,66 +7,59 @@ interface Services {
 	db: Database;
 }
 
-export class Like {
-	private post: Post;
+interface LikeMeta extends BaseMeta {
+	title: string;
+	url: string;
+}
 
-	constructor(post: Post) {
-		this.post = post instanceof Post ? post : new Post(post);
-	}
+type InsertLike = Omit<Tables.InsertPost, "id" | "type"> & LikeMeta;
 
-	get id() {
-		return this.post.id;
+// @ts-expect-error TS is an idiot
+export class Like extends Post<LikeMeta> {
+	constructor(input: Post<LikeMeta> | PostAttributes<LikeMeta>) {
+		super(input);
 	}
 
 	get title() {
-		return this.post.meta.title;
+		return this.meta.title;
 	}
 
 	get url() {
-		return new URL(this.post.meta.url);
+		return new URL(this.meta.url);
 	}
 
-	get createdAt() {
-		return this.post.createdAt;
-	}
-
-	get updatedAt() {
-		return this.post.updatedAt;
-	}
-
-	toJSON() {
+	override toJSON() {
 		return {
-			...this.post.toJSON(),
+			...super.toJSON(),
 			// Like Attributes
 			title: this.title,
 			url: this.url.toJSON(),
 		};
 	}
 
-	static async list({ db }: Services) {
-		let posts = await Post.list({ db }, "like");
+	static override async list({ db }: Services) {
+		let posts = await Post.list<LikeMeta>({ db }, "like");
 		return posts.map((post) => new Like(post));
 	}
 
-	static async show({ db }: Services, id: Tables.SelectPost["id"]) {
-		let post = await Post.show({ db }, id);
+	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
+		let post = await Post.show<LikeMeta>({ db }, id);
 		return new Like(post);
 	}
 
-	static async create(
+	static override async create(
 		{ db }: Services,
-		input: Omit<Tables.InsertPost, "type"> & { title: string; url: URL },
+		{ title, url, ...input }: InsertLike,
 	) {
-		let post = await Post.create(
+		let post = await Post.create<LikeMeta>(
 			{ db },
-			{ ...input, type: "like" },
-			{ title: input.title, url: input.url.toString() },
+			{ ...input, type: "like", title, url },
 		);
 
 		return new Like(post);
 	}
 
-	static async destroy({ db }: Services, id: Tables.SelectPost["id"]) {
-		await Post.destroy({ db }, id);
+	static override async destroy({ db }: Services, id: Tables.SelectPost["id"]) {
+		await super.destroy({ db }, id);
 	}
 }
