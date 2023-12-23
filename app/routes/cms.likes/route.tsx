@@ -28,14 +28,13 @@ import {
 } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { Bookmark } from "~/models/bookmark.server";
 import { Like } from "~/models/like.server";
 import { I18n } from "~/modules/i18n.server";
 import { SessionStorage } from "~/modules/session.server";
-import { Airtable } from "~/services/airtable.server";
-import { Cache } from "~/services/cache.server";
-import { Tables, database } from "~/services/db.server";
+import { database } from "~/services/db.server";
 import { assertUUID } from "~/utils/uuid";
+
+import { deleteLike, importBookmarks } from "./queries";
 
 const INTENT = { importBookmarks: "IMPORT_BOOKMARKS", delete: "DELETE_LIKE" };
 
@@ -72,44 +71,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	}
 
 	if (formData.get("intent") === INTENT.importBookmarks) {
-		let airtable = new Airtable(
-			context.env.AIRTABLE_API_KEY,
-			context.env.AIRTABLE_BASE,
-			context.env.AIRTABLE_TABLE_ID,
-		);
-
-		let cache = new Cache(context.kv.airtable);
-
-		let bookmarks = await Bookmark.list({ airtable, cache });
-
 		try {
-			let db = database(context.db);
-
-			await db.delete(Tables.postMeta).execute();
-			await db.delete(Tables.posts).execute();
-
-			await Promise.all(
-				bookmarks.map((bookmark) => {
-					return Like.create(
-						{ db },
-						{
-							authorId: user.id,
-							createdAt: new Date(bookmark.createdAt),
-							updatedAt: new Date(bookmark.createdAt),
-							title: bookmark.title,
-							url: new URL(bookmark.url),
-						},
-					);
-				}),
-			);
-
+			await importBookmarks(context, user);
 			throw redirect("/cms/likes");
 		} catch (exception) {
 			if (exception instanceof Response) throw exception;
 			if (exception instanceof Error) {
 				return json({ error: exception.message }, 400);
 			}
-
 			console.log(exception);
 			throw exception;
 		}
@@ -119,9 +88,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 		let id = formData.get("id");
 		assertUUID(id);
 
-		let db = database(context.db);
-
-		await Like.destroy({ db }, id);
+		await deleteLike(context, id);
 
 		return json(null);
 	}
@@ -205,7 +172,7 @@ function LikesTable() {
 			<TableBody>
 				{likes.map((like) => {
 					return (
-						<Row key={like.id}>
+						<Row key={like.id} className="py-2">
 							<Cell>
 								<a href={like.url}>{like.title}</a>
 							</Cell>
