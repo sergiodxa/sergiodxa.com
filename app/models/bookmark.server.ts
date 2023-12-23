@@ -52,7 +52,13 @@ export class Bookmark {
 			}
 		} else console.info("Cache Miss: /bookmarks");
 
-		let records = await airtable.bookmarks(100);
+		let { records, offset } = await airtable.bookmarks();
+
+		while (offset) {
+			let next = await airtable.bookmarks(offset);
+			records = records.concat(next.records);
+			offset = next.offset;
+		}
 
 		let bookmarks = records.map(
 			(record) =>
