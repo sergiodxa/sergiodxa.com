@@ -9,6 +9,7 @@ import { Article } from "~/models/db-article.server";
 import { Markdown } from "~/modules/md.server";
 import { CollectedNotes } from "~/services/cn.server";
 import { Tables, database } from "~/services/db.server";
+import { Logger } from "~/modules/logger.server";
 
 const AttributesSchema = z
 	.object({
@@ -39,11 +40,17 @@ const FrontMatterSchema = z.object({
 });
 
 export async function importArticles(context: AppLoadContext, user: User) {
+	let logger = new Logger(context);
+
+	void logger.info("importing articles");
+
 	let cn = new CollectedNotes(
 		context.env.CN_EMAIL,
 		context.env.CN_TOKEN,
 		context.env.CN_SITE,
 	);
+
+	void logger.info("fetching articles");
 
 	let articles = await Promise.all([
 		cn.fetchNotes(1),
@@ -53,9 +60,13 @@ export async function importArticles(context: AppLoadContext, user: User) {
 		cn.fetchNotes(5),
 	]).then((articles) => articles.flat());
 
+	void logger.info(`fetched ${articles.length} articles`);
+
 	let db = database(context.db);
 
 	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
+
+	void logger.info("deleted old articles in DB");
 
 	await Promise.all(
 		articles.map(async (article) => {
@@ -84,7 +95,9 @@ export async function importArticles(context: AppLoadContext, user: User) {
 				},
 			);
 		}),
-	);
+	).catch((error) => {
+		void logger.info(`error importing articles: ${error.message}`);
+	});
 }
 
 function stripTitle(body: string) {
