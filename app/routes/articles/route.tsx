@@ -5,33 +5,32 @@ import {
 	json,
 } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Article } from "~/models/db-article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { database } from "~/services/db.server";
+
+import { queryArticles } from "./queries";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
 
 	let url = new URL(request.url);
 
-	let term = url.searchParams.get("q") ?? "";
-	let page = Number(url.searchParams.get("page") ?? 1);
+	let term = z.string().nullable().parse(url.searchParams.get("q"));
+	let noCache = z.boolean().parse(url.searchParams.has("noCache"));
 
 	let headers = new Headers({
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
 
-	let db = database(context.db);
-
 	let t = await new I18n().getFixedT(request);
 
 	try {
-		let articles = await Article.search({ db }, term);
+		let articles = await queryArticles(context, term, noCache);
 
 		let meta: MetaDescriptor[] = [];
 
@@ -41,17 +40,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			meta.push({ title: t("articles.meta.title.search", { term }) });
 		}
 
-		return json(
-			{
-				term,
-				page,
-				meta,
-				articles: articles.map((article) => {
-					return { path: article.pathname, title: article.title };
-				}),
-			},
-			{ headers },
-		);
+		return json({ term: term ?? undefined, meta, articles }, { headers });
 	} catch (error) {
 		if (error instanceof Error) {
 			throw json({ message: error.message }, 500);
