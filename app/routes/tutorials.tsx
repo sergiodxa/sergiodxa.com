@@ -77,7 +77,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Component() {
 	let { term } = useLoaderData<typeof loader>();
-	let t = useT("translation", "tutorials");
+	let t = useT("tutorials");
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
@@ -108,7 +108,7 @@ function List() {
 }
 
 function Subscribe() {
-	let t = useT("translation", "tutorials.subscribe");
+	let t = useT("tutorials.subscribe");
 	return (
 		<Trans
 			t={t}

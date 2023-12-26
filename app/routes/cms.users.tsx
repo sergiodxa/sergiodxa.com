@@ -47,7 +47,7 @@ export default function Component() {
 function SearchForm() {
 	let [searchParams] = useSearchParams();
 	let submit = useSubmit();
-	let t = useT("translation", "cms.users.search");
+	let t = useT("cms.users.search");
 
 	return (
 		<Form
@@ -86,7 +86,7 @@ function SearchForm() {
 
 function UsersTable() {
 	let { users } = useLoaderData<typeof loader>();
-	let t = useT("translation", "cms.users.table");
+	let t = useT("cms.users.table");
 
 	return (
 		<Table aria-label="Users" className="w-full">

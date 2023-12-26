@@ -108,7 +108,7 @@ export default function Component() {
 function Header() {
 	let { tutorial } = useLoaderData<typeof loader>();
 	let user = useUser();
-	let t = useT("translation", "tutorial.header");
+	let t = useT("tutorial.header");
 
 	let editUrl = new URL(
 		`https://github.com/sergiodxa/sergiodxa.com/edit/main/content/tutorials/${tutorial.slug}.md`,
@@ -143,7 +143,7 @@ function Header() {
 
 function Versions() {
 	let { tutorial } = useLoaderData<typeof loader>();
-	let t = useT("translation", "tutorial");
+	let t = useT("tutorial");
 
 	if (!tutorial || tutorial.tags.length === 0) return null;
 
@@ -176,7 +176,7 @@ function Versions() {
 
 function Recommendations() {
 	let recommendations = useAsyncValue() as RecommendationsList;
-	let t = useT("translation", "tutorial.related");
+	let t = useT("tutorial.related");
 
 	if (!recommendations || recommendations.length === 0) return null;
 

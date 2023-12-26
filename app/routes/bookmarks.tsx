@@ -45,7 +45,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Bookmarks() {
 	let { bookmarks } = useLoaderData<typeof loader>();
-	let t = useT("translation", "bookmarks");
+	let t = useT("bookmarks");
 
 	return (
 		<section className="mx-auto max-w-screen-sm space-y-2">

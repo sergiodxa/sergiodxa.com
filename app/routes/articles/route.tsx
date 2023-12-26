@@ -56,7 +56,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Articles() {
 	let { articles, term } = useLoaderData<typeof loader>();
-	let t = useT("translation", "articles");
+	let t = useT("articles");
 
 	let count = articles.length;
 

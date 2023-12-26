@@ -42,7 +42,7 @@ export namespace Button {
 	}
 
 	export function Bold() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `**${selected}**`}
@@ -55,7 +55,7 @@ export namespace Button {
 	}
 
 	export function Italic() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `_${selected}_`}
@@ -68,7 +68,7 @@ export namespace Button {
 	}
 
 	export function Link() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => {
@@ -83,7 +83,7 @@ export namespace Button {
 	}
 
 	export function Code() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `\`${selected}\``}
@@ -96,7 +96,7 @@ export namespace Button {
 	}
 
 	export function Quote() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `> ${selected}`}
@@ -109,7 +109,7 @@ export namespace Button {
 	}
 
 	export function Image() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `![${selected}](https://)`}
@@ -122,7 +122,7 @@ export namespace Button {
 	}
 
 	export function Heading() {
-		let t = useT("translation", "editor");
+		let t = useT("editor");
 		return (
 			<MenuItem
 				updater={(selected) => `## ${selected}`}

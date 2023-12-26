@@ -114,7 +114,7 @@ export default function Component() {
 function SearchForm() {
 	let [searchParams] = useSearchParams();
 	let submit = useSubmit();
-	let t = useT("translation", "cms.likes.search");
+	let t = useT("cms.likes.search");
 
 	return (
 		<Form
@@ -156,7 +156,7 @@ function SearchForm() {
 
 function LikesTable() {
 	let { likes } = useLoaderData<typeof loader>();
-	let t = useT("translation", "cms.likes.table");
+	let t = useT("cms.likes.table");
 
 	return (
 		<Table aria-label="Users" className="w-full">
@@ -192,7 +192,7 @@ function LikesTable() {
 function ImportBookmarks() {
 	let submit = useSubmit();
 	let actionData = useActionData<typeof action>();
-	let t = useT("translation", "cms.likes.import");
+	let t = useT("cms.likes.import");
 
 	return (
 		<Form
@@ -217,7 +217,7 @@ function ImportBookmarks() {
 
 function DeleteForm({ id }: { id: string }) {
 	let fetcher = useFetcher<typeof action>();
-	let t = useT("translation", "cms.likes.delete");
+	let t = useT("cms.likes.delete");
 
 	useEffect(() => {
 		if (fetcher.data?.error) alert(fetcher.data.error);

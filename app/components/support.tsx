@@ -1,7 +1,7 @@
 import { useT } from "~/helpers/use-i18n.hook";
 
 export function Support() {
-	let t = useT("translation", "support");
+	let t = useT("support");
 
 	return (
 		<aside>

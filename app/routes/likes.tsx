@@ -40,7 +40,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Component() {
 	let { likes } = useLoaderData<typeof loader>();
-	let t = useT("translation", "likes");
+	let t = useT("likes");
 
 	return (
 		<section className="mx-auto max-w-screen-sm space-y-2">

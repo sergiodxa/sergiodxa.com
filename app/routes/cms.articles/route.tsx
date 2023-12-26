@@ -87,7 +87,7 @@ export default function Component() {
 
 function ArticlesTable() {
 	let { articles } = useLoaderData<typeof loader>();
-	let t = useT("translation", "cms.articles.table");
+	let t = useT("cms.articles.table");
 
 	return (
 		<Table aria-label="Users" className="w-full">
@@ -123,7 +123,7 @@ function ArticlesTable() {
 
 function ImportArticles() {
 	let submit = useSubmit();
-	let t = useT("translation", "cms.articles.import");
+	let t = useT("cms.articles.import");
 
 	return (
 		<Form
@@ -150,7 +150,7 @@ function ImportArticles() {
 
 function ResetArticles() {
 	let submit = useSubmit();
-	let t = useT("translation", "cms.articles.reset");
+	let t = useT("cms.articles.reset");
 
 	return (
 		<Form

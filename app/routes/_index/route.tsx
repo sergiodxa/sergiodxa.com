@@ -33,7 +33,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 export default function Index() {
 	let { items } = useLoaderData<typeof loader>();
-	let t = useT("translation", "home");
+	let t = useT("home");
 
 	return (
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-8">
