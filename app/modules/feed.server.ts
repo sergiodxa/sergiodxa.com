@@ -1,18 +1,57 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 
-import { Article } from "~/models/article.server";
+import { z } from "zod";
+
 import { Bookmark } from "~/models/bookmark.server";
+import { Article } from "~/models/db-article.server";
 import { Tutorial } from "~/models/tutorial.server";
+import { Cache } from "~/modules/cache.server";
 import { Airtable } from "~/services/airtable.server";
-import { Cache } from "~/services/cache.server";
-import { CollectedNotes } from "~/services/cn.server";
+import { Cache as OldCache } from "~/services/cache.server";
+import { database } from "~/services/db.server";
 import { GitHub } from "~/services/github.server";
+
+const ItemPayloadSchema = z.object({
+	title: z.string(),
+	link: z.string(),
+	createdAt: z.number(),
+});
+
+const ArticleItemSchema = z.object({
+	type: z.literal("article"),
+	id: z.string().uuid(),
+	payload: ItemPayloadSchema,
+});
+
+const BookmarkItemSchema = z.object({
+	type: z.literal("bookmark"),
+	id: z.string().uuid(),
+	payload: ItemPayloadSchema,
+});
+
+const TutorialItemSchema = z.object({
+	type: z.literal("tutorial"),
+	id: z.string().uuid(),
+	payload: ItemPayloadSchema,
+});
+
+const ItemSchema = z.discriminatedUnion("type", [
+	ArticleItemSchema,
+	BookmarkItemSchema,
+	TutorialItemSchema,
+]);
+
+type Item = z.output<typeof ItemSchema>;
+
+type ArticleItem = Extract<Item, { type: "article" }>;
+type BookmarkItem = Extract<Item, { type: "bookmark" }>;
+type TutorialItem = Extract<Item, { type: "tutorial" }>;
 
 export class Feed {
 	static sort(
-		articles: Array<Awaited<ReturnType<typeof Feed.articles>>[number]>,
-		bookmarks: Array<Awaited<ReturnType<typeof Feed.bookmarks>>[number]>,
-		tutorials: Array<Awaited<ReturnType<typeof Feed.tutorials>>[number]>,
+		articles: Array<ArticleItem>,
+		bookmarks: Array<BookmarkItem>,
+		tutorials: Array<TutorialItem>,
 	) {
 		return [...articles, ...bookmarks, ...tutorials].sort(
 			(a, b) => b.payload.createdAt - a.payload.createdAt,
@@ -20,7 +59,7 @@ export class Feed {
 	}
 
 	static async bookmarks(context: AppLoadContext) {
-		let cache = new Cache(context.kv.airtable);
+		let cache = new OldCache(context.kv.airtable);
 		let airtable = new Airtable(
 			context.env.AIRTABLE_API_KEY,
 			context.env.AIRTABLE_BASE,
@@ -43,26 +82,27 @@ export class Feed {
 	}
 
 	static async articles(context: AppLoadContext) {
-		let cache = new Cache(context.kv.cn);
-		let cn = new CollectedNotes(
-			context.env.CN_EMAIL,
-			context.env.CN_TOKEN,
-			context.env.CN_SITE,
-		);
+		let db = database(context.db);
 
-		let articles = await Article.list({ cache, cn }, 1);
+		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
-		return articles.map((article) => {
-			return {
-				id: String(article.path),
-				type: "article",
-				payload: {
-					title: article.title,
-					link: `/articles/${article.path}`,
-					createdAt: new Date(article.createdAt).getTime(),
-				},
-			} as const;
+		let result = await cache.fetch("feed:articles", async () => {
+			let articles = await Article.list({ db });
+			let items = articles.map<ArticleItem>((article) => {
+				return {
+					id: article.id,
+					type: "article",
+					payload: {
+						title: article.title,
+						link: article.pathname,
+						createdAt: new Date(article.createdAt).getTime(),
+					},
+				};
+			});
+			return JSON.stringify(items);
 		});
+
+		return ArticleItemSchema.array().parse(JSON.parse(result));
 	}
 
 	static async tutorials(context: AppLoadContext) {
