@@ -32,9 +32,10 @@ export default {
 	},
 
 	articles: {
-		404: "404 Not Found",
-		empty:
-			"The requested URL /articles?page={{page}} was not found on this server.",
+		empty: {
+			title: "No Results",
+			body: "The requested URL /articles?q={{term}} was not found on this server.",
+		},
 		title: "Articles",
 		meta: {
 			title: {
@@ -206,13 +207,11 @@ export default {
 			},
 		},
 
-		posts: {
+		articles: {
 			search: { label: "What're you looking for?", cta: "Search" },
 			table: {
 				header: {
-					slug: "Slug",
-					status: "Status",
-					authorId: "Author ID",
+					title: "Title",
 					createdAt: "Date Created",
 					updatedAt: "Last Update",
 				},

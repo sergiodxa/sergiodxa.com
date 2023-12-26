@@ -83,8 +83,8 @@ export default function Articles() {
 	if (count === 0) {
 		return (
 			<main className="mx-auto max-w-screen-sm space-y-4">
-				<h2 className="text-3xl font-bold">{t("404")}</h2>
-				<p>{t("empty", { page })}</p>
+				<h2 className="text-3xl font-bold">{t("empty.title")}</h2>
+				<p>{t("empty.body", { term })}</p>
 			</main>
 		);
 	}
