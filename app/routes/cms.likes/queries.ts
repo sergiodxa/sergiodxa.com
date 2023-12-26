@@ -2,6 +2,8 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { User } from "~/modules/session.server";
 import type { UUID } from "~/utils/uuid";
 
+import { eq } from "drizzle-orm";
+
 import { Bookmark } from "~/models/bookmark.server";
 import { Like } from "~/models/like.server";
 import { Airtable } from "~/services/airtable.server";
@@ -21,8 +23,7 @@ export async function importBookmarks(context: AppLoadContext, user: User) {
 
 	let db = database(context.db);
 
-	await db.delete(Tables.postMeta).execute();
-	await db.delete(Tables.posts).execute();
+	await db.delete(Tables.posts).where(eq(Tables.posts.type, "like")).execute();
 
 	await Promise.all(
 		bookmarks.map((bookmark) => {
