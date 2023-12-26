@@ -45,17 +45,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	let articles = await Article.list({ db });
 
-	let posts = await db.query.posts.findMany();
-	console.log("posts", posts.length);
-	console.log(
-		"articles",
-		posts.filter((post) => post.type === "article").length,
-	);
-	console.log("likes", posts.filter((post) => post.type === "like").length);
-
-	let postMeta = await db.query.postMeta.findMany();
-	console.log("post meta", postMeta.length);
-
 	void new Logger(context).info(`queried ${articles.length} articles`);
 
 	return json({ articles: articles.map((article) => article.toJSON()) });
