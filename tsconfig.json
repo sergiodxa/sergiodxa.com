@@ -9,7 +9,7 @@
 	],
 	"exclude": ["scripts/migrate.ts"],
 	"compilerOptions": {
-		"lib": ["DOM", "DOM.Iterable", "ES2023"],
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"jsx": "react-jsx",
@@ -17,6 +17,7 @@
 		"resolveJsonModule": true,
 		"strict": true,
 		"module": "ESNext",
+		"target": "ESNext",
 		"allowJs": true,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
