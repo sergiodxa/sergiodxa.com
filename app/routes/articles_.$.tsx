@@ -10,11 +10,10 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
-import { Article } from "~/models/article.server";
+import { Article } from "~/models/db-article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { Cache } from "~/services/cache.server";
-import { CollectedNotes } from "~/services/cn.server";
+import { database } from "~/services/db.server";
 
 export function loader({ request, context, params }: LoaderFunctionArgs) {
 	return context.time("routes/articles.$id#loader", async () => {
@@ -27,14 +26,9 @@ export function loader({ request, context, params }: LoaderFunctionArgs) {
 		let i18n = new I18n();
 
 		try {
-			let cache = new Cache(context.kv.cn);
-			let cn = new CollectedNotes(
-				context.env.CN_EMAIL,
-				context.env.CN_TOKEN,
-				context.env.CN_SITE,
-			);
+			let db = database(context.db);
 
-			let article = await Article.show({ cache, cn }, path);
+			let article = await Article.show({ db }, path);
 
 			let headers = new Headers({
 				"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
@@ -42,34 +36,30 @@ export function loader({ request, context, params }: LoaderFunctionArgs) {
 
 			return jsonHash(
 				{
-					body: article.body,
-					// structuredData() {
-					// 	return {
-					// 		wordCount: note.wordCount,
-					// 		datePublished: note.datePublished.toISOString(),
-					// 		dateModified: note.dateModified.toISOString(),
-					// 	};
-					// },
+					title: article.title,
+					body: article.renderable,
 					async meta(): Promise<MetaDescriptor[]> {
 						let t = await i18n.getFixedT(request);
 
+						let author = await article.author;
+
 						return [
 							{ title: t("article.meta.title", { note: article.title }) },
-							// { name: "description", content: note.headline },
+							{ name: "description", content: article.excerpt },
 							{
 								"script:ld+json": {
 									"@context": "https://schema.org",
 									"@type": "Article",
 									headline: article.title,
-									// description: note.headline,
+									description: article.excerpt,
 									author: {
 										"@type": "Person",
-										name: "Sergio Xalambrí",
+										name: author.displayName,
 										url: "https://sergiodxa.com/about",
 									},
-									// wordCount: note.wordCount,
-									// datePublished: note.datePublished.toISOString(),
-									// dateModified: note.dateModified.toISOString(),
+									wordCount: await article.wordCount,
+									datePublished: article.createdAt.toISOString(),
+									dateModified: article.updatedAt.toISOString(),
 								},
 							},
 						];

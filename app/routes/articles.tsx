@@ -9,11 +9,10 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Article } from "~/models/article.server";
+import { Article } from "~/models/db-article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { Cache } from "~/services/cache.server";
-import { CollectedNotes } from "~/services/cn.server";
+import { database } from "~/services/db.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -27,20 +26,12 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
 
-	let cache = new Cache(context.kv.cn);
-	let cn = new CollectedNotes(
-		context.env.CN_EMAIL,
-		context.env.CN_TOKEN,
-		context.env.CN_SITE,
-	);
+	let db = database(context.db);
 
 	let t = await new I18n().getFixedT(request);
 
 	try {
-		let articles =
-			term === ""
-				? await Article.list({ cache, cn }, page)
-				: await Article.search({ cache, cn }, term, page);
+		let articles = await Article.search({ db }, term);
 
 		let meta: MetaDescriptor[] = [];
 
@@ -56,7 +47,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 				page,
 				meta,
 				articles: articles.map((article) => {
-					return { path: article.path, title: article.title };
+					return { path: article.pathname, title: article.title };
 				}),
 			},
 			{ headers },
@@ -75,7 +66,7 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function Articles() {
-	let { articles, term, page } = useLoaderData<typeof loader>();
+	let { articles, term } = useLoaderData<typeof loader>();
 	let t = useT("translation", "articles");
 
 	let count = articles.length;
@@ -89,14 +80,6 @@ export default function Articles() {
 		);
 	}
 
-	let prevLink = term
-		? `/articles?q=${term}&page=${page - 1}`
-		: `/articles?page=${page - 1}`;
-
-	let nextLink = term
-		? `/articles?q=${term}&page=${page + 1}`
-		: `/articles?page=${page + 1}`;
-
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
 			<PageHeader t={t} />
@@ -107,30 +90,13 @@ export default function Articles() {
 				<ul className="space-y-2">
 					{articles.map((article) => (
 						<li key={article.path} className="list-inside list-disc">
-							<Link to={`/articles/${article.path}`} prefetch="intent">
+							<Link to={article.path} prefetch="intent">
 								{article.title}
 							</Link>
 						</li>
 					))}
 				</ul>
 			</div>
-
-			<footer className="flex w-full justify-evenly">
-				{page > 1 && (
-					<>
-						<Link to={prevLink} prefetch="intent">
-							{t("nav.prev")}
-						</Link>
-					</>
-				)}
-				{count === 40 && (
-					<>
-						<Link to={nextLink} prefetch="intent">
-							{t("nav.next")}
-						</Link>
-					</>
-				)}
-			</footer>
 		</main>
 	);
 }
