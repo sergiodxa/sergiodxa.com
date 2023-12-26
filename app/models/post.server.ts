@@ -63,6 +63,10 @@ export class Post<Meta extends BaseMeta> {
 		return this.authorPromise;
 	}
 
+	get cacheKey() {
+		return `post:${this.id}`;
+	}
+
 	toJSON() {
 		return {
 			id: this.id,
