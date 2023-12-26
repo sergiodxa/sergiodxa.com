@@ -11,12 +11,15 @@ import {
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Article } from "~/models/db-article.server";
+import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 
 import { importArticles } from "./queries";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
+	void new Logger(context).http(request);
+
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
 	if (user.role !== "admin") throw redirect("/");
 
@@ -24,7 +27,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	await importArticles(context, user);
 
+	void new Logger(context).info("listing articles");
+
 	let articles = await Article.list({ db });
+
+	void new Logger(context).info(`queried ${articles.length} articles`);
 
 	return json({ articles: articles.map((article) => article.toJSON()) });
 }
