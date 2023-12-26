@@ -159,7 +159,7 @@ function Item({
 						<span
 							className={cn(
 								iconColor,
-								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white",
+								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-neutral-50",
 							)}
 						>
 							{icon}
@@ -173,6 +173,7 @@ function Item({
 								{createdAt.toLocaleDateString(locale, {
 									month: "short",
 									day: "2-digit",
+									year: "2-digit",
 								})}
 							</time>
 						</div>
