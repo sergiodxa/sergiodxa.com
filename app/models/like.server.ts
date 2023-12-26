@@ -16,8 +16,11 @@ type InsertLike = Omit<Tables.InsertPost, "id" | "type"> & LikeMeta;
 
 // @ts-expect-error TS is an idiot
 export class Like extends Post<LikeMeta> {
-	constructor(input: Post<LikeMeta> | PostAttributes<LikeMeta>) {
-		super(input);
+	constructor(
+		services: Services,
+		input: Post<LikeMeta> | PostAttributes<LikeMeta>,
+	) {
+		super(services, input);
 	}
 
 	get title() {
@@ -39,12 +42,12 @@ export class Like extends Post<LikeMeta> {
 
 	static override async list({ db }: Services) {
 		let posts = await Post.list<LikeMeta>({ db }, "like");
-		return posts.map((post) => new Like(post));
+		return posts.map((post) => new Like({ db }, post));
 	}
 
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
 		let post = await Post.show<LikeMeta>({ db }, id);
-		return new Like(post);
+		return new Like({ db }, post);
 	}
 
 	static override async create(
@@ -56,10 +59,6 @@ export class Like extends Post<LikeMeta> {
 			{ ...input, type: "like", title, url },
 		);
 
-		return new Like(post);
-	}
-
-	static override async destroy({ db }: Services, id: Tables.SelectPost["id"]) {
-		await super.destroy({ db }, id);
+		return new Like({ db }, post);
 	}
 }

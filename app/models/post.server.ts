@@ -4,7 +4,7 @@ import type { UUID } from "~/utils/uuid";
 import { desc, eq } from "drizzle-orm";
 
 import { Tables } from "~/services/db.server";
-import { generateUUID } from "~/utils/uuid";
+import { assertUUID, generateUUID } from "~/utils/uuid";
 
 export interface BaseMeta {
 	[key: string]: unknown;
@@ -23,24 +23,44 @@ interface Services {
 }
 
 export class Post<Meta extends BaseMeta> {
-	readonly id: string;
+	readonly id: UUID;
 	// Attributes
 	readonly type: "like" | "tutorial" | "article";
 	// Relations
-	readonly authorId: string;
+	readonly authorId: UUID;
 	// Timestamps
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 	// Meta
 	public meta: Meta;
 
-	constructor(input: Post<Meta> | PostAttributes<Meta>) {
+	private authorPromise?: Promise<Tables.SelectUser>;
+
+	constructor(
+		protected services: Services,
+		input: Post<Meta> | PostAttributes<Meta>,
+	) {
 		this.id = input.id;
 		this.authorId = input.authorId;
 		this.type = input.type;
 		this.createdAt = input.createdAt;
 		this.updatedAt = input.updatedAt;
 		this.meta = input.meta;
+	}
+
+	get author() {
+		if (this.authorPromise) return this.authorPromise;
+		this.authorPromise = this.services.db.query.users
+			.findFirst({
+				where: eq(Tables.users.id, this.authorId),
+			})
+			.then((author) => {
+				if (author) return author;
+				throw new Error(
+					`Couldn't find author with id ${this.authorId} on post ${this.id}.`,
+				);
+			});
+		return this.authorPromise;
 	}
 
 	toJSON() {
@@ -75,20 +95,24 @@ export class Post<Meta extends BaseMeta> {
 		if (!posts) throw new Error("There are no post types.");
 
 		return posts.map((post) => {
-			return new this({
-				id: post.id,
-				// Attributes
-				type: post.type,
-				// Relations
-				authorId: post.authorId,
-				// Timestamps
-				createdAt: post.createdAt,
-				updatedAt: post.updatedAt,
-				// Meta
-				meta: post.meta.reduce((acc, meta) => {
-					return { ...acc, [meta.key]: meta.value };
-				}, {} as Meta),
-			});
+			assertUUID(post.authorId);
+			return new this(
+				{ db },
+				{
+					id: post.id,
+					// Attributes
+					type: post.type,
+					// Relations
+					authorId: post.authorId,
+					// Timestamps
+					createdAt: post.createdAt,
+					updatedAt: post.updatedAt,
+					// Meta
+					meta: post.meta.reduce((acc, meta) => {
+						return { ...acc, [meta.key]: meta.value };
+					}, {} as Meta),
+				},
+			);
 		});
 	}
 
@@ -102,20 +126,25 @@ export class Post<Meta extends BaseMeta> {
 			throw new Error(`Couldn't find post with Id ${id}`);
 		}
 
-		return new this({
-			id: post.id,
-			// Attributes
-			type: post.type,
-			// Relations
-			authorId: post.authorId,
-			// Timestamps
-			createdAt: post.createdAt,
-			updatedAt: post.updatedAt,
-			// Meta
-			meta: post.meta.reduce((acc, meta) => {
-				return { ...acc, [meta.key]: meta.value };
-			}, {} as Meta),
-		});
+		assertUUID(post.authorId);
+
+		return new this(
+			{ db },
+			{
+				id: post.id,
+				// Attributes
+				type: post.type,
+				// Relations
+				authorId: post.authorId,
+				// Timestamps
+				createdAt: post.createdAt,
+				updatedAt: post.updatedAt,
+				// Meta
+				meta: post.meta.reduce((acc, meta) => {
+					return { ...acc, [meta.key]: meta.value };
+				}, {} as Meta),
+			},
+		);
 	}
 
 	static async destroy({ db }: Services, id: UUID) {
@@ -148,6 +177,7 @@ export class Post<Meta extends BaseMeta> {
 
 		await Promise.all(
 			Object.entries(meta).map(async ([key, value]) => {
+				if (!value) return;
 				await db
 					.insert(Tables.postMeta)
 					.values({ postId: id, key, value })
