@@ -3,6 +3,7 @@ compatibility_date = "2023-06-22"
 node_compat = true
 
 kv_namespaces = [
+  { binding = "cache", id = "597a3ce0108c42798aeac0044a566e31", preview_id = "cache" },
   { binding = "airtable", id = "7be9035dc2c04b2581e0a85ec1af46bb", preview_id = "airtable@sergiodxa.com" },
   { binding = "cn", id = "8b961c1e81e1456aa045e11386648340", preview_id = "collectednotes@sergiodxa.com" },
   { binding = "gh", id = "c24122b9e09e4ceda66f57797298db6b", preview_id = "github@sergiodxa.com" },
