@@ -68,8 +68,8 @@ export async function importArticles(context: AppLoadContext, user: User) {
 
 	void logger.info("deleted old articles in DB");
 
-	await Promise.all(
-		articles.map(async (article) => {
+	for await (let article of articles) {
+		try {
 			void logger.info(`importing article ${article.title}`);
 			let { body, attributes } = FrontMatterSchema.parse(fm(article.body));
 
@@ -77,7 +77,7 @@ export async function importArticles(context: AppLoadContext, user: User) {
 
 			let plainBody = await Markdown.plain(body);
 
-			return await Article.create(
+			await Article.create(
 				{ db },
 				{
 					title: attributes.title ?? article.title,
@@ -95,12 +95,16 @@ export async function importArticles(context: AppLoadContext, user: User) {
 					canonical_url: attributes.canonical_url,
 				},
 			);
-		}),
-	).catch((error) => {
-		void logger.info(`error importing articles: ${error.message}`);
-	});
+		} catch (exception) {
+			if (exception instanceof Error) {
+				void logger.info(
+					`error importing ${article.title}: ${exception.message}`,
+				);
+			}
+		}
+	}
 
-	void logger.info(`imported ${articles.length} articles into DB`);
+	void logger.info(`imported articles into DB`);
 }
 
 function stripTitle(body: string) {
