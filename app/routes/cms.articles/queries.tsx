@@ -42,15 +42,11 @@ const FrontMatterSchema = z.object({
 export async function importArticles(context: AppLoadContext, user: User) {
 	let logger = new Logger(context);
 
-	void logger.info("importing articles");
-
 	let cn = new CollectedNotes(
 		context.env.CN_EMAIL,
 		context.env.CN_TOKEN,
 		context.env.CN_SITE,
 	);
-
-	void logger.info("fetching articles");
 
 	let articles = await Promise.all([
 		cn.fetchNotes(1),
@@ -60,17 +56,12 @@ export async function importArticles(context: AppLoadContext, user: User) {
 		cn.fetchNotes(5),
 	]).then((articles) => articles.flat());
 
-	void logger.info(`fetched ${articles.length} articles`);
-
 	let db = database(context.db);
 
 	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
 
-	void logger.info("deleted old articles in DB");
-
 	for await (let article of articles) {
 		try {
-			void logger.info(`importing article ${article.title}`);
 			let { body, attributes } = FrontMatterSchema.parse(fm(article.body));
 
 			body = stripTitle(body);
@@ -103,8 +94,6 @@ export async function importArticles(context: AppLoadContext, user: User) {
 			}
 		}
 	}
-
-	void logger.info(`imported articles into DB`);
 }
 
 function stripTitle(body: string) {
