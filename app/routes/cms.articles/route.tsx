@@ -1,8 +1,15 @@
-import { redirect, type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import type {
+	ActionFunctionArgs,
+	LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
+
+import { redirect, json } from "@remix-run/cloudflare";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import {
+	Button,
 	Cell,
 	Column,
+	Form,
 	Row,
 	Table,
 	TableBody,
@@ -17,6 +24,8 @@ import { database } from "~/services/db.server";
 
 import { importArticles } from "./queries";
 
+const INTENT = { importArticles: "IMPORT_ARTICLES" };
+
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
 
@@ -24,8 +33,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	if (user.role !== "admin") throw redirect("/");
 
 	let db = database(context.db);
-
-	await importArticles(context, user);
 
 	void new Logger(context).info("listing articles");
 
@@ -36,11 +43,23 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	return json({ articles: articles.map((article) => article.toJSON()) });
 }
 
+export async function action({ request, context }: ActionFunctionArgs) {
+	void new Logger(context).http(request);
+
+	let user = await SessionStorage.requireUser(context, request, "/auth/login");
+	if (user.role !== "admin") throw redirect("/");
+
+	await importArticles(context, user);
+
+	throw redirect("/cms/articles");
+}
+
 export default function Component() {
 	return (
 		<>
 			<header className="flex justify-between">
 				<h2 className="text-3xl font-bold">Articles</h2>
+				<ImportArticles />
 			</header>
 
 			<ArticlesTable />
@@ -81,5 +100,30 @@ function ArticlesTable() {
 				})}
 			</TableBody>
 		</Table>
+	);
+}
+
+function ImportArticles() {
+	let submit = useSubmit();
+	let actionData = useActionData<typeof action>();
+	let t = useT("translation", "cms.articles.import");
+
+	return (
+		<Form
+			method="post"
+			onSubmit={(event) => {
+				event.preventDefault();
+				submit(event.currentTarget);
+			}}
+			validationErrors={actionData ?? undefined}
+		>
+			<input type="hidden" name="intent" value={INTENT.importArticles} />
+			<Button
+				type="submit"
+				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
+			>
+				{t("cta")}
+			</Button>
+		</Form>
 	);
 }
