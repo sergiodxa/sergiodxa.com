@@ -39,7 +39,11 @@ const FrontMatterSchema = z.object({
 	body: z.string(),
 });
 
-export async function importArticles(context: AppLoadContext, user: User) {
+export async function importArticles(
+	context: AppLoadContext,
+	user: User,
+	page: number,
+) {
 	let logger = new Logger(context);
 
 	let cn = new CollectedNotes(
@@ -48,17 +52,9 @@ export async function importArticles(context: AppLoadContext, user: User) {
 		context.env.CN_SITE,
 	);
 
-	let articles = await Promise.all([
-		cn.fetchNotes(1),
-		cn.fetchNotes(2),
-		cn.fetchNotes(3),
-		cn.fetchNotes(4),
-		cn.fetchNotes(5),
-	]).then((articles) => articles.flat());
+	let articles = await cn.fetchNotes(page);
 
 	let db = database(context.db);
-
-	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
 
 	for await (let article of articles) {
 		try {
@@ -94,6 +90,11 @@ export async function importArticles(context: AppLoadContext, user: User) {
 			}
 		}
 	}
+}
+
+export async function resetArticles(context: AppLoadContext) {
+	let db = database(context.db);
+	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
 }
 
 function stripTitle(body: string) {

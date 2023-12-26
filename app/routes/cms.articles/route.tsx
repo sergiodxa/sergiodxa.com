@@ -10,11 +10,15 @@ import {
 	Cell,
 	Column,
 	Form,
+	Input,
+	Label,
+	NumberField,
 	Row,
 	Table,
 	TableBody,
 	TableHeader,
 } from "react-aria-components";
+import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Article } from "~/models/db-article.server";
@@ -22,9 +26,12 @@ import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 
-import { importArticles } from "./queries";
+import { importArticles, resetArticles } from "./queries";
 
-const INTENT = { importArticles: "IMPORT_ARTICLES" };
+const INTENT = {
+	import: "IMPORT_ARTICLES" as const,
+	reset: "RESET_ARTICLES" as const,
+};
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -38,6 +45,17 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	let articles = await Article.list({ db });
 
+	let posts = await db.query.posts.findMany();
+	console.log("posts", posts.length);
+	console.log(
+		"articles",
+		posts.filter((post) => post.type === "article").length,
+	);
+	console.log("likes", posts.filter((post) => post.type === "like").length);
+
+	let postMeta = await db.query.postMeta.findMany();
+	console.log("post meta", postMeta.length);
+
 	void new Logger(context).info(`queried ${articles.length} articles`);
 
 	return json({ articles: articles.map((article) => article.toJSON()) });
@@ -49,7 +67,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
 	if (user.role !== "admin") throw redirect("/");
 
-	await importArticles(context, user);
+	let formData = await request.formData();
+	let intent = z
+		.enum([INTENT.import, INTENT.reset])
+		.parse(formData.get("intent"));
+
+	if (intent === INTENT.import) {
+		let page = z.coerce.number().parse(formData.get("page"));
+		await importArticles(context, user, page);
+	}
+
+	if (intent === INTENT.reset) await resetArticles(context);
 
 	throw redirect("/cms/articles");
 }
@@ -60,6 +88,7 @@ export default function Component() {
 			<header className="flex justify-between">
 				<h2 className="text-3xl font-bold">Articles</h2>
 				<ImportArticles />
+				<ResetArticles />
 			</header>
 
 			<ArticlesTable />
@@ -105,7 +134,6 @@ function ArticlesTable() {
 
 function ImportArticles() {
 	let submit = useSubmit();
-	let actionData = useActionData<typeof action>();
 	let t = useT("translation", "cms.articles.import");
 
 	return (
@@ -115,9 +143,35 @@ function ImportArticles() {
 				event.preventDefault();
 				submit(event.currentTarget);
 			}}
-			validationErrors={actionData ?? undefined}
 		>
-			<input type="hidden" name="intent" value={INTENT.importArticles} />
+			<input type="hidden" name="intent" value={INTENT.import} />
+			<NumberField name="page">
+				<Label>Page</Label>
+				<Input name="page" />
+			</NumberField>
+			<Button
+				type="submit"
+				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
+			>
+				{t("cta")}
+			</Button>
+		</Form>
+	);
+}
+
+function ResetArticles() {
+	let submit = useSubmit();
+	let t = useT("translation", "cms.articles.reset");
+
+	return (
+		<Form
+			method="post"
+			onSubmit={(event) => {
+				event.preventDefault();
+				submit(event.currentTarget);
+			}}
+		>
+			<input type="hidden" name="intent" value={INTENT.reset} />
 			<Button
 				type="submit"
 				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
