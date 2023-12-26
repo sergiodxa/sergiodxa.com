@@ -97,9 +97,8 @@ export class Article extends Post<ArticleMeta> {
 		return posts.map((post) => new this(services, post));
 	}
 
-	static async search(services: Services, query?: string) {
+	static async search(services: Services, query: string) {
 		let articles = await Article.list(services);
-		if (!query) return articles;
 
 		let words = query
 			.trim()
