@@ -237,7 +237,7 @@ function Header() {
 
 	return (
 		<header className="bg-blue-600">
-			<nav className="mx-auto max-w-7xl px-6 lg:px-8" aria-label="Top">
+			<nav className="mx-auto max-w-screen-xl px-6 lg:px-8" aria-label="Top">
 				<div className="flex w-full flex-col justify-between gap-4 border-b border-blue-500 py-6 md:flex-row md:items-center md:gap-10 lg:border-none">
 					<div className="flex items-center gap-10">
 						<NavLink to="/" className="hidden flex-shrink-0 md:block">

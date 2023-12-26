@@ -3,6 +3,8 @@ import { Outlet } from "react-router";
 
 import { SessionStorage } from "~/modules/session.server";
 
+import { Navigation } from "./nav";
+
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
 	if (user.role !== "admin") throw redirect("/");
@@ -11,8 +13,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 export default function Component() {
 	return (
-		<main className="mx-auto flex max-w-screen-xl flex-col gap-8">
-			<h1 className="text-xl font-bold">CMS</h1>
+		<main className="-my-4 mx-auto flex max-w-screen-xl flex-col gap-8">
+			<Navigation />
 			<Outlet />
 		</main>
 	);

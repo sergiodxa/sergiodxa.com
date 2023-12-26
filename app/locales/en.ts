@@ -180,6 +180,18 @@ export default {
 	},
 
 	cms: {
+		layout: {
+			nav: {
+				label: "Dashboard",
+				items: {
+					dashboard: "Dashboard",
+					articles: "Articles",
+					likes: "Likes",
+					tutorials: "Tutorials",
+				},
+			},
+		},
+
 		_index: {
 			stats: {
 				title: "Post Stats",
