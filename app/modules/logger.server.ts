@@ -10,10 +10,14 @@ export class Logger {
 	}
 
 	async info(message: string) {
-		await this.betterStack.fetch("info", message);
+		if (process.env.NODE_ENV === "production") {
+			await this.betterStack.fetch("info", message);
+		} else console.info(message);
 	}
 
 	async http(request: Request): Promise<void> {
-		await this.betterStack.fetch("info", `${request.method} ${request.url}`);
+		if (process.env.NODE_ENV === "production") {
+			await this.betterStack.fetch("info", `${request.method} ${request.url}`);
+		} else console.info(`${request.method} ${request.url}`);
 	}
 }
