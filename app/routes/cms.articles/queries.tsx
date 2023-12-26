@@ -73,7 +73,7 @@ export async function importArticles(context: AppLoadContext, user: User) {
 					locale: attributes.lang ?? "en",
 					content: body,
 					excerpt: extractExcerpt({
-						body: plainBody.toString(),
+						body: plainBody.toString().replace("\n", " "),
 						headline: article.headline,
 						description: attributes.description,
 					}),
@@ -100,7 +100,7 @@ function extractExcerpt(input: {
 }) {
 	if (input.description) return input.description;
 	if (!input.headline.includes("title: \n")) {
-		return `${input.headline.slice(-3)}…`;
+		return `${input.headline.slice(0, -3)}…`;
 	}
 	return `${input.body.slice(0, 139)}…`.replaceAll("\n", " ");
 }

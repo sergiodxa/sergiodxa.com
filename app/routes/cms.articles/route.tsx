@@ -59,8 +59,9 @@ function ArticlesTable() {
 				{articles.map((article) => {
 					return (
 						<Row key={article.id} className="py-2">
-							<Cell>
+							<Cell className="flex flex-col">
 								<a href={`/articles/${article.slug}`}>{article.title}</a>
+								<p>{article.excerpt}</p>
 							</Cell>
 							<Cell className="flex-shrink-0 text-right">
 								{article.createdAt}
