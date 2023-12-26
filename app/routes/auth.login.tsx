@@ -26,7 +26,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function Component() {
-	let t = useT("translation");
+	let t = useT("login");
 
 	return (
 		<Form
@@ -35,7 +35,7 @@ export default function Component() {
 		>
 			<header className="sm:mx-auto sm:w-full sm:max-w-md">
 				<h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-					{t("login.title")}
+					{t("title")}
 				</h2>
 			</header>
 
@@ -43,36 +43,8 @@ export default function Component() {
 				type="submit"
 				className="inline-flex items-center rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-medium text-blue-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 			>
-				{t("login.github")}
+				{t("github")}
 			</button>
 		</Form>
 	);
 }
-
-// function Alert() {
-// 	let { error } = useLoaderData<typeof loader>();
-// 	let t = useT("translation");
-
-// 	if (!error) return null;
-
-// 	return (
-// 		<div className="w-full rounded-md bg-red-50 p-4">
-// 			<div className="flex">
-// 				<div className="flex-shrink-0">
-// 					<ExclamationTriangleIcon
-// 						className="h-5 w-5 text-red-400"
-// 						aria-hidden="true"
-// 					/>
-// 				</div>
-// 				<div className="ml-3">
-// 					<h3 className="text-sm font-medium text-red-800">
-// 						{t("login.error.title")}
-// 					</h3>
-// 					<div className="mt-2 text-sm text-red-700">
-// 						<p>{t("login.error.description")}</p>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</div>
-// 	);
-// }

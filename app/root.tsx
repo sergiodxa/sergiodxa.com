@@ -226,13 +226,13 @@ function useChangeLanguage(locale: string) {
 
 function Header() {
 	let { user } = useLoaderData<typeof loader>();
-	let t = useT("translation");
+	let t = useT("nav");
 
 	let navigation = [
-		{ name: t("nav.home"), to: "/" },
-		{ name: t("nav.articles"), to: "/articles" },
-		{ name: t("nav.tutorials"), to: "/tutorials" },
-		{ name: t("nav.bookmarks"), to: "/bookmarks" },
+		{ name: t("home"), to: "/" },
+		{ name: t("articles"), to: "/articles" },
+		{ name: t("tutorials"), to: "/tutorials" },
+		{ name: t("bookmarks"), to: "/bookmarks" },
 	] as const;
 
 	return (
@@ -270,7 +270,7 @@ function Header() {
 								href="https://github.com/sponsors/sergiodxa"
 								className="block flex-shrink-0 flex-grow rounded-md border border-transparent bg-white px-4 py-2 text-center text-base font-medium text-blue-600 hover:bg-blue-50"
 							>
-								{t("nav.sponsor")}
+								{t("sponsor")}
 							</a>
 						) : null}
 
@@ -280,7 +280,7 @@ function Header() {
 									type="submit"
 									className="hidden rounded-md border border-transparent bg-blue-500 px-4 py-2 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
 								>
-									{t("nav.login")}
+									{t("login")}
 								</button>
 							</Form>
 						) : (
@@ -294,7 +294,7 @@ function Header() {
 									type="submit"
 									className="hidden rounded-md border border-transparent bg-blue-500 px-4 py-2 text-base font-medium text-white hover:bg-opacity-75 lg:inline-block"
 								>
-									{t("nav.logout")}
+									{t("logout")}
 								</button>
 							</Form>
 						)}
