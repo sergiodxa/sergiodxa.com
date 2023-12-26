@@ -180,6 +180,18 @@ export default {
 	},
 
 	cms: {
+		_index: {
+			stats: {
+				title: "Post Stats",
+				total: {
+					articles: "Total Articles",
+					likes: "Total Likes",
+					tutorials: "Total Tutorials",
+				},
+				viewAll: "View all",
+			},
+		},
+
 		users: {
 			search: { label: "What're you looking for?", cta: "Search" },
 			table: {
