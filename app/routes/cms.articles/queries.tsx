@@ -6,10 +6,10 @@ import fm from "front-matter";
 import { z } from "zod";
 
 import { Article } from "~/models/db-article.server";
+import { Logger } from "~/modules/logger.server";
 import { Markdown } from "~/modules/md.server";
 import { CollectedNotes } from "~/services/cn.server";
 import { Tables, database } from "~/services/db.server";
-import { Logger } from "~/modules/logger.server";
 
 const AttributesSchema = z
 	.object({
@@ -70,6 +70,7 @@ export async function importArticles(context: AppLoadContext, user: User) {
 
 	await Promise.all(
 		articles.map(async (article) => {
+			void logger.info(`importing article ${article.title}`);
 			let { body, attributes } = FrontMatterSchema.parse(fm(article.body));
 
 			body = stripTitle(body);
@@ -98,6 +99,8 @@ export async function importArticles(context: AppLoadContext, user: User) {
 	).catch((error) => {
 		void logger.info(`error importing articles: ${error.message}`);
 	});
+
+	void logger.info(`imported ${articles.length} articles into DB`);
 }
 
 function stripTitle(body: string) {
