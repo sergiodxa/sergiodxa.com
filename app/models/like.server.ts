@@ -16,6 +16,8 @@ type InsertLike = Omit<Tables.InsertPost, "id" | "type"> & LikeMeta;
 
 // @ts-expect-error TS is an idiot
 export class Like extends Post<LikeMeta> {
+	override readonly type = "like" as const;
+
 	constructor(
 		services: Services,
 		input: Post<LikeMeta> | PostAttributes<LikeMeta>,
