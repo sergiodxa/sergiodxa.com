@@ -20,7 +20,7 @@ export function Navigation() {
 						<NavLink
 							key={link.name}
 							to={link.to}
-							className="text-base font-medium text-white visited:text-white hover:text-blue-50"
+							className="text-base font-medium text-white no-underline visited:text-white hover:text-blue-50"
 						>
 							{link.name}
 						</NavLink>
