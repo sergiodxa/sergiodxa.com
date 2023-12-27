@@ -3,11 +3,9 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 import { Article } from "~/models/article.server";
-import { Bookmark } from "~/models/bookmark.server";
 import { Tutorial } from "~/models/db-tutorial.server";
+import { Like } from "~/models/like.server";
 import { Cache } from "~/modules/cache.server";
-import { Airtable } from "~/services/airtable.server";
-import { Cache as OldCache } from "~/services/cache.server";
 import { database } from "~/services/db.server";
 
 const ItemPayloadSchema = z.object({
@@ -58,26 +56,27 @@ export class Feed {
 	}
 
 	static async bookmarks(context: AppLoadContext) {
-		let cache = new OldCache(context.kv.airtable);
-		let airtable = new Airtable(
-			context.env.AIRTABLE_API_KEY,
-			context.env.AIRTABLE_BASE,
-			context.env.AIRTABLE_TABLE_ID,
-		);
+		let db = database(context.db);
 
-		let bookmarks = await Bookmark.list({ cache, airtable });
+		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
-		return bookmarks.map((bookmark) => {
-			return {
-				id: String(bookmark.id),
-				type: "bookmark",
-				payload: {
-					title: bookmark.title,
-					link: bookmark.url,
-					createdAt: new Date(bookmark.createdAt).getTime(),
-				},
-			} as const;
+		let result = await cache.fetch("feed:bookmarks", async () => {
+			let likes = await Like.list({ db });
+			let items = likes.map<BookmarkItem>((bookmark) => {
+				return {
+					id: bookmark.id,
+					type: "bookmark",
+					payload: {
+						title: bookmark.title,
+						link: bookmark.url.toString(),
+						createdAt: new Date(bookmark.createdAt).getTime(),
+					},
+				};
+			});
+			return JSON.stringify(items);
 		});
+
+		return BookmarkItemSchema.array().parse(JSON.parse(result));
 	}
 
 	static async articles(context: AppLoadContext) {
@@ -86,7 +85,6 @@ export class Feed {
 		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
 		let result = await cache.fetch("feed:articles", async () => {
-			console.log("Cache Miss: feed:articles");
 			let articles = await Article.list({ db });
 			let items = articles.map<ArticleItem>((article) => {
 				return {
@@ -111,7 +109,6 @@ export class Feed {
 		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
 		let result = await cache.fetch("feed:tutorials", async () => {
-			console.log("Cache Miss: feed:tutorials");
 			let tutorials = await Tutorial.list({ db });
 			let items = tutorials.map<TutorialItem>((article) => {
 				return {
