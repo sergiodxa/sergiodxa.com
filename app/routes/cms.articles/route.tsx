@@ -75,7 +75,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function Component() {
 	return (
 		<div className="flex flex-col gap-8 pb-10">
-			<header className="flex justify-between gap-4">
+			<header className="flex justify-between gap-4 px-5">
 				<h2 className="text-3xl font-bold">Articles</h2>
 
 				<Link
