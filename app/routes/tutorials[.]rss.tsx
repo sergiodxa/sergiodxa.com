@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 
 import { xml } from "remix-utils/responses";
 
-import { Tutorial } from "~/models/db-tutorial.server";
+import { Tutorial } from "~/models/tutorial.server";
 import { Logger } from "~/modules/logger.server";
 import { database } from "~/services/db.server";
 

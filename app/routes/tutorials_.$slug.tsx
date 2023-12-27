@@ -15,7 +15,7 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
-import { Tutorial } from "~/models/db-tutorial.server";
+import { Tutorial } from "~/models/tutorial.server";
 import { I18n } from "~/modules/i18n.server";
 import { database } from "~/services/db.server";
 import { cn } from "~/utils/cn";

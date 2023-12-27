@@ -3,8 +3,8 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 import { Article } from "~/models/article.server";
-import { Tutorial } from "~/models/db-tutorial.server";
 import { Like } from "~/models/like.server";
+import { Tutorial } from "~/models/tutorial.server";
 import { Cache } from "~/modules/cache.server";
 import { database } from "~/services/db.server";
 

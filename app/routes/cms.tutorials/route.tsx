@@ -7,7 +7,7 @@ import { redirect, json } from "@remix-run/cloudflare";
 import { Link } from "@remix-run/react";
 import { z } from "zod";
 
-import { Tutorial } from "~/models/db-tutorial.server";
+import { Tutorial } from "~/models/tutorial.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";

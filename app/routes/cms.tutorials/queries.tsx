@@ -5,7 +5,7 @@ import type { UUID } from "~/utils/uuid";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { Tutorial } from "~/models/db-tutorial.server";
+import { Tutorial } from "~/models/tutorial.server";
 import { Logger } from "~/modules/logger.server";
 import { Markdown } from "~/modules/md.server";
 import { Tables, database } from "~/services/db.server";
