@@ -38,14 +38,19 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 		let db = database(context.db);
 		let tutorial = await Tutorial.show({ db }, slug);
 
-		let tutorials = await tutorial.recommendations({ db });
-		let recommendations = tutorials.map((tutorial) => {
-			return {
-				title: tutorial.title,
-				slug: tutorial.slug,
-				tag: tutorial.tags.at(0),
-			};
-		});
+		let [recommendations, author, wordCount] = await Promise.all([
+			tutorial.recommendations({ db }).then((tutorials) => {
+				return tutorials.map((tutorial) => {
+					return {
+						title: tutorial.title,
+						slug: tutorial.slug,
+						tag: tutorial.tags.at(0),
+					};
+				});
+			}),
+			tutorial.author,
+			tutorial.wordCount,
+		]);
 
 		let t = await i18n.getFixedT(request);
 
@@ -66,6 +71,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 
 			return [
 				{ title },
+				{ name: "description", content: tutorial.excerpt },
 				{ property: "og:title", content: title },
 				{ property: "og:type", content: "article" },
 				{ property: "og:url", content: request.url },
@@ -75,6 +81,22 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 				{ property: "twitter:creator", content: "@sergiodxa" },
 				{ property: "twitter:site", content: "@sergiodxa" },
 				{ property: "twitter:title", content: title },
+				{
+					"script:ld+json": {
+						"@context": "https://schema.org",
+						"@type": "Article",
+						headline: tutorial.title,
+						description: tutorial.excerpt,
+						author: {
+							"@type": "Person",
+							name: author.displayName,
+							url: "https://sergiodxa.com/about",
+						},
+						wordCount,
+						datePublished: tutorial.createdAt.toISOString(),
+						dateModified: tutorial.updatedAt.toISOString(),
+					},
+				},
 			];
 		}
 	});
