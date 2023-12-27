@@ -4,10 +4,8 @@ import type { UUID } from "~/utils/uuid";
 
 import { eq } from "drizzle-orm";
 
-import { Bookmark } from "~/models/bookmark.server";
 import { Like } from "~/models/like.server";
 import { Airtable } from "~/services/airtable.server";
-import { Cache } from "~/services/cache.server";
 import { Tables, database } from "~/services/db.server";
 
 export async function importBookmarks(context: AppLoadContext, user: User) {
@@ -17,9 +15,22 @@ export async function importBookmarks(context: AppLoadContext, user: User) {
 		context.env.AIRTABLE_TABLE_ID,
 	);
 
-	let cache = new Cache(context.kv.airtable);
+	let { records, offset } = await airtable.bookmarks();
 
-	let bookmarks = await Bookmark.list({ airtable, cache });
+	while (offset) {
+		let next = await airtable.bookmarks(offset);
+		records = records.concat(next.records);
+		offset = next.offset;
+	}
+
+	let bookmarks = records.map((record) => {
+		return {
+			id: record.id,
+			title: record.fields.title,
+			url: record.fields.url,
+			createdAt: new Date(record.createdTime),
+		};
+	});
 
 	let db = database(context.db);
 
@@ -31,8 +42,8 @@ export async function importBookmarks(context: AppLoadContext, user: User) {
 				{ db },
 				{
 					authorId: user.id,
-					createdAt: new Date(bookmark.createdAt),
-					updatedAt: new Date(bookmark.createdAt),
+					createdAt: bookmark.createdAt,
+					updatedAt: bookmark.createdAt,
 					title: bookmark.title,
 					url: bookmark.url,
 				},
