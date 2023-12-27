@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Article } from "~/models/article.server";
 import { Cache } from "~/modules/cache.server";
 import { database } from "~/services/db.server";
+import { isEmpty } from "~/utils/arrays";
 
 const SearchResultSchema = z.object({ path: z.string(), title: z.string() });
 
@@ -33,5 +34,9 @@ export async function queryArticles(
 		{ ttl: 60 * 60 * 24 },
 	);
 
-	return SearchResultSchema.array().parse(JSON.parse(result));
+	let data = SearchResultSchema.array().parse(JSON.parse(result));
+
+	if (isEmpty(data)) context.waitUntil(cache.delete(key));
+
+	return data;
 }
