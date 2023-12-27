@@ -96,11 +96,11 @@ export class Tutorial extends Post<TutorialMeta> {
 		let result: Tutorial[] = [];
 
 		for (let item of list) {
-			for (let tag of this.shuffle(this.tags)) {
-				let { name, version } = this.getPackageNameAndVersion(tag);
+			for (let tag of Tutorial.shuffle(this.tags)) {
+				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
 
-				let match = this.shuffle(item.tags).find((itemTag) => {
-					let item = this.getPackageNameAndVersion(itemTag);
+				let match = Tutorial.shuffle(item.tags).find((itemTag) => {
+					let item = Tutorial.getPackageNameAndVersion(itemTag);
 					if (item.name !== name) return false;
 					return semver.gte(version, item.version);
 				});
@@ -109,12 +109,62 @@ export class Tutorial extends Post<TutorialMeta> {
 			}
 		}
 
-		return this.shuffle(this.dedupeBySlug(result)).slice(0, limit);
+		return Tutorial.shuffle(Tutorial.dedupeBySlug(result)).slice(0, limit);
 	}
 
 	static override async list(services: Services) {
 		let posts = await Post.list<TutorialMeta>(services, "tutorial");
 		return posts.map((post) => new this(services, post));
+	}
+
+	static async search(services: Services, query?: string) {
+		let tutorials = await this.list(services);
+
+		query = query?.toLowerCase().trim(); // Normalize the query
+		if (!query) return tutorials;
+
+		let techsInQuery = Tutorial.findTechnologiesInString(query);
+
+		for (let techInQuery of techsInQuery) {
+			if (techInQuery.version) {
+				query = query.replace(
+					`tech:${techInQuery.name}@${techInQuery.version}`,
+					"",
+				);
+			} else {
+				query = query.replace(`tech:${techInQuery.name}`, "");
+			}
+
+			tutorials = tutorials.filter((item) => {
+				for (let tagInTutorial of item.tags) {
+					let techInTutorial = this.getPackageNameAndVersion(tagInTutorial);
+					if (techInQuery.name.includes("*")) {
+						if (
+							!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
+						) {
+							continue;
+						}
+					} else if (techInTutorial.name !== techInQuery.name) {
+						continue;
+					}
+					if (!techInQuery.version) return true;
+					if (semver.gte(techInTutorial.version, techInQuery.version)) {
+						return true;
+					}
+				}
+
+				return false;
+			});
+		}
+
+		for (let word of query.trim()) {
+			tutorials = tutorials.filter((item) => {
+				let title = item.title.toLowerCase();
+				return title.includes(word);
+			});
+		}
+
+		return tutorials;
 	}
 
 	static async findById(services: Services, id: UUID) {
@@ -149,7 +199,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		return new this(services, post);
 	}
 
-	private shuffle<Value>(list: Value[]) {
+	private static shuffle<Value>(list: Value[]) {
 		let result = [...list];
 
 		for (let i = result.length - 1; i > 0; i--) {
@@ -160,7 +210,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		return result;
 	}
 
-	private getPackageNameAndVersion(tag: string) {
+	private static getPackageNameAndVersion(tag: string) {
 		if (!tag.startsWith("@")) {
 			let [name, version] = tag.split("@");
 			return { name, version };
@@ -170,7 +220,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		return { name: `@${name}`, version };
 	}
 
-	private dedupeBySlug<Value extends { slug: string }>(
+	private static dedupeBySlug<Value extends { slug: string }>(
 		items: Value[],
 	): Value[] {
 		let result: Value[] = [];
@@ -186,5 +236,22 @@ export class Tutorial extends Post<TutorialMeta> {
 		}
 
 		return result;
+	}
+
+	/**
+	 * can find the technologies name and version from a string
+	 * @example
+	 * this.#findTechnologiesInString(`hello world tech:@remix-run/react@1.10.0 tech:react@18 tech:@types/react-dom@18.5`)
+	 */
+	private static findTechnologiesInString(value: string) {
+		if (!value.includes("tech:")) return [];
+
+		return value
+			.split(" ")
+			.filter((value) => value.includes("tech:"))
+			.map((value) => {
+				value = value.slice("tech:".length);
+				return Tutorial.getPackageNameAndVersion(value);
+			});
 	}
 }
