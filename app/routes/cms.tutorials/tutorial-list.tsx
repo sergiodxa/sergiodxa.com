@@ -1,10 +1,14 @@
 import type { loader } from "./route";
 import type { SerializeFrom } from "@remix-run/cloudflare";
+import type { UUID } from "~/utils/uuid";
 
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { Button } from "react-aria-components";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
+
+import { INTENT } from "./types";
 
 export function TutorialList() {
 	let { tutorials } = useLoaderData<typeof loader>();
@@ -58,14 +62,33 @@ function Item(props: ItemProps) {
 				</div>
 			</div>
 
-			<div className="flex-shrink-0">
+			<div className="flex flex-shrink-0 items-center gap-1">
 				<Link
 					to={props.id}
 					className="block rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 no-underline shadow-sm ring-1 ring-inset ring-gray-300 visited:text-gray-900 hover:bg-gray-50"
 				>
 					{t("edit")}
 				</Link>
+
+				<DeleteButton id={props.id} />
 			</div>
 		</li>
+	);
+}
+
+function DeleteButton({ id }: { id: UUID }) {
+	let fetcher = useFetcher();
+
+	return (
+		<fetcher.Form method="POST">
+			<input type="hidden" name="intent" value={INTENT.delete} />
+			<input type="hidden" name="id" value={id} />
+			<Button
+				type="submit"
+				className="block rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 no-underline shadow-sm ring-1 ring-inset ring-gray-300 visited:text-gray-900 hover:bg-gray-50"
+			>
+				Delete
+			</Button>
+		</fetcher.Form>
 	);
 }

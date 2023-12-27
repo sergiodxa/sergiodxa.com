@@ -1,5 +1,6 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { User } from "~/modules/session.server";
+import type { UUID } from "~/utils/uuid";
 
 import { eq } from "drizzle-orm";
 
@@ -55,6 +56,11 @@ export async function importTutorials(context: AppLoadContext, user: User) {
 export async function resetTutorials(context: AppLoadContext) {
 	let db = database(context.db);
 	await db.delete(Tables.posts).where(eq(Tables.posts.type, "tutorial"));
+}
+
+export async function deleteTutorial(context: AppLoadContext, id: UUID) {
+	let db = database(context.db);
+	await Tutorial.destroy({ db }, id);
 }
 
 function extractExcerpt(input: {

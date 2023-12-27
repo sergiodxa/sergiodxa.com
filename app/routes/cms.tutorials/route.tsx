@@ -4,24 +4,21 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { Link, useSubmit } from "@remix-run/react";
-import { Button, Form } from "react-aria-components";
+import { Link } from "@remix-run/react";
 import { z } from "zod";
 
-import { useT } from "~/helpers/use-i18n.hook";
 import { Tutorial } from "~/models/db-tutorial.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { assertUUID } from "~/utils/uuid";
 
-import { importTutorials, resetTutorials } from "./queries";
+import { ImportTutorials } from "./import-tutorials";
+import { deleteTutorial, importTutorials, resetTutorials } from "./queries";
+import { ResetTutorials } from "./reset-tutorials";
 import { TutorialList } from "./tutorial-list";
-
-const INTENT = {
-	import: "IMPORT_TUTORIALS" as const,
-	reset: "RESET_TUTORIALS" as const,
-};
+import { INTENT } from "./types";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -60,12 +57,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let formData = await request.formData();
 	let intent = z
-		.enum([INTENT.import, INTENT.reset])
+		.enum([INTENT.import, INTENT.reset, INTENT.delete])
 		.parse(formData.get("intent"));
 
 	try {
 		if (intent === INTENT.import) await importTutorials(context, user);
 		if (intent === INTENT.reset) await resetTutorials(context);
+		if (intent === INTENT.delete) {
+			let id = formData.get("id");
+			assertUUID(id);
+			await deleteTutorial(context, id);
+		}
 
 		throw redirect("/cms/tutorials");
 	} catch (exception) {
@@ -89,58 +91,12 @@ export default function Component() {
 						Write Article
 					</Link>
 
-					{<ImportTutorials />}
-					{<ResetTutorials />}
+					<ImportTutorials />
+					<ResetTutorials />
 				</div>
 			</header>
 
 			<TutorialList />
 		</div>
-	);
-}
-
-function ImportTutorials() {
-	let submit = useSubmit();
-	let t = useT("cms.tutorials.import");
-
-	return (
-		<Form
-			method="post"
-			onSubmit={(event) => {
-				event.preventDefault();
-				submit(event.currentTarget);
-			}}
-		>
-			<input type="hidden" name="intent" value={INTENT.import} />
-			<Button
-				type="submit"
-				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-			>
-				{t("cta")}
-			</Button>
-		</Form>
-	);
-}
-
-function ResetTutorials() {
-	let submit = useSubmit();
-	let t = useT("cms.tutorials.reset");
-
-	return (
-		<Form
-			method="post"
-			onSubmit={(event) => {
-				event.preventDefault();
-				submit(event.currentTarget);
-			}}
-		>
-			<input type="hidden" name="intent" value={INTENT.reset} />
-			<Button
-				type="submit"
-				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-			>
-				{t("cta")}
-			</Button>
-		</Form>
 	);
 }
