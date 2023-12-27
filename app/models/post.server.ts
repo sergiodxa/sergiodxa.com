@@ -112,16 +112,7 @@ export class Post<Meta extends BaseMeta> {
 					createdAt: post.createdAt,
 					updatedAt: post.updatedAt,
 					// Meta
-					meta: post.meta.reduce((acc, meta) => {
-						if (meta.key in acc) {
-							let value = acc[meta.key];
-							if (Array.isArray(value)) {
-								return { ...acc, [meta.key]: [...value, meta.value] };
-							} else return { ...acc, [meta.key]: [value, meta.value] };
-						}
-
-						return { ...acc, [meta.key]: meta.value };
-					}, {} as Meta),
+					meta: reduceMeta<Meta>(post.meta),
 				},
 			);
 		});
@@ -151,16 +142,7 @@ export class Post<Meta extends BaseMeta> {
 				createdAt: post.createdAt,
 				updatedAt: post.updatedAt,
 				// Meta
-				meta: post.meta.reduce((acc, meta) => {
-					if (meta.key in acc) {
-						let value = acc[meta.key];
-						if (Array.isArray(value)) {
-							return { ...acc, [meta.key]: [...value, meta.value] };
-						} else return { ...acc, [meta.key]: [value, meta.value] };
-					}
-
-					return { ...acc, [meta.key]: meta.value };
-				}, {} as Meta),
+				meta: reduceMeta<Meta>(post.meta),
 			},
 		);
 	}
@@ -208,7 +190,7 @@ async function createPostMeta(
 	id: UUID,
 	key: string,
 	value: unknown,
-) {
+): Promise<void> {
 	if (!value) return;
 
 	if (typeof value === "string") {
@@ -233,4 +215,19 @@ async function createPostMeta(
 			value.map((item: unknown) => createPostMeta(db, id, key, item)),
 		));
 	}
+}
+
+function reduceMeta<Meta extends BaseMeta>(
+	meta: Tables.SelectPostMeta[],
+): Meta {
+	return meta.reduce((acc, meta) => {
+		if (meta.key in acc) {
+			let value = acc[meta.key];
+			if (Array.isArray(value)) {
+				return { ...acc, [meta.key]: [...value, meta.value] };
+			} else return { ...acc, [meta.key]: [value, meta.value] };
+		}
+
+		return { ...acc, [meta.key]: meta.value };
+	}, {} as Meta);
 }
