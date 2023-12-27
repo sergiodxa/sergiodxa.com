@@ -79,5 +79,10 @@ export namespace Cache {
 			await this.write(key, value, options);
 			return value;
 		}
+
+		async list(prefix?: string, limit = 1000): Promise<string[]> {
+			let list = await this.kv.list({ prefix, limit });
+			return list.keys.map((key) => key.name);
+		}
 	}
 }
