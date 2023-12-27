@@ -15,9 +15,9 @@ import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
-import { Tutorial } from "~/models/tutorial.server";
+import { Tutorial } from "~/models/db-tutorial.server";
 import { I18n } from "~/modules/i18n.server";
-import { GitHub } from "~/services/github.server";
+import { database } from "~/services/db.server";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
@@ -35,22 +35,29 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 			throw redirect(`/tutorials/${slug}`);
 		}
 
-		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
-		let tutorial = await Tutorial.show({ gh, kv: context.kv.tutorials }, slug);
+		let db = database(context.db);
+		let tutorial = await Tutorial.show({ db }, slug);
+
+		let tutorials = await tutorial.recommendations({ db });
+		let recommendations = tutorials.map((tutorial) => {
+			return {
+				title: tutorial.title,
+				slug: tutorial.slug,
+				tag: tutorial.tags.at(0),
+			};
+		});
 
 		let t = await i18n.getFixedT(request);
 
 		return defer({
 			tutorial: {
+				id: tutorial.id,
 				slug: tutorial.slug,
 				tags: tutorial.tags,
 				title: tutorial.title,
-				content: tutorial.body,
+				content: tutorial.renderable,
 			},
-			recommendations: tutorial.recommendations({
-				gh,
-				kv: context.kv.tutorials,
-			}),
+			recommendations,
 			meta: getMeta(),
 		});
 
@@ -110,9 +117,7 @@ function Header() {
 	let user = useUser();
 	let t = useT("tutorial.header");
 
-	let editUrl = new URL(
-		`https://github.com/sergiodxa/sergiodxa.com/edit/main/content/tutorials/${tutorial.slug}.md`,
-	);
+	let editUrl = new URL(`https://sergiodxa.com/cms/tutorials/${tutorial.id}`);
 
 	return (
 		<header className="gap-4 md:flex md:items-start md:justify-between">

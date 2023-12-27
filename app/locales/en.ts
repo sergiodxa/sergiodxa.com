@@ -140,7 +140,7 @@ export default {
 		},
 		header: {
 			eyebrown: "How to",
-			edit: "Edit on GitHub",
+			edit: "Edit Tutorial",
 		},
 		tags: "Used",
 		related: {
