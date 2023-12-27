@@ -4,12 +4,11 @@ import { z } from "zod";
 
 import { Article } from "~/models/article.server";
 import { Bookmark } from "~/models/bookmark.server";
-import { Tutorial } from "~/models/tutorial.server";
+import { Tutorial } from "~/models/db-tutorial.server";
 import { Cache } from "~/modules/cache.server";
 import { Airtable } from "~/services/airtable.server";
 import { Cache as OldCache } from "~/services/cache.server";
 import { database } from "~/services/db.server";
-import { GitHub } from "~/services/github.server";
 
 const ItemPayloadSchema = z.object({
 	title: z.string(),
@@ -87,6 +86,7 @@ export class Feed {
 		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
 		let result = await cache.fetch("feed:articles", async () => {
+			console.log("Cache Miss: feed:articles");
 			let articles = await Article.list({ db });
 			let items = articles.map<ArticleItem>((article) => {
 				return {
@@ -106,23 +106,27 @@ export class Feed {
 	}
 
 	static async tutorials(context: AppLoadContext) {
-		let kv = context.kv.tutorials;
-		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+		let db = database(context.db);
 
-		let tutorials = await Tutorial.list({ kv, gh });
+		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
-		return tutorials
-			.filter((tutorial) => tutorial.createdAt)
-			.map((tutorial) => {
+		let result = await cache.fetch("feed:tutorials", async () => {
+			console.log("Cache Miss: feed:tutorials");
+			let tutorials = await Tutorial.list({ db });
+			let items = tutorials.map<TutorialItem>((article) => {
 				return {
-					id: String(tutorial.slug),
+					id: article.id,
 					type: "tutorial",
 					payload: {
-						title: tutorial.title,
-						link: `/tutorials/${tutorial.slug}`,
-						createdAt: new Date(tutorial.createdAt!).getTime(),
+						title: article.title,
+						link: article.pathname,
+						createdAt: new Date(article.createdAt).getTime(),
 					},
-				} as const;
+				};
 			});
+			return JSON.stringify(items);
+		});
+
+		return TutorialItemSchema.array().parse(JSON.parse(result));
 	}
 }
