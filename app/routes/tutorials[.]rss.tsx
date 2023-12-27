@@ -2,15 +2,15 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 
 import { xml } from "remix-utils/responses";
 
-import { Tutorial } from "~/models/tutorial.server";
+import { Tutorial } from "~/models/db-tutorial.server";
 import { Logger } from "~/modules/logger.server";
-import { GitHub } from "~/services/github.server";
+import { database } from "~/services/db.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
 
-	let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
-	let tutorials = await Tutorial.list({ gh, kv: context.kv.tutorials });
+	let db = database(context.db);
+	let tutorials = await Tutorial.list({ db });
 
 	let headers = new Headers();
 	headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");
@@ -29,8 +29,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		.map((tutorial) => {
 			return `<item>
 		<title>${tutorial.title}</title>
-		<description><a href="https://sergiodxa.com/tutorials/${
-			tutorial.slug
+		<description>${tutorial.excerpt}\n<a href="https://sergiodxa.com/${
+			tutorial.pathname
 		}">Read it on the web</a></description>
 		<link>https://sergiodxa.com/tutorials/${tutorial.slug}</link>
 		${
