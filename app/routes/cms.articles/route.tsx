@@ -4,7 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { Button, Form, Input, Label, NumberField } from "react-aria-components";
 import { z } from "zod";
 
@@ -74,9 +74,17 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 export default function Component() {
 	return (
-		<div className="pb-10">
-			<header className="flex justify-between">
+		<div className="flex flex-col gap-8 pb-10">
+			<header className="flex justify-between gap-4">
 				<h2 className="text-3xl font-bold">Articles</h2>
+
+				<Link
+					to="/cms/articles/new"
+					className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900 no-underline visited:text-blue-900"
+				>
+					Write Article
+				</Link>
+
 				{false && <ImportArticles />}
 				{false && <ResetArticles />}
 			</header>
