@@ -1,12 +1,13 @@
 import type { BaseMeta, PostAttributes } from "~/models/post.server";
 import type { Database } from "~/services/db.server";
+import type { UUID } from "~/utils/uuid";
 
 import { and, eq } from "drizzle-orm";
 
 import { Post } from "~/models/post.server";
 import { Markdown } from "~/modules/md.server";
 import { Tables } from "~/services/db.server";
-import { UUID, assertUUID } from "~/utils/uuid";
+import { assertUUID } from "~/utils/uuid";
 
 interface ArticleMeta extends BaseMeta {
 	slug: string;
@@ -55,7 +56,7 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	get canonicalUrl() {
-		return this.meta.canonicalUrl;
+		return this.meta.canonical_url;
 	}
 
 	get pathname() {
