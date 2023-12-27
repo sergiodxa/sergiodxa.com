@@ -202,6 +202,18 @@ export default {
 				},
 				viewAll: "View all",
 			},
+
+			quickAction: {
+				like: {
+					title: "Quick Action: Like a URL",
+					label: "URL",
+					cta: "Create Like",
+				},
+			},
+
+			lastDaySearch: {
+				title: "Search term in the last day",
+			},
 		},
 
 		users: {

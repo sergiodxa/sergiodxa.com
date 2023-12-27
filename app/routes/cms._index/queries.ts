@@ -4,6 +4,7 @@ import type { UUID } from "~/utils/uuid";
 import { count, eq } from "drizzle-orm";
 
 import { Like } from "~/models/like.server";
+import { Cache } from "~/modules/cache.server";
 import { Tables, database } from "~/services/db.server";
 
 export async function queryStats(context: AppLoadContext) {
@@ -39,12 +40,19 @@ export async function createQuickLike(
 
 	let html = await response.text();
 
-	let title = html.match(/<title>(?<title>.+?)<\/title>/)?.groups?.title;
-	console.log(title);
+	let title = html.match(/<title>(?<title>.+?)<\/title>/)?.groups?.title.trim();
 
 	if (!title) throw new Error("Couldn't find title for this URL");
 
 	let db = database(context.db);
 
 	await Like.create({ db }, { title, url: url.toString(), authorId: userId });
+}
+
+export async function queryLastDaySearch(context: AppLoadContext) {
+	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+
+	let keys = await cache.list("articles:search:");
+
+	return keys.map((key) => key.replace("articles:search:", ""));
 }

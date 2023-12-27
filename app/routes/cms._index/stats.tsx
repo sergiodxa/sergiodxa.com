@@ -1,6 +1,7 @@
 import type { loader } from "./route";
 
 import { Link, useLoaderData } from "@remix-run/react";
+import { Heading } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
 
@@ -23,11 +24,12 @@ export function Stats() {
 	];
 
 	return (
-		<div>
-			<h3 className="text-base font-semibold leading-6 text-gray-900">
+		<div className="flex flex-col gap-5">
+			<Heading className="text-base font-semibold leading-6 text-gray-900">
 				{t("title")}
-			</h3>
-			<dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+			</Heading>
+
+			<dl className="grid grid-cols-1 gap-5 sm:grid-cols-3">
 				{stats.map((item) => (
 					<div
 						key={item.name}
@@ -43,15 +45,13 @@ export function Stats() {
 								{item.stat}
 							</p>
 							<div className="absolute inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
-								<div className="text-sm">
-									<Link
-										to={item.path}
-										prefetch="intent"
-										className="font-medium text-indigo-600 hover:text-indigo-500"
-									>
-										{t("viewAll")}
-									</Link>
-								</div>
+								<Link
+									to={item.path}
+									prefetch="intent"
+									className="text-sm font-medium text-indigo-600 visited:text-indigo-600 hover:text-indigo-500"
+								>
+									{t("viewAll")}
+								</Link>
 							</div>
 						</dd>
 					</div>
