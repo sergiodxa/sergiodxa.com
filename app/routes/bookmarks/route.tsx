@@ -9,21 +9,19 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Like } from "~/models/like.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { database } from "~/services/db.server";
+
+import { queryBookmarks } from "./query";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/bookmarks#loader", async () => {
 		void new Logger(context).http(request);
 
-		let likes = await Like.list({ db: database(context.db) });
+		let likes = await queryBookmarks(context);
 
 		return jsonHash({
-			likes: likes.map((like) => {
-				return { title: like.title, url: like.url.toString() };
-			}),
+			likes,
 			async meta(): Promise<MetaDescriptor[]> {
 				let t = await new I18n().getFixedT(request);
 
