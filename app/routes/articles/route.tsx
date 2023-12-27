@@ -21,7 +21,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let url = new URL(request.url);
 
 	let term = z.string().nullable().parse(url.searchParams.get("q"));
-	let noCache = z.boolean().parse(url.searchParams.has("noCache"));
 
 	let headers = new Headers({
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
@@ -30,7 +29,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let t = await new I18n().getFixedT(request);
 
 	try {
-		let articles = await queryArticles(context, term, noCache);
+		let articles = await queryArticles(context, term);
 
 		let meta: MetaDescriptor[] = [];
 

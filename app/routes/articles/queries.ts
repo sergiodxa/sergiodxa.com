@@ -11,7 +11,6 @@ const SearchResultSchema = z.object({ path: z.string(), title: z.string() });
 export async function queryArticles(
 	context: AppLoadContext,
 	query: string | null,
-	noCache: boolean,
 ) {
 	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 	let db = database(context.db);
