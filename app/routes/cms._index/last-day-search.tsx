@@ -15,13 +15,35 @@ export function LastDaySearch() {
 				{t("title")}
 			</Heading>
 
-			<ul className="grid grid-cols-2 gap-2 rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-				{lastDaySearch.map((searchTerm) => (
-					<li key={searchTerm} className="flex-grow">
-						{searchTerm}
-					</li>
-				))}
-			</ul>
+			<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+					<Heading className="text-base font-semibold leading-6 text-gray-900">
+						Articles
+					</Heading>
+
+					<ul className="grid grid-cols-2 gap-2">
+						{lastDaySearch.articles.map((searchTerm) => (
+							<li key={searchTerm} className="flex-grow">
+								{searchTerm}
+							</li>
+						))}
+					</ul>
+				</div>
+
+				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+					<Heading className="text-base font-semibold leading-6 text-gray-900">
+						Tutorials
+					</Heading>
+
+					<ul className="grid grid-cols-2 gap-2 ">
+						{lastDaySearch.tutorials.map((searchTerm) => (
+							<li key={searchTerm} className="flex-grow">
+								{searchTerm}
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
 		</div>
 	);
 }
