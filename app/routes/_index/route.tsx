@@ -3,10 +3,10 @@ import { useLoaderData } from "@remix-run/react";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Feed } from "~/modules/feed.server";
 import { Logger } from "~/modules/logger.server";
 
 import { FeedList } from "./feed";
+import { queryArticles, queryBookmarks, queryTutorials, sort } from "./queries";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/index#loader", async () => {
@@ -17,14 +17,14 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		});
 
 		let [articles, bookmarks, tutorials] = await Promise.all([
-			Feed.articles(context),
-			Feed.bookmarks(context),
-			Feed.tutorials(context),
+			queryArticles(context),
+			queryBookmarks(context),
+			queryTutorials(context),
 		]);
 
 		return json(
 			{
-				items: Feed.sort(articles, bookmarks, tutorials),
+				items: sort(articles, bookmarks, tutorials),
 			},
 			{ headers },
 		);

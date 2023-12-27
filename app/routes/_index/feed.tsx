@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/no-redundant-roles */
+import type { sort } from "./queries";
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
-import type { Feed } from "~/modules/feed.server";
 
 import { BookmarkIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
@@ -13,7 +13,7 @@ import { cn } from "~/utils/cn";
 
 type Props = {
 	t: TFunction;
-	items: ReturnType<typeof Feed.sort>;
+	items: ReturnType<typeof sort>;
 };
 
 export function FeedList({ t, items }: Props) {
