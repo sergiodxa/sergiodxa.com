@@ -212,7 +212,7 @@ export default {
 			},
 
 			lastDaySearch: {
-				title: "Search term in the last day",
+				title: "Search Terms: Last 24hs",
 			},
 		},
 
