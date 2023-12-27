@@ -9,26 +9,21 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Bookmark } from "~/models/bookmark.server";
+import { Like } from "~/models/like.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { Airtable } from "~/services/airtable.server";
-import { Cache } from "~/services/cache.server";
+import { database } from "~/services/db.server";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/bookmarks#loader", async () => {
 		void new Logger(context).http(request);
 
-		let airtable = new Airtable(
-			context.env.AIRTABLE_API_KEY,
-			context.env.AIRTABLE_BASE,
-			context.env.AIRTABLE_TABLE_ID,
-		);
-
-		let cache = new Cache(context.kv.airtable);
+		let likes = await Like.list({ db: database(context.db) });
 
 		return jsonHash({
-			bookmarks: Bookmark.list({ airtable, cache }),
+			likes: likes.map((like) => {
+				return { title: like.title, url: like.url.toString() };
+			}),
 			async meta(): Promise<MetaDescriptor[]> {
 				let t = await new I18n().getFixedT(request);
 
@@ -43,9 +38,9 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 	return data.meta;
 };
 
-export default function Bookmarks() {
-	let { bookmarks } = useLoaderData<typeof loader>();
-	let t = useT("bookmarks");
+export default function Component() {
+	let { likes } = useLoaderData<typeof loader>();
+	let t = useT("likes");
 
 	return (
 		<section className="mx-auto max-w-screen-sm space-y-2">
@@ -53,10 +48,10 @@ export default function Bookmarks() {
 
 			<main>
 				<ul className="space-y-2">
-					{bookmarks.map((bookmark) => (
-						<li key={bookmark.url} className="list-inside list-disc">
-							<a href={bookmark.url} rel="nofollow noreferer">
-								{bookmark.title}
+					{likes.map((like) => (
+						<li key={like.url} className="list-inside list-disc">
+							<a href={like.url} rel="nofollow noreferer">
+								{like.title}
 							</a>
 						</li>
 					))}
