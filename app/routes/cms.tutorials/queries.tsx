@@ -3,12 +3,55 @@ import type { User } from "~/modules/session.server";
 import type { UUID } from "~/utils/uuid";
 
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 import { Tutorial } from "~/models/db-tutorial.server";
-import { MarkdownSchema } from "~/models/markdown.server";
 import { Logger } from "~/modules/logger.server";
+import { Markdown } from "~/modules/md.server";
 import { Tables, database } from "~/services/db.server";
 import { GitHub } from "~/services/github.server";
+
+export const MarkdownSchema = z
+	.string()
+	.transform((content) => {
+		if (content.startsWith("# ")) {
+			let [title, ...body] = content.split("\n");
+
+			let plain = body.join("\n").trimStart();
+
+			return {
+				attributes: {
+					title: title.slice(1).trim(),
+					tags: [],
+				},
+				body: plain,
+			};
+		}
+
+		let [tags, ...rest] = content.split("\n");
+		let [title, ...body] = rest.join("\n").trim().split("\n");
+		let plain = body.join("\n").trimStart();
+
+		return {
+			attributes: {
+				title: title.slice(1).trim(),
+				tags: tags
+					.split("#")
+					.map((tag) => tag.trim())
+					.filter(Boolean),
+			},
+			body: plain,
+		};
+	})
+	.pipe(
+		z.object({
+			attributes: z.object({
+				title: z.string().min(1),
+				tags: z.string().array(),
+			}),
+			body: z.string(),
+		}),
+	);
 
 export async function importTutorials(context: AppLoadContext, user: User) {
 	let logger = new Logger(context);
@@ -27,21 +70,20 @@ export async function importTutorials(context: AppLoadContext, user: User) {
 				let markdown = MarkdownSchema.parse(tutorial.content);
 				let title = markdown.attributes.title;
 				let createdAt = new Date(tutorial.createdAt ?? Date.now());
+
+				let plainBody = await Markdown.plain(markdown.body);
+
 				await Tutorial.create(
 					{ db },
 					{
 						slug,
 						title,
-						content: markdown.attributes.plain,
+						content: markdown.body,
 						authorId: user.id,
 						tags: markdown.attributes.tags,
 						createdAt,
 						updatedAt: createdAt,
-						excerpt: extractExcerpt({
-							body: markdown.attributes.plain,
-							description: undefined,
-							headline: "title: \n",
-						}),
+						excerpt: extractExcerpt(plainBody.toString()),
 					},
 				);
 			} catch (exception) {
@@ -63,16 +105,8 @@ export async function deleteTutorial(context: AppLoadContext, id: UUID) {
 	await Tutorial.destroy({ db }, id);
 }
 
-function extractExcerpt(input: {
-	body: string;
-	headline: string;
-	description?: string;
-}) {
-	if (input.description) return input.description;
-	if (!input.headline.includes("title: \n")) {
-		return `${input.headline.slice(0, -3)}…`;
-	}
-	return `${input.body.slice(0, 139)}…`.replaceAll("\n", " ");
+function extractExcerpt(body: string) {
+	return `${body.slice(0, 139)}…`.replaceAll("\n", " ");
 }
 
 function pathToSlug(path: string) {
