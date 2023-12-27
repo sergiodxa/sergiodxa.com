@@ -62,7 +62,7 @@ export class Tutorial extends Post<TutorialMeta> {
 	}
 
 	get renderable() {
-		return Markdown.parse(`# ${this.title}\n${this.content}`);
+		return Markdown.parse(this.content);
 	}
 
 	private wordCountPromise?: Promise<number>;
