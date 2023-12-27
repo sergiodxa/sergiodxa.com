@@ -25,6 +25,7 @@ export const BodySchema = z.union([TagSchema, ScalarSchema]);
 export const AttributesSchema = z.object({
 	title: z.string().min(1).max(140),
 	tags: z.string().array(),
+	plain: z.string(),
 });
 
 export const MarkdownSchema = z
@@ -33,17 +34,21 @@ export const MarkdownSchema = z
 		if (content.startsWith("# ")) {
 			let [title, ...body] = content.split("\n");
 
+			let plain = body.join("\n").trimStart();
+
 			return {
 				attributes: {
 					title: title.slice(1).trim(),
 					tags: [],
+					plain,
 				},
-				body: transform(parse(body.join("\n").trimStart())),
+				body: transform(parse(plain)),
 			};
 		}
 
 		let [tags, ...rest] = content.split("\n");
 		let [title, ...body] = rest.join("\n").trim().split("\n");
+		let plain = body.join("\n").trimStart();
 
 		return {
 			attributes: {
@@ -52,8 +57,9 @@ export const MarkdownSchema = z
 					.split("#")
 					.map((tag) => tag.trim())
 					.filter(Boolean),
+				plain,
 			},
-			body: transform(parse(body.join("\n").trimStart())),
+			body: transform(parse(plain)),
 		};
 	})
 	.pipe(z.object({ attributes: AttributesSchema, body: BodySchema }));
