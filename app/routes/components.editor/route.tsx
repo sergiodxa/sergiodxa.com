@@ -30,11 +30,11 @@ export async function action({ request, context }: DataFunctionArgs) {
 	return json({ content });
 }
 
-export function Editor() {
+export function Editor({ defaultContent }: { defaultContent?: string }) {
 	let { submit, data } = useFetcher<typeof action>();
 	let $textarea = useRef<HTMLTextAreaElement>(null);
 
-	let [state, dispatch] = useEditor($textarea.current);
+	let [state, dispatch] = useEditor($textarea.current, defaultContent);
 
 	let stateValue = state.value;
 
@@ -51,7 +51,7 @@ export function Editor() {
 
 	return (
 		<Provider value={providerValue}>
-			<div className="grid h-[calc(100vh-90px-32px)] gap-4 sm:grid-cols-2">
+			<div className="grid h-[calc(100vh-90px-72px-64px)] gap-4 sm:grid-cols-2">
 				<div className="flex h-full flex-col rounded-md border border-neutral-300 bg-white">
 					<div role="menubar" className="flex items-center justify-between p-2">
 						<div className="flex items-center gap-x-1 text-gray-700">

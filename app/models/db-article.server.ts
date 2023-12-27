@@ -6,7 +6,7 @@ import { and, eq } from "drizzle-orm";
 import { Post } from "~/models/post.server";
 import { Markdown } from "~/modules/md.server";
 import { Tables } from "~/services/db.server";
-import { assertUUID } from "~/utils/uuid";
+import { UUID, assertUUID } from "~/utils/uuid";
 
 interface ArticleMeta extends BaseMeta {
 	slug: string;
@@ -114,6 +114,11 @@ export class Article extends Post<ArticleMeta> {
 		}
 
 		return articles;
+	}
+
+	static async findById(services: Services, id: UUID) {
+		let post = await Post.show<ArticleMeta>(services, id);
+		return new this(services, post);
 	}
 
 	static override async show(

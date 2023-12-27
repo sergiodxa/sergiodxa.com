@@ -37,24 +37,30 @@ const context = createContext<{
 	dispatch: Dispatch<Actions>;
 }>({ element: createRef(), state: initialState, dispatch() {} });
 
-export function useEditor(element: HTMLTextAreaElement | null) {
-	return useReducer((state: EditorState, action: Actions) => {
-		if (action.type === "write") {
-			if (action.payload.value === state.value) return state;
-			return { ...state, value: action.payload.value };
-		}
+export function useEditor(
+	element: HTMLTextAreaElement | null,
+	defaultContent?: string,
+) {
+	return useReducer(
+		(state: EditorState, action: Actions) => {
+			if (action.type === "write") {
+				if (action.payload.value === state.value) return state;
+				return { ...state, value: action.payload.value };
+			}
 
-		if (action.type === "update" && element) {
-			let selection = action.payload.selection;
-			let selected = getSelected(state.value, selection);
-			let updated = action.payload.updater(selected);
-			setSelectionRange(element, action.payload.handler(selection));
-			let value = updateContent(state.value, selection, updated);
-			return { ...state, value };
-		}
+			if (action.type === "update" && element) {
+				let selection = action.payload.selection;
+				let selected = getSelected(state.value, selection);
+				let updated = action.payload.updater(selected);
+				setSelectionRange(element, action.payload.handler(selection));
+				let value = updateContent(state.value, selection, updated);
+				return { ...state, value };
+			}
 
-		return state;
-	}, initialState);
+			return state;
+		},
+		defaultContent ? { value: defaultContent } : initialState,
+	);
 }
 
 export const Provider = context.Provider;
