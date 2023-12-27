@@ -2,7 +2,7 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 
 import { z } from "zod";
 
-import { Article } from "~/models/db-article.server";
+import { Article } from "~/models/article.server";
 import { Cache } from "~/modules/cache.server";
 import { database } from "~/services/db.server";
 

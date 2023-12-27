@@ -7,7 +7,7 @@ import type {
 import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
-import { Article } from "~/models/db-article.server";
+import { Article } from "~/models/article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Editor } from "~/routes/components.editor/route";
 import { database } from "~/services/db.server";

@@ -9,7 +9,7 @@ import { Button, Form, Input, Label, NumberField } from "react-aria-components";
 import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { Article } from "~/models/db-article.server";
+import { Article } from "~/models/article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";

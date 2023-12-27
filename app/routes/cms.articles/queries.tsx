@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import fm from "front-matter";
 import { z } from "zod";
 
-import { Article } from "~/models/db-article.server";
+import { Article } from "~/models/article.server";
 import { Logger } from "~/modules/logger.server";
 import { Markdown } from "~/modules/md.server";
 import { CollectedNotes } from "~/services/cn.server";

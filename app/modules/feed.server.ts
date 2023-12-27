@@ -2,8 +2,8 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 
 import { z } from "zod";
 
+import { Article } from "~/models/article.server";
 import { Bookmark } from "~/models/bookmark.server";
-import { Article } from "~/models/db-article.server";
 import { Tutorial } from "~/models/tutorial.server";
 import { Cache } from "~/modules/cache.server";
 import { Airtable } from "~/services/airtable.server";

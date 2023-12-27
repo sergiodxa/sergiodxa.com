@@ -10,7 +10,7 @@ import { jsonHash } from "remix-utils/json-hash";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
-import { Article } from "~/models/db-article.server";
+import { Article } from "~/models/article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { database } from "~/services/db.server";
