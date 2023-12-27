@@ -4,28 +4,18 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { useLoaderData, useSubmit } from "@remix-run/react";
-import {
-	Button,
-	Cell,
-	Column,
-	Form,
-	Input,
-	Label,
-	NumberField,
-	Row,
-	Table,
-	TableBody,
-	TableHeader,
-} from "react-aria-components";
+import { useSubmit } from "@remix-run/react";
+import { Button, Form, Input, Label, NumberField } from "react-aria-components";
 import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Article } from "~/models/db-article.server";
+import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 
+import { ArticleList } from "./article-list";
 import { importArticles, resetArticles } from "./queries";
 
 const INTENT = {
@@ -41,13 +31,24 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	let db = database(context.db);
 
-	void new Logger(context).info("listing articles");
-
 	let articles = await Article.list({ db });
 
-	void new Logger(context).info(`queried ${articles.length} articles`);
+	let locale = await new I18n().getLocale(request);
 
-	return json({ articles: articles.map((article) => article.toJSON()) });
+	return json({
+		articles: articles.map((article) => {
+			return {
+				id: article.id,
+				title: article.title,
+				path: article.pathname,
+				date: article.createdAt.toLocaleDateString(locale, {
+					year: "numeric",
+					month: "short",
+					day: "numeric",
+				}),
+			};
+		}),
+	});
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -73,51 +74,15 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 export default function Component() {
 	return (
-		<>
+		<div className="pb-10">
 			<header className="flex justify-between">
 				<h2 className="text-3xl font-bold">Articles</h2>
-				<ImportArticles />
-				<ResetArticles />
+				{false && <ImportArticles />}
+				{false && <ResetArticles />}
 			</header>
 
-			<ArticlesTable />
-		</>
-	);
-}
-
-function ArticlesTable() {
-	let { articles } = useLoaderData<typeof loader>();
-	let t = useT("cms.articles.table");
-
-	return (
-		<Table aria-label="Users" className="w-full">
-			<TableHeader>
-				<Column className="text-left" isRowHeader>
-					{t("header.title")}
-				</Column>
-				<Column className="text-right">{t("header.createdAt")}</Column>
-				<Column className="text-right">{t("header.updatedAt")}</Column>
-			</TableHeader>
-
-			<TableBody>
-				{articles.map((article) => {
-					return (
-						<Row key={article.id} className="py-2">
-							<Cell className="flex flex-col">
-								<a href={`/articles/${article.slug}`}>{article.title}</a>
-								<p>{article.excerpt}</p>
-							</Cell>
-							<Cell className="flex-shrink-0 text-right">
-								{article.createdAt}
-							</Cell>
-							<Cell className="flex-shrink-0 text-right">
-								{article.updatedAt}
-							</Cell>
-						</Row>
-					);
-				})}
-			</TableBody>
-		</Table>
+			<ArticleList />
+		</div>
 	);
 }
 

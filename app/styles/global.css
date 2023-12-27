@@ -19,7 +19,7 @@ main a:has(:is(h1, h2, h3, h4, h5, h6)) {
 	text-decoration: none !important;
 }
 
-main a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
+.prose a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
 	content: " #";
 	color: rgb(55, 65, 81);
 	opacity: 0;
@@ -27,7 +27,7 @@ main a:has(:is(h1, h2, h3, h4, h5, h6)) :is(h1, h2, h3, h4, h5, h6):after {
 	transition-delay: 150ms;
 }
 
-main
+.prose
 	a:has(:is(h1, h2, h3, h4, h5, h6))
 	:is(h1, h2, h3, h4, h5, h6):hover:after {
 	opacity: 1;
