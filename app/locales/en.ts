@@ -261,5 +261,24 @@ export default {
 				},
 			},
 		},
+
+		tutorials: {
+			search: { label: "What're you looking for?", cta: "Search" },
+			import: { cta: "Import Tutorials" },
+			reset: { cta: "Reset Tutorials" },
+			list: {
+				item: {
+					publishedOn: "Published on {{date}}",
+					edit: "Edit Tutorial",
+				},
+			},
+			table: {
+				header: {
+					title: "Title",
+					createdAt: "Date Created",
+					updatedAt: "Last Update",
+				},
+			},
+		},
 	},
 };
