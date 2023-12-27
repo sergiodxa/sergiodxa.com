@@ -11,10 +11,10 @@ import { jsonHash } from "remix-utils/json-hash";
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
-import { Tutorial } from "~/models/tutorial.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
-import { GitHub } from "~/services/github.server";
+
+import { queryTutorials } from "./queries";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/tutorials#loader", async () => {
@@ -23,14 +23,8 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		let url = new URL(request.url);
 
 		let query = url.searchParams.get("q") ?? "";
-		let page = Number(url.searchParams.get("page") ?? 1);
 
-		let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
-
-		let tutorials = await Tutorial.list(
-			{ gh, kv: context.kv.tutorials },
-			query,
-		);
+		let tutorials = await queryTutorials(context, query);
 
 		let headers = new Headers({
 			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
@@ -39,12 +33,10 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		return jsonHash(
 			{
 				term: query,
-				page,
 				tutorials: tutorials.map((tutorial) => {
 					return {
-						slug: tutorial.slug,
+						path: tutorial.path,
 						title: tutorial.title,
-						createdAt: tutorial.createdAt,
 					};
 				}),
 				async meta(): Promise<MetaDescriptor[]> {
@@ -97,8 +89,8 @@ function List() {
 	return (
 		<ul className="space-y-2">
 			{tutorials.map((tutorial) => (
-				<li key={tutorial.slug} className="list-inside list-disc">
-					<Link to={`/tutorials/${tutorial.slug}`} prefetch="intent">
+				<li key={tutorial.path} className="list-inside list-disc">
+					<Link to={tutorial.path} prefetch="intent">
 						{tutorial.title}
 					</Link>
 				</li>
