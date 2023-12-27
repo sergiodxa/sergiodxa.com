@@ -113,6 +113,13 @@ export class Post<Meta extends BaseMeta> {
 					updatedAt: post.updatedAt,
 					// Meta
 					meta: post.meta.reduce((acc, meta) => {
+						if (meta.key in acc) {
+							let value = acc[meta.key];
+							if (Array.isArray(value)) {
+								return { ...acc, [meta.key]: [...value, meta.value] };
+							} else return { ...acc, [meta.key]: [value, meta.value] };
+						}
+
 						return { ...acc, [meta.key]: meta.value };
 					}, {} as Meta),
 				},
@@ -145,6 +152,13 @@ export class Post<Meta extends BaseMeta> {
 				updatedAt: post.updatedAt,
 				// Meta
 				meta: post.meta.reduce((acc, meta) => {
+					if (meta.key in acc) {
+						let value = acc[meta.key];
+						if (Array.isArray(value)) {
+							return { ...acc, [meta.key]: [...value, meta.value] };
+						} else return { ...acc, [meta.key]: [value, meta.value] };
+					}
+
 					return { ...acc, [meta.key]: meta.value };
 				}, {} as Meta),
 			},
@@ -181,14 +195,42 @@ export class Post<Meta extends BaseMeta> {
 
 		await Promise.all(
 			Object.entries(meta).map(async ([key, value]) => {
-				if (!value) return;
-				await db
-					.insert(Tables.postMeta)
-					.values({ postId: id, key, value })
-					.execute();
+				return createPostMeta(db, id, key, value);
 			}),
 		);
 
 		return await Post.show<Meta>({ db }, id);
+	}
+}
+
+async function createPostMeta(
+	db: Database,
+	id: UUID,
+	key: string,
+	value: unknown,
+) {
+	if (!value) return;
+
+	if (typeof value === "string") {
+		return void (await db
+			.insert(Tables.postMeta)
+			.values({ postId: id, key, value })
+			.execute());
+	}
+
+	if (typeof value === "boolean" || typeof value === "number") {
+		return createPostMeta(db, id, key, value.toString());
+	}
+
+	if (typeof value === "symbol") return;
+
+	if (typeof value === "function") return createPostMeta(db, id, key, value());
+
+	if (value instanceof Promise) return createPostMeta(db, id, key, await value);
+
+	if (Array.isArray(value)) {
+		return void (await Promise.all(
+			value.map((item: unknown) => createPostMeta(db, id, key, item)),
+		));
 	}
 }
