@@ -49,11 +49,9 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 				pubDate: tutorial.createdAt.toUTCString(),
 			};
 		}),
-	].sort((a, b) => {
-		let aDate = new Date(a.pubDate);
-		let bDate = new Date(b.pubDate);
-		return bDate.getTime() - aDate.getTime();
-	});
+	].sort(
+		(a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime(),
+	);
 
 	let rss = new RSS({
 		title: "Sergio Xalambrí",

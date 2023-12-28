@@ -69,7 +69,6 @@ server.use(
 				db: ctx.env.DB,
 				kv: {
 					cache: ctx.env.cache,
-					cn: ctx.env.cn,
 					auth: ctx.env.auth,
 					airtable: ctx.env.airtable,
 					tutorials: ctx.env.tutorials,

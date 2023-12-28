@@ -3,8 +3,6 @@
 interface RuntimeEnv {
 	auth: KVNamespace;
 	airtable: KVNamespace;
-	cn: KVNamespace;
-	gh: KVNamespace;
 	tutorials: KVNamespace;
 	cache: KVNamespace;
 	DB: D1Database;
