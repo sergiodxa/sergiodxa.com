@@ -51,14 +51,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 export default function Component() {
 	return (
-		<>
+		<div className="pb-10">
 			<Stats />
-			<div className="grid grid-cols-3 gap-5">
+			<div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
 				<CreateLike />
 				<div className="col-span-2">
 					<LastDaySearch />
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

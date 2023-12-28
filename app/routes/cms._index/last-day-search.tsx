@@ -21,7 +21,7 @@ export function LastDaySearch() {
 						Articles
 					</Heading>
 
-					<ul className="grid grid-cols-2 gap-2">
+					<ul className="list-inside list-disc">
 						{lastDaySearch.articles.map((searchTerm) => (
 							<li key={searchTerm} className="flex-grow">
 								{searchTerm}
@@ -35,7 +35,7 @@ export function LastDaySearch() {
 						Tutorials
 					</Heading>
 
-					<ul className="grid grid-cols-2 gap-2 ">
+					<ul className="list-inside list-disc">
 						{lastDaySearch.tutorials.map((searchTerm) => (
 							<li key={searchTerm} className="flex-grow">
 								{searchTerm}
