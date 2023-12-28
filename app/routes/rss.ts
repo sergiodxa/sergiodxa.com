@@ -24,7 +24,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			let link = new URL(article.pathname, "https://sergiodxa.com").toString();
 
 			return {
-				guid: String(article.id),
+				guid: article.id,
 				title: article.title,
 				description: `${article.excerpt}\n<a href="${link}">Read it on the web</a>`,
 				link,
@@ -32,7 +32,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			};
 		}),
 		...likes.map((like) => ({
-			guid: String(like.id),
+			guid: like.id,
 			title: like.title,
 			description: `<a href="${like.url}">Read it on the source</a>`,
 			link: like.url.toString(),
@@ -42,7 +42,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			let link = new URL(tutorial.pathname, "https://sergiodxa.com").toString();
 
 			return {
-				guid: String(tutorial.id),
+				guid: tutorial.id,
 				title: tutorial.title,
 				description: `${tutorial.excerpt}\n<a href="${link}">Read it on the web</a>`,
 				link,

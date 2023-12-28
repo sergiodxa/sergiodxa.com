@@ -22,7 +22,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	for (let tutorial of tutorials) {
 		let link = new URL(tutorial.pathname, "https://sergiodxa.com").toString();
 		rss.addItem({
-			guid: tutorial.slug,
+			guid: tutorial.id,
 			title: tutorial.title,
 			description: `${tutorial.excerpt}\n<a href="${link}">Read it on the web</a>`,
 			link,
