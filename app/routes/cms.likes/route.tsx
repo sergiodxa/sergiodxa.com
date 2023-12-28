@@ -12,10 +12,10 @@ import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 import { assertUUID } from "~/utils/uuid";
 
+import { ImportBookmarks } from "./import-bookmarks";
 import { LikesList } from "./likes-list";
 import { deleteLike, importBookmarks } from "./queries";
 import { INTENT } from "./types";
-import { ImportBookmarks } from "./import-bookmarks";
 
 export const handle: SDX.Handle = { hydrate: true };
 
