@@ -35,22 +35,31 @@ export default {
 			title: "No Results",
 			body: "The requested URL /articles?q={{term}} was not found on this server.",
 		},
+
 		title: "Articles",
+
 		meta: {
 			title: {
 				default: "Articles of sergiodxa",
 				search: 'Search results for "{{term}}" on sergiodxa\' blog',
 			},
 		},
+
 		header: {
 			title: "Articles",
 			description: "These are my articles.",
 		},
+
+		subscribe: {
+			cta: "Subscribe to my articles using <rss>RSS</rss>.",
+		},
+
 		description: {
 			search:
 				"Showing {{count}} articles for the query <highlight>{{term}}</highlight>",
 			default: "These are my articles.",
 		},
+
 		search: {
 			label: "Search",
 			placeholder: "Remix, SWR, Next, Rails…",
@@ -59,6 +68,7 @@ export default {
 				default: "Search",
 			},
 		},
+
 		nav: {
 			prev: "Previous articles",
 			next: "Next articles",
@@ -82,6 +92,10 @@ export default {
 		header: {
 			title: "Bookmarks",
 			description: "Links that I read and liked.",
+		},
+
+		subscribe: {
+			cta: "Subscribe to my bookmarks using <rss>RSS</rss>.",
 		},
 	},
 

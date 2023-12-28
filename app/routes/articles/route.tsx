@@ -5,6 +5,7 @@ import {
 	json,
 } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
+import { Trans } from "react-i18next";
 import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
@@ -73,6 +74,7 @@ export default function Articles() {
 			<PageHeader t={t} />
 
 			<div className="space-y-4">
+				<Subscribe />
 				<SearchForm t={t} defaultValue={term} />
 
 				<ul className="space-y-2">
@@ -86,5 +88,21 @@ export default function Articles() {
 				</ul>
 			</div>
 		</main>
+	);
+}
+
+function Subscribe() {
+	let t = useT("articles.subscribe");
+	return (
+		<Trans
+			t={t}
+			parent="p"
+			className="text-lg text-gray-800"
+			i18nKey="cta"
+			components={{
+				// eslint-disable-next-line jsx-a11y/anchor-has-content
+				rss: <a href="/articles.rss" />,
+			}}
+		/>
 	);
 }
