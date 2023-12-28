@@ -4,6 +4,7 @@ import { xml } from "remix-utils/responses";
 
 import { Tutorial } from "~/models/tutorial.server";
 import { Logger } from "~/modules/logger.server";
+import { RSS } from "~/modules/rss.server";
 import { database } from "~/services/db.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -15,35 +16,21 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let headers = new Headers();
 	headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");
 
-	let content = `
-<rss version="2.0">
-	<channel>
-		<title>Tutorials by Sergio Xalambrí</title>
-		<description>
-			The complete list of tutorials wrote by @sergiodxa.
-		</description>
-		<link>https://sergiodxa.com/tutorials.rss</link>
-	</channel>
+	let rss = new RSS({
+		title: "Tutorials by Sergio Xalambrí",
+		description: "The complete list of tutorials wrote by @sergiodxa.",
+		link: "https://sergiodxa.com/tutorials.rss",
+	});
 
-	${tutorials
-		.map((tutorial) => {
-			return `<item>
-		<title>${tutorial.title}</title>
-		<description>${tutorial.excerpt}\n<a href="https://sergiodxa.com/${
-			tutorial.pathname
-		}">Read it on the web</a></description>
-		<link>https://sergiodxa.com/tutorials/${tutorial.slug}</link>
-		${
-			tutorial.createdAt
-				? `<pubDate>${new Date(tutorial.createdAt).toUTCString()}</pubDate>`
-				: ""
-		}
-		<guid>${tutorial.slug}</guid>
-	</item>`;
-		})
-		.join("\n	")}
-    </rss>
-  `;
+	for (let tutorial of tutorials) {
+		rss.addItem({
+			guid: tutorial.slug,
+			title: tutorial.title,
+			description: `${tutorial.excerpt}\n<a href="https://sergiodxa.com/${tutorial.pathname}">Read it on the web</a>`,
+			link: new URL(tutorial.pathname, "https://sergiodxa.com").toString(),
+			pubDate: tutorial.createdAt.toUTCString(),
+		});
+	}
 
-	return xml(`<?xml version="1.0" encoding="UTF-8"?>${content}`, { headers });
+	return xml(rss.toString(), { headers });
 }
