@@ -13,9 +13,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let db = database(context.db);
 	let tutorials = await Tutorial.list({ db });
 
-	let headers = new Headers();
-	headers.set("cache-control", "s-maxage=3600, stale-while-revalidate");
-
 	let rss = new RSS({
 		title: "Tutorials by Sergio Xalambrí",
 		description: "The complete list of tutorials wrote by @sergiodxa.",
@@ -23,14 +20,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	});
 
 	for (let tutorial of tutorials) {
+		let link = new URL(tutorial.pathname, "https://sergiodxa.com").toString();
 		rss.addItem({
 			guid: tutorial.slug,
 			title: tutorial.title,
-			description: `${tutorial.excerpt}\n<a href="https://sergiodxa.com/${tutorial.pathname}">Read it on the web</a>`,
-			link: new URL(tutorial.pathname, "https://sergiodxa.com").toString(),
+			description: `${tutorial.excerpt}\n<a href="${link}">Read it on the web</a>`,
+			link,
 			pubDate: tutorial.createdAt.toUTCString(),
 		});
 	}
 
-	return xml(rss.toString(), { headers });
+	return xml(rss.toString());
 }
