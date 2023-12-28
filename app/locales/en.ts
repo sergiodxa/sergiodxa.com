@@ -231,13 +231,11 @@ export default {
 		likes: {
 			search: { label: "What're you looking for?", cta: "Search" },
 			import: { cta: "Import Bookmarks" },
-			delete: { cta: "Delete", pending: "Deleting" },
-			table: {
-				header: {
-					title: "Title",
-					createdAt: "Date Created",
-					updatedAt: "Last Update",
-					actions: "Actions",
+			list: {
+				item: {
+					publishedOn: "Published on {{date}}",
+					edit: "Edit Like",
+					delete: { cta: "Delete", pending: "Deleting" },
 				},
 			},
 		},
@@ -252,13 +250,6 @@ export default {
 					edit: "Edit Article",
 				},
 			},
-			table: {
-				header: {
-					title: "Title",
-					createdAt: "Date Created",
-					updatedAt: "Last Update",
-				},
-			},
 		},
 
 		tutorials: {
@@ -269,13 +260,7 @@ export default {
 				item: {
 					publishedOn: "Published on {{date}}",
 					edit: "Edit Tutorial",
-				},
-			},
-			table: {
-				header: {
-					title: "Title",
-					createdAt: "Date Created",
-					updatedAt: "Last Update",
+					delete: { cta: "Delete", pending: "Deleting" },
 				},
 			},
 		},

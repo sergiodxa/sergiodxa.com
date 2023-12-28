@@ -5,27 +5,8 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
-import {
-	useActionData,
-	useFetcher,
-	useLoaderData,
-	useSearchParams,
-	useSubmit,
-} from "@remix-run/react";
-import { useEffect } from "react";
-import {
-	Button,
-	Cell,
-	Column,
-	Form,
-	Input,
-	Label,
-	Row,
-	SearchField,
-	Table,
-	TableBody,
-	TableHeader,
-} from "react-aria-components";
+import { useActionData, useSearchParams, useSubmit } from "@remix-run/react";
+import { Button, Form, Input, Label, SearchField } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Like } from "~/models/like.server";
@@ -34,9 +15,9 @@ import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 import { assertUUID } from "~/utils/uuid";
 
+import { LikesList } from "./likes-list";
 import { deleteLike, importBookmarks } from "./queries";
-
-const INTENT = { importBookmarks: "IMPORT_BOOKMARKS", delete: "DELETE_LIKE" };
+import { INTENT } from "./types";
 
 export const handle: SDX.Handle = { hydrate: true };
 
@@ -106,7 +87,7 @@ export default function Component() {
 			</header>
 
 			<SearchForm />
-			<LikesTable />
+			<LikesList />
 		</>
 	);
 }
@@ -154,41 +135,6 @@ function SearchForm() {
 	);
 }
 
-function LikesTable() {
-	let { likes } = useLoaderData<typeof loader>();
-	let t = useT("cms.likes.table");
-
-	return (
-		<Table aria-label="Users" className="w-full">
-			<TableHeader>
-				<Column className="text-left" isRowHeader>
-					{t("header.title")}
-				</Column>
-				<Column className="text-right">{t("header.createdAt")}</Column>
-				<Column className="text-right">{t("header.updatedAt")}</Column>
-				<Column className="text-center">{t("header.actions")}</Column>
-			</TableHeader>
-
-			<TableBody>
-				{likes.map((like) => {
-					return (
-						<Row key={like.id} className="py-2">
-							<Cell>
-								<a href={like.url}>{like.title}</a>
-							</Cell>
-							<Cell className="flex-shrink-0 text-right">{like.createdAt}</Cell>
-							<Cell className="flex-shrink-0 text-right">{like.updatedAt}</Cell>
-							<Cell>
-								<DeleteForm id={like.id} />
-							</Cell>
-						</Row>
-					);
-				})}
-			</TableBody>
-		</Table>
-	);
-}
-
 function ImportBookmarks() {
 	let submit = useSubmit();
 	let actionData = useActionData<typeof action>();
@@ -210,37 +156,6 @@ function ImportBookmarks() {
 				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
 			>
 				{t("cta")}
-			</Button>
-		</Form>
-	);
-}
-
-function DeleteForm({ id }: { id: string }) {
-	let fetcher = useFetcher<typeof action>();
-	let t = useT("cms.likes.delete");
-
-	useEffect(() => {
-		if (fetcher.data?.error) alert(fetcher.data.error);
-	}, [fetcher]);
-
-	let isDeleting = fetcher.state !== "idle";
-
-	return (
-		<Form
-			method="post"
-			onSubmit={(event) => {
-				event.preventDefault();
-				fetcher.submit(event.currentTarget);
-			}}
-		>
-			<input type="hidden" name="intent" value={INTENT.delete} />
-			<input type="hidden" name="id" value={id} />
-
-			<Button
-				type="submit"
-				className="block flex-shrink-0 rounded-md border-2 border-red-600 bg-red-100 px-4 py-2 text-center text-base font-medium text-red-900"
-			>
-				{isDeleting ? t("pending") : t("cta")}
 			</Button>
 		</Form>
 	);
