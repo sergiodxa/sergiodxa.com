@@ -18,6 +18,10 @@ export default {
 				"I'm a web developer from Buenos Aires, Argentina. I work at <strong>Daffy</strong> as a Web Developer.",
 		},
 
+		subscribe: {
+			cta: "Subscribe to my content using <rss>RSS</rss>.",
+		},
+
 		feed: {
 			title: "Activity",
 			description: "The latests activity on my website",

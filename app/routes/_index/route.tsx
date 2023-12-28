@@ -1,5 +1,6 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
+import { Trans } from "react-i18next";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
@@ -39,7 +40,27 @@ export default function Index() {
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-8">
 			<PageHeader t={t} />
 
-			<FeedList t={t} items={items} />
+			<div className="flex flex-col gap-y-4">
+				<Subscribe />
+
+				<FeedList t={t} items={items} />
+			</div>
 		</main>
+	);
+}
+
+function Subscribe() {
+	let t = useT("home.subscribe");
+	return (
+		<Trans
+			t={t}
+			parent="p"
+			className="text-sm text-gray-600"
+			i18nKey="cta"
+			components={{
+				// eslint-disable-next-line jsx-a11y/anchor-has-content
+				rss: <a href="/rss" className="text-blue-600 underline" />,
+			}}
+		/>
 	);
 }

@@ -45,7 +45,7 @@ export default function Component() {
 		<main className="mx-auto max-w-screen-sm space-y-2">
 			<PageHeader t={t} />
 
-			<div className="space-y-4">
+			<div className="flex flex-col gap-y-4">
 				<Subscribe />
 
 				<ul className="space-y-2">
