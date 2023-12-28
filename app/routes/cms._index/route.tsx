@@ -51,7 +51,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 export default function Component() {
 	return (
-		<div className="pb-10">
+		<div className="flex flex-col gap-8">
 			<Stats />
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
 				<CreateLike />
