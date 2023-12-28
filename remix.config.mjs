@@ -13,8 +13,6 @@ export default {
 	tailwind: true,
 	watchPaths: ["./server/**/*.ts"],
 	future: {
-		v3_fetcherPersist: true,
-		v3_relativeSplatPath: true,
 	},
-	serverNodeBuiltinsPolyfill: { modules: {} },
+	serverNodeBuiltinsPolyfill: { modules: {}, },
 };
