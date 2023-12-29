@@ -19,6 +19,7 @@ import {
 	ScrollRestoration,
 	useLoaderData,
 	NavLink,
+	useMatches,
 } from "@remix-run/react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,6 +34,7 @@ import { SessionStorage } from "~/modules/session.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
+import { cn } from "./utils/cn";
 
 export let links: LinksFunction = () => {
 	return [
@@ -94,11 +96,19 @@ export default function App() {
 	let { locale } = useLoaderData<typeof loader>();
 	useChangeLanguage(locale);
 
+	let matches = useMatches();
+	let match = matches.findLast((match) => {
+		if (!match.handle) return false;
+		if (typeof match.handle !== "object") return false;
+		if ("noPadding" in match.handle) return true;
+		return false;
+	});
+
 	return (
 		<Document locale={locale}>
 			<Header />
 
-			<div className="p-4">
+			<div className={cn({ "p-4": Boolean(match) })}>
 				<Outlet />
 			</div>
 		</Document>
@@ -181,7 +191,7 @@ function Document({
 					href="https://webmention.io/sergiodxa.com/xmlrpc"
 				/>
 			</head>
-			<body className="bg-neutral-50 font-sans text-neutral-900">
+			<body className="min-h-full bg-neutral-50 font-sans text-neutral-900">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate || process.env.NODE_ENV === "development" ? (

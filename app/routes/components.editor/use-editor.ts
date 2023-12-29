@@ -20,7 +20,7 @@ export type EditorState = {
 export type Updater = (selected: string) => string;
 export type Handler = (selection: SelectionType) => SelectionType;
 
-type Actions =
+export type Actions =
 	| { type: "write"; payload: { value: string } }
 	| {
 			type: "update";
