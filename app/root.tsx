@@ -34,6 +34,7 @@ import { SessionStorage } from "~/modules/session.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
+
 import { cn } from "./utils/cn";
 
 export let links: LinksFunction = () => {
