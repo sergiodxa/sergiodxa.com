@@ -29,7 +29,8 @@
     "db:migration:create": "wrangler d1 migrations create",
     "db:migration:list": "wrangler d1 migrations list",
     "db:migration:run": "wrangler d1 migrations apply",
-    "g:icons": "bunx rmx-cli svg-sprite icons app/components"
+    "g:icons": "bunx rmx-cli svg-sprite icons app/components",
+    "postg:icons": "prettier --write app/components/icon.tsx && eslint --fix app/components/icon.tsx"
   },
   "lint-stage": {
     "*.{ts,tsx}": [
