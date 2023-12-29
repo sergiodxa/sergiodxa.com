@@ -47,6 +47,25 @@ export class Like extends Post<LikeMeta> {
 		return posts.map((post) => new Like({ db }, post));
 	}
 
+	static async search({ db }: Services, query: string) {
+		let likes = await Like.list({ db });
+
+		let words = query
+			.trim()
+			.toLowerCase()
+			.split(/\s+/)
+			.filter((word) => word.length > 1);
+
+		for (let word of words) {
+			likes = likes.filter((item) => {
+				let title = item.title.toLowerCase();
+				return title.includes(word);
+			});
+		}
+
+		return likes;
+	}
+
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
 		let post = await Post.show<LikeMeta>({ db }, id);
 		return new Like({ db }, post);

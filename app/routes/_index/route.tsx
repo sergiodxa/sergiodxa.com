@@ -1,8 +1,10 @@
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { Trans } from "react-i18next";
+import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
+import { SearchForm } from "~/components/search-form";
 import { useT } from "~/helpers/use-i18n.hook";
 import { Logger } from "~/modules/logger.server";
 
@@ -17,14 +19,18 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
 		});
 
+		let url = new URL(request.url);
+		let query = z.string().nullable().parse(url.searchParams.get("q"));
+
 		let [articles, bookmarks, tutorials] = await Promise.all([
-			queryArticles(context),
-			queryBookmarks(context),
-			queryTutorials(context),
+			queryArticles(context, query),
+			queryBookmarks(context, query),
+			queryTutorials(context, query),
 		]);
 
 		return json(
 			{
+				query,
 				items: sort(articles, bookmarks, tutorials),
 			},
 			{ headers },
@@ -33,7 +39,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 export default function Index() {
-	let { items } = useLoaderData<typeof loader>();
+	let { items, query } = useLoaderData<typeof loader>();
 	let t = useT("home");
 
 	return (
@@ -42,6 +48,7 @@ export default function Index() {
 
 			<div className="flex flex-col gap-y-4">
 				<Subscribe />
+				<SearchForm t={t} defaultValue={query ?? undefined} />
 
 				<FeedList t={t} items={items} />
 			</div>

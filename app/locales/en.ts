@@ -22,6 +22,15 @@ export default {
 			cta: "Subscribe to my content using <rss>RSS</rss>.",
 		},
 
+		search: {
+			label: "Search",
+			placeholder: "Remix, SWR, Next, Rails…",
+			button: {
+				progress: "Searching…",
+				default: "Search",
+			},
+		},
+
 		feed: {
 			title: "Activity",
 			description: "The latests activity on my website",
