@@ -66,15 +66,10 @@ server.use(
 			let measurer = new Measurer();
 
 			return {
-				db: ctx.env.DB,
-				kv: {
-					cache: ctx.env.cache,
-					auth: ctx.env.auth,
-					airtable: ctx.env.airtable,
-					tutorials: ctx.env.tutorials,
-				},
-				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
 				env,
+				db: ctx.env.DB,
+				kv: { cache: ctx.env.cache, auth: ctx.env.auth },
+				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
 				time: measurer.time.bind(measurer),
 			};
 		},

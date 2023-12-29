@@ -4,9 +4,7 @@ node_compat = true
 
 kv_namespaces = [
   { binding = "cache", id = "597a3ce0108c42798aeac0044a566e31", preview_id = "cache" },
-  { binding = "airtable", id = "7be9035dc2c04b2581e0a85ec1af46bb", preview_id = "airtable@sergiodxa.com" },
   { binding = "auth", id = "fda5fdfe90e74e2b82dd0ccd49346c27", preview_id = "auth@sergiodxa.com" },
-  { binding = "tutorials", id = "35d8114ec66b41a3b1fb1723df61282f", preview_id = "tutorials@sergiodxa.com" },
 ]
 
 [[d1_databases]]
