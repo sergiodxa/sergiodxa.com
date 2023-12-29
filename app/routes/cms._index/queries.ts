@@ -52,17 +52,23 @@ export async function createQuickLike(
 export async function queryLastDaySearch(context: AppLoadContext) {
 	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 
-	let [articles, tutorials] = await Promise.all([
+	let [articles, tutorials, feedArticles, feedTutorials] = await Promise.all([
 		cache.list("articles:search:"),
 		cache.list("tutorials:search:"),
+		cache.list("feed:articles:search:"),
+		cache.list("feed:tutorials:search:"),
 	]);
 
 	return {
-		articles: articles.map((key) => key.replace("articles:search:", "")),
-		tutorials: tutorials.map((key) => {
-			key = key.replace("tutorials:search:", "");
-			if (!key.startsWith("tech:")) return key;
-			return key.replace("tech:", "");
-		}),
+		articles: [...articles, ...feedArticles]
+			.map((key) => key.replace("articles:search:", "").replace("feed:", ""))
+			.sort((a, b) => a.localeCompare(b)),
+		tutorials: [...tutorials, ...feedTutorials]
+			.map((key) => {
+				key = key.replace("tutorials:search:", "").replace("feed:", "");
+				if (!key.startsWith("tech:")) return key;
+				return key.replace("tech:", "");
+			})
+			.sort((a, b) => a.localeCompare(b)),
 	};
 }
