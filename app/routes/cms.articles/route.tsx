@@ -78,15 +78,17 @@ export default function Component() {
 			<header className="flex justify-between gap-4 px-5">
 				<h2 className="text-3xl font-bold">Articles</h2>
 
-				<Link
-					to="/cms/articles/new"
-					className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900 no-underline visited:text-blue-900"
-				>
-					Write Article
-				</Link>
+				<div className="flex items-center gap-4">
+					<Link
+						to="/cms/articles/new"
+						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900 no-underline visited:text-blue-900"
+					>
+						Write Article
+					</Link>
 
-				{false && <ImportArticles />}
-				{false && <ResetArticles />}
+					<ImportArticles />
+					<ResetArticles />
+				</div>
 			</header>
 
 			<ArticleList />
@@ -101,6 +103,7 @@ function ImportArticles() {
 	return (
 		<Form
 			method="post"
+			className="flex items-center gap-1"
 			onSubmit={(event) => {
 				event.preventDefault();
 				submit(event.currentTarget);
@@ -108,8 +111,11 @@ function ImportArticles() {
 		>
 			<input type="hidden" name="intent" value={INTENT.import} />
 			<NumberField name="page">
-				<Label>Page</Label>
-				<Input name="page" />
+				<Label className="sr-only">Page</Label>
+				<Input
+					name="page"
+					className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
+				/>
 			</NumberField>
 			<Button
 				type="submit"
