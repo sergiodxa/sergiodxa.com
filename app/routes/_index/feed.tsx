@@ -4,10 +4,10 @@ import type { sort } from "./queries";
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 
-import { BookmarkIcon, PencilIcon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
+import Icon from "~/components/icon";
 import { useLocale } from "~/helpers/use-i18n.hook";
 import { cn } from "~/utils/cn";
 
@@ -44,7 +44,11 @@ export function FeedList({ t, items }: Props) {
 								/>
 							}
 							icon={
-								<PencilIcon className="h-5 w-5 text-white" aria-hidden="true" />
+								<Icon
+									icon="pencil"
+									className="h-5 w-5 text-white"
+									aria-hidden="true"
+								/>
 							}
 							iconColor="bg-amber-500"
 							createdAt={new Date(item.payload.createdAt)}
@@ -76,7 +80,11 @@ export function FeedList({ t, items }: Props) {
 								/>
 							}
 							icon={
-								<PencilIcon className="h-5 w-5 text-white" aria-hidden="true" />
+								<Icon
+									icon="pencil"
+									className="h-5 w-5 text-white"
+									aria-hidden="true"
+								/>
 							}
 							iconColor="bg-amber-500"
 							createdAt={new Date(item.payload.createdAt)}
@@ -109,7 +117,8 @@ export function FeedList({ t, items }: Props) {
 								/>
 							}
 							icon={
-								<BookmarkIcon
+								<Icon
+									icon="bookmark"
 									className="h-5 w-5 text-white"
 									aria-hidden="true"
 								/>

@@ -28,7 +28,8 @@
     "db:run": "wrangler d1 execute",
     "db:migration:create": "wrangler d1 migrations create",
     "db:migration:list": "wrangler d1 migrations list",
-    "db:migration:run": "wrangler d1 migrations apply"
+    "db:migration:run": "wrangler d1 migrations apply",
+    "g:icons": "bunx rmx-cli svg-sprite icons app/components"
   },
   "lint-stage": {
     "*.{ts,tsx}": [
@@ -116,6 +117,7 @@
     "pptr-testing-library": "^0.7.0",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.4.0",
+    "rmx-cli": "^0.4.15",
     "tailwindcss": "^3.3.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2",
