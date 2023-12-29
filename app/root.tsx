@@ -109,7 +109,7 @@ export default function App() {
 		<Document locale={locale}>
 			<Header />
 
-			<div className={cn({ "p-4": Boolean(match) })}>
+			<div className={cn({ "p-4": !match })}>
 				<Outlet />
 			</div>
 		</Document>

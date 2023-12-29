@@ -26,7 +26,7 @@ import { assertUUID } from "~/utils/uuid";
 import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
 
-export const matches = {
+export const handle = {
 	noPadding: true,
 };
 
