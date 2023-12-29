@@ -7,6 +7,7 @@ import type {
 import { Link, useLoaderData } from "@remix-run/react";
 import { Trans } from "react-i18next";
 import { jsonHash } from "remix-utils/json-hash";
+import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
 import { SearchForm } from "~/components/search-form";
@@ -22,7 +23,10 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 		let url = new URL(request.url);
 
-		let query = url.searchParams.get("q") ?? "";
+		let query = z
+			.string()
+			.transform((v) => v.toLowerCase())
+			.parse(url.searchParams.get("q"));
 
 		let tutorials = await queryTutorials(context, query);
 

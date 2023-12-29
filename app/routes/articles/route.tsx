@@ -21,7 +21,11 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	let url = new URL(request.url);
 
-	let term = z.string().nullable().parse(url.searchParams.get("q"));
+	let term = z
+		.string()
+		.transform((v) => v.toLowerCase())
+		.nullable()
+		.parse(url.searchParams.get("q"));
 
 	let headers = new Headers({
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",

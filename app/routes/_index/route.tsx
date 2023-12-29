@@ -20,7 +20,11 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		});
 
 		let url = new URL(request.url);
-		let query = z.string().nullable().parse(url.searchParams.get("q"));
+		let query = z
+			.string()
+			.transform((v) => v.toLowerCase())
+			.nullable()
+			.parse(url.searchParams.get("q"));
 
 		let [articles, bookmarks, tutorials] = await Promise.all([
 			queryArticles(context, query),
