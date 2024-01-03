@@ -4,9 +4,6 @@
   "description": "The code behind sergiodxa.com",
   "license": "MIT",
   "type": "module",
-  "engines": {
-    "node": "18"
-  },
   "scripts": {
     "ci": "bun run build & bun run lint & bun run test -- --run && bun run typecheck",
     "build": "remix build",
@@ -82,6 +79,7 @@
     "remix-hono": "^0.0.14",
     "remix-i18next": "^5.4.0",
     "remix-utils": "^7.1.0",
+    "spin-delay": "^1.2.0",
     "strip-markdown": "^6.0.0",
     "tailwind-merge": "^1.13.2",
     "tiny-invariant": "^1.3.1",
