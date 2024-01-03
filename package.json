@@ -64,6 +64,7 @@
     "drizzle-orm": "^0.29.1",
     "front-matter": "^4.0.2",
     "hono": "^3.7.6",
+    "htmlparser2": "^9.0.0",
     "i18next": "^23.5.1",
     "i18next-browser-languagedetector": "^7.1.0",
     "inflected": "^2.1.0",

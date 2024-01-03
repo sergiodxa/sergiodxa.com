@@ -1,3 +1,5 @@
+import { parseFeed } from "htmlparser2";
+
 interface Item {
 	guid: string;
 	title: string;
@@ -13,12 +15,28 @@ interface Channel {
 }
 
 export class RSS {
-	private items = new Set<Item>();
+	private itemSet = new Set<Item>();
 
-	constructor(private channel: Channel) {}
+	constructor(readonly channel: Channel) {}
+
+	get items() {
+		return Array.from(this.itemSet);
+	}
 
 	addItem(item: Item) {
-		this.items.add(item);
+		this.itemSet.add(item);
+	}
+
+	removeItem(guid: string) {
+		let item = [...this.itemSet].find((item) => item.guid === guid);
+		if (item) this.itemSet.delete(item);
+	}
+
+	toJSON() {
+		return {
+			channel: this.channel,
+			items: Array.from(this.itemSet),
+		};
 	}
 
 	toString() {
@@ -28,7 +46,7 @@ export class RSS {
     <title>${this.channel.title}</title>
     <description>${this.channel.description}</description>
     <link>${this.channel.link}</link>
-    ${Array.from(this.items)
+    ${this.items
 			.map((item) => {
 				return `<item>
         <guid>${item.guid}</guid>
@@ -41,5 +59,49 @@ export class RSS {
 			.join("\n")}
   </channel>
 </rss>`;
+	}
+
+	static async fetch(url: URL) {
+		let response = await fetch(url, {
+			method: "GET",
+			headers: { "cache-control": "no-cache, no-store" },
+		});
+
+		if (!response.ok) throw new Error("Failed to fetch RSS feed");
+		if (!response.headers.get("Content-Type")?.includes("application/xml")) {
+			throw new Error("Invalid Content-Type");
+		}
+
+		let text = await response.text();
+
+		let feed = parseFeed(text, { xmlMode: true });
+
+		if (!feed) throw new Error("Invalid RSS feed");
+
+		if (!feed.title || !feed.description || !feed.link) {
+			throw new Error("Invalid RSS feed");
+		}
+
+		let rss = new RSS({
+			title: feed.title,
+			description: feed.description,
+			link: feed.link,
+		});
+
+		for (let { id, title, description, link, pubDate } of feed.items) {
+			if (!id || !title || !description || !link || !pubDate) {
+				throw new Error("Invalid RSS feed");
+			}
+
+			rss.addItem({
+				guid: id,
+				link,
+				title,
+				pubDate: pubDate.toISOString(),
+				description,
+			});
+		}
+
+		return rss;
 	}
 }
