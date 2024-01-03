@@ -26,10 +26,6 @@ import { assertUUID } from "~/utils/uuid";
 import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
 
-export const handle = {
-	noPadding: true,
-};
-
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	await SessionStorage.requireUser(context, request);
 
@@ -95,7 +91,7 @@ export default function Component() {
 		<Provider value={providerValue}>
 			<Form
 				method="post"
-				className="grid min-h-[calc(100vh-90px)] w-full grid-cols-2 gap-4"
+				className="grid min-h-screen w-full grid-cols-2 gap-4"
 			>
 				<div className="py-4 pl-4">
 					<Textbox
