@@ -29,6 +29,10 @@ export let EnvSchema = z.object({
 
 	GH_APP_ID: z.string().min(1),
 	GH_APP_PEM: z.string().min(1),
+
+	CK_API_KEY: z.string(),
+	CK_API_SECRET: z.string(),
+	CK_FORM_ID: z.string(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
