@@ -85,7 +85,7 @@ export default function Component() {
 			</Card>
 
 			<section className="mx-auto grid w-full max-w-screen-xl grid-cols-2 gap-5">
-				<Card className="col-span-1 row-span-2 aspect-auto w-full max-w-none items-stretch justify-normal">
+				<ProseCard className="col-span-1 row-span-2">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						1. Setup an Authenticator
 					</h2>
@@ -94,9 +94,15 @@ export default function Component() {
 						Create an Authenticator to help you let your users access into your
 						application.
 					</p>
-				</Card>
 
-				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<p>
+						An Authenticator is a function that takes a request and returns a
+						user. If the request is authenticated, the user will be returned.
+						Otherwise, the user will be redirected to the login page.
+					</p>
+				</ProseCard>
+
+				<ProseCard className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						2. Login with email + password
 					</h2>
@@ -105,9 +111,9 @@ export default function Component() {
 						Add a login form to your site with a few lines of code. Remix Auth
 						will handle the rest.
 					</p>
-				</Card>
+				</ProseCard>
 
-				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+				<ProseCard className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						3. Keep the user logged-in longer
 					</h2>
@@ -116,9 +122,9 @@ export default function Component() {
 						Ask the user if they want to stay logged-in for a longer period of
 						time.
 					</p>
-				</Card>
+				</ProseCard>
 
-				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+				<ProseCard className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						4. Take the user back where it was
 					</h2>
@@ -127,15 +133,32 @@ export default function Component() {
 						Redirect the user back to the page they were on before they had to
 						login.
 					</p>
-				</Card>
+				</ProseCard>
 
-				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+				<ProseCard className="col-span-1 row-span-2">
 					<h2 className="font-medium tracking-wide text-blue-500">
-						5. Access with GitHub
+						5. Split the login and signup strategies
+					</h2>
+
+					<p>
+						Use different Remix Auth strategies for login and signup so you can:
+					</p>
+
+					<ul>
+						<li>Ask for more information during signup.</li>
+						<li>Validate the password strength.</li>
+						<li>Send a confirmation email.</li>
+						<li>Warn about leaked passwords.</li>
+					</ul>
+				</ProseCard>
+
+				<ProseCard className="col-span-1">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						6. Access with GitHub
 					</h2>
 
 					<p>Allow users to use their GitHub account to access your site.</p>
-				</Card>
+				</ProseCard>
 			</section>
 		</main>
 	);
@@ -152,6 +175,25 @@ function Card({
 		<article
 			className={cn(
 				"isolate flex aspect-video w-full max-w-md flex-col items-center justify-center gap-6 rounded-3xl bg-white p-10 shadow-lg",
+				className,
+			)}
+		>
+			{children}
+		</article>
+	);
+}
+
+function ProseCard({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
+	return (
+		<article
+			className={cn(
+				"prose isolate w-full rounded-3xl bg-white p-10 shadow-lg",
 				className,
 			)}
 		>
