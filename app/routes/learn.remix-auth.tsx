@@ -37,15 +37,15 @@ export default function Component() {
 	});
 
 	return (
-		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-20 bg-white bg-gradient-to-b from-white to-gray-200 px-5 py-20">
-			<h1 className="flex flex-shrink-0 flex-col text-center text-9xl text-black">
-				<small className="text-5xl font-thin">
+		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-5 bg-white bg-gradient-to-b from-white to-gray-200 py-10 sm:gap-20 sm:py-20">
+			<h1 className="flex flex-shrink-0 flex-col text-center text-5xl text-black sm:text-9xl">
+				<small className="text-xl font-thin">
 					A <em className="text-blue-600">free</em> email course to learn
 				</small>
 				<strong className="font-semibold tracking-wide">Remix Auth</strong>
 			</h1>
 
-			<Card>
+			<article className="isolate -mx-5 flex aspect-video w-full max-w-md flex-col items-center justify-center gap-6 bg-white p-10 shadow-lg sm:rounded-3xl">
 				<h2 className="sr-only">Subscribe</h2>
 
 				{!actionData ? (
@@ -74,18 +74,18 @@ export default function Component() {
 						</Button>
 					</Form>
 				) : actionData.state == "active" ? (
-					<p className="text-3xl font-medium text-green-500">
+					<p className="text-2xl font-medium text-green-500 sm:text-3xl">
 						You're subscribed!
 					</p>
 				) : (
-					<p className="text-3xl font-medium text-blue-500">
+					<p className="text-2xl font-medium text-blue-500 sm:text-3xl">
 						Confirm your subscription.
 					</p>
 				)}
-			</Card>
+			</article>
 
-			<section className="mx-auto grid w-full max-w-screen-xl grid-cols-2 gap-5">
-				<ProseCard className="col-span-1 row-span-2">
+			<section className="mx-auto grid w-full max-w-screen-xl gap-5 px-5 sm:grid-cols-2">
+				<Card className="col-span-1 sm:row-span-2">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						1. Setup an Authenticator
 					</h2>
@@ -100,9 +100,9 @@ export default function Component() {
 						user. If the request is authenticated, the user will be returned.
 						Otherwise, the user will be redirected to the login page.
 					</p>
-				</ProseCard>
+				</Card>
 
-				<ProseCard className="col-span-1">
+				<Card className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						2. Login with email + password
 					</h2>
@@ -111,9 +111,9 @@ export default function Component() {
 						Add a login form to your site with a few lines of code. Remix Auth
 						will handle the rest.
 					</p>
-				</ProseCard>
+				</Card>
 
-				<ProseCard className="col-span-1">
+				<Card className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						3. Keep the user logged-in longer
 					</h2>
@@ -122,9 +122,9 @@ export default function Component() {
 						Ask the user if they want to stay logged-in for a longer period of
 						time.
 					</p>
-				</ProseCard>
+				</Card>
 
-				<ProseCard className="col-span-1">
+				<Card className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						4. Take the user back where it was
 					</h2>
@@ -133,9 +133,9 @@ export default function Component() {
 						Redirect the user back to the page they were on before they had to
 						login.
 					</p>
-				</ProseCard>
+				</Card>
 
-				<ProseCard className="col-span-1 row-span-2">
+				<Card className="col-span-1 sm:row-span-2">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						5. Split the login and signup strategies
 					</h2>
@@ -150,40 +150,21 @@ export default function Component() {
 						<li>Send a confirmation email.</li>
 						<li>Warn about leaked passwords.</li>
 					</ul>
-				</ProseCard>
+				</Card>
 
-				<ProseCard className="col-span-1">
+				<Card className="col-span-1">
 					<h2 className="font-medium tracking-wide text-blue-500">
 						6. Access with GitHub
 					</h2>
 
 					<p>Allow users to use their GitHub account to access your site.</p>
-				</ProseCard>
+				</Card>
 			</section>
 		</main>
 	);
 }
 
 function Card({
-	children,
-	className,
-}: {
-	children: ReactNode;
-	className?: string;
-}) {
-	return (
-		<article
-			className={cn(
-				"isolate flex aspect-video w-full max-w-md flex-col items-center justify-center gap-6 rounded-3xl bg-white p-10 shadow-lg",
-				className,
-			)}
-		>
-			{children}
-		</article>
-	);
-}
-
-function ProseCard({
 	children,
 	className,
 }: {
