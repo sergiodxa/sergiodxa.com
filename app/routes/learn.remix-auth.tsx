@@ -2,11 +2,13 @@ import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { ReactNode } from "react";
 import { Button, Input, Label, TextField } from "react-aria-components";
 import { useSpinDelay } from "spin-delay";
 import { z } from "zod";
 
 import { ConvertKit } from "~/services/convertkit.server";
+import { cn } from "~/utils/cn";
 import { Schemas } from "~/utils/schemas";
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -35,53 +37,125 @@ export default function Component() {
 	});
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-gray-50 dark:bg-neutral-950">
-			<h1 className="text-9xl font-black text-neutral-900 dark:text-white">
-				<small className="text-5xl font-bold text-neutral-700 dark:text-neutral-200">
-					A <em>free</em> email course to learn
+		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-20 bg-white bg-gradient-to-b from-white to-gray-200 px-5 py-20">
+			<h1 className="flex flex-shrink-0 flex-col text-center text-9xl text-black">
+				<small className="text-5xl font-thin">
+					A <em className="text-indigo  -600">free</em> email course to learn
 				</small>
-				<br />
-				<strong>Remix Auth</strong>
+				<strong className="font-semibold tracking-wide">Remix Auth</strong>
 			</h1>
 
-			<Form
-				method="post"
-				className="mx-auto flex w-full max-w-xs flex-col gap-6"
-			>
-				<TextField
-					name="email"
-					isRequired
-					className="flex w-full flex-col gap-1"
-				>
-					<Label className="text-sm text-neutral-500">Email address</Label>
-					<Input
-						type="email"
-						placeholder="jane@doe.com"
-						className="w-full rounded-md border-2 border-neutral-700 px-4 py-2 dark:border-neutral-200"
-					/>
-				</TextField>
+			<Card>
+				<h2 className="sr-only">Subscribe</h2>
 
-				<Button
-					type="submit"
-					className="w-full rounded-md border-2 border-blue-600 bg-blue-600 px-4 py-2 text-blue-50 hover:border-blue-700 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 data-[disabled]:border-gray-500 data-[disabled]:bg-gray-500 data-[disabled]:text-gray-50"
-					isDisabled={isPending}
-				>
-					Subscribe for Free
-				</Button>
+				{!actionData ? (
+					<Form method="post" className="contents">
+						<TextField
+							name="email"
+							isRequired
+							className="flex w-full flex-col gap-2"
+						>
+							<Label className="text-lg capitalize text-black">
+								Email address
+							</Label>
+							<Input
+								type="email"
+								placeholder="jane@doe.com"
+								className="w-full rounded-md border-2 border-neutral-700 px-4 py-2 dark:border-neutral-200"
+							/>
+						</TextField>
 
-				{!actionData && <div className="h-6" />}
-
-				{actionData?.status === "success" && actionData.state === "active" && (
-					<p className="font-semibold text-green-500">You're subscribed</p>
+						<Button
+							type="submit"
+							className="w-full rounded-md border-2 border-blue-600 bg-blue-600 px-4 py-2 tracking-wider text-blue-50 hover:border-blue-700 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 data-[disabled]:border-gray-500 data-[disabled]:bg-gray-500 data-[disabled]:text-gray-50"
+							isDisabled={isPending}
+						>
+							Subscribe for Free
+						</Button>
+					</Form>
+				) : actionData.state == "active" ? (
+					<p className="text-3xl font-medium text-green-500">
+						You're subscribed!
+					</p>
+				) : (
+					<p className="text-3xl font-medium text-blue-500">
+						Confirm your subscription.
+					</p>
 				)}
+			</Card>
 
-				{actionData?.status === "success" &&
-					actionData.state === "inactive" && (
-						<p className="font-semibold text-blue-500">
-							Confirm your subscription
-						</p>
-					)}
-			</Form>
+			<section className="mx-auto grid w-full max-w-screen-xl grid-cols-2 gap-5">
+				<Card className="col-span-1 row-span-2 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						1. Setup an Authenticator
+					</h2>
+
+					<p>
+						Create an Authenticator to help you let your users access into your
+						application.
+					</p>
+				</Card>
+
+				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						2. Login with email + password
+					</h2>
+
+					<p>
+						Add a login form to your site with a few lines of code. Remix Auth
+						will handle the rest.
+					</p>
+				</Card>
+
+				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						3. Keep the user logged-in longer
+					</h2>
+
+					<p>
+						Ask the user if they want to stay logged-in for a longer period of
+						time.
+					</p>
+				</Card>
+
+				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						4. Take the user back where it was
+					</h2>
+
+					<p>
+						Redirect the user back to the page they were on before they had to
+						login.
+					</p>
+				</Card>
+
+				<Card className="col-span-1 aspect-auto w-full max-w-none items-stretch justify-normal">
+					<h2 className="font-medium tracking-wide text-blue-500">
+						5. Access with GitHub
+					</h2>
+
+					<p>Allow users to use their GitHub account to access your site.</p>
+				</Card>
+			</section>
 		</main>
+	);
+}
+
+function Card({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
+	return (
+		<article
+			className={cn(
+				"isolate flex aspect-video w-full max-w-md flex-col items-center justify-center gap-6 rounded-3xl bg-white p-10 shadow-lg",
+				className,
+			)}
+		>
+			{children}
+		</article>
 	);
 }
