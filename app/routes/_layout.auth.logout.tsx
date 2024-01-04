@@ -23,6 +23,7 @@ export default function Component() {
 		<Form
 			method="post"
 			className="mx-auto flex max-w-screen-sm flex-col items-center gap-10 pt-10"
+			reloadDocument
 		>
 			<header className="sm:mx-auto sm:w-full sm:max-w-md">
 				<h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
