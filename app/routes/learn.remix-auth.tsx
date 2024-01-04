@@ -40,7 +40,7 @@ export default function Component() {
 		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-20 bg-white bg-gradient-to-b from-white to-gray-200 px-5 py-20">
 			<h1 className="flex flex-shrink-0 flex-col text-center text-9xl text-black">
 				<small className="text-5xl font-thin">
-					A <em className="text-indigo  -600">free</em> email course to learn
+					A <em className="text-blue-600">free</em> email course to learn
 				</small>
 				<strong className="font-semibold tracking-wide">Remix Auth</strong>
 			</h1>
