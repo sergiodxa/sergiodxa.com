@@ -26,6 +26,8 @@ import { assertUUID } from "~/utils/uuid";
 import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
 
+export const handle: SDX.Handle = { hydrate: true };
+
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	await SessionStorage.requireUser(context, request);
 
