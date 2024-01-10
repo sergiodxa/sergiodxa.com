@@ -12,6 +12,7 @@ import {
 	Label,
 	TextField,
 } from "react-aria-components";
+import { useHydrated } from "remix-utils/use-hydrated";
 import { z } from "zod";
 
 import { Tutorial } from "~/models/tutorial.server";
@@ -51,6 +52,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 export default function Component() {
 	let [title, setTitle] = useState("");
 	let slug = parameterize(title);
+
+	let isHydrated = useHydrated();
 
 	let { submit, data } = useFetcher<typeof editorAction>();
 	let $textarea = useRef<HTMLTextAreaElement>(null);
@@ -110,7 +113,7 @@ export default function Component() {
 							type="text"
 							maxLength={140}
 							name="slug"
-							readOnly
+							readOnly={isHydrated}
 							value={slug}
 							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
 						/>
