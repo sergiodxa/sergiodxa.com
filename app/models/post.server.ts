@@ -183,6 +183,39 @@ export class Post<Meta extends BaseMeta> {
 
 		return await Post.show<Meta>({ db }, id);
 	}
+
+	static async update<Meta extends BaseMeta>(
+		{ db }: Services,
+		id: UUID,
+		{
+			authorId,
+			type,
+			createdAt,
+			updatedAt,
+			...meta
+		}: Omit<Tables.InsertPost, "id"> & Meta,
+	) {
+		let result = await db
+			.update(Tables.posts)
+			.set({ type, authorId, createdAt, updatedAt })
+			.where(eq(Tables.posts.id, id))
+			.execute();
+
+		if (!result.success && result.error) throw new Error(result.error);
+
+		await db
+			.delete(Tables.postMeta)
+			.where(eq(Tables.postMeta.postId, id))
+			.execute();
+
+		await Promise.all(
+			Object.entries(meta).map(async ([key, value]) => {
+				return createPostMeta(db, id, key, value);
+			}),
+		);
+
+		return await Post.show<Meta>({ db }, id);
+	}
 }
 
 async function createPostMeta(

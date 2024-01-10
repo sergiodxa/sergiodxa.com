@@ -199,6 +199,13 @@ export class Tutorial extends Post<TutorialMeta> {
 		return new this(services, post);
 	}
 
+	static override update(services: Services, id: UUID, input: InsertTutorial) {
+		return Post.update<TutorialMeta>(services, id, {
+			...input,
+			type: "tutorial",
+		});
+	}
+
 	private static shuffle<Value>(list: Value[]) {
 		let result = [...list];
 

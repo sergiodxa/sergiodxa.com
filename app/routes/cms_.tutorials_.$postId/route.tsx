@@ -39,8 +39,11 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	return json({ tutorial: tutorial.toJSON() });
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request, params, context }: ActionFunctionArgs) {
 	let { id: authorId } = await SessionStorage.requireUser(context, request);
+
+	let postId = z.string().uuid().parse(params.postId);
+	assertUUID(postId);
 
 	let body = Schemas.formData()
 		.pipe(
@@ -57,7 +60,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	assertUUID(authorId);
 
-	await Tutorial.create({ db }, { ...body, authorId });
+	await Tutorial.update({ db }, postId, { ...body, authorId });
 
 	throw redirect(`/tutorials/${body.slug}`);
 }
