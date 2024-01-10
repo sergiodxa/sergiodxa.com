@@ -23,11 +23,12 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 		let url = new URL(request.url);
 
-		let query = z
-			.string()
-			.transform((v) => v.toLowerCase())
-			.nullable()
-			.parse(url.searchParams.get("q"));
+		let query =
+			z
+				.string()
+				.transform((v) => v.toLowerCase().trim())
+				.nullable()
+				.parse(url.searchParams.get("q")) ?? "";
 
 		let tutorials = await queryTutorials(context, query);
 
