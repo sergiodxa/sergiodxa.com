@@ -1,12 +1,7 @@
 import type { loader } from "./route";
 
 import { useLoaderData } from "@remix-run/react";
-import {
-	GridList,
-	GridListItem,
-	Button,
-	Checkbox,
-} from "react-aria-components";
+import { GridList, GridListItem, Checkbox } from "react-aria-components";
 
 export function CacheKeyList() {
 	let { keys } = useLoaderData<typeof loader>();

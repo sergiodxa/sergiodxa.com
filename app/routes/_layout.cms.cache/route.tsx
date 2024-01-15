@@ -89,16 +89,6 @@ export default function Component() {
 			<Form method="post" id={id}>
 				<CacheKeyList />
 			</Form>
-
-			<ul className="flex list-inside list-disc flex-col gap-2 text-lg">
-				{keys.map((key) => (
-					<li key={key}>
-						<h3 className="font-semibold leading-6 text-gray-900 underline">
-							{key}
-						</h3>
-					</li>
-				))}
-			</ul>
 		</div>
 	);
 }
