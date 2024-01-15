@@ -20,7 +20,7 @@ declare global {
 declare module "@remix-run/server-runtime" {
 	export interface AppLoadContext {
 		db: D1Database;
-		kv: Record<"cache" | "auth", KVNamespace>;
+		kv: Record<"cache" | "auth" | "redirects", KVNamespace>;
 		waitUntil(promise: Promise<unknown>): void;
 		env: Env;
 		time: Measurer["time"];

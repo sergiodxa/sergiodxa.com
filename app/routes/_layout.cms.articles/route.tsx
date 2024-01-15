@@ -14,14 +14,11 @@ import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { assertUUID } from "~/utils/uuid";
 
 import { ArticleList } from "./article-list";
-import { importArticles, resetArticles } from "./queries";
-
-const INTENT = {
-	import: "IMPORT_ARTICLES" as const,
-	reset: "RESET_ARTICLES" as const,
-};
+import { importArticles, moveToTutorial, resetArticles } from "./queries";
+import { INTENT } from "./types";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -59,7 +56,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let formData = await request.formData();
 	let intent = z
-		.enum([INTENT.import, INTENT.reset])
+		.enum([INTENT.import, INTENT.reset, INTENT.moveToTutorial])
 		.parse(formData.get("intent"));
 
 	if (intent === INTENT.import) {
@@ -68,6 +65,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	}
 
 	if (intent === INTENT.reset) await resetArticles(context);
+
+	if (intent === INTENT.moveToTutorial) {
+		let id = formData.get("id");
+		assertUUID(id);
+		await moveToTutorial(context, id);
+	}
 
 	throw redirect("/cms/articles");
 }

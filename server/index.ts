@@ -68,7 +68,11 @@ server.use(
 			return {
 				env,
 				db: ctx.env.DB,
-				kv: { cache: ctx.env.cache, auth: ctx.env.auth },
+				kv: {
+					cache: ctx.env.cache,
+					auth: ctx.env.auth,
+					redirects: ctx.env.redirects,
+				},
 				waitUntil: ctx.executionCtx.waitUntil.bind(ctx.executionCtx),
 				time: measurer.time.bind(measurer),
 			};

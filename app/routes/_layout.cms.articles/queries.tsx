@@ -1,5 +1,6 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { User } from "~/modules/session.server";
+import type { UUID } from "~/utils/uuid";
 
 import { eq } from "drizzle-orm";
 import fm from "front-matter";
@@ -8,6 +9,7 @@ import { z } from "zod";
 import { Article } from "~/models/article.server";
 import { Logger } from "~/modules/logger.server";
 import { Markdown } from "~/modules/md.server";
+import { Redirects } from "~/modules/redirects.server";
 import { CollectedNotes } from "~/services/cn.server";
 import { Tables, database } from "~/services/db.server";
 
@@ -95,6 +97,36 @@ export async function importArticles(
 export async function resetArticles(context: AppLoadContext) {
 	let db = database(context.db);
 	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
+}
+
+export async function moveToTutorial(context: AppLoadContext, id: UUID) {
+	let redirects = new Redirects(context);
+	let db = database(context.db);
+
+	let article = await db.query.posts.findFirst({
+		where: eq(Tables.posts.id, id),
+		with: { meta: { where: eq(Tables.postMeta.key, "slug") } },
+	});
+
+	if (!article) throw new Error("Article not found");
+
+	let slugMeta = article.meta.find((meta) => meta.key === "slug");
+	if (!slugMeta) throw new Error("Slug meta not found");
+
+	try {
+		await db
+			.update(Tables.posts)
+			.set({ type: "tutorial" })
+			.where(eq(Tables.posts.id, id));
+
+		await redirects.add(
+			slugMeta.value,
+			`/article/${slugMeta.value}`,
+			`/tutorial/${slugMeta.value}`,
+		);
+	} catch (error) {
+		console.log(error);
+	}
 }
 
 function stripTitle(body: string) {

@@ -14,7 +14,7 @@ import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 
 import { CacheKeyList } from "./list";
-import { INTENTS } from "./types";
+import { INTENT } from "./types";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -39,12 +39,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	let formData = await request.formData();
 
-	if (formData.get("intent") === INTENTS.clear) {
+	if (formData.get("intent") === INTENT.clear) {
 		let keys = await cache.list();
 		await Promise.all(keys.map((key) => cache.delete(key)));
 	}
 
-	if (formData.get("intent") === INTENTS.deleteSelected) {
+	if (formData.get("intent") === INTENT.deleteSelected) {
 		let keys = z.string().array().parse(formData.getAll("key"));
 		await Promise.all(keys.map((key) => cache.delete(key)));
 	}
@@ -65,7 +65,7 @@ export default function Component() {
 						<Button
 							type="submit"
 							name="intent"
-							value={INTENTS.clear}
+							value={INTENT.clear}
 							className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
 						>
 							Clear Cache
@@ -75,7 +75,7 @@ export default function Component() {
 					<Button
 						type="submit"
 						name="intent"
-						value={INTENTS.deleteSelected}
+						value={INTENT.deleteSelected}
 						form={id}
 						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
 					>

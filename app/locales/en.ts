@@ -215,6 +215,7 @@ export default {
 					likes: "Likes",
 					tutorials: "Tutorials",
 					cache: "Cache Keys",
+					redirects: "Redirects",
 				},
 			},
 		},
@@ -276,6 +277,7 @@ export default {
 				item: {
 					publishedOn: "Published on {{date}}",
 					edit: "Edit Article",
+					moveToTutorial: "Move to Tutorial",
 				},
 			},
 		},

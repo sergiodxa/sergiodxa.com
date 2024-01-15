@@ -5,6 +5,7 @@ node_compat = true
 kv_namespaces = [
   { binding = "cache", id = "597a3ce0108c42798aeac0044a566e31", preview_id = "cache" },
   { binding = "auth", id = "fda5fdfe90e74e2b82dd0ccd49346c27", preview_id = "auth@sergiodxa.com" },
+  { binding = "redirects", id = "2bcc558cadce40dcb9c73f047c26be6c", preview_id = "redirects" },
 ]
 
 [[d1_databases]]
