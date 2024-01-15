@@ -46,37 +46,45 @@ export async function queryArticles(
 
 	let result: string;
 	if (query) {
-		result = await cache.fetch(`feed:articles:search:${query}`, async () => {
-			let articles = await Article.search({ db }, query);
-			let items = articles.map<ArticleItem>((article) => {
-				return {
-					id: article.id,
-					type: "article",
-					payload: {
-						title: article.title,
-						link: article.pathname,
-						createdAt: new Date(article.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			`feed:articles:search:${query}`,
+			async () => {
+				let articles = await Article.search({ db }, query);
+				let items = articles.map<ArticleItem>((article) => {
+					return {
+						id: article.id,
+						type: "article",
+						payload: {
+							title: article.title,
+							link: article.pathname,
+							createdAt: new Date(article.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	} else {
-		result = await cache.fetch("feed:articles", async () => {
-			let articles = await Article.list({ db });
-			let items = articles.map<ArticleItem>((article) => {
-				return {
-					id: article.id,
-					type: "article",
-					payload: {
-						title: article.title,
-						link: article.pathname,
-						createdAt: new Date(article.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			"feed:articles",
+			async () => {
+				let articles = await Article.list({ db });
+				let items = articles.map<ArticleItem>((article) => {
+					return {
+						id: article.id,
+						type: "article",
+						payload: {
+							title: article.title,
+							link: article.pathname,
+							createdAt: new Date(article.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	}
 
 	return ArticleItemSchema.array().parse(JSON.parse(result));
@@ -93,37 +101,45 @@ export async function queryBookmarks(
 	let result: string;
 
 	if (query) {
-		result = await cache.fetch(`feed:bookmarks:search:${query}`, async () => {
-			let likes = await Like.search({ db }, query);
-			let items = likes.map<BookmarkItem>((bookmark) => {
-				return {
-					id: bookmark.id,
-					type: "bookmark",
-					payload: {
-						title: bookmark.title,
-						link: bookmark.url.toString(),
-						createdAt: new Date(bookmark.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			`feed:bookmarks:search:${query}`,
+			async () => {
+				let likes = await Like.search({ db }, query);
+				let items = likes.map<BookmarkItem>((bookmark) => {
+					return {
+						id: bookmark.id,
+						type: "bookmark",
+						payload: {
+							title: bookmark.title,
+							link: bookmark.url.toString(),
+							createdAt: new Date(bookmark.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	} else {
-		result = await cache.fetch("feed:bookmarks", async () => {
-			let likes = await Like.list({ db });
-			let items = likes.map<BookmarkItem>((bookmark) => {
-				return {
-					id: bookmark.id,
-					type: "bookmark",
-					payload: {
-						title: bookmark.title,
-						link: bookmark.url.toString(),
-						createdAt: new Date(bookmark.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			"feed:bookmarks",
+			async () => {
+				let likes = await Like.list({ db });
+				let items = likes.map<BookmarkItem>((bookmark) => {
+					return {
+						id: bookmark.id,
+						type: "bookmark",
+						payload: {
+							title: bookmark.title,
+							link: bookmark.url.toString(),
+							createdAt: new Date(bookmark.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	}
 
 	return BookmarkItemSchema.array().parse(JSON.parse(result));
@@ -140,37 +156,45 @@ export async function queryTutorials(
 	let result: string;
 
 	if (query) {
-		result = await cache.fetch(`feed:tutorials:search:${query}`, async () => {
-			let tutorials = await Tutorial.search({ db }, query);
-			let items = tutorials.map<TutorialItem>((article) => {
-				return {
-					id: article.id,
-					type: "tutorial",
-					payload: {
-						title: article.title,
-						link: article.pathname,
-						createdAt: new Date(article.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			`feed:tutorials:search:${query}`,
+			async () => {
+				let tutorials = await Tutorial.search({ db }, query);
+				let items = tutorials.map<TutorialItem>((article) => {
+					return {
+						id: article.id,
+						type: "tutorial",
+						payload: {
+							title: article.title,
+							link: article.pathname,
+							createdAt: new Date(article.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	} else {
-		result = await cache.fetch("feed:tutorials", async () => {
-			let tutorials = await Tutorial.list({ db });
-			let items = tutorials.map<TutorialItem>((article) => {
-				return {
-					id: article.id,
-					type: "tutorial",
-					payload: {
-						title: article.title,
-						link: article.pathname,
-						createdAt: new Date(article.createdAt).getTime(),
-					},
-				};
-			});
-			return JSON.stringify(items);
-		});
+		result = await cache.fetch(
+			"feed:tutorials",
+			async () => {
+				let tutorials = await Tutorial.list({ db });
+				let items = tutorials.map<TutorialItem>((article) => {
+					return {
+						id: article.id,
+						type: "tutorial",
+						payload: {
+							title: article.title,
+							link: article.pathname,
+							createdAt: new Date(article.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
 	}
 
 	return TutorialItemSchema.array().parse(JSON.parse(result));
