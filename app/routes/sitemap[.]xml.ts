@@ -1,4 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { xml } from "remix-utils/responses";
 
 import { Article } from "~/models/article.server";
 import { Like } from "~/models/like.server";
@@ -43,4 +44,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	for (let tutorial of tutorials) {
 		sitemap.append(new URL(tutorial.pathname, url), tutorial.createdAt);
 	}
+
+	return xml(sitemap.toString());
 }
