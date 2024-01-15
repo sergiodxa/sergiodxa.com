@@ -4,7 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import { useId } from "react";
 import { Button } from "react-aria-components";
 import { z } from "zod";
@@ -53,8 +53,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function Component() {
-	let { keys } = useLoaderData<typeof loader>();
-
 	let id = useId();
 
 	return (
