@@ -23,6 +23,18 @@ export default function Component() {
 	);
 }
 
+export function ErrorBoundary() {
+	return (
+		<>
+			<Header />
+
+			<div className="p-4">
+				<h1>Something went wrong</h1>
+			</div>
+		</>
+	);
+}
+
 function Header() {
 	let user = useUser();
 	let t = useT("nav");
