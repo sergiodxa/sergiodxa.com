@@ -1,0 +1,47 @@
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
+
+import { json, redirect } from "@remix-run/cloudflare";
+import { useLoaderData } from "@remix-run/react";
+import { z } from "zod";
+
+import { Redirects } from "~/modules/redirects.server";
+
+import { ArticleView } from "./article-view";
+import { queryArticle, queryTutorial } from "./queries";
+import { TutorialView } from "./tutorial-view";
+
+export async function loader({ request, params, context }: LoaderFunctionArgs) {
+	let { postType, slug } = z
+		.object({ postType: z.enum(["articles", "tutorials"]), slug: z.string() })
+		.parse({ postType: params.postType, slug: params["*"] });
+
+	if (postType === "articles") {
+		try {
+			let redirects = new Redirects(context);
+			let articleRedirect = await redirects.show(slug);
+			if (articleRedirect) throw redirect(articleRedirect.to);
+		} catch (error) {
+			if (error instanceof Response) throw error;
+			console.error(error);
+		}
+
+		return json(await queryArticle(context, request, slug));
+	}
+
+	if (postType === "tutorials") {
+		return json(await queryTutorial(context, request, slug));
+	}
+
+	throw new Error("Invalid post type");
+}
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+	return data?.meta ?? [];
+};
+
+export default function Component() {
+	let { postType } = useLoaderData<typeof loader>();
+	if (postType === "articles") return <ArticleView />;
+	if (postType === "tutorials") return <TutorialView />;
+	return null;
+}

@@ -168,7 +168,7 @@ export class Tutorial extends Post<TutorialMeta> {
 	}
 
 	static async findById(services: Services, id: UUID) {
-		let post = await Post.show<TutorialMeta>(services, id);
+		let post = await Post.show<TutorialMeta>(services, "tutorial", id);
 		return new this(services, post);
 	}
 
@@ -186,7 +186,11 @@ export class Tutorial extends Post<TutorialMeta> {
 
 		assertUUID(result?.postId);
 
-		let post = await Post.show<TutorialMeta>(services, result.postId);
+		let post = await Post.show<TutorialMeta>(
+			services,
+			"tutorial",
+			result.postId,
+		);
 		return new this(services, post);
 	}
 

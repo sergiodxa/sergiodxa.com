@@ -1,7 +1,7 @@
 import type { Database } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
 
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { Tables } from "~/services/db.server";
 import { assertUUID, generateUUID } from "~/utils/uuid";
@@ -118,10 +118,14 @@ export class Post<Meta extends BaseMeta> {
 		});
 	}
 
-	static async show<Meta extends BaseMeta>({ db }: Services, id: UUID) {
+	static async show<Meta extends BaseMeta>(
+		{ db }: Services,
+		type: Tables.SelectPost["type"],
+		id: UUID,
+	) {
 		let post = await db.query.posts.findFirst({
 			with: { meta: true },
-			where: eq(Tables.posts.id, id),
+			where: and(eq(Tables.posts.type, type), eq(Tables.posts.id, id)),
 		});
 
 		if (!post) {
@@ -181,7 +185,7 @@ export class Post<Meta extends BaseMeta> {
 			}),
 		);
 
-		return await Post.show<Meta>({ db }, id);
+		return await Post.show<Meta>({ db }, type, id);
 	}
 
 	static async update<Meta extends BaseMeta>(
@@ -214,7 +218,7 @@ export class Post<Meta extends BaseMeta> {
 			}),
 		);
 
-		return await Post.show<Meta>({ db }, id);
+		return await Post.show<Meta>({ db }, type, id);
 	}
 }
 

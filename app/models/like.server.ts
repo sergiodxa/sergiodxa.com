@@ -67,7 +67,7 @@ export class Like extends Post<LikeMeta> {
 	}
 
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
-		let post = await Post.show<LikeMeta>({ db }, id);
+		let post = await Post.show<LikeMeta>({ db }, "like", id);
 		return new Like({ db }, post);
 	}
 

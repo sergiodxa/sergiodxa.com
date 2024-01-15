@@ -19,9 +19,9 @@ export class Redirects {
 	}
 
 	async show(name: string) {
-		let redirect = await this.loadContext.kv.redirects.getWithMetadata(name);
+		let redirect = await this.loadContext.kv.redirects.get(name, "json");
 		if (!redirect) return null;
-		return RedirectSchema.parse(redirect.metadata);
+		return RedirectSchema.parse(redirect);
 	}
 }
 
