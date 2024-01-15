@@ -1,4 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+
 import { xml } from "remix-utils/responses";
 
 import { Article } from "~/models/article.server";
