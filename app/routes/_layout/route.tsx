@@ -1,6 +1,12 @@
 import type { LinksFunction } from "@remix-run/cloudflare";
 
-import { Form, NavLink, Outlet } from "@remix-run/react";
+import {
+	Form,
+	NavLink,
+	Outlet,
+	isRouteErrorResponse,
+	useRouteError,
+} from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { useUser } from "~/helpers/use-user.hook";
@@ -24,13 +30,25 @@ export default function Component() {
 }
 
 export function ErrorBoundary() {
+	let error = useRouteError();
+
+	let title = "Something went wrong";
+
+	if (isRouteErrorResponse(error)) {
+		title = error.status === 404 ? "Content not found" : "Something went wrong";
+	} else if (error instanceof Error) {
+		title = error.message;
+	}
+
 	return (
 		<>
 			<Header />
 
-			<div className="p-4">
-				<h1>Something went wrong</h1>
-			</div>
+			<article className="prose prose-blue mx-auto flex max-w-screen-md flex-col gap-8 px-4 pb-14 pt-20">
+				<header className="gap-4 md:flex md:items-start md:justify-between">
+					<h1>{title}</h1>
+				</header>
+			</article>
 		</>
 	);
 }
