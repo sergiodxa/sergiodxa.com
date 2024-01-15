@@ -13,6 +13,7 @@ import { Support } from "~/components/support";
 import { Article } from "~/models/article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
+import { Redirects } from "~/modules/redirects.server";
 import { database } from "~/services/db.server";
 
 export function loader({ request, context, params }: LoaderFunctionArgs) {
@@ -24,6 +25,14 @@ export function loader({ request, context, params }: LoaderFunctionArgs) {
 		if (!path) throw redirect("/articles");
 
 		let i18n = new I18n();
+
+		try {
+			let redirects = new Redirects(context);
+			let articleRedirect = await redirects.show(path);
+			if (articleRedirect) throw redirect(articleRedirect.to);
+		} catch (error) {
+			console.error(error);
+		}
 
 		try {
 			let db = database(context.db);

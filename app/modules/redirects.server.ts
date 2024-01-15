@@ -17,6 +17,12 @@ export class Redirects {
 			{ metadata: { from, to } },
 		);
 	}
+
+	async show(name: string) {
+		let redirect = await this.loadContext.kv.redirects.getWithMetadata(name);
+		if (!redirect) return null;
+		return RedirectSchema.parse(redirect.metadata);
+	}
 }
 
 const RedirectSchema = z.object({ from: z.string(), to: z.string() });
