@@ -7,6 +7,7 @@ import { json, redirect } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 import { SessionStorage } from "~/modules/session.server";
+import { GitHub } from "~/services/github.server";
 import { assertUUID } from "~/utils/uuid";
 
 import { CreateLike } from "./create-like";
@@ -24,7 +25,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		queryLastDaySearch(context),
 	]);
 
-	return json({ stats, lastDaySearch });
+	let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+	let result = await gh.sponsors();
+	let sponsors = result.node.sponsorshipsAsMaintainer.nodes.map(
+		(n) => n.sponsorEntity,
+	);
+
+	return json({ stats, lastDaySearch, sponsors });
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {

@@ -90,8 +90,68 @@ export class GitHub {
 		}
 	}
 
+	async sponsors() {
+		let result = await this.octokit.graphql(gql`
+			query {
+				node(id: "MDQ6VXNlcjEzMTIwMTg=") {
+					... on User {
+						sponsorshipsAsMaintainer(first: 100) {
+							nodes {
+								sponsorEntity {
+									... on User {
+										id
+										name
+										login
+										avatarUrl
+										url
+									}
+									... on Organization {
+										id
+										name
+										login
+										avatarUrl
+										url
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		`);
+
+		return z
+			.object({
+				node: z.object({
+					sponsorshipsAsMaintainer: z.object({
+						nodes: z
+							.object({
+								sponsorEntity: z.union([
+									z.object({
+										id: z.string(),
+										name: z.string(),
+										login: z.string(),
+										avatarUrl: z.string(),
+										url: z.string(),
+									}),
+									z.object({
+										id: z.string(),
+										name: z.string(),
+										login: z.string(),
+										avatarUrl: z.string(),
+										url: z.string(),
+									}),
+								]),
+							})
+							.array(),
+					}),
+				}),
+			})
+			.parse(result);
+	}
+
 	async isSponsoringMe(id: string) {
-		let result = await this.octokit.graphql(`query {
+		let result = await this.octokit.graphql(gql`query {
 	node(id: "${id}") {
 		... on Sponsorable {
 			isSponsoringViewer
@@ -108,3 +168,5 @@ export class GitHub {
 export class GitHubError extends Error {
 	override name = "GitHubError";
 }
+
+const gql = String.raw;
