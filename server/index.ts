@@ -19,11 +19,11 @@ type ContextEnv = { Bindings: RuntimeEnv };
 
 const server = new Hono<ContextEnv>();
 
-server.use("*", (context, next) => {
+server.use("*", async (context, next) => {
 	let url = new URL(context.req.url);
 	if (!url.origin.includes("www.")) return next();
 	url.hostname = url.hostname.slice(4);
-	return c.redirect(url.href, 302);
+	return context.redirect(url.href, 302);
 });
 
 server.use("/write", (context, next) => {
