@@ -49,7 +49,6 @@
 		"@octokit/core": "^5.0.0",
 		"@primer/octicons": "^19.4.0",
 		"@remix-run/cloudflare": "^2.5.0",
-		"@remix-run/cloudflare-pages": "^2.5.0",
 		"@remix-run/react": "^2.5.0",
 		"@sentry/remix": "^7.58.0",
 		"@sergiodxa/api-client": "^1.0.2",
