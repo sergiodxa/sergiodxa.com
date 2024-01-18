@@ -25,7 +25,6 @@
 		"noImplicitOverride": true,
 		"paths": {
 			"~/*": ["./app/*"],
-			"~/build": ["./types/build.d.ts", "./dist/worker/index.js"],
 			"~/server/*": ["./server/*"],
 			"~/test/*": ["./test/*"]
 		},
