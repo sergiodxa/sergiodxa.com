@@ -12,10 +12,8 @@ import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 import { EnvSchema } from "./env";
 import { Measurer } from "./measure";
 
-// @ts-expect-error
 if (process.env.NODE_ENV === "development") logDevReady(build);
 
-// @ts-expect-error
 let remix = createRequestHandler(build, build.mode);
 
 export async function onRequest(
