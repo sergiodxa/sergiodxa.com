@@ -24,6 +24,8 @@ import { assertUUID } from "~/utils/uuid";
 import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
 
+import { clearCache } from "./queries";
+
 export const handle: SDX.Handle = { hydrate: true };
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -45,6 +47,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	assertUUID(authorId);
 
 	await Tutorial.create({ db }, { ...body, authorId });
+
+	await clearCache(context);
 
 	throw redirect(`/tutorials/${body.slug}`);
 }

@@ -1,5 +1,5 @@
 import type {
-	DataFunctionArgs,
+	LoaderFunctionArgs,
 	MetaDescriptor,
 	MetaFunction,
 } from "@remix-run/cloudflare";
@@ -11,7 +11,7 @@ import { Editor } from "~/routes/components.editor/route";
 
 export let handle: SDX.Handle = { hydrate: true };
 
-export async function loader({ request, params }: DataFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	let t = await new I18n().getFixedT(request);
 
 	let meta: MetaDescriptor[] = [{ title: t("write.title") }];
