@@ -26,7 +26,15 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 			async meta(): Promise<MetaDescriptor[]> {
 				let t = await new I18n().getFixedT(request);
 
-				return [{ title: t("bookmarks.meta.title") }];
+				return [
+					{ title: t("bookmarks.meta.title") },
+					{
+						tagName: "link",
+						rel: "alternate",
+						type: "application/rss+xml",
+						href: "/bookmarks.rss",
+					},
+				];
 			},
 		});
 	});

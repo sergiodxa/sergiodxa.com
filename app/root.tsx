@@ -166,6 +166,9 @@ function Document({
 				/>
 				<Meta />
 				<Links />
+				<link rel="alternate" type="application/rss+xml" href="/rss" />
+				{/* <link rel="alternate" type="application/json" href="/feed.json" /> */}
+				{/* <link rel="alternate" type="application/mf2+html" href="/feed.html" /> */}
 				<link href="https://github.com/sergiodxa" rel="me authn" />
 				<link
 					rel="webmention"

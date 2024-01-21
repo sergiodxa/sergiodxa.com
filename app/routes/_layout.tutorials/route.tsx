@@ -60,6 +60,13 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 						});
 					}
 
+					meta.push({
+						tagName: "link",
+						rel: "alternate",
+						type: "application/rss+xml",
+						href: "/tutorials.rss",
+					});
+
 					return meta;
 				},
 			},

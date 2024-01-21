@@ -44,6 +44,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			meta.push({ title: t("articles.meta.title.search", { term }) });
 		}
 
+		meta.push({
+			tagName: "link",
+			rel: "alternate",
+			type: "application/rss+xml",
+			href: "/articles.rss",
+		});
+
 		return json({ term: term ?? undefined, meta, articles }, { headers });
 	} catch (error) {
 		if (error instanceof Error) {
