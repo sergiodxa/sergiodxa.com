@@ -100,10 +100,10 @@ export default function Component() {
 function List() {
 	let { tutorials } = useLoaderData<typeof loader>();
 	return (
-		<ul className="space-y-2">
+		<ul className="h-feed space-y-2">
 			{tutorials.map((tutorial) => (
-				<li key={tutorial.path} className="list-inside list-disc">
-					<Link to={tutorial.path} prefetch="intent">
+				<li key={tutorial.path} className="h-entry list-inside list-disc">
+					<Link to={tutorial.path} prefetch="intent" className="u-url">
 						{tutorial.title}
 					</Link>
 				</li>
