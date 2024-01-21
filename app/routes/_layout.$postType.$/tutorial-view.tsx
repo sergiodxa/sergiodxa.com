@@ -1,13 +1,14 @@
 import type { loader } from "./route";
 import type { SerializeFrom } from "@remix-run/cloudflare";
 
-import { Await, Link, useAsyncValue, useLoaderData } from "@remix-run/react";
+import { Await, useAsyncValue, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import { Trans } from "react-i18next";
 
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
+import { Link } from "~/ui/Link";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
@@ -24,7 +25,7 @@ export function TutorialView() {
 
 	return (
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
-			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
+			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<Versions />
 
 				<div>
@@ -78,8 +79,8 @@ function Versions() {
 					return (
 						<li key={tag} className="contents">
 							<Link
-								to={to}
-								className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800"
+								href={to}
+								className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800 dark:bg-blue-900 dark:text-blue-200 dark:visited:text-blue-300"
 							>
 								{tag}
 							</Link>
@@ -99,8 +100,8 @@ function Recommendations() {
 
 	return (
 		<section className="not-prose mt-4 space-y-4">
-			<header className="border-b border-gray-200 pb-5">
-				<h2 className="text-lg font-medium leading-6 text-gray-900">
+			<header className="border-b border-zinc-200 pb-5">
+				<h2 className="text-lg font-medium leading-6 text-zinc-900 dark:text-zinc-100">
 					{t("title")}
 				</h2>
 			</header>
@@ -120,10 +121,7 @@ function Recommendations() {
 
 					return (
 						<div key={slug} className="flex flex-col gap-2">
-							<Link
-								to={`/tutorials/${slug}`}
-								className="line-clamp-2 block text-blue-900 underline visited:text-violet-900"
-							>
+							<Link href={`/tutorials/${slug}`} className="line-clamp-2 block">
 								<p className="text-xl font-semibold">{title}</p>
 							</Link>
 
@@ -134,13 +132,7 @@ function Recommendations() {
 								i18nKey="reason"
 								values={{ tag }}
 								components={{
-									anchor: (
-										// eslint-disable-next-line jsx-a11y/anchor-has-content
-										<Link
-											to={to}
-											className="text-blue-800 underline visited:text-violet-800"
-										/>
-									),
+									anchor: <Link href={to} />,
 								}}
 							/>
 						</div>

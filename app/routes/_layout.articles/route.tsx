@@ -4,15 +4,15 @@ import {
 	type MetaDescriptor,
 	json,
 } from "@remix-run/cloudflare";
-import { Link, useLoaderData } from "@remix-run/react";
-import { Trans } from "react-i18next";
+import { useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
-import { SearchForm } from "~/components/search-form";
+import { Subscribe } from "~/components/subscribe";
 import { useT } from "~/helpers/use-i18n.hook";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
+import { Link } from "~/ui/Link";
 
 import { queryArticles } from "./queries";
 
@@ -85,13 +85,12 @@ export default function Articles() {
 			<PageHeader t={t} />
 
 			<div className="flex flex-col gap-y-4">
-				<Subscribe />
-				<SearchForm t={t} defaultValue={term} />
+				<Subscribe t={t} />
 
 				<ul className="space-y-2">
 					{articles.map((article) => (
 						<li key={article.path} className="list-inside list-disc">
-							<Link to={article.path} prefetch="intent">
+							<Link href={article.path} prefetch="intent">
 								{article.title}
 							</Link>
 						</li>
@@ -99,21 +98,5 @@ export default function Articles() {
 				</ul>
 			</div>
 		</main>
-	);
-}
-
-function Subscribe() {
-	let t = useT("articles.subscribe");
-	return (
-		<Trans
-			t={t}
-			parent="p"
-			className="text-lg text-gray-800"
-			i18nKey="cta"
-			components={{
-				// eslint-disable-next-line jsx-a11y/anchor-has-content
-				rss: <a href="/articles.rss" />,
-			}}
-		/>
 	);
 }

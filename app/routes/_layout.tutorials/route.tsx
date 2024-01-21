@@ -4,16 +4,16 @@ import type {
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
-import { Link, useLoaderData } from "@remix-run/react";
-import { Trans } from "react-i18next";
+import { useLoaderData } from "@remix-run/react";
 import { jsonHash } from "remix-utils/json-hash";
 import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
-import { SearchForm } from "~/components/search-form";
+import { Subscribe } from "~/components/subscribe";
 import { useT } from "~/helpers/use-i18n.hook";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
+import { Link } from "~/ui/Link";
 
 import { queryTutorials } from "./queries";
 
@@ -38,7 +38,6 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 		return jsonHash(
 			{
-				term: query,
 				tutorials: tutorials.map((tutorial) => {
 					return {
 						path: tutorial.path,
@@ -81,7 +80,6 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function Component() {
-	let { term } = useLoaderData<typeof loader>();
 	let t = useT("tutorials");
 
 	return (
@@ -89,8 +87,8 @@ export default function Component() {
 			<PageHeader t={t} />
 
 			<div className="flex flex-col gap-y-4">
-				<Subscribe />
-				<SearchForm t={t} defaultValue={term} />
+				<Subscribe t={t} />
+
 				<List />
 			</div>
 		</main>
@@ -103,27 +101,11 @@ function List() {
 		<ul className="h-feed space-y-2">
 			{tutorials.map((tutorial) => (
 				<li key={tutorial.path} className="h-entry list-inside list-disc">
-					<Link to={tutorial.path} prefetch="intent" className="u-url">
+					<Link href={tutorial.path} prefetch="intent" className="u-url">
 						{tutorial.title}
 					</Link>
 				</li>
 			))}
 		</ul>
-	);
-}
-
-function Subscribe() {
-	let t = useT("tutorials.subscribe");
-	return (
-		<Trans
-			t={t}
-			parent="p"
-			className="text-lg text-gray-800"
-			i18nKey="cta"
-			components={{
-				// eslint-disable-next-line jsx-a11y/anchor-has-content
-				rss: <a href="/tutorials.rss" />,
-			}}
-		/>
 	);
 }

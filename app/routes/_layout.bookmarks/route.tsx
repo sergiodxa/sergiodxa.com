@@ -5,13 +5,14 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";
-import { Trans } from "react-i18next";
 import { jsonHash } from "remix-utils/json-hash";
 
 import { PageHeader } from "~/components/page-header";
+import { Subscribe } from "~/components/subscribe";
 import { useT } from "~/helpers/use-i18n.hook";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
+import { Link } from "~/ui/Link";
 
 import { queryBookmarks } from "./query";
 
@@ -47,41 +48,25 @@ export let meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Component() {
 	let { likes } = useLoaderData<typeof loader>();
-	let t = useT("likes");
+	let t = useT("bookmarks");
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
 			<PageHeader t={t} />
 
 			<div className="flex flex-col gap-y-4">
-				<Subscribe />
+				<Subscribe t={t} />
 
 				<ul className="space-y-2">
 					{likes.map((like) => (
 						<li key={like.url} className="list-inside list-disc">
-							<a href={like.url} rel="nofollow noreferer">
+							<Link href={like.url} rel="nofollow noreferer">
 								{like.title}
-							</a>
+							</Link>
 						</li>
 					))}
 				</ul>
 			</div>
 		</main>
-	);
-}
-
-function Subscribe() {
-	let t = useT("bookmarks.subscribe");
-	return (
-		<Trans
-			t={t}
-			parent="p"
-			className="text-lg text-gray-800"
-			i18nKey="cta"
-			components={{
-				// eslint-disable-next-line jsx-a11y/anchor-has-content
-				rss: <a href="/bookmarks.rss" />,
-			}}
-		/>
 	);
 }

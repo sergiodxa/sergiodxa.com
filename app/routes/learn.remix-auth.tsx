@@ -67,7 +67,7 @@ export default function Component() {
 
 						<Button
 							type="submit"
-							className="w-full rounded-md border-2 border-blue-600 bg-blue-600 px-4 py-2 tracking-wider text-blue-50 hover:border-blue-700 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 data-[disabled]:border-gray-500 data-[disabled]:bg-gray-500 data-[disabled]:text-gray-50"
+							className="w-full rounded-md border-2 border-blue-600 bg-blue-600 px-4 py-2 tracking-wider text-blue-50 data-[disabled]:border-gray-500 data-[disabled]:bg-gray-500 data-[disabled]:text-gray-50 hover:border-blue-700 hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
 							isDisabled={isPending}
 						>
 							Subscribe for Free

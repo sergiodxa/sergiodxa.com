@@ -4,11 +4,12 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
-import { Form } from "@remix-run/react";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Auth } from "~/modules/auth.server";
 import { SessionStorage } from "~/modules/session.server";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let user = await SessionStorage.readUser(context, request);
@@ -32,19 +33,17 @@ export default function Component() {
 		<Form
 			method="post"
 			className="mx-auto flex max-w-screen-sm flex-col items-center gap-10 pt-10"
+			reloadDocument
 		>
 			<header className="sm:mx-auto sm:w-full sm:max-w-md">
-				<h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+				<h2 className="text-center text-3xl font-bold tracking-tight">
 					{t("title")}
 				</h2>
 			</header>
 
-			<button
-				type="submit"
-				className="inline-flex items-center rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-medium text-blue-600 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-			>
+			<Button type="submit" variant="primary">
 				{t("github")}
-			</button>
+			</Button>
 		</Form>
 	);
 }

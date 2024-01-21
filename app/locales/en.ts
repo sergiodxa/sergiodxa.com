@@ -90,15 +90,6 @@ export default {
 
 	article: { meta: { title: "{{note}} by sergiodxa" } },
 
-	likes: {
-		meta: { title: "Like of sergiodxa" },
-
-		header: {
-			title: "Likes",
-			description: "Links that I read and liked.",
-		},
-	},
-
 	bookmarks: {
 		meta: { title: "Bookmarks of sergiodxa" },
 

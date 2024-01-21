@@ -12,7 +12,7 @@ export function ArticleView() {
 
 	return (
 		<article className="mx-auto mb-8 flex max-w-screen-md flex-col gap-8">
-			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg">
+			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<MarkdownView content={loaderData.article.body} />
 			</div>
 			<Support />

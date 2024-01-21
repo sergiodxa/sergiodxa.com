@@ -4,11 +4,11 @@ import type { sort } from "./queries";
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 
-import { Link } from "@remix-run/react";
 import { Trans } from "react-i18next";
 
 import Icon from "~/components/icon";
 import { useLocale } from "~/helpers/use-i18n.hook";
+import { Link } from "~/ui/Link";
 import { cn } from "~/utils/cn";
 
 type Props = {
@@ -29,17 +29,12 @@ export function FeedList({ t, items }: Props) {
 							body={
 								<Trans
 									parent="p"
-									className="text-sm text-gray-800"
+									className="text-sm text-zinc-800 dark:text-zinc-200"
 									i18nKey="feed.article"
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
-										"link:article": (
-											<Link
-												to={item.payload.link}
-												className="font-medium text-blue-600"
-											/>
-										),
+										"link:article": <Link href={item.payload.link} />,
 									}}
 								/>
 							}
@@ -65,17 +60,12 @@ export function FeedList({ t, items }: Props) {
 							body={
 								<Trans
 									parent="p"
-									className="text-sm text-gray-800"
+									className="text-sm text-zinc-800 dark:text-zinc-200"
 									i18nKey="feed.tutorial"
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
-										"link:tutorial": (
-											<Link
-												to={item.payload.link}
-												className="font-medium text-blue-600"
-											/>
-										),
+										"link:tutorial": <Link href={item.payload.link} />,
 									}}
 								/>
 							}
@@ -101,17 +91,13 @@ export function FeedList({ t, items }: Props) {
 							body={
 								<Trans
 									parent="p"
-									className="text-sm text-gray-800"
+									className="text-sm text-zinc-800 dark:text-zinc-200"
 									i18nKey="feed.bookmark"
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
 										"link:bookmark": (
-											<a
-												href={item.payload.link}
-												rel="nofollow noreferer"
-												className="font-medium text-blue-600"
-											/>
+											<Link href={item.payload.link} rel="nofollow noreferer" />
 										),
 									}}
 								/>
@@ -159,7 +145,7 @@ function Item({
 			<div className="relative pb-8">
 				{index !== size ? (
 					<span
-						className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
+						className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-white dark:bg-zinc-900"
 						aria-hidden="true"
 					/>
 				) : null}
@@ -168,7 +154,7 @@ function Item({
 						<span
 							className={cn(
 								iconColor,
-								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-neutral-50",
+								"flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white dark:ring-zinc-900",
 							)}
 						>
 							{icon}
@@ -177,7 +163,7 @@ function Item({
 					<div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
 						{body}
 
-						<div className="whitespace-nowrap text-right text-sm tabular-nums text-gray-500">
+						<div className="whitespace-nowrap text-right text-sm tabular-nums text-zinc-500">
 							<time dateTime={createdAt.toISOString()}>
 								{createdAt.toLocaleDateString(locale, {
 									month: "short",

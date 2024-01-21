@@ -43,6 +43,7 @@ module.exports = {
 		"react-hooks/exhaustive-deps": "error",
 
 		"jsx-a11y/anchor-is-valid": "off",
+		"jsx-a11y/anchor-has-content": "off",
 
 		"import/order": [
 			"error",

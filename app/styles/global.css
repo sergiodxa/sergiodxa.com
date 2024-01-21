@@ -1,4 +1,4 @@
-:focus:not(:focus-visible) {
+/* :focus:not(:focus-visible) {
 	outline: none;
 }
 
@@ -36,4 +36,4 @@ main a:has(:is(h1, h2, h3, h4, h5, h6)) {
 .quote::before,
 .quote::after {
 	content: '"';
-}
+} */

@@ -18,8 +18,10 @@ import {
 	ScrollRestoration,
 	useLoaderData,
 	useLocation,
+	useNavigate,
 } from "@remix-run/react";
 import { useEffect } from "react";
+import { RouterProvider } from "react-aria-components";
 import { useTranslation } from "react-i18next";
 import { jsonHash } from "remix-utils/json-hash";
 import { useShouldHydrate } from "remix-utils/use-should-hydrate";
@@ -91,9 +93,13 @@ export default function App() {
 	let { locale } = useLoaderData<typeof loader>();
 	useChangeLanguage(locale);
 
+	let navigate = useNavigate();
+
 	return (
 		<Document locale={locale}>
-			<Outlet />
+			<RouterProvider navigate={navigate}>
+				<Outlet />
+			</RouterProvider>
 		</Document>
 	);
 }
@@ -183,7 +189,7 @@ function Document({
 					href={`https://sergiodxa.com${location.pathname}`}
 				/>
 			</head>
-			<body className="min-h-full bg-neutral-50 font-sans text-neutral-900">
+			<body className="min-h-full bg-white font-sans text-black dark:bg-zinc-900 dark:text-zinc-50">
 				{children}
 				<ScrollRestoration />
 				{shouldHydrate || process.env.NODE_ENV === "development" ? (
