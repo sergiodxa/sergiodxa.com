@@ -23,6 +23,7 @@ module.exports = {
 					"Noto Color Emoji",
 				],
 			},
+
 			maxWidth: {
 				prose: "65ch",
 			},
@@ -49,5 +50,10 @@ module.exports = {
 		},
 	},
 
-	plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
+	plugins: [
+		require("@tailwindcss/typography"),
+		require("@tailwindcss/forms"),
+		require("tailwindcss-react-aria-components"),
+		require("tailwindcss-animate"),
+	],
 };
