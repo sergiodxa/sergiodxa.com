@@ -33,7 +33,7 @@ export default {
 
 		feed: {
 			title: "Activity",
-			description: "The latests activity on my website",
+			description: "My latests activity",
 
 			article: "I wrote about <link:article>{{title}}</link:article>",
 
