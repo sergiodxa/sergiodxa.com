@@ -39,7 +39,7 @@ export default {
 
 			tutorial: "I published how to <link:tutorial>{{title}}</link:tutorial>",
 
-			bookmark: "I read <link:bookmark>{{title}}</link:bookmark> and liked it",
+			bookmark: "I saved <link:bookmark>{{title}}</link:bookmark>",
 		},
 	},
 
