@@ -72,7 +72,7 @@ function Header() {
 	let query = searchParams.get("q") ?? "";
 
 	return (
-		<header className="mx-auto flex flex-col md:flex-row max-w-screen-xl md:items-center justify-between px-5 py-2 gap-1">
+		<header className="mx-auto flex max-w-screen-xl flex-col justify-between gap-1 px-5 py-2 md:flex-row md:items-center">
 			<nav aria-label="Main" className="flex-shrink-0">
 				<ul className="flex items-center gap-x-4">
 					{navigation.map((item) => {
@@ -85,7 +85,7 @@ function Header() {
 				</ul>
 			</nav>
 
-			<div className="flex items-center gap-3 justify-between md:justify-end flex-grow flex-col [@media(min-width:470px)]:flex-row">
+			<div className="flex flex-grow flex-col items-center justify-between gap-3 md:justify-end [@media(min-width:470px)]:flex-row">
 				{!user?.isSponsor ? (
 					<Link href="https://github.com/sponsors/sergiodxa">
 						{t("sponsor")}

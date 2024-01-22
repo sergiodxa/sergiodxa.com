@@ -2,22 +2,19 @@ import type { action as editorAction } from "../components.editor/route";
 import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 
 import { redirect } from "@remix-run/cloudflare";
-import { Form, useFetcher } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { parameterize } from "inflected";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-	Button,
-	Heading,
-	Input,
-	Label,
-	TextField,
-} from "react-aria-components";
+import { Heading } from "react-aria-components";
 import { useHydrated } from "remix-utils/use-hydrated";
 import { z } from "zod";
 
 import { Tutorial } from "~/models/tutorial.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
+import { TextField } from "~/ui/TextField";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
 
@@ -98,45 +95,24 @@ export default function Component() {
 
 					<TextField
 						name="title"
-						className="flex flex-col gap-0.5"
 						onChange={setTitle}
-					>
-						<Label className="text-sm font-medium text-gray-700">Title</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="title"
-							value={title}
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
+						label="Title"
+						value={title}
+						maxLength={140}
+					/>
+          
+					<TextField
+						name="slug"
+						onChange={setTitle}
+						label="Slug"
+						value={slug}
+						maxLength={140}
+						isReadOnly={isHydrated}
+					/>
 
-					<TextField name="slug" className="flex flex-col gap-0.5">
-						<Label className="text-sm font-medium text-gray-700">Slug</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="slug"
-							readOnly={isHydrated}
-							value={slug}
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
+					<TextField name="excerpt" label="Excerpt" maxLength={140} />
 
-					<TextField name="excerpt" className="flex flex-col gap-0.5">
-						<Label className="text-sm font-medium text-gray-700">Excerpt</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="excerpt"
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
-
-					<Button
-						type="submit"
-						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-					>
+					<Button type="submit" variant="primary">
 						Save
 					</Button>
 

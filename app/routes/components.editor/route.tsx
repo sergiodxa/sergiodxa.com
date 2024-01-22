@@ -10,6 +10,7 @@ import { z } from "zod";
 
 import { MarkdownView } from "~/components/markdown";
 import { Markdown } from "~/modules/md.server";
+import { Toolbar } from "~/ui/Toolbar";
 import { Schemas } from "~/utils/schemas";
 
 import { Button } from "./buttons";
@@ -45,16 +46,16 @@ type TextboxProps = {
 
 export function Textbox(props: TextboxProps) {
 	return (
-		<div className="flex h-full flex-col rounded-md border border-neutral-300 bg-white">
+		<div className="flex h-full flex-col rounded-md border border-neutral-300 bg-white dark:bg-zinc-800">
 			<div role="menubar" className="flex items-center justify-between p-2">
-				<div className="flex items-center gap-x-1 text-gray-700">
+				<div className="flex items-center gap-x-1 text-zinc-700 dark:text-zinc-300">
 					<svg width={16} height={16}>
 						<use href="/icons?name=markdown#markdown" />
 					</svg>
 					<span className="text-xs">Markdown is supported</span>
 				</div>
 
-				<div className="flex items-center justify-end">
+        <Toolbar aria-label="Text Formatting" orientation="horizontal">
 					<Button.Bold />
 					<Button.Italic />
 					<Button.Link />
@@ -62,10 +63,10 @@ export function Textbox(props: TextboxProps) {
 					<Button.Quote />
 					<Button.Image />
 					<Button.Heading />
-				</div>
+        </Toolbar>
 			</div>
 
-			<textarea
+    <textarea
 				name="content"
 				ref={props.fieldRef}
 				value={props.value}
@@ -85,7 +86,7 @@ type PreviewProps = {
 
 export function Preview(props: PreviewProps) {
 	return (
-		<div className="prose prose-blue max-w-prose overflow-y-auto">
+		<div className="prose prose-blue sm:prose-lg max-w-prose overflow-y-auto dark:prose-invert">
 			{props.rendereable ? <MarkdownView content={props.rendereable} /> : null}
 		</div>
 	);

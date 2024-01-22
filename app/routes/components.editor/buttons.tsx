@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { useT } from "~/helpers/use-i18n.hook";
+import { Button as UIButton } from "~/ui/Button";
 
 import { getSelection } from "./get-selection";
 import { useUpdate, useElement } from "./use-editor";
@@ -27,17 +28,16 @@ export namespace Button {
 		let update = useUpdate();
 		let element = useElement();
 		return (
-			<button
+			<UIButton
 				type="button"
-				role="menuitem"
-				className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-neutral-200"
-				onClick={() => {
+        variant="secondary"
+				onPress={() => {
 					let selection = getSelection(element.current!);
 					update({ selection, updater, handler });
 				}}
 			>
 				{children}
-			</button>
+			</UIButton>
 		);
 	}
 
