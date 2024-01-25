@@ -55,7 +55,7 @@ export function Textbox(props: TextboxProps) {
 					<span className="text-xs">Markdown is supported</span>
 				</div>
 
-        <Toolbar aria-label="Text Formatting" orientation="horizontal">
+				<Toolbar aria-label="Text Formatting" orientation="horizontal">
 					<Button.Bold />
 					<Button.Italic />
 					<Button.Link />
@@ -63,10 +63,10 @@ export function Textbox(props: TextboxProps) {
 					<Button.Quote />
 					<Button.Image />
 					<Button.Heading />
-        </Toolbar>
+				</Toolbar>
 			</div>
 
-    <textarea
+			<textarea
 				name="content"
 				ref={props.fieldRef}
 				value={props.value}
@@ -86,7 +86,7 @@ type PreviewProps = {
 
 export function Preview(props: PreviewProps) {
 	return (
-		<div className="prose prose-blue sm:prose-lg max-w-prose overflow-y-auto dark:prose-invert">
+		<div className="prose prose-blue max-w-prose overflow-y-auto sm:prose-lg dark:prose-invert">
 			{props.rendereable ? <MarkdownView content={props.rendereable} /> : null}
 		</div>
 	);

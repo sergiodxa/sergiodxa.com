@@ -30,7 +30,7 @@ export namespace Button {
 		return (
 			<UIButton
 				type="button"
-        variant="secondary"
+				variant="secondary"
 				onPress={() => {
 					let selection = getSelection(element.current!);
 					update({ selection, updater, handler });

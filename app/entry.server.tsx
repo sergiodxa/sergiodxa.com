@@ -7,7 +7,7 @@ import type {
 import { RemixServer, isRouteErrorResponse } from "@remix-run/react";
 import { isErrorResponse } from "@remix-run/react/dist/data";
 import { createInstance } from "i18next";
-import isbot from "isbot";
+import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { preloadLinkedAssets } from "remix-utils/preload-route-assets";

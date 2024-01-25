@@ -100,7 +100,7 @@ export default function Component() {
 						value={title}
 						maxLength={140}
 					/>
-          
+
 					<TextField
 						name="slug"
 						onChange={setTitle}
