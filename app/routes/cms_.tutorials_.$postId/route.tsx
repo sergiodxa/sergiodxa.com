@@ -6,7 +6,6 @@ import type {
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
-import { parameterize } from "inflected";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Button,
@@ -69,7 +68,6 @@ export default function Component() {
 	let loaderData = useLoaderData<typeof loader>();
 
 	let [title, setTitle] = useState(loaderData.tutorial.title);
-	let slug = parameterize(title);
 
 	let { submit, data } = useFetcher<typeof editorAction>();
 	let $textarea = useRef<HTMLTextAreaElement>(null);
@@ -133,7 +131,7 @@ export default function Component() {
 							maxLength={140}
 							name="slug"
 							readOnly
-							value={slug}
+							value={loaderData.tutorial.slug}
 							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
 						/>
 					</TextField>
