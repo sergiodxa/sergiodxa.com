@@ -39,8 +39,14 @@ export function Fence({ children, language }: FenceProps) {
 		content = Prism.highlight(children, Prism.languages[language], language);
 	} catch (error) {
 		if (error instanceof Error && error.message.includes("has no grammar")) {
-			content = Prism.highlight(children, Prism.languages.plain, "plain");
+			try {
+				content = Prism.highlight(children, Prism.languages.plain, "plain");
+			} catch {
+				// ignore any error here
+			}
 		}
+
+		// ignore other errors
 	}
 
 	return (
