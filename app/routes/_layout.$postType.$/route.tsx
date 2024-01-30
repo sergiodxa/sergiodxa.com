@@ -1,7 +1,12 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare";
+import type {
+	LinksFunction,
+	LoaderFunctionArgs,
+	MetaFunction,
+} from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
+import prism from "prismjs/themes/prism-okaidia.min.css";
 import { z } from "zod";
 
 import { Redirects } from "~/modules/redirects.server";
@@ -9,6 +14,8 @@ import { Redirects } from "~/modules/redirects.server";
 import { ArticleView } from "./article-view";
 import { queryArticle, queryTutorial } from "./queries";
 import { TutorialView } from "./tutorial-view";
+
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: prism }];
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	let { postType, slug } = z

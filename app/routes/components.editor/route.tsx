@@ -1,6 +1,6 @@
 import type { Actions } from "./use-editor";
 import type { RenderableTreeNode } from "@markdoc/markdoc";
-import type { DataFunctionArgs } from "@remix-run/cloudflare";
+import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 import type { Dispatch, RefObject } from "react";
 
 import { json } from "@remix-run/cloudflare";
@@ -18,7 +18,7 @@ import { Provider, useEditor } from "./use-editor";
 
 export let handle: SDX.Handle = { hydrate: true };
 
-export async function action({ request, context }: DataFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
 	try {
 		let markdown = await context.time("parseFormData", async () => {
 			let { content } = await Schemas.formData()
