@@ -1,11 +1,11 @@
-import { rest } from "msw";
+import { http, passthrough } from "msw";
 import { setupServer } from "msw/node";
 
 import { github } from "./github.mock";
 
 let misc = [
-	rest.get(/http:\/\/localhost:\d+\/.*/, async (req) => req.passthrough()),
-	rest.post(/http:\/\/localhost:\d+\/.*/, async (req) => req.passthrough()),
+	http.get(/http:\/\/localhost:\d+\/.*/, passthrough),
+	http.post(/http:\/\/localhost:\d+\/.*/, passthrough),
 ];
 
 export const server = setupServer(...misc, ...github);

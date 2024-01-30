@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { rest } from "msw";
+import { HttpResponse, http } from "msw";
 import { z } from "zod";
 
 async function existsFile(path: string) {
@@ -14,23 +14,20 @@ async function existsFile(path: string) {
 }
 
 export let github = [
-	rest.get(
+	http.get(
 		"https://raw.githubusercontent.com/:owner/:repo/main/:path*",
-		async (req, res, ctx) => {
-			let { path } = z.object({ path: z.string().array() }).parse(req.params);
+		async (request) => {
+			let { path } = z
+				.object({ path: z.string().array() })
+				.parse(request.params);
 
 			if (!(await existsFile(path.join("/")))) {
-				return res(
-					ctx.status(404),
-					ctx.json({
-						message: "Not Found",
-					})
-				);
+				return HttpResponse.json({ message: "Not Found" }, { status: 404 });
 			}
 
 			let content = await fs.readFile(resolve(path.join("/")), "utf-8");
 
-			return res(ctx.status(200), ctx.text(content));
-		}
+			return HttpResponse.json(JSON.parse(content), { status: 200 });
+		},
 	),
 ];

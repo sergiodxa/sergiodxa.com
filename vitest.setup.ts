@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll } from "vitest";
 
 import { server } from "./mocks";
 
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 
 dotenv.config({ override: true });
 
