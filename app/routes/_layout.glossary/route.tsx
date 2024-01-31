@@ -29,14 +29,16 @@ export default function Component() {
 			<PageHeader t={t} />
 
 			<dl className="flex flex-col">
-				{glossary.map((term) => (
+				{glossary.map(({ id, slug, term, definition }) => (
 					<div
-						key={term.id}
-						id={term.slug}
+						key={id}
+						id={slug}
 						className="py-4 target:rounded-md target:border-2 target:border-zinc-500 target:border-opacity-50 target:bg-zinc-100 target:p-4 target:shadow-md target:dark:border-zinc-400 target:dark:border-opacity-50 target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none"
 					>
-						<dt className="text-xl font-bold">{term.term}</dt>
-						<dd>{term.definition}</dd>
+						<dt className="text-xl font-bold">
+							<a href={`#${slug}`}>{term}</a>
+						</dt>
+						<dd>{definition}</dd>
 					</div>
 				))}
 			</dl>
