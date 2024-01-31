@@ -33,7 +33,7 @@ export default function Component() {
 					<div
 						key={term.id}
 						id={term.slug}
-						className="py-4 target:rounded-md target:bg-zinc-100 target:p-4 target:shadow-md target:ring-2 target:ring-zinc-500 target:ring-opacity-50 target:dark:border-none target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none target:dark:ring-zinc-400 target:dark:ring-opacity-50"
+						className="py-4 target:rounded-md target:border-2 target:border-zinc-500 target:border-opacity-50 target:bg-zinc-100 target:p-4 target:shadow-md target:dark:border-zinc-400 target:dark:border-opacity-50 target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none"
 					>
 						<dt className="text-xl font-bold">{term.term}</dt>
 						<dd>{term.definition}</dd>
