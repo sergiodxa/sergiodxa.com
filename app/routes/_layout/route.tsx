@@ -67,6 +67,7 @@ function Header() {
 		{ name: t("articles"), to: "/articles" },
 		{ name: t("tutorials"), to: "/tutorials" },
 		{ name: t("bookmarks"), to: "/bookmarks" },
+		{ name: t("glossary"), to: "/glossary" },
 	] as const;
 
 	let query = searchParams.get("q") ?? "";
