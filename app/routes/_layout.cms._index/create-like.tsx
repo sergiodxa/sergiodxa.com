@@ -2,7 +2,6 @@ import { Heading } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Button } from "~/ui/Button";
-import { Input, Label } from "~/ui/Field";
 import { Form } from "~/ui/Form";
 import { TextField } from "~/ui/TextField";
 
@@ -24,10 +23,7 @@ export function CreateLike() {
 			>
 				<input type="hidden" name="intent" value={INTENT.createLike} />
 
-				<TextField type="url">
-					<Label>{t("label")}</Label>
-					<Input name="url" />
-				</TextField>
+				<TextField type="url" name="url" label={t("label")} />
 
 				<Button type="submit" variant="primary">
 					{t("cta")}
