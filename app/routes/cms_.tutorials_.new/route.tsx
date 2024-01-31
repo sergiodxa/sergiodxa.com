@@ -1,9 +1,11 @@
 import type { action as editorAction } from "../components.editor/route";
-import type { ActionFunctionArgs } from "@remix-run/cloudflare";
+import type { ActionFunctionArgs, LinksFunction } from "@remix-run/cloudflare";
 
 import { redirect } from "@remix-run/cloudflare";
 import { useFetcher } from "@remix-run/react";
 import { parameterize } from "inflected";
+import dark from "prism-theme-github/themes/prism-theme-github-dark.css";
+import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Heading } from "react-aria-components";
 import { useHydrated } from "remix-utils/use-hydrated";
@@ -22,6 +24,11 @@ import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
 
 import { clearCache } from "./queries";
+
+export const links: LinksFunction = () => [
+	{ rel: "stylesheet", href: light, media: "(prefers-color-scheme: light)" },
+	{ rel: "stylesheet", href: dark, media: "(prefers-color-scheme: dark)" },
+];
 
 export const handle: SDX.Handle = { hydrate: true };
 

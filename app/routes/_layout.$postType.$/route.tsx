@@ -6,7 +6,8 @@ import type {
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import prism from "prismjs/themes/prism-okaidia.min.css";
+import dark from "prism-theme-github/themes/prism-theme-github-dark.css";
+import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { z } from "zod";
 
 import { Redirects } from "~/modules/redirects.server";
@@ -15,7 +16,10 @@ import { ArticleView } from "./article-view";
 import { queryArticle, queryTutorial } from "./queries";
 import { TutorialView } from "./tutorial-view";
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: prism }];
+export const links: LinksFunction = () => [
+	{ rel: "stylesheet", href: light, media: "(prefers-color-scheme: light)" },
+	{ rel: "stylesheet", href: dark, media: "(prefers-color-scheme: dark)" },
+];
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	let { postType, slug } = z
