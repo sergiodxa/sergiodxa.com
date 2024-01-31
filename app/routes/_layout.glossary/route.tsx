@@ -28,7 +28,7 @@ export default function Component() {
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-y-8">
 			<PageHeader t={t} />
 
-			<dl className="flex flex-col divide-y divide-zinc-500">
+			<dl className="flex flex-col">
 				{glossary.map((term) => (
 					<div
 						key={term.id}
