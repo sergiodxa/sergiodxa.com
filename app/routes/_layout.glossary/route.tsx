@@ -25,7 +25,7 @@ export default function Component() {
 	let t = useT("glossary");
 
 	return (
-		<main className="mx-auto flex max-w-screen-sm flex-col gap-y-8">
+		<main className="mx-auto mb-8 flex max-w-screen-sm flex-col gap-y-8">
 			<PageHeader t={t} />
 
 			<dl className="flex flex-col">
@@ -33,7 +33,7 @@ export default function Component() {
 					<div
 						key={id}
 						id={slug}
-						className="py-4 target:rounded-md target:border-2 target:border-zinc-500 target:border-opacity-50 target:bg-zinc-100 target:p-4 target:shadow-md target:dark:border-zinc-400 target:dark:border-opacity-50 target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none"
+						className="py-4 target:scroll-m-4 target:rounded-md target:border-2 target:border-zinc-500 target:border-opacity-50 target:bg-zinc-100 target:p-4 target:shadow-md target:dark:border-zinc-400 target:dark:border-opacity-50 target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none"
 					>
 						<dt className="text-xl font-bold">
 							<a href={`#${slug}`}>{term}</a>
