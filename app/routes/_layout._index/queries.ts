@@ -263,12 +263,7 @@ export async function queryGlossary(
 }
 
 export function sort(
-	articles: Array<ArticleItem>,
-	bookmarks: Array<BookmarkItem>,
-	tutorials: Array<TutorialItem>,
-	glossary: Array<GlossaryItem>,
+	items: Array<ArticleItem | BookmarkItem | TutorialItem | GlossaryItem>,
 ) {
-	return [...articles, ...bookmarks, ...tutorials, ...glossary].sort(
-		(a, b) => b.payload.createdAt - a.payload.createdAt,
-	);
+	return items.sort((a, b) => b.payload.createdAt - a.payload.createdAt);
 }

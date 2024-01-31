@@ -39,7 +39,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		]);
 
 		return json(
-			{ items: sort(articles, bookmarks, tutorials, glossary) },
+			{ items: sort([...articles, ...bookmarks, ...tutorials, ...glossary]) },
 			{ headers },
 		);
 	});
