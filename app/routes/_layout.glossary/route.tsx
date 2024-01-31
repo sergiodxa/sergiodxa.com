@@ -15,6 +15,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let db = database(context.db);
 
 	let glossary = await Glossary.list({ db });
+	glossary = glossary.sort((a, b) => a.term.localeCompare(b.term, "en"));
 
 	return json({ glossary: glossary.map((g) => g.toJSON()) });
 }
@@ -24,19 +25,21 @@ export default function Component() {
 	let t = useT("glossary");
 
 	return (
-		<main className="mx-auto max-w-screen-sm space-y-2">
+		<main className="mx-auto flex max-w-screen-sm flex-col gap-y-8">
 			<PageHeader t={t} />
 
-			<div className="flex flex-col gap-y-4">
-				<dl className="space-y-2">
-					{glossary.map((term) => (
-						<div key={term.id}>
-							<dt className="text-xl font-bold">{term.term}</dt>
-							<dd>{term.definition}</dd>
-						</div>
-					))}
-				</dl>
-			</div>
+			<dl className="flex flex-col divide-y divide-zinc-500">
+				{glossary.map((term) => (
+					<div
+						key={term.id}
+						id={term.slug}
+						className="py-4 target:rounded-md target:bg-zinc-100 target:p-4 target:shadow-md target:ring-2 target:ring-zinc-500 target:ring-opacity-50 target:dark:border-none target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none target:dark:ring-zinc-400 target:dark:ring-opacity-50"
+					>
+						<dt className="text-xl font-bold">{term.term}</dt>
+						<dd>{term.definition}</dd>
+					</div>
+				))}
+			</dl>
 		</main>
 	);
 }
