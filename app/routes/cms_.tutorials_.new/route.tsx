@@ -4,7 +4,7 @@ import type { ActionFunctionArgs, LinksFunction } from "@remix-run/cloudflare";
 import { redirect } from "@remix-run/cloudflare";
 import { useFetcher } from "@remix-run/react";
 import { parameterize } from "inflected";
-import dark from "prism-theme-github/themes/prism-theme-github-dark.css";
+import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
 import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Heading } from "react-aria-components";

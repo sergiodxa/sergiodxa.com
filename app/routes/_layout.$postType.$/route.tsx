@@ -6,7 +6,7 @@ import type {
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import dark from "prism-theme-github/themes/prism-theme-github-dark.css";
+import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
 import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { z } from "zod";
 
