@@ -11,6 +11,7 @@ import {
 	FieldError,
 	Input,
 	Label,
+	TextArea,
 	fieldBorderStyles,
 } from "./Field";
 import { composeTailwindRenderProps, focusRing } from "./utils";
@@ -28,24 +29,31 @@ export interface TextFieldProps extends AriaTextFieldProps {
 	label?: string;
 	description?: string;
 	errorMessage?: string | ((validation: ValidationResult) => string);
+	type?: AriaTextFieldProps["type"] | "textarea";
 }
 
 export function TextField({
 	label,
 	description,
 	errorMessage,
+	type,
 	...props
 }: TextFieldProps) {
 	return (
 		<AriaTextField
 			{...props}
+			type={type === "textarea" ? "text" : type}
 			className={composeTailwindRenderProps(
 				props.className,
 				"flex flex-col gap-1",
 			)}
 		>
 			{label && <Label>{label}</Label>}
-			<Input className={inputStyles} />
+			{type === "textarea" ? (
+				<TextArea className={inputStyles} rows={5} />
+			) : (
+				<Input className={inputStyles} />
+			)}
 			{description && <Description>{description}</Description>}
 			<FieldError>{errorMessage}</FieldError>
 		</AriaTextField>

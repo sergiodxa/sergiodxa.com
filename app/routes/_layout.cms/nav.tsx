@@ -10,6 +10,7 @@ export function Navigation() {
 		{ name: t("items.articles"), to: "articles" },
 		{ name: t("items.likes"), to: "likes" },
 		{ name: t("items.tutorials"), to: "tutorials" },
+		{ name: t("items.glossary"), to: "glossary" },
 		{ name: t("items.cache"), to: "cache" },
 		{ name: t("items.redirects"), to: "redirects" },
 	] as const;

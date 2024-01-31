@@ -214,6 +214,7 @@ export default {
 					articles: "Articles",
 					likes: "Likes",
 					tutorials: "Tutorials",
+					glossary: "Glossary",
 					cache: "Cache Keys",
 					redirects: "Redirects",
 				},
