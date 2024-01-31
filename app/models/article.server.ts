@@ -83,7 +83,7 @@ export class Article extends Post<ArticleMeta> {
 	override toJSON() {
 		return {
 			...super.toJSON(),
-			// Like Attributes
+			// Article Attributes
 			slug: this.slug,
 			locale: this.locale,
 			title: this.title,
