@@ -115,6 +115,37 @@ export function FeedList({ t, items }: Props) {
 					);
 				}
 
+				if (item.type === "glossary") {
+					return (
+						<Item
+							key={item.id}
+							index={index}
+							size={items.length - 1}
+							body={
+								<Trans
+									parent="p"
+									className="text-sm text-zinc-800 dark:text-zinc-200"
+									i18nKey="feed.glossary"
+									t={t}
+									values={{ title: item.payload.title }}
+									components={{
+										"link:glossary": <Link href={item.payload.link} />,
+									}}
+								/>
+							}
+							icon={
+								<Icon
+									icon="pencil"
+									className="h-5 w-5 text-white"
+									aria-hidden="true"
+								/>
+							}
+							iconColor="bg-blue-400"
+							createdAt={new Date(item.payload.createdAt)}
+						/>
+					);
+				}
+
 				return null;
 			})}
 		</ol>

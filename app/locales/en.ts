@@ -41,6 +41,9 @@ export default {
 			tutorial: "I published how to <link:tutorial>{{title}}</link:tutorial>",
 
 			bookmark: "I saved <link:bookmark>{{title}}</link:bookmark>",
+
+			glossary:
+				"I added the definition of <link:glossary>{{title}}</link:glossary> to the glossary",
 		},
 	},
 

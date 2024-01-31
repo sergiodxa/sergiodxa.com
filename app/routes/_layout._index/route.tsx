@@ -8,7 +8,13 @@ import { useT } from "~/helpers/use-i18n.hook";
 import { Logger } from "~/modules/logger.server";
 
 import { FeedList } from "./feed";
-import { queryArticles, queryBookmarks, queryTutorials, sort } from "./queries";
+import {
+	queryArticles,
+	queryBookmarks,
+	queryGlossary,
+	queryTutorials,
+	sort,
+} from "./queries";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/index#loader", async () => {
@@ -25,13 +31,17 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 			.nullable()
 			.parse(url.searchParams.get("q"));
 
-		let [articles, bookmarks, tutorials] = await Promise.all([
+		let [articles, bookmarks, tutorials, glossary] = await Promise.all([
 			queryArticles(context, query),
 			queryBookmarks(context, query),
 			queryTutorials(context, query),
+			queryGlossary(context, query),
 		]);
 
-		return json({ items: sort(articles, bookmarks, tutorials) }, { headers });
+		return json(
+			{ items: sort(articles, bookmarks, tutorials, glossary) },
+			{ headers },
+		);
 	});
 }
 

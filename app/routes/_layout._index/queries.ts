@@ -3,6 +3,7 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 import { Article } from "~/models/article.server";
+import { Glossary } from "~/models/glossary.server";
 import { Like } from "~/models/like.server";
 import { Tutorial } from "~/models/tutorial.server";
 import { Cache } from "~/modules/cache.server";
@@ -32,9 +33,16 @@ const TutorialItemSchema = z.object({
 	payload: PayloadSchema,
 });
 
+const GlossaryItemSchema = z.object({
+	type: z.literal("glossary"),
+	id: z.string().uuid(),
+	payload: PayloadSchema,
+});
+
 type ArticleItem = Awaited<ReturnType<typeof queryArticles>>[number];
 type BookmarkItem = Awaited<ReturnType<typeof queryBookmarks>>[number];
 type TutorialItem = Awaited<ReturnType<typeof queryTutorials>>[number];
+type GlossaryItem = Awaited<ReturnType<typeof queryGlossary>>[number];
 
 export async function queryArticles(
 	context: AppLoadContext,
@@ -200,12 +208,67 @@ export async function queryTutorials(
 	return TutorialItemSchema.array().parse(JSON.parse(result));
 }
 
+export async function queryGlossary(
+	context: AppLoadContext,
+	query: string | null,
+) {
+	let db = database(context.db);
+
+	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+
+	let result: string;
+	if (query) {
+		result = await cache.fetch(
+			`feed:glossary:search:${query}`,
+			async () => {
+				let glossary = await Glossary.search({ db }, query);
+				let items = glossary.map<GlossaryItem>((item) => {
+					return {
+						id: item.id,
+						type: "glossary",
+						payload: {
+							title: item.term,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
+	} else {
+		result = await cache.fetch(
+			"feed:glossary",
+			async () => {
+				let glossary = await Glossary.list({ db });
+				let items = glossary.map<GlossaryItem>((item) => {
+					return {
+						id: item.id,
+						type: "glossary",
+						payload: {
+							title: item.term,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
+						},
+					};
+				});
+				return JSON.stringify(items);
+			},
+			{ ttl: 60 * 60 * 24 },
+		);
+	}
+
+	return GlossaryItemSchema.array().parse(JSON.parse(result));
+}
+
 export function sort(
 	articles: Array<ArticleItem>,
 	bookmarks: Array<BookmarkItem>,
 	tutorials: Array<TutorialItem>,
+	glossary: Array<GlossaryItem>,
 ) {
-	return [...articles, ...bookmarks, ...tutorials].sort(
+	return [...articles, ...bookmarks, ...tutorials, ...glossary].sort(
 		(a, b) => b.payload.createdAt - a.payload.createdAt,
 	);
 }

@@ -39,6 +39,10 @@ export class Glossary extends Post<GlossaryMeta> {
 		return this.meta.definition;
 	}
 
+	get pathname() {
+		return `/glossary#${this.slug}`;
+	}
+
 	override toJSON() {
 		return {
 			...super.toJSON(),
@@ -64,5 +68,24 @@ export class Glossary extends Post<GlossaryMeta> {
 			services,
 			await Post.create<GlossaryMeta>(services, { ...input, type: "glossary" }),
 		);
+	}
+
+	static async search(services: Services, query: string) {
+		let glossary = await Glossary.list(services);
+
+		let words = query
+			.trim()
+			.toLowerCase()
+			.split(/\s+/)
+			.filter((word) => word.length > 1);
+
+		for (let word of words) {
+			glossary = glossary.filter((item) => {
+				let term = item.term.toLowerCase();
+				return term.includes(word);
+			});
+		}
+
+		return glossary;
 	}
 }
