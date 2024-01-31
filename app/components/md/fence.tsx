@@ -59,11 +59,7 @@ export function Fence({ children, language }: FenceProps) {
 
 export const fence = {
 	render: "Fence",
-	attributes: {
-		language: {
-			type: String,
-		},
-	},
+	attributes: { language: { type: String } },
 };
 
 type FileNode = {
