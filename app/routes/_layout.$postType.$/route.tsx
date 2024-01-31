@@ -22,9 +22,15 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
-	let { postType, slug } = z
+	let result = z
 		.object({ postType: z.enum(["articles", "tutorials"]), slug: z.string() })
-		.parse({ postType: params.postType, slug: params["*"] });
+		.safeParse({ postType: params.postType, slug: params["*"] });
+
+	if (!result.success) {
+		throw new Error("Invalid post type", { cause: result.error });
+	}
+
+	let { postType, slug } = result.data;
 
 	if (postType === "articles") {
 		try {
