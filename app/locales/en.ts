@@ -151,6 +151,15 @@ export default {
 		},
 	},
 
+	glossary: {
+		title: "Glossary",
+
+		header: {
+			title: "Glossary",
+			description: "My definition of some terms.",
+		},
+	},
+
 	tutorial: {
 		document: {
 			title: "How to {{title}} by sergiodxa",

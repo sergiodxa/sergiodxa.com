@@ -67,7 +67,7 @@ export namespace Tables {
 			.references(() => users.id, { onDelete: "cascade" }),
 		// Attributes
 		type: text("type", {
-			enum: ["like", "tutorial", "article"],
+			enum: ["like", "tutorial", "article", "comment", "glossary"],
 			length: 255,
 		}).notNull(),
 	});

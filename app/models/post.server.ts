@@ -25,7 +25,7 @@ interface Services {
 export class Post<Meta extends BaseMeta> {
 	readonly id: UUID;
 	// Attributes
-	readonly type: "like" | "tutorial" | "article";
+	readonly type: "like" | "tutorial" | "article" | "comment" | "glossary";
 	// Relations
 	readonly authorId: UUID;
 	// Timestamps
