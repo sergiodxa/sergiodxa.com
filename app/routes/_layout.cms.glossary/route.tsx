@@ -26,12 +26,16 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			.pipe(z.object({ term: z.string(), definition: z.string() }))
 			.parse(formData);
 
+		let slug = parameterize(term);
+
 		let db = database(context.db);
 
 		await Glossary.create(
 			{ db },
-			{ authorId: user.id, slug: parameterize(term), term, definition },
+			{ authorId: user.id, slug, term, definition },
 		);
+
+		throw redirect(`/glossary#${slug}`);
 	}
 
 	throw redirect("/glossary");
@@ -46,13 +50,8 @@ export default function Component() {
 
 			<Form method="post" className="max-w-xs">
 				<input type="hidden" name="intent" value={INTENT.create} />
-				<TextField label="Term" name="term" defaultValue="SSR" />
-				<TextField
-					type="textarea"
-					label="Definition"
-					name="definition"
-					defaultValue="An application rendering strategy where the rendering happens in a server, typically at runtime when a new render is requested."
-				/>
+				<TextField label="Term" name="term" />
+				<TextField type="textarea" label="Definition" name="definition" />
 
 				<Button type="submit" variant="primary">
 					Create
