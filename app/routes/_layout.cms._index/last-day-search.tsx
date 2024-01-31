@@ -11,13 +11,13 @@ export function LastDaySearch() {
 
 	return (
 		<div className="flex flex-col gap-5">
-			<Heading className="text-base font-semibold leading-6 text-gray-900">
+			<Heading className="text-base font-semibold leading-6 text-zinc-900 dark:text-zinc-50">
 				{t("title")}
 			</Heading>
 
 			<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-					<Heading className="text-base font-semibold leading-6 text-gray-900">
+				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-zinc-600">
+					<Heading className="text-base font-semibold leading-6 text-zinc-900 dark:text-zinc-50">
 						Articles
 					</Heading>
 
@@ -30,8 +30,8 @@ export function LastDaySearch() {
 					</ul>
 				</div>
 
-				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-					<Heading className="text-base font-semibold leading-6 text-gray-900">
+				<div className="flex flex-col gap-1 rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-zinc-600">
+					<Heading className="text-base font-semibold leading-6 text-zinc-900 dark:text-zinc-50">
 						Tutorials
 					</Heading>
 

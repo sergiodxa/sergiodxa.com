@@ -30,6 +30,12 @@ export async function createQuickLike(
 	url: URL,
 	userId: UUID,
 ) {
+	let db = database(context.db);
+
+	let likes = await Like.list({ db });
+
+	if (likes.some((like) => like.url.toString() === url.toString())) return;
+
 	let response = await fetch(url, {
 		method: "GET",
 		redirect: "follow",
@@ -43,8 +49,6 @@ export async function createQuickLike(
 	let title = html.match(/<title>(?<title>.+?)<\/title>/)?.groups?.title.trim();
 
 	if (!title) throw new Error("Couldn't find title for this URL");
-
-	let db = database(context.db);
 
 	await Like.create({ db }, { title, url: url.toString(), authorId: userId });
 }

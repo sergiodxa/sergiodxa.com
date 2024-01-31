@@ -1,13 +1,10 @@
-import { Form } from "@remix-run/react";
-import {
-	Button,
-	Heading,
-	Input,
-	Label,
-	TextField,
-} from "react-aria-components";
+import { Heading } from "react-aria-components";
 
 import { useT } from "~/helpers/use-i18n.hook";
+import { Button } from "~/ui/Button";
+import { Input, Label } from "~/ui/Field";
+import { Form } from "~/ui/Form";
+import { TextField } from "~/ui/TextField";
 
 import { INTENT } from "./types";
 
@@ -16,30 +13,23 @@ export function CreateLike() {
 
 	return (
 		<div className="flex flex-col gap-5">
-			<Heading className="text-base font-semibold leading-6 text-gray-900">
+			<Heading className="text-base font-semibold leading-6 text-zinc-900 dark:text-zinc-50">
 				{t("title")}
 			</Heading>
 
 			<Form
 				method="post"
-				className="flex items-end gap-2 rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+				className="flex-row items-end gap-2 rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-zinc-600"
 				reloadDocument
 			>
 				<input type="hidden" name="intent" value={INTENT.createLike} />
-				<TextField type="url" className="flex flex-grow flex-col gap-0.5">
-					<Label className="text-sm font-medium text-gray-700">
-						{t("label")}
-					</Label>
-					<Input
-						name="url"
-						className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-					/>
+
+				<TextField type="url">
+					<Label>{t("label")}</Label>
+					<Input name="url" />
 				</TextField>
 
-				<Button
-					type="submit"
-					className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-				>
+				<Button type="submit" variant="primary">
 					{t("cta")}
 				</Button>
 			</Form>
