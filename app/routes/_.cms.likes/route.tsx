@@ -20,6 +20,7 @@ import { INTENT } from "./types";
 export const handle: SDX.Handle = { hydrate: true };
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
+	await SessionStorage.requireUser(context, request, "/auth/login");
 	let likes = await Like.list({ db: database(context.db) });
 	let locale = await new I18n().getLocale(request);
 

@@ -82,4 +82,15 @@ export class Like extends Post<LikeMeta> {
 
 		return new Like({ db }, post);
 	}
+
+	static override async update(
+		services: Services,
+		id: Tables.SelectPost["id"],
+		input: InsertLike,
+	) {
+		return Post.update<LikeMeta>(services, id, {
+			...input,
+			type: "like",
+		});
+	}
 }
