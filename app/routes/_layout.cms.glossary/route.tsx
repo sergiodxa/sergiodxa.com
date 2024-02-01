@@ -5,6 +5,7 @@ import { parameterize } from "inflected";
 import { z } from "zod";
 
 import { Glossary } from "~/models/glossary.server";
+import { Cache } from "~/modules/cache.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
 import { Button } from "~/ui/Button";
@@ -13,7 +14,6 @@ import { TextField } from "~/ui/TextField";
 import { Schemas } from "~/utils/schemas";
 
 import { INTENT } from "./types";
-import { Cache } from "~/modules/cache.server";
 
 export async function action({ request, context }: ActionFunctionArgs) {
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
