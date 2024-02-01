@@ -13,6 +13,7 @@ import { TextField } from "~/ui/TextField";
 import { Schemas } from "~/utils/schemas";
 
 import { INTENT } from "./types";
+import { Cache } from "~/modules/cache.server";
 
 export async function action({ request, context }: ActionFunctionArgs) {
 	let user = await SessionStorage.requireUser(context, request, "/auth/login");
@@ -34,6 +35,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			{ db },
 			{ authorId: user.id, slug, term, definition },
 		);
+
+		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+		let cacheKey = await cache.list("feed:glossary:");
+		await Promise.all([
+			cache.delete("feed:glossary"),
+			await Promise.all(cacheKey.map((key) => cache.delete(key))),
+		]);
 
 		throw redirectDocument(`/glossary#${slug}`);
 	}
