@@ -14,5 +14,5 @@ export default function Icon({
 	);
 }
 
-export const iconNames = ["bookmark", "pencil"] as const;
+export const iconNames = ["book", "bookmark", "pencil"] as const;
 export type IconName = (typeof iconNames)[number];

@@ -135,7 +135,7 @@ export function FeedList({ t, items }: Props) {
 							}
 							icon={
 								<Icon
-									icon="pencil"
+									icon="book"
 									className="h-5 w-5 text-white"
 									aria-hidden="true"
 								/>
