@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 
-import { redirect } from "@remix-run/cloudflare";
+import { redirect, redirectDocument } from "@remix-run/cloudflare";
 import { parameterize } from "inflected";
 import { z } from "zod";
 
@@ -35,7 +35,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			{ authorId: user.id, slug, term, definition },
 		);
 
-		throw redirect(`/glossary#${slug}`);
+		throw redirectDocument(`/glossary#${slug}`);
 	}
 
 	throw redirect("/glossary");
