@@ -58,13 +58,28 @@ export default function Component() {
 				<Subscribe t={t} />
 
 				<ul className="space-y-2">
-					{likes.map((like) => (
-						<li key={like.url} className="list-inside list-disc">
-							<Link href={like.url} rel="nofollow noreferer">
-								{like.title}
-							</Link>
-						</li>
-					))}
+					{likes.map((like) => {
+						return (
+							<li key={like.url} className="list-inside list-disc">
+								<Link href={like.url} rel="nofollow noreferer">
+									{like.title}
+								</Link>
+
+								{like.cached && (
+									<>
+										{" - "}
+										<Link
+											href={like.cached}
+											rel="nofollow noreferer"
+											className="text-sm"
+										>
+											(Wayback Machine)
+										</Link>
+									</>
+								)}
+							</li>
+						);
+					})}
 				</ul>
 			</div>
 		</main>

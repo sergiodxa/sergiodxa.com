@@ -6,7 +6,11 @@ import { Like } from "~/models/like.server";
 import { Cache } from "~/modules/cache.server";
 import { database } from "~/services/db.server";
 
-const SearchResultSchema = z.object({ title: z.string(), url: z.string() });
+const SearchResultSchema = z.object({
+	title: z.string(),
+	url: z.string().url(),
+	cached: z.string().url(),
+});
 
 export async function queryBookmarks(context: AppLoadContext) {
 	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
@@ -21,7 +25,18 @@ export async function queryBookmarks(context: AppLoadContext) {
 
 			return JSON.stringify(
 				bookmarks.map((article) => {
-					return { title: article.title, url: article.url.toString() };
+					let date = article.createdAt
+						.toISOString()
+						.replaceAll("-", "")
+						.replaceAll(":", "")
+						.replaceAll(".", "")
+						.replace("T", "");
+
+					let url = article.url.toString();
+
+					let cached = `https://web.archive.org/web/${date}/${url}`;
+
+					return { title: article.title, url, cached };
 				}),
 			);
 		},
