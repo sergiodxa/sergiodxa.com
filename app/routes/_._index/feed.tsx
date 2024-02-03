@@ -18,7 +18,7 @@ type Props = {
 
 export function FeedList({ t, items }: Props) {
 	return (
-		<ol aria-label={t("feed.title") as string}>
+		<ol aria-label={t("feed.title") as string} className="h-feed">
 			{items.map((item, index) => {
 				if (item.type === "article") {
 					return (
@@ -172,7 +172,7 @@ function Item({
 	let locale = useLocale();
 
 	return (
-		<li>
+		<li className="h-entry">
 			<div className="relative pb-8">
 				{index !== size ? (
 					<span
