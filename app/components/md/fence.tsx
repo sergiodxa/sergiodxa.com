@@ -17,8 +17,8 @@ import "prismjs/components/prism-toml";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-yaml";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
-import Icon from "../icon";
-import { Heading } from "react-aria-components";
+
+import Icon from "~/components/icon";
 
 type FenceProps = {
 	children: string;
