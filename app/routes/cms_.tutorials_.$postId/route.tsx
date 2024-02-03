@@ -1,11 +1,14 @@
 import type { action as editorAction } from "../components.editor/route";
 import type {
 	ActionFunctionArgs,
+	LinksFunction,
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
+import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Heading } from "react-aria-components";
 import { z } from "zod";
@@ -20,6 +23,11 @@ import { assertUUID } from "~/utils/uuid";
 
 import { Preview, Textbox } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
+
+export const links: LinksFunction = () => [
+	{ rel: "stylesheet", href: light, media: "(prefers-color-scheme: light)" },
+	{ rel: "stylesheet", href: dark, media: "(prefers-color-scheme: dark)" },
+];
 
 export const handle: SDX.Handle = { hydrate: true };
 
