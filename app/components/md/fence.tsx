@@ -17,13 +17,16 @@ import "prismjs/components/prism-toml";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-yaml";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
+import Icon from "../icon";
+import { Heading } from "react-aria-components";
 
 type FenceProps = {
 	children: string;
 	language: string;
+	path?: string;
 };
 
-export function Fence({ children, language }: FenceProps) {
+export function Fence({ children, language, path }: FenceProps) {
 	if (language === "tsx") language = "ts";
 	if (language === "dotenv") language = "plain";
 	if (language === "erb") language = "html";
@@ -50,16 +53,21 @@ export function Fence({ children, language }: FenceProps) {
 	}
 
 	return (
-		<pre
-			className={`language-${language}`}
-			dangerouslySetInnerHTML={{ __html: content }}
-		/>
+		<pre className={`language-${language}`}>
+			{path && (
+				<header className="flex items-center gap-1 pb-1.5">
+					<Icon icon="document" className="h-4 w-4" aria-hidden />
+					<span className="text-xs leading-none">{path}</span>
+				</header>
+			)}
+			<code dangerouslySetInnerHTML={{ __html: content }} />
+		</pre>
 	);
 }
 
 export const fence = {
 	render: "Fence",
-	attributes: { language: { type: String } },
+	attributes: { language: { type: String }, path: { type: String } },
 };
 
 type FileNode = {
