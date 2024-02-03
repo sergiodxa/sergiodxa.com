@@ -42,6 +42,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 				title: z.string().max(140),
 				slug: z.string(),
 				excerpt: z.string(),
+				tags: z
+					.string()
+					.optional()
+					.transform((value) => value?.split(" ")),
 			}),
 		)
 		.parse(await request.formData());
@@ -116,6 +120,8 @@ export default function Component() {
 						maxLength={140}
 						isReadOnly={isHydrated}
 					/>
+
+					<TextField name="tags" label="Tags" type="text" />
 
 					<TextField name="excerpt" label="Excerpt" maxLength={140} />
 
