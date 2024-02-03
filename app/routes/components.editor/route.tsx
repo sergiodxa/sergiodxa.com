@@ -8,6 +8,7 @@ import { useFetcher } from "@remix-run/react";
 import { useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 
+import Icon from "~/components/icon";
 import { MarkdownView } from "~/components/markdown";
 import { Markdown } from "~/modules/md.server";
 import { Toolbar } from "~/ui/Toolbar";
@@ -49,9 +50,7 @@ export function Textbox(props: TextboxProps) {
 		<div className="flex h-full flex-col rounded-md border border-neutral-300 bg-white dark:bg-zinc-800">
 			<div role="menubar" className="flex items-center justify-between p-2">
 				<div className="flex items-center gap-x-1 text-zinc-700 dark:text-zinc-300">
-					<svg width={16} height={16}>
-						<use href="/icons?name=markdown#markdown" />
-					</svg>
+					<Icon icon="markdown" className="h-4 w-4" />
 					<span className="text-xs">Markdown is supported</span>
 				</div>
 
