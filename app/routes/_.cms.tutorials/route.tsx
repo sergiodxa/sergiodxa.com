@@ -4,7 +4,6 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { Link } from "@remix-run/react";
 import { z } from "zod";
 
 import { Tutorial } from "~/models/tutorial.server";
@@ -12,6 +11,7 @@ import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { Link } from "~/ui/Link";
 import { assertUUID } from "~/utils/uuid";
 
 import { ImportTutorials } from "./import-tutorials";
@@ -84,12 +84,7 @@ export default function Component() {
 				<h2 className="text-3xl font-bold">Tutorials</h2>
 
 				<div className="flex items-center gap-4">
-					<Link
-						to="/cms/tutorials/new"
-						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900 no-underline visited:text-blue-900"
-					>
-						Write Article
-					</Link>
+					<Link href="/cms/tutorials/new">Write Article</Link>
 
 					<ImportTutorials />
 					<ResetTutorials />
