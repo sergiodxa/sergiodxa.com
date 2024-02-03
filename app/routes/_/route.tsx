@@ -38,7 +38,10 @@ export function ErrorBoundary() {
 	let title = "Something went wrong";
 
 	if (isRouteErrorResponse(error)) {
-		title = error.status === 404 ? "Content not found" : "Something went wrong";
+		title =
+			error.status === 404
+				? "Content not found"
+				: error.statusText ?? "Something went wrong";
 	} else if (error instanceof Error) {
 		title = error.message;
 	}
