@@ -4,9 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { redirect, json } from "@remix-run/cloudflare";
-import { Form } from "@remix-run/react";
 import { useId } from "react";
-import { Button } from "react-aria-components";
 import { z } from "zod";
 
 import { Cache } from "~/modules/cache.server";
@@ -15,6 +13,8 @@ import { SessionStorage } from "~/modules/session.server";
 
 import { CacheKeyList } from "./list";
 import { INTENT } from "./types";
+import { Form } from "~/ui/Form";
+import { Button } from "~/ui/Button";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -61,12 +61,12 @@ export default function Component() {
 				<h2 className="text-3xl font-bold">Cache Keys</h2>
 
 				<div className="flex items-center gap-4">
-					<Form method="post" className="flex items-center gap-1">
+					<Form method="post">
 						<Button
 							type="submit"
 							name="intent"
 							value={INTENT.clear}
-							className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
+							variant="primary"
 						>
 							Clear Cache
 						</Button>
@@ -77,7 +77,7 @@ export default function Component() {
 						name="intent"
 						value={INTENT.deleteSelected}
 						form={id}
-						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
+						variant="secondary"
 					>
 						Delete Selected
 					</Button>
