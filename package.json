@@ -52,6 +52,7 @@
     "@sentry/remix": "^7.98.0",
     "@sergiodxa/api-client": "^1.0.2",
     "@tailwindcss/typography": "^0.5.9",
+    "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.0",
     "collected-notes": "^2.3.0",
     "dotenv": "^16.4.1",
