@@ -24,7 +24,12 @@ export async function queryArticle(
 			postType: "articles" as const,
 			article: { title: article.title, body: article.renderable },
 			meta: [
-				{ title: t("article.meta.title", { note: article.title }) },
+				{
+					title: t("article.meta.title", {
+						note: article.title,
+						interpolation: { escapeValue: false },
+					}),
+				},
 				{ name: "description", content: article.excerpt },
 				{
 					"script:ld+json": {
@@ -77,7 +82,10 @@ export async function queryTutorial(
 		let locale = await new I18n().getLocale(request);
 		let t = await new I18n().getFixedT(locale);
 
-		let title = t("tutorial.document.title", { title: tutorial.title });
+		let title = t("tutorial.document.title", {
+			title: tutorial.title,
+			interpolation: { escapeValue: false },
+		});
 
 		return {
 			postType: "tutorials" as const,
