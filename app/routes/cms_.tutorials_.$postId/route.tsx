@@ -7,18 +7,14 @@ import type {
 import { json, redirect } from "@remix-run/cloudflare";
 import { Form, useFetcher, useLoaderData } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-	Button,
-	Heading,
-	Input,
-	Label,
-	TextField,
-} from "react-aria-components";
+import { Heading } from "react-aria-components";
 import { z } from "zod";
 
 import { Tutorial } from "~/models/tutorial.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { Button } from "~/ui/Button";
+import { TextField } from "~/ui/TextField";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
 
@@ -30,12 +26,22 @@ export const handle: SDX.Handle = { hydrate: true };
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	await SessionStorage.requireUser(context, request);
 
-	let db = database(context.db);
 	let postId = z.string().uuid().parse(params.postId);
 	assertUUID(postId);
+
+	let db = database(context.db);
+
 	let tutorial = await Tutorial.findById({ db }, postId);
 
-	return json({ tutorial: tutorial.toJSON() });
+	return json({
+		tutorial: {
+			content: tutorial.content,
+			excerpt: tutorial.excerpt,
+			slug: tutorial.slug,
+			title: tutorial.title,
+			tags: tutorial.tags,
+		},
+	});
 }
 
 export async function action({ request, params, context }: ActionFunctionArgs) {
@@ -44,16 +50,27 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 	let postId = z.string().uuid().parse(params.postId);
 	assertUUID(postId);
 
-	let body = Schemas.formData()
+	let result = Schemas.formData()
 		.pipe(
 			z.object({
 				content: z.string(),
 				title: z.string().max(140),
 				slug: z.string(),
 				excerpt: z.string(),
+				tags: z
+					.string()
+					.optional()
+					.transform((value) => value?.split(" ")),
 			}),
 		)
-		.parse(await request.formData());
+		.safeParse(await request.formData());
+
+	if (!result.success) {
+		console.log(result.error);
+		return json({});
+	}
+
+	let body = result.data;
 
 	let db = database(context.db);
 
@@ -111,46 +128,38 @@ export default function Component() {
 
 					<TextField
 						name="title"
-						className="flex flex-col gap-0.5"
 						onChange={setTitle}
-					>
-						<Label className="text-sm font-medium text-gray-700">Title</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="title"
-							value={title}
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
+						label="Title"
+						type="text"
+						maxLength={140}
+						value={title}
+					/>
 
-					<TextField name="slug" className="flex flex-col gap-0.5">
-						<Label className="text-sm font-medium text-gray-700">Slug</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="slug"
-							readOnly
-							value={loaderData.tutorial.slug}
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
+					<TextField
+						name="slug"
+						label="Slug"
+						type="text"
+						maxLength={140}
+						isReadOnly
+						value={loaderData.tutorial.slug}
+					/>
 
-					<TextField name="excerpt" className="flex flex-col gap-0.5">
-						<Label className="text-sm font-medium text-gray-700">Excerpt</Label>
-						<Input
-							type="text"
-							maxLength={140}
-							name="excerpt"
-							defaultValue={loaderData.tutorial.excerpt}
-							className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-						/>
-					</TextField>
+					<TextField
+						name="excerpt"
+						label="Excerpt"
+						type="text"
+						maxLength={140}
+						defaultValue={loaderData.tutorial.excerpt}
+					/>
 
-					<Button
-						type="submit"
-						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-					>
+					<TextField
+						name="tags"
+						label="Tags"
+						type="text"
+						defaultValue={loaderData.tutorial.tags.join(" ")}
+					/>
+
+					<Button type="submit" variant="primary">
 						Save
 					</Button>
 
