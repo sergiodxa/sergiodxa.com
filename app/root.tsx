@@ -17,7 +17,6 @@ import {
 	Scripts,
 	ScrollRestoration,
 	useLoaderData,
-	useLocation,
 	useNavigate,
 } from "@remix-run/react";
 import { useEffect } from "react";
@@ -136,7 +135,6 @@ function Document({
 }) {
 	let shouldHydrate = useShouldHydrate();
 	let dir = useDirection();
-	let location = useLocation();
 
 	return (
 		<html lang={locale} dir={dir} className="h-full">
@@ -183,10 +181,6 @@ function Document({
 				<link
 					rel="pingback"
 					href="https://webmention.io/sergiodxa.com/xmlrpc"
-				/>
-				<link
-					rel="canonical"
-					href={`https://sergiodxa.com${location.pathname}`}
 				/>
 			</head>
 			<body className="min-h-full bg-white font-sans text-black dark:bg-zinc-900 dark:text-zinc-50">

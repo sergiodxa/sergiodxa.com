@@ -51,6 +51,12 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			href: "/articles.rss",
 		});
 
+		meta.push({
+			tagName: "link",
+			rel: "canonical",
+			href: new URL("/articles", url).toString(),
+		});
+
 		return json({ term: term ?? undefined, meta, articles }, { headers });
 	} catch (error) {
 		if (error instanceof Error) {
@@ -60,10 +66,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	}
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) return [];
-	return data.meta;
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Articles() {
 	let { articles, term } = useLoaderData<typeof loader>();

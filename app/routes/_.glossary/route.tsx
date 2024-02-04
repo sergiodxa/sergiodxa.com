@@ -1,4 +1,8 @@
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+import type {
+	LoaderFunctionArgs,
+	MetaDescriptor,
+	MetaFunction,
+} from "@remix-run/cloudflare";
 
 import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -6,19 +10,37 @@ import { useLoaderData } from "@remix-run/react";
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
 import { Glossary } from "~/models/glossary.server";
+import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { database } from "~/services/db.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
+	let locale = await new I18n().getLocale(request);
 
 	let db = database(context.db);
 
 	let glossary = await Glossary.list({ db });
-	glossary = glossary.sort((a, b) => a.term.localeCompare(b.term, "en"));
+	glossary = glossary.sort((a, b) => a.term.localeCompare(b.term, locale));
 
-	return json({ glossary: glossary.map((g) => g.toJSON()) });
+	return json({
+		glossary: glossary.map((g) => g.toJSON()),
+		meta: [
+			{ title: "Glossary of sergiodxa" },
+			{
+				name: "description",
+				content: "My definition of terms used in web dev.",
+			},
+			{
+				tagName: "link",
+				rel: "canonical",
+				href: new URL("/glossary", request.url).toString(),
+			},
+		] satisfies MetaDescriptor[],
+	});
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	let { glossary } = useLoaderData<typeof loader>();

@@ -35,16 +35,18 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 						type: "application/rss+xml",
 						href: "/bookmarks.rss",
 					},
+					{
+						tagName: "link",
+						rel: "canonical",
+						href: new URL("/bookmarks", request.url).toString(),
+					},
 				];
 			},
 		});
 	});
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) return [];
-	return data.meta;
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	let { likes } = useLoaderData<typeof loader>();

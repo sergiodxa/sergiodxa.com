@@ -66,6 +66,12 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 						href: "/tutorials.rss",
 					});
 
+					meta.push({
+						tagName: "link",
+						rel: "canonical",
+						href: new URL("/tutorials", url).toString(),
+					});
+
 					return meta;
 				},
 			},
@@ -74,10 +80,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 	});
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	if (!data) return [];
-	return data.meta;
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	let t = useT("tutorials");
