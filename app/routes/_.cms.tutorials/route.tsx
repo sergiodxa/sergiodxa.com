@@ -11,7 +11,8 @@ import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
-import { Link } from "~/ui/Link";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 import { assertUUID } from "~/utils/uuid";
 
 import { ImportTutorials } from "./import-tutorials";
@@ -84,7 +85,11 @@ export default function Component() {
 				<h2 className="text-3xl font-bold">Tutorials</h2>
 
 				<div className="flex items-center gap-4">
-					<Link href="/cms/tutorials/new">Write Article</Link>
+					<Form method="get" action="/cms/tutorials/new">
+						<Button type="submit" variant="primary">
+							Write Tutorial
+						</Button>
+					</Form>
 
 					<ImportTutorials />
 					<ResetTutorials />
