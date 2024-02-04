@@ -1,4 +1,4 @@
-import type { AppLoadContext } from "@remix-run/cloudflare";
+import type { AppLoadContext, MetaDescriptor } from "@remix-run/cloudflare";
 
 import { Article } from "~/models/article.server";
 import { Tutorial } from "~/models/tutorial.server";
@@ -32,6 +32,13 @@ export async function queryArticle(
 				},
 				{ name: "description", content: article.excerpt },
 				{
+					tagName: "link",
+					rel: "canonical",
+					href:
+						article.canonicalUrl ??
+						new URL(article.pathname, request.url).toString(),
+				},
+				{
 					"script:ld+json": {
 						"@context": "https://schema.org",
 						"@type": "Article",
@@ -47,7 +54,7 @@ export async function queryArticle(
 						dateModified: article.updatedAt.toISOString(),
 					},
 				},
-			],
+			] satisfies MetaDescriptor[],
 		};
 	} catch (error) {
 		console.error(error);
@@ -110,6 +117,11 @@ export async function queryTutorial(
 				{ property: "twitter:site", content: "@sergiodxa" },
 				{ property: "twitter:title", content: title },
 				{
+					tagName: "link",
+					rel: "canonical",
+					href: new URL(tutorial.pathname, request.url).toString(),
+				},
+				{
 					"script:ld+json": {
 						"@context": "https://schema.org",
 						"@type": "Article",
@@ -125,7 +137,7 @@ export async function queryTutorial(
 						dateModified: tutorial.updatedAt.toISOString(),
 					},
 				},
-			],
+			] satisfies MetaDescriptor[],
 		};
 	} catch (error) {
 		console.error(error);
