@@ -9,21 +9,14 @@ import { isEmpty } from "~/utils/arrays";
 
 const SearchResultSchema = z.object({ path: z.string(), title: z.string() });
 
-export async function queryArticles(
-	context: AppLoadContext,
-	query: string | null,
-) {
+export async function queryArticles(context: AppLoadContext) {
 	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
 	let db = database(context.db);
 
-	let key = query ? `articles:search:${query}` : "articles:list";
-
 	let result = await cache.fetch(
-		key,
+		"articles:list",
 		async () => {
-			let articles = query
-				? await Article.search({ db }, query)
-				: await Article.list({ db });
+			let articles = await Article.list({ db });
 
 			return JSON.stringify(
 				articles.map((article) => {
@@ -36,7 +29,7 @@ export async function queryArticles(
 
 	let data = SearchResultSchema.array().parse(JSON.parse(result));
 
-	if (isEmpty(data)) context.waitUntil(cache.delete(key));
+	if (isEmpty(data)) context.waitUntil(cache.delete("articles:list"));
 
 	return data;
 }

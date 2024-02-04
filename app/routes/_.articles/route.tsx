@@ -5,7 +5,6 @@ import {
 	json,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { z } from "zod";
 
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
@@ -21,12 +20,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
 	let url = new URL(request.url);
 
-	let term = z
-		.string()
-		.transform((v) => v.toLowerCase())
-		.nullable()
-		.parse(url.searchParams.get("q"));
-
 	let headers = new Headers({
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
@@ -34,30 +27,28 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	let t = await new I18n().getFixedT(request);
 
 	try {
-		let articles = await queryArticles(context, term);
+		let articles = await queryArticles(context);
 
-		let meta: MetaDescriptor[] = [];
-
-		if (term === "") {
-			meta.push({ title: t("articles.meta.title.default") });
-		} else {
-			meta.push({ title: t("articles.meta.title.search", { term }) });
-		}
-
-		meta.push({
-			tagName: "link",
-			rel: "alternate",
-			type: "application/rss+xml",
-			href: "/articles.rss",
-		});
-
-		meta.push({
-			tagName: "link",
-			rel: "canonical",
-			href: new URL("/articles", url).toString(),
-		});
-
-		return json({ term: term ?? undefined, meta, articles }, { headers });
+		return json(
+			{
+				articles,
+				meta: [
+					{ title: t("articles.meta.title") },
+					{
+						tagName: "link",
+						rel: "alternate",
+						type: "application/rss+xml",
+						href: "/articles.rss",
+					},
+					{
+						tagName: "link",
+						rel: "canonical",
+						href: new URL("/articles", url).toString(),
+					},
+				] satisfies MetaDescriptor[],
+			},
+			{ headers },
+		);
 	} catch (error) {
 		if (error instanceof Error) {
 			throw json({ message: error.message }, 500);
@@ -69,19 +60,8 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Articles() {
-	let { articles, term } = useLoaderData<typeof loader>();
+	let { articles } = useLoaderData<typeof loader>();
 	let t = useT("articles");
-
-	let count = articles.length;
-
-	if (count === 0) {
-		return (
-			<main className="mx-auto max-w-screen-sm space-y-4">
-				<h2 className="text-3xl font-bold">{t("empty.title")}</h2>
-				<p>{t("empty.body", { term })}</p>
-			</main>
-		);
-	}
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">

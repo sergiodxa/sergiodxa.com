@@ -48,18 +48,10 @@ export default {
 	},
 
 	articles: {
-		empty: {
-			title: "No Results",
-			body: "The requested URL /articles?q={{term}} was not found on this server.",
-		},
-
 		title: "Articles",
 
 		meta: {
-			title: {
-				default: "Articles of sergiodxa",
-				search: 'Search results for "{{term}}" on sergiodxa\' blog',
-			},
+			title: "Articles of sergiodxa",
 		},
 
 		header: {
