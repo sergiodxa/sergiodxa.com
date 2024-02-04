@@ -52,9 +52,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	throw new Error("Invalid post type");
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-	return data?.meta ?? [];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	let { postType } = useLoaderData<typeof loader>();

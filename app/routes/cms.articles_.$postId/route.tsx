@@ -30,9 +30,7 @@ export async function loader({ request, params, context }: DataFunctionArgs) {
 	return json({ meta, article: article.toJSON() });
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	return data?.meta ?? [];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	let loaderData = useLoaderData<typeof loader>();

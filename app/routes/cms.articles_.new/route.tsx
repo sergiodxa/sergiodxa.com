@@ -19,9 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 	return json({ meta });
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	return data?.meta ?? [];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export default function Component() {
 	return (

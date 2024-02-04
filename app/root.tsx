@@ -74,9 +74,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 	});
 }
 
-export let meta: MetaFunction<typeof loader> = ({ data }) => {
-	return data?.meta ?? [];
-};
+export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
 export let shouldRevalidate: ShouldRevalidateFunction = ({
 	defaultShouldRevalidate,
