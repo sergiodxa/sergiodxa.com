@@ -17,7 +17,7 @@ import { Schemas } from "~/utils/schemas";
 import { Button } from "./buttons";
 import { Provider, useEditor } from "./use-editor";
 
-export let handle: SDX.Handle = { hydrate: true };
+export const handle: SDX.Handle = { hydrate: true };
 
 export async function action({ request, context }: ActionFunctionArgs) {
 	try {

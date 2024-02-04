@@ -74,7 +74,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 
-export let shouldRevalidate: ShouldRevalidateFunction = ({
+export const shouldRevalidate: ShouldRevalidateFunction = ({
 	defaultShouldRevalidate,
 	formData,
 }) => {
@@ -82,7 +82,7 @@ export let shouldRevalidate: ShouldRevalidateFunction = ({
 	return defaultShouldRevalidate;
 };
 
-export let handle: SDX.Handle = { i18n: "translation", hydrate: false };
+export const handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
 	let { locale } = useLoaderData<typeof loader>();

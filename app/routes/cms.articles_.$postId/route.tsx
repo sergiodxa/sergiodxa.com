@@ -13,7 +13,7 @@ import { Editor } from "~/routes/components.editor/route";
 import { database } from "~/services/db.server";
 import { assertUUID } from "~/utils/uuid";
 
-export let handle: SDX.Handle = { hydrate: true };
+export const handle: SDX.Handle = { hydrate: true };
 
 export async function loader({ request, params, context }: DataFunctionArgs) {
 	let t = await new I18n().getFixedT(request);

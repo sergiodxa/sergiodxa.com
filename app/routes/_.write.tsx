@@ -9,7 +9,7 @@ import { json } from "@remix-run/cloudflare";
 import { I18n } from "~/modules/i18n.server";
 import { Editor } from "~/routes/components.editor/route";
 
-export let handle: SDX.Handle = { hydrate: true };
+export const handle: SDX.Handle = { hydrate: true };
 
 export async function loader({ request }: DataFunctionArgs) {
 	let t = await new I18n().getFixedT(request);
