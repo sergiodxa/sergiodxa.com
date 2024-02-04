@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { SessionStorage } from "~/modules/session.server";
 import { GitHub } from "~/services/github.server";
+import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
 
 import { CreateLike } from "./create-like";
@@ -43,14 +44,47 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (formData.get("intent") === INTENT.createLike) {
 		assertUUID(user.id);
 
-		let url = z
-			.string()
-			.url()
-			.transform((value) => new URL(value))
-			.parse(formData.get("url"));
+		try {
+			let { url } = Schemas.formData()
+				.pipe(
+					z.object({
+						url: z
+							.string()
+							.url()
+							.transform((value) => new URL(value)),
+					}),
+				)
+				.parse(formData);
 
-		await createQuickLike(context, url, user.id);
-		throw redirect("/cms");
+			await createQuickLike(context, url, user.id);
+			throw redirect("/cms");
+		} catch (error) {
+			if (error instanceof Response) throw error;
+			if (error instanceof z.ZodError) {
+				return json(
+					{
+						intent: INTENT.createLike,
+						errors: error.issues.reduce(
+							(errors, issue) => {
+								errors[issue.path[0]!] = issue.message;
+								return errors;
+							},
+							{} as Record<string, string>,
+						),
+					},
+					{ status: 400 },
+				);
+			}
+
+			if (error instanceof Error) {
+				return json(
+					{ intent: INTENT.createLike, errors: { url: error.message } },
+					{ status: 400 },
+				);
+			}
+
+			throw error;
+		}
 	}
 
 	throw redirect("/cms");

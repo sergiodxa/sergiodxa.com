@@ -8,6 +8,6 @@ export function generateUUID() {
 
 export function assertUUID(value: unknown): asserts value is UUID {
 	if (!z.string().uuid().safeParse(value).success) {
-		throw new Error("Invalid UUID");
+		throw new TypeError("Invalid UUID");
 	}
 }

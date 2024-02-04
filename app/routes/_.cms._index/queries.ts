@@ -43,7 +43,7 @@ export async function createQuickLike(
 		headers: { Accept: "text/html", "User-Agent": "SDX Like Bot" },
 	});
 
-	if (!response.ok) throw new Error("Can't create like for this URL");
+	if (!response.ok) throw new Error("Can't load the URL to like.");
 
 	let html = await response.text();
 
