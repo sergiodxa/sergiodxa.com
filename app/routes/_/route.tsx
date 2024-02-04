@@ -16,9 +16,9 @@ import { SearchField } from "~/ui/SearchField";
 
 import avatarHref from "./avatar.png";
 
-export let links: LinksFunction = () => {
-	return [{ rel: "preload", as: "image", href: avatarHref }];
-};
+export const links: LinksFunction = () => [
+	{ rel: "preload", as: "image", href: avatarHref },
+];
 
 export default function Component() {
 	return (

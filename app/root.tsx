@@ -33,23 +33,21 @@ import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
 import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
 
-export let links: LinksFunction = () => {
-	return [
-		{ rel: "preconnect", href: "https://static.cloudflareinsights.com" },
-		{ rel: "preload", href: sansFont, as: "font" },
-		{ rel: "preload", as: "style", href: "/fonts/sans" },
-		{ rel: "preload", as: "style", href: tailwindUrl },
-		{ rel: "preload", as: "style", href: globalStylesUrl },
-		{ rel: "stylesheet", href: "/fonts/sans" },
-		{ rel: "stylesheet", href: tailwindUrl },
-		{ rel: "stylesheet", href: globalStylesUrl },
-		{
-			rel: "preload",
-			href: "https://static.cloudflareinsights.com/beacon.min.js",
-			as: "script",
-		},
-	];
-};
+export const links: LinksFunction = () => [
+	{ rel: "preconnect", href: "https://static.cloudflareinsights.com" },
+	{ rel: "preload", href: sansFont, as: "font" },
+	{ rel: "preload", as: "style", href: "/fonts/sans" },
+	{ rel: "preload", as: "style", href: tailwindUrl },
+	{ rel: "preload", as: "style", href: globalStylesUrl },
+	{ rel: "stylesheet", href: "/fonts/sans" },
+	{ rel: "stylesheet", href: tailwindUrl },
+	{ rel: "stylesheet", href: globalStylesUrl },
+	{
+		rel: "preload",
+		href: "https://static.cloudflareinsights.com/beacon.min.js",
+		as: "script",
+	},
+];
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("root#loader", async () => {
