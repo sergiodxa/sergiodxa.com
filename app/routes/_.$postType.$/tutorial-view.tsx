@@ -74,7 +74,7 @@ function Versions() {
 					let searchParams = new URLSearchParams();
 					searchParams.set("q", `tech:${tag}`);
 
-					let to = `/tutorials?${searchParams.toString()}`;
+					let to = `/?${searchParams.toString()}`;
 
 					return (
 						<li key={tag} className="contents">
