@@ -32,7 +32,7 @@ export function TutorialView() {
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<Versions />
 
-				{user?.isSponsor && (
+				{user?.role === "admin" && (
 					<Form
 						method="get"
 						action={`/cms/tutorials/${loaderData.tutorial.id}`}
