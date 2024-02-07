@@ -8,6 +8,9 @@ import { Trans } from "react-i18next";
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useT } from "~/helpers/use-i18n.hook";
+import { useUser } from "~/helpers/use-user.hook";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
 import { cn } from "~/utils/cn";
 
@@ -20,6 +23,7 @@ type RecommendationsList = Extract<
 export function TutorialView() {
 	let loaderData = useLoaderData<typeof loader>();
 	let t = useT("tutorial");
+	let user = useUser();
 
 	if (loaderData.postType !== "tutorials") return null;
 
@@ -27,6 +31,17 @@ export function TutorialView() {
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<Versions />
+
+				{user?.isSponsor && (
+					<Form
+						method="get"
+						action={`/cms/tutorials/${loaderData.tutorial.id}`}
+					>
+						<Button type="submit" variant="primary">
+							Edit
+						</Button>
+					</Form>
+				)}
 
 				<div>
 					<header className="gap-4 md:flex md:items-start md:justify-between">
