@@ -133,11 +133,18 @@ function DumpDatabase() {
 			? actionData.errors
 			: undefined;
 
+	let success = actionData?.intent === "DUMP_DB" && "success" in actionData;
+
 	return (
 		<Form method="post" errors={errors}>
 			{errors && (
 				<p className="text-sm text-red-600 forced-colors:text-[Mark]">
 					{errors?.intent}
+				</p>
+			)}
+			{success && (
+				<p className="text-sm text-green-600 forced-colors:text-[Mark]">
+					Database dumped successfully
 				</p>
 			)}
 			<Button type="submit" name="intent" value={INTENT.dump}>
