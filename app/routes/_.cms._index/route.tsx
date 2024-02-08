@@ -131,10 +131,15 @@ function DumpDatabase() {
 	let errors =
 		actionData?.intent === "DUMP_DB" && "errors" in actionData
 			? actionData.errors
-			: {};
+			: undefined;
 
 	return (
 		<Form method="post" errors={errors}>
+			{errors && (
+				<p className="text-sm text-red-600 forced-colors:text-[Mark]">
+					{errors?.intent}
+				</p>
+			)}
 			<Button type="submit" name="intent" value={INTENT.dump}>
 				Dump copy of the database
 			</Button>
