@@ -97,10 +97,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			await context.fs.backups.put(`${date.toISOString()}.sql`, dump);
 			return json({ intent: INTENT.dump, success: true });
 		} catch (error) {
-			return json(
-				{ intent: INTENT.dump, errors: { intent: "Failed to dump database" } },
-				{ status: 400 },
-			);
+			let intent = "Failed to dump database.";
+			if (error instanceof Error) intent = error.message;
+			return json({ intent: INTENT.dump, errors: { intent } }, { status: 400 });
 		}
 	}
 
