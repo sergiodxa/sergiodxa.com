@@ -8,6 +8,8 @@ import { z } from "zod";
 
 import { SessionStorage } from "~/modules/session.server";
 import { GitHub } from "~/services/github.server";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
 
@@ -87,6 +89,22 @@ export async function action({ request, context }: ActionFunctionArgs) {
 		}
 	}
 
+	if (formData.get("intent") === INTENT.dump) {
+		try {
+			let dump = await context.db.dump();
+			return new Response(dump, {
+				status: 200,
+				headers: { "Content-Type": "application/octet-stream" },
+			});
+		} catch (error) {
+			console.log(error);
+			return json(
+				{ intent: INTENT.dump, errors: "Failed to dump database" },
+				{ status: 400 },
+			);
+		}
+	}
+
 	throw redirect("/cms");
 }
 
@@ -99,7 +117,18 @@ export default function Component() {
 				<div className="col-span-2">
 					<LastDaySearch />
 				</div>
+				<DumpDatabase />
 			</div>
 		</div>
+	);
+}
+
+function DumpDatabase() {
+	return (
+		<Form method="post" reloadDocument>
+			<Button type="submit" name="intent" value={INTENT.dump}>
+				Dump copy of the database
+			</Button>
+		</Form>
 	);
 }
