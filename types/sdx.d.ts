@@ -22,8 +22,8 @@ declare module "@remix-run/server-runtime" {
 		db: D1Database;
 		fs: Record<"backups", R2Bucket>;
 		kv: Record<"cache" | "auth" | "redirects", KVNamespace>;
-		waitUntil(promise: Promise<unknown>): void;
 		env: Env;
 		time: Measurer["time"];
+		waitUntil(promise: Promise<unknown>): void;
 	}
 }
