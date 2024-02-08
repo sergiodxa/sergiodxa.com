@@ -92,9 +92,13 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	if (formData.get("intent") === INTENT.dump) {
 		try {
+			console.log("creating db dump");
 			let dump = await context.db.dump();
+			console.log("db dump created");
+			console.log("dump size:", dump.byteLength);
 			let date = new Date();
 			await context.fs.backups.put(`${date.toISOString()}.sql`, dump);
+			console.log("saved to R2");
 			return json({ intent: INTENT.dump, success: true });
 		} catch (error) {
 			console.log(error);
