@@ -30,18 +30,20 @@ export function TutorialView() {
 	return (
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
-				<Versions />
+				<div className="flex items-baseline justify-between gap-2">
+					<Versions />
 
-				{user?.role === "admin" && (
-					<Form
-						method="get"
-						action={`/cms/tutorials/${loaderData.tutorial.id}`}
-					>
-						<Button type="submit" variant="primary">
-							Edit
-						</Button>
-					</Form>
-				)}
+					{user?.role === "admin" && (
+						<Form
+							method="get"
+							action={`/cms/tutorials/${loaderData.tutorial.id}`}
+						>
+							<Button type="submit" variant="primary">
+								Edit
+							</Button>
+						</Form>
+					)}
+				</div>
 
 				<div>
 					<header className="gap-4 md:flex md:items-start md:justify-between">
