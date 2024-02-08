@@ -4,7 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
-import { useActionData } from "@remix-run/react";
+import { useActionData, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 
 import { SessionStorage } from "~/modules/session.server";
@@ -93,7 +93,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (formData.get("intent") === INTENT.dump) {
 		try {
 			let dump = await context.db.dump();
-			await context.fs.backups.put(`${new Date().toISOString()}.sql`, dump);
+			let date = new Date();
+			await context.fs.backups.put(`${date.toISOString()}.sql`, dump, {
+				customMetadata: { date: date.toISOString() },
+			});
 			return json({ intent: INTENT.dump, success: true });
 		} catch (error) {
 			console.log(error);
@@ -127,13 +130,16 @@ export default function Component() {
 
 function DumpDatabase() {
 	let actionData = useActionData<typeof action>();
+	let navigation = useNavigation();
 
 	let errors =
-		actionData?.intent === "DUMP_DB" && "errors" in actionData
+		actionData?.intent === INTENT.dump && "errors" in actionData
 			? actionData.errors
 			: undefined;
 
-	let success = actionData?.intent === "DUMP_DB" && "success" in actionData;
+	let success = actionData?.intent === INTENT.dump && "success" in actionData;
+
+	let isPending = navigation.formData?.get("intent") === INTENT.dump;
 
 	return (
 		<Form method="post" errors={errors}>
@@ -150,6 +156,9 @@ function DumpDatabase() {
 			<Button type="submit" name="intent" value={INTENT.dump}>
 				Dump copy of the database
 			</Button>
+			{isPending && (
+				<p className="text-sm text-gray-600">Dumping database...</p>
+			)}
 		</Form>
 	);
 }
