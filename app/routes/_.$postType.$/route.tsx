@@ -58,5 +58,5 @@ export default function Component() {
 	let { postType } = useLoaderData<typeof loader>();
 	if (postType === "articles") return <ArticleView />;
 	if (postType === "tutorials") return <TutorialView />;
-	return null;
+	throw new Error(`Invalid post type: ${postType ?? "Missing"}`);
 }
