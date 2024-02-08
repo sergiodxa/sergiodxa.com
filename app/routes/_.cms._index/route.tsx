@@ -94,9 +94,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 		try {
 			let dump = await context.db.dump();
 			let date = new Date();
-			await context.fs.backups.put(`${date.toISOString()}.sql`, dump, {
-				customMetadata: { date: date.toISOString() },
-			});
+			await context.fs.backups.put(`${date.toISOString()}.sql`, dump);
 			return json({ intent: INTENT.dump, success: true });
 		} catch (error) {
 			console.log(error);
