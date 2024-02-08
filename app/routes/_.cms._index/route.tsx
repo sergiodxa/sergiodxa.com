@@ -112,7 +112,7 @@ export default function Component() {
 		<div className="flex flex-col gap-8">
 			<Stats />
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-				<div>
+				<div className="flex flex-col gap-5">
 					<CreateLike />
 					<DumpDatabase />
 				</div>
