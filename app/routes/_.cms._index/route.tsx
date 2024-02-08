@@ -4,6 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
+import { useActionData } from "@remix-run/react";
 import { z } from "zod";
 
 import { SessionStorage } from "~/modules/session.server";
@@ -92,14 +93,12 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (formData.get("intent") === INTENT.dump) {
 		try {
 			let dump = await context.db.dump();
-			return new Response(dump, {
-				status: 200,
-				headers: { "Content-Type": "application/octet-stream" },
-			});
+			await context.fs.backups.put(`${new Date().toISOString()}.sql`, dump);
+			return json({ intent: INTENT.dump, success: true });
 		} catch (error) {
 			console.log(error);
 			return json(
-				{ intent: INTENT.dump, errors: "Failed to dump database" },
+				{ intent: INTENT.dump, errors: { intent: "Failed to dump database" } },
 				{ status: 400 },
 			);
 		}
@@ -124,8 +123,15 @@ export default function Component() {
 }
 
 function DumpDatabase() {
+	let actionData = useActionData<typeof action>();
+
+	let errors =
+		actionData?.intent === "DUMP_DB" && "errors" in actionData
+			? actionData.errors
+			: {};
+
 	return (
-		<Form method="post" reloadDocument>
+		<Form method="post" errors={errors}>
 			<Button type="submit" name="intent" value={INTENT.dump}>
 				Dump copy of the database
 			</Button>

@@ -52,6 +52,7 @@ export async function onRequest(
 
 	let response = await remix(ctx.request, {
 		env,
+		fs: { backups: ctx.env.backups },
 		db: ctx.env.DB,
 		kv: {
 			cache: ctx.env.cache,

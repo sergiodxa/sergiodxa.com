@@ -8,14 +8,14 @@ kv_namespaces = [
   { binding = "redirects", id = "2bcc558cadce40dcb9c73f047c26be6c", preview_id = "redirects" },
 ]
 
+r2_buckets = [
+  { binding = "backups", bucket_name = "backups", preview_bucket_name = "backups" },
+]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "db"
 database_id = "f6bb2533-9284-4427-83e6-ea12c6630026"
-
-# r2_buckets = [
-#   { binding = "BUCKET", bucket_name = "campaigns", preview_bucket_name = "campaigns" }
-# ]
 
 # [[services]]
 # binding = "SVG_GENERATOR"
