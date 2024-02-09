@@ -11,11 +11,14 @@ import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
 import { useT } from "~/helpers/use-i18n.hook";
+import { useUser } from "~/helpers/use-user.hook";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { Link } from "~/ui/Link";
 
 import { queryTutorials } from "./queries";
+import { Form } from "~/ui/Form";
+import { Button } from "~/ui/Button";
 
 export function loader({ request, context }: LoaderFunctionArgs) {
 	return context.time("routes/tutorials#loader", async () => {
@@ -85,9 +88,20 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
 export default function Component() {
 	let t = useT("tutorials");
 
+	let user = useUser();
+
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
-			<PageHeader t={t} />
+			<div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+				<PageHeader t={t} />
+				{user?.role === "admin" && (
+					<Form method="get" action="/cms/tutorials/new">
+						<Button type="submit" variant="primary">
+							Write
+						</Button>
+					</Form>
+				)}
+			</div>
 
 			<div className="flex flex-col gap-y-4">
 				<Subscribe t={t} />
