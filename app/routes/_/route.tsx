@@ -71,7 +71,9 @@ function Header() {
 		{ name: t("tutorials"), to: "/tutorials" },
 		{ name: t("bookmarks"), to: "/bookmarks" },
 		{ name: t("glossary"), to: "/glossary" },
-	] as const;
+	];
+
+	if (user?.role === "admin") navigation.push({ name: t("cms"), to: "/cms" });
 
 	let query = searchParams.get("q") ?? "";
 
