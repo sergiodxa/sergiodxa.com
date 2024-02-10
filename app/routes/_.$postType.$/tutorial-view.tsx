@@ -1,7 +1,12 @@
 import type { loader } from "./route";
 import type { SerializeFrom } from "@remix-run/cloudflare";
 
-import { Await, useAsyncValue, useLoaderData } from "@remix-run/react";
+import {
+	Await,
+	useAsyncValue,
+	useLoaderData,
+	Link as RemixLink,
+} from "@remix-run/react";
 import { Suspense } from "react";
 import { Trans } from "react-i18next";
 
@@ -12,6 +17,7 @@ import { useUser } from "~/helpers/use-user.hook";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
+import { TagGroup, Tag } from "~/ui/TagGroup";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;
@@ -31,7 +37,7 @@ export function TutorialView() {
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-					<Versions />
+					<Tags tags={loaderData.tutorial.tags} />
 
 					{user?.role === "admin" && (
 						<Form
@@ -72,40 +78,26 @@ export function TutorialView() {
 	);
 }
 
-function Versions() {
-	let loaderData = useLoaderData<typeof loader>();
+function Tags({ tags }: { tags: string[] }) {
 	let t = useT("tutorial");
 
-	if (loaderData.postType !== "tutorials") return null;
-
-	let { tutorial } = loaderData;
-
-	if (!tutorial || tutorial.tags.length === 0) return null;
+	if (tags.length === 0) return null;
 
 	return (
-		<section className="not-prose flex flex-wrap items-center gap-1">
-			<h2 className="text-xs font-bold">{t("tags")}</h2>
+		<TagGroup label={t("tags")} color="blue" className="not-prose flex-row">
+			{tags.map((tag) => {
+				let searchParams = new URLSearchParams();
+				searchParams.set("q", `tech:${tag}`);
 
-			<ul className="contents">
-				{tutorial.tags.map((tag) => {
-					let searchParams = new URLSearchParams();
-					searchParams.set("q", `tech:${tag}`);
+				let to = `/?${searchParams.toString()}`;
 
-					let to = `/?${searchParams.toString()}`;
-
-					return (
-						<li key={tag} className="contents">
-							<Link
-								href={to}
-								className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline visited:text-blue-800 dark:bg-blue-900 dark:text-blue-200 dark:visited:text-blue-300"
-							>
-								{tag}
-							</Link>
-						</li>
-					);
-				})}
-			</ul>
-		</section>
+				return (
+					<Tag key={tag}>
+						<RemixLink to={to}>{tag}</RemixLink>
+					</Tag>
+				);
+			})}
+		</TagGroup>
 	);
 }
 
