@@ -4,7 +4,7 @@ import type { ActionFunctionArgs, LinksFunction } from "@remix-run/cloudflare";
 import { redirect } from "@remix-run/cloudflare";
 import { useFetcher } from "@remix-run/react";
 import { parameterize } from "inflected";
-import { ImagePlus } from "lucide-react";
+import { ArrowLeft, ImagePlus } from "lucide-react";
 import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
 import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { useEffect, useMemo, useRef } from "react";
@@ -19,6 +19,7 @@ import { database } from "~/services/db.server";
 import { Button } from "~/ui/Button";
 import { FieldGroup, TextArea } from "~/ui/Field";
 import { Form } from "~/ui/Form";
+import { Link } from "~/ui/Link";
 import { TextField } from "~/ui/TextField";
 import { Toolbar } from "~/ui/Toolbar";
 import { Schemas } from "~/utils/schemas";
@@ -89,6 +90,10 @@ export default function Component() {
 		<Provider value={providerValue}>
 			<Form method="post" className="h-screen p-4">
 				<Toolbar className="rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
+					<Link href="/cms/tutorials" className="flex items-center gap-1">
+						<ArrowLeft className="size-5" />
+						<span>Go back</span>
+					</Link>
 					<div className="flex-grow" />
 					<Button type="submit" variant="primary">
 						Save
