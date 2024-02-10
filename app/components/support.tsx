@@ -1,4 +1,6 @@
 import { useT } from "~/helpers/use-i18n.hook";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 
 export function Support() {
 	let t = useT("support");
@@ -10,17 +12,11 @@ export function Support() {
 					{t("title")}
 				</h2>
 
-				<div className="flex items-center gap-x-6 lg:flex-shrink-0">
-					<a
-						href="https://github.com/sponsors/sergiodxa"
-						className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-					>
+				<Form action="/sponsor">
+					<Button type="submit" variant="primary">
 						{t("cta")}
-					</a>
-					{/* <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-						Learn more <span aria-hidden="true">→</span>
-					</a> */}
-				</div>
+					</Button>
+				</Form>
 			</div>
 		</aside>
 	);
