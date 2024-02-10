@@ -86,7 +86,7 @@ export function TagGroup<T extends object>({
 			{...props}
 			className={twMerge("flex flex-col gap-1", props.className)}
 		>
-			<Label>{label}</Label>
+			{label && <Label>{label}</Label>}
 			<ColorContext.Provider value={props.color || "gray"}>
 				<TagList
 					items={items}

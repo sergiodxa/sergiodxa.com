@@ -11,6 +11,8 @@ import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
 
 import { INTENT } from "./types";
+import { Tag, TagGroup } from "~/ui/TagGroup";
+import { useId } from "react";
 
 export function TutorialList() {
 	let { tutorials } = useLoaderData<typeof loader>();
@@ -27,6 +29,7 @@ type ItemProps = SerializeFrom<typeof loader>["tutorials"][number];
 
 function Item(props: ItemProps) {
 	let t = useT("cms.tutorials.list.item");
+	let id = useId();
 
 	return (
 		<li className="flex items-center justify-between gap-3 gap-x-6 py-5">
@@ -48,19 +51,22 @@ function Item(props: ItemProps) {
 					<svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current">
 						<circle cx="1" cy="1" r="1" />
 					</svg>
-					<span>Tags:</span>
-					<ul className="flex flex-wrap items-center gap-1">
+
+					<span id={id}>Tags:</span>
+
+					<TagGroup aria-labelledby={id} className="flex-row" color="blue">
 						{props.tags.map((tag) => {
-							return (
-								<li
-									key={tag}
-									className="inline-flex flex-shrink-0 items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline dark:bg-blue-800 dark:text-blue-100"
-								>
-									{tag}
-								</li>
-							);
+							return <Tag key={tag}>{tag}</Tag>;
+							// return (
+							// 	<li
+							// 		key={tag}
+							// 		className="inline-flex flex-shrink-0 items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline dark:bg-blue-800 dark:text-blue-100"
+							// 	>
+							// 		{tag}
+							// 	</li>
+							// );
 						})}
-					</ul>
+					</TagGroup>
 				</div>
 			</div>
 
