@@ -3,16 +3,16 @@ import type { SerializeFrom } from "@remix-run/cloudflare";
 import type { UUID } from "~/utils/uuid";
 
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useId } from "react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
+import { Tag, TagGroup } from "~/ui/TagGroup";
 
 import { INTENT } from "./types";
-import { Tag, TagGroup } from "~/ui/TagGroup";
-import { useId } from "react";
 
 export function TutorialList() {
 	let { tutorials } = useLoaderData<typeof loader>();
@@ -57,14 +57,6 @@ function Item(props: ItemProps) {
 					<TagGroup aria-labelledby={id} className="flex-row" color="blue">
 						{props.tags.map((tag) => {
 							return <Tag key={tag}>{tag}</Tag>;
-							// return (
-							// 	<li
-							// 		key={tag}
-							// 		className="inline-flex flex-shrink-0 items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 no-underline dark:bg-blue-800 dark:text-blue-100"
-							// 	>
-							// 		{tag}
-							// 	</li>
-							// );
 						})}
 					</TagGroup>
 				</div>
