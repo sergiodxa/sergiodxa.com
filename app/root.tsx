@@ -19,9 +19,8 @@ import {
 	useLoaderData,
 	useNavigate,
 } from "@remix-run/react";
-import { useEffect } from "react";
 import { RouterProvider } from "react-aria-components";
-import { useTranslation } from "react-i18next";
+import { useChangeLanguage } from "remix-i18next/react";
 import { jsonHash } from "remix-utils/json-hash";
 import { useShouldHydrate } from "remix-utils/use-should-hydrate";
 
@@ -213,11 +212,4 @@ function Document({
 			</body>
 		</html>
 	);
-}
-
-function useChangeLanguage(locale: string) {
-	let { i18n } = useTranslation();
-	useEffect(() => {
-		i18n.changeLanguage(locale);
-	}, [locale, i18n]);
 }

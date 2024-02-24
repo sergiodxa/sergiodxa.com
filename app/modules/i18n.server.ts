@@ -1,5 +1,5 @@
 import { createCookie } from "@remix-run/cloudflare";
-import { RemixI18Next } from "remix-i18next";
+import { RemixI18Next } from "remix-i18next/server";
 
 import en from "~/locales/en";
 import es from "~/locales/es";
