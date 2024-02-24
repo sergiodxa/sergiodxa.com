@@ -9,10 +9,13 @@ import { useLoaderData } from "@remix-run/react";
 
 import { PageHeader } from "~/components/page-header";
 import { useT } from "~/helpers/use-i18n.hook";
+import { useUser } from "~/helpers/use-user.hook";
 import { Glossary } from "~/models/glossary.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { database } from "~/services/db.server";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	void new Logger(context).http(request);
@@ -46,9 +49,21 @@ export default function Component() {
 	let { glossary } = useLoaderData<typeof loader>();
 	let t = useT("glossary");
 
+	let user = useUser();
+
 	return (
 		<main className="mx-auto mb-8 flex max-w-screen-sm flex-col gap-y-8">
-			<PageHeader t={t} />
+			<div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+				<PageHeader t={t} />
+
+				{user?.role === "admin" && (
+					<Form method="get" action="/cms/glossary">
+						<Button type="submit" variant="primary">
+							Define
+						</Button>
+					</Form>
+				)}
+			</div>
 
 			<dl className="flex flex-col">
 				{glossary.map(({ id, slug, term, definition }) => (
