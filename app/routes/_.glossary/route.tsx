@@ -66,15 +66,32 @@ export default function Component() {
 			</div>
 
 			<dl className="flex flex-col">
-				{glossary.map(({ id, slug, term, definition }) => (
+				{glossary.map(({ id, slug, title, term, definition }) => (
 					<div
 						key={id}
 						id={slug}
 						className="py-4 target:scroll-m-4 target:rounded-md target:border-2 target:border-zinc-500 target:border-opacity-50 target:bg-zinc-100 target:p-4 target:shadow-md target:dark:border-zinc-400 target:dark:border-opacity-50 target:dark:bg-zinc-800 target:dark:text-zinc-100 target:dark:shadow-none"
 					>
-						<dt className="text-xl font-bold">
-							<a href={`#${slug}`}>{term}</a>
-						</dt>
+						<div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+							<dt className="text-xl font-bold">
+								<a href={`#${slug}`}>
+									{term}{" "}
+									{title ? (
+										<small className="text-sm text-zinc-700 dark:text-zinc-400">
+											(aka {title})
+										</small>
+									) : null}
+								</a>
+							</dt>
+
+							{user?.role === "admin" && (
+								<Form method="get" action={`/cms/glossary/${id}`}>
+									<Button type="submit" variant="primary">
+										Edit
+									</Button>
+								</Form>
+							)}
+						</div>
 						<dd>{definition}</dd>
 					</div>
 				))}

@@ -52,6 +52,7 @@ export class Glossary extends Post<GlossaryMeta> {
 		return {
 			...super.toJSON(),
 			// Glossary Attributes
+			title: this.title,
 			slug: this.slug,
 			term: this.term,
 			definition: this.definition,
@@ -73,6 +74,13 @@ export class Glossary extends Post<GlossaryMeta> {
 			services,
 			await Post.create<GlossaryMeta>(services, { ...input, type: "glossary" }),
 		);
+	}
+
+	static override update(services: Services, id: UUID, input: InsertGlossary) {
+		return Post.update<GlossaryMeta>(services, id, {
+			...input,
+			type: "glossary",
+		});
 	}
 
 	static async search(services: Services, query: string) {
