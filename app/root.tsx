@@ -27,6 +27,7 @@ import { useShouldHydrate } from "remix-utils/use-should-hydrate";
 import sansFont from "~/fonts/sans.woff2";
 import { useDirection, useLocale } from "~/helpers/use-i18n.hook";
 import { I18n } from "~/modules/i18n.server";
+import { NoJS } from "~/modules/no-js.server";
 import { SessionStorage } from "~/modules/session.server";
 import globalStylesUrl from "~/styles/global.css";
 import tailwindUrl from "~/styles/tailwind.css";
@@ -55,8 +56,16 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 		let i18n = new I18n();
 		let locale = await i18n.getLocale(request);
 
+		let noJS = await new NoJS().validate(request);
+
+		let headers = new Headers();
+		headers.append("set-cookie", await i18n.saveCookie(locale));
+		await new NoJS().save(noJS, headers);
+
 		return jsonHash(
 			{
+				url: request.url,
+				noJS,
 				locale,
 				async meta(): Promise<MetaDescriptor[]> {
 					let t = await i18n.getFixedT(locale);
@@ -66,7 +75,7 @@ export function loader({ request, context }: LoaderFunctionArgs) {
 					return await SessionStorage.readUser(context, request);
 				},
 			},
-			{ headers: { "Set-Cookie": await i18n.saveCookie(locale) } },
+			{ headers },
 		);
 	});
 }
@@ -84,13 +93,21 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 export const handle: SDX.Handle = { i18n: "translation", hydrate: false };
 
 export default function App() {
-	let { locale } = useLoaderData<typeof loader>();
+	let { locale, noJS, url } = useLoaderData<typeof loader>();
 	useChangeLanguage(locale);
 
 	let navigate = useNavigate();
 
+	let noJSURL = new URL(url);
+	noJSURL.searchParams.set("no-js", "true");
+
 	return (
 		<Document locale={locale}>
+			{noJS ? null : (
+				<noscript>
+					<meta httpEquiv="refresh" content={`0; url=${noJSURL.toString()}`} />
+				</noscript>
+			)}
 			<RouterProvider navigate={navigate}>
 				<Outlet />
 			</RouterProvider>
