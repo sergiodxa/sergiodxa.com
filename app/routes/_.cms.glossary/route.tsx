@@ -23,8 +23,14 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	let intent = formData.get("intent");
 
 	if (intent === INTENT.create) {
-		let { term, definition } = Schemas.formData()
-			.pipe(z.object({ term: z.string(), definition: z.string() }))
+		let { term, title, definition } = Schemas.formData()
+			.pipe(
+				z.object({
+					term: z.string(),
+					title: z.string().optional(),
+					definition: z.string(),
+				}),
+			)
 			.parse(formData);
 
 		let slug = parameterize(term);
@@ -33,7 +39,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 		await Glossary.create(
 			{ db },
-			{ authorId: user.id, slug, term, definition },
+			{ authorId: user.id, slug, term, title, definition },
 		);
 
 		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
@@ -58,8 +64,14 @@ export default function Component() {
 
 			<Form method="post" className="max-w-xs">
 				<input type="hidden" name="intent" value={INTENT.create} />
-				<TextField label="Term" name="term" />
-				<TextField type="textarea" label="Definition" name="definition" />
+				<TextField label="Term" name="term" isRequired />
+				<TextField label="Title" name="title" />
+				<TextField
+					type="textarea"
+					label="Definition"
+					name="definition"
+					isRequired
+				/>
 
 				<Button type="submit" variant="primary">
 					Create

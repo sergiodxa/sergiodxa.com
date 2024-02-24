@@ -7,6 +7,7 @@ import { Post } from "~/models/post.server";
 interface GlossaryMeta extends BaseMeta {
 	slug: string;
 	term: string;
+	title?: string;
 	definition: string;
 }
 
@@ -33,6 +34,10 @@ export class Glossary extends Post<GlossaryMeta> {
 
 	get term() {
 		return this.meta.term;
+	}
+
+	get title() {
+		return this.meta.title;
 	}
 
 	get definition() {
