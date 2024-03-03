@@ -1,14 +1,15 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
+import type { Options } from "prettier";
 
-import acornPlugin from "prettier/plugins/acorn";
-import babelPlugin from "prettier/plugins/babel";
-import estreePlugin from "prettier/plugins/estree";
-import graphqlPlugin from "prettier/plugins/graphql";
-import htmlPlugin from "prettier/plugins/html";
-import markdownPlugin from "prettier/plugins/markdown";
-import postcssPlugin from "prettier/plugins/postcss";
-import typescriptPlugin from "prettier/plugins/typescript";
-import yamlPlugin from "prettier/plugins/yaml";
+import * as acornPlugin from "prettier/plugins/acorn";
+import * as babelPlugin from "prettier/plugins/babel";
+import * as estreePlugin from "prettier/plugins/estree";
+import * as graphqlPlugin from "prettier/plugins/graphql";
+import * as htmlPlugin from "prettier/plugins/html";
+import * as markdownPlugin from "prettier/plugins/markdown";
+import * as postcssPlugin from "prettier/plugins/postcss";
+import * as typescriptPlugin from "prettier/plugins/typescript";
+import * as yamlPlugin from "prettier/plugins/yaml";
 import { format } from "prettier/standalone";
 
 import { Cache } from "~/modules/cache.server";
@@ -27,9 +28,8 @@ export async function clearCache(context: AppLoadContext) {
 }
 
 export async function prettify(content: string) {
-	return await format(content, {
+	let options = {
 		arrowParens: "always",
-		experimentalTernaries: true,
 		proseWrap: "never",
 		semi: true,
 		singleQuote: false,
@@ -48,5 +48,7 @@ export async function prettify(content: string) {
 			typescriptPlugin,
 			yamlPlugin,
 		],
-	});
+	} satisfies Options;
+
+	return await format(content, options);
 }
