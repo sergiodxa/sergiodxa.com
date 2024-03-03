@@ -10,6 +10,7 @@ import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
 import light from "prism-theme-github/themes/prism-theme-github-light.css";
 import { z } from "zod";
 
+import { Cache } from "~/modules/cache.server";
 import { Redirects } from "~/modules/redirects.server";
 
 import { ArticleView } from "./article-view";
@@ -30,6 +31,8 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 		throw new Error("Invalid post type", { cause: result.error });
 	}
 
+	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+
 	let { postType, slug } = result.data;
 
 	if (postType === "articles") {
@@ -42,11 +45,23 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 			console.error(error);
 		}
 
-		return json(await queryArticle(context, request, slug));
+		let data = await cache.fetch(
+			`articles:${slug}`,
+			async () => JSON.stringify(await queryArticle(context, request, slug)),
+			{ ttl: 60 * 5 },
+		);
+
+		return json(JSON.parse(data) as Awaited<ReturnType<typeof queryArticle>>);
 	}
 
 	if (postType === "tutorials") {
-		return json(await queryTutorial(context, request, slug));
+		let data = await cache.fetch(
+			`tutorials:${slug}`,
+			async () => JSON.stringify(await queryTutorial(context, request, slug)),
+			{ ttl: 60 * 5 },
+		);
+
+		return json(JSON.parse(data) as Awaited<ReturnType<typeof queryTutorial>>);
 	}
 
 	throw new Error("Invalid post type");
