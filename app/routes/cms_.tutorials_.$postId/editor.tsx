@@ -11,7 +11,7 @@ export function Editor({ value, onChange }: EditorProps) {
 	let $textarea = useRef<HTMLTextAreaElement>(null);
 
 	return (
-		<FieldGroup className="h-auto flex-grow flex-col items-stretch">
+		<FieldGroup className="w-prose h-auto flex-grow flex-col items-stretch">
 			<TextArea
 				ref={$textarea}
 				name="content"

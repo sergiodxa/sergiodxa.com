@@ -26,7 +26,7 @@ import { Provider, useEditor } from "../components.editor/use-editor";
 import { Actions } from "./actions";
 import { Controls } from "./controls";
 import { Editor } from "./editor";
-import { clearCache } from "./queries";
+import { clearCache, prettify } from "./queries";
 import { QuickActions } from "./quick-actions";
 
 export const links: LinksFunction = () => [
@@ -94,14 +94,26 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 
 	if (!result.success) {
 		console.log(result.error);
-		return json({});
+		return json(null, { status: 400 });
 	}
 
 	let body = result.data;
 
 	let db = database(context.db);
 
-	let intent = z.enum(["write", "update"]).parse(formData.get("intent"));
+	let intent = z
+		.enum(["write", "update", "prettify"])
+		.parse(formData.get("intent"));
+
+	if (intent === "prettify") {
+		try {
+			let content = await prettify(body.content);
+			return json({ intent, content });
+		} catch (error) {
+			console.log(error);
+			return json({ intent, content: body.content });
+		}
+	}
 
 	if (intent === "write") {
 		await Tutorial.create({ db }, { ...body, authorId });
@@ -167,7 +179,7 @@ export default function Component() {
 						<Preview rendereable={data?.content} />
 					</div>
 
-					<QuickActions />
+					<QuickActions dispatch={dispatch} />
 				</div>
 			</Form>
 		</Provider>

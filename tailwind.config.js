@@ -24,6 +24,10 @@ module.exports = {
 				],
 			},
 
+			minWidth: {
+				prose: "65ch",
+			},
+
 			maxWidth: {
 				prose: "65ch",
 			},
