@@ -93,6 +93,7 @@ export class Glossary extends Post<GlossaryMeta> {
 		let fuse = new Fuse(glossary, {
 			keys: ["term", "title", "definition"],
 			includeScore: true,
+			findAllMatches: false,
 		});
 
 		return fuse.search(query);

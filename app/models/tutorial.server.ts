@@ -160,6 +160,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		let fuse = new Fuse(tutorials, {
 			keys: ["title", "content"],
 			includeScore: true,
+			findAllMatches: false,
 		});
 
 		return fuse.search(query);

@@ -107,6 +107,7 @@ export class Article extends Post<ArticleMeta> {
 		let fuse = new Fuse(articles, {
 			keys: ["title", "content"],
 			includeScore: true,
+			findAllMatches: false,
 		});
 
 		return fuse.search(query);

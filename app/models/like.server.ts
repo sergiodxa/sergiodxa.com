@@ -57,6 +57,7 @@ export class Like extends Post<LikeMeta> {
 		let fuse = new Fuse(likes, {
 			keys: ["title"],
 			includeScore: true,
+			findAllMatches: false,
 		});
 
 		return fuse.search(query);
