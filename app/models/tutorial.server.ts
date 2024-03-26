@@ -118,11 +118,10 @@ export class Tutorial extends Post<TutorialMeta> {
 		return posts.map((post) => new this(services, post));
 	}
 
-	static async search(services: Services, query?: string) {
+	static async search(services: Services, query = "") {
 		let tutorials = await this.list(services);
 
 		query = query?.toLowerCase().trim(); // Normalize the query
-		if (!query) return tutorials;
 
 		let techsInQuery = Tutorial.findTechnologiesInString(query);
 
@@ -160,9 +159,10 @@ export class Tutorial extends Post<TutorialMeta> {
 
 		let fuse = new Fuse(tutorials, {
 			keys: ["title", "content"],
+			includeScore: true,
 		});
 
-		return fuse.search(query).map((result) => result.item);
+		return fuse.search(query);
 	}
 
 	static async findById(services: Services, id: UUID) {

@@ -106,9 +106,10 @@ export class Article extends Post<ArticleMeta> {
 
 		let fuse = new Fuse(articles, {
 			keys: ["title", "content"],
+			includeScore: true,
 		});
 
-		return fuse.search(query).map((result) => result.item);
+		return fuse.search(query);
 	}
 
 	static async findById(services: Services, id: UUID) {

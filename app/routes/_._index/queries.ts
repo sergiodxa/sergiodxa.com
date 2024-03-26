@@ -19,24 +19,28 @@ const ArticleItemSchema = z.object({
 	type: z.literal("article"),
 	id: z.string().uuid(),
 	payload: PayloadSchema,
+	score: z.number().min(0).max(1),
 });
 
 const BookmarkItemSchema = z.object({
 	type: z.literal("bookmark"),
 	id: z.string().uuid(),
 	payload: PayloadSchema,
+	score: z.number().min(0).max(1),
 });
 
 const TutorialItemSchema = z.object({
 	type: z.literal("tutorial"),
 	id: z.string().uuid(),
 	payload: PayloadSchema,
+	score: z.number().min(0).max(1),
 });
 
 const GlossaryItemSchema = z.object({
 	type: z.literal("glossary"),
 	id: z.string().uuid(),
 	payload: PayloadSchema,
+	score: z.number().min(0).max(1),
 });
 
 type ArticleItem = Awaited<ReturnType<typeof queryArticles>>[number];
@@ -58,15 +62,16 @@ export async function queryArticles(
 			`feed:articles:search:${query}`,
 			async () => {
 				let articles = await Article.search({ db }, query);
-				let items = articles.map<ArticleItem>((article) => {
+				let items = articles.map<ArticleItem>(({ item, score = 0 }) => {
 					return {
-						id: article.id,
+						id: item.id,
 						type: "article",
 						payload: {
-							title: article.title,
-							link: article.pathname,
-							createdAt: new Date(article.createdAt).getTime(),
+							title: item.title,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score,
 					};
 				});
 				return JSON.stringify(items);
@@ -78,15 +83,16 @@ export async function queryArticles(
 			"feed:articles",
 			async () => {
 				let articles = await Article.list({ db });
-				let items = articles.map<ArticleItem>((article) => {
+				let items = articles.map<ArticleItem>((item) => {
 					return {
-						id: article.id,
+						id: item.id,
 						type: "article",
 						payload: {
-							title: article.title,
-							link: article.pathname,
-							createdAt: new Date(article.createdAt).getTime(),
+							title: item.title,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score: 0,
 					};
 				});
 				return JSON.stringify(items);
@@ -113,15 +119,16 @@ export async function queryBookmarks(
 			`feed:bookmarks:search:${query}`,
 			async () => {
 				let likes = await Like.search({ db }, query);
-				let items = likes.map<BookmarkItem>((bookmark) => {
+				let items = likes.map<BookmarkItem>(({ item, score = 0 }) => {
 					return {
-						id: bookmark.id,
+						id: item.id,
 						type: "bookmark",
 						payload: {
-							title: bookmark.title,
-							link: bookmark.url.toString(),
-							createdAt: new Date(bookmark.createdAt).getTime(),
+							title: item.title,
+							link: item.url.toString(),
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score,
 					};
 				});
 				return JSON.stringify(items);
@@ -133,15 +140,16 @@ export async function queryBookmarks(
 			"feed:bookmarks",
 			async () => {
 				let likes = await Like.list({ db });
-				let items = likes.map<BookmarkItem>((bookmark) => {
+				let items = likes.map<BookmarkItem>((item) => {
 					return {
-						id: bookmark.id,
+						id: item.id,
 						type: "bookmark",
 						payload: {
-							title: bookmark.title,
-							link: bookmark.url.toString(),
-							createdAt: new Date(bookmark.createdAt).getTime(),
+							title: item.title,
+							link: item.url.toString(),
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score: 0,
 					};
 				});
 				return JSON.stringify(items);
@@ -168,15 +176,16 @@ export async function queryTutorials(
 			`feed:tutorials:search:${query}`,
 			async () => {
 				let tutorials = await Tutorial.search({ db }, query);
-				let items = tutorials.map<TutorialItem>((article) => {
+				let items = tutorials.map<TutorialItem>(({ item, score = 0 }) => {
 					return {
-						id: article.id,
+						id: item.id,
 						type: "tutorial",
 						payload: {
-							title: article.title,
-							link: article.pathname,
-							createdAt: new Date(article.createdAt).getTime(),
+							title: item.title,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score,
 					};
 				});
 				return JSON.stringify(items);
@@ -188,15 +197,16 @@ export async function queryTutorials(
 			"feed:tutorials",
 			async () => {
 				let tutorials = await Tutorial.list({ db });
-				let items = tutorials.map<TutorialItem>((article) => {
+				let items = tutorials.map<TutorialItem>((item) => {
 					return {
-						id: article.id,
+						id: item.id,
 						type: "tutorial",
 						payload: {
-							title: article.title,
-							link: article.pathname,
-							createdAt: new Date(article.createdAt).getTime(),
+							title: item.title,
+							link: item.pathname,
+							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score: 0,
 					};
 				});
 				return JSON.stringify(items);
@@ -222,7 +232,7 @@ export async function queryGlossary(
 			`feed:glossary:search:${query}`,
 			async () => {
 				let glossary = await Glossary.search({ db }, query);
-				let items = glossary.map<GlossaryItem>((item) => {
+				let items = glossary.map<GlossaryItem>(({ item, score = 0 }) => {
 					return {
 						id: item.id,
 						type: "glossary",
@@ -231,6 +241,7 @@ export async function queryGlossary(
 							link: item.pathname,
 							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score,
 					};
 				});
 				return JSON.stringify(items);
@@ -251,6 +262,7 @@ export async function queryGlossary(
 							link: item.pathname,
 							createdAt: new Date(item.createdAt).getTime(),
 						},
+						score: 0,
 					};
 				});
 				return JSON.stringify(items);
@@ -265,5 +277,8 @@ export async function queryGlossary(
 export function sort(
 	items: Array<ArticleItem | BookmarkItem | TutorialItem | GlossaryItem>,
 ) {
-	return items.sort((a, b) => b.payload.createdAt - a.payload.createdAt);
+	return items.sort((a, b) => {
+		if (a.score !== b.score) return b.score - a.score;
+		return b.payload.createdAt - a.payload.createdAt;
+	});
 }

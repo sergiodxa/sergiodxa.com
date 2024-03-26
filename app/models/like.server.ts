@@ -56,9 +56,10 @@ export class Like extends Post<LikeMeta> {
 
 		let fuse = new Fuse(likes, {
 			keys: ["title"],
+			includeScore: true,
 		});
 
-		return fuse.search(query).map((result) => result.item);
+		return fuse.search(query);
 	}
 
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
