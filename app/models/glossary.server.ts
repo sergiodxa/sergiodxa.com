@@ -2,6 +2,8 @@ import type { BaseMeta, PostAttributes } from "~/models/post.server";
 import type { Database, Tables } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
 
+import Fuse from "fuse.js";
+
 import { Post } from "~/models/post.server";
 
 interface GlossaryMeta extends BaseMeta {
@@ -86,19 +88,12 @@ export class Glossary extends Post<GlossaryMeta> {
 	static async search(services: Services, query: string) {
 		let glossary = await Glossary.list(services);
 
-		let words = query
-			.trim()
-			.toLowerCase()
-			.split(/\s+/)
-			.filter((word) => word.length > 1);
+		query = query.trim().toLowerCase();
 
-		for (let word of words) {
-			glossary = glossary.filter((item) => {
-				let term = item.term.toLowerCase();
-				return term.includes(word);
-			});
-		}
+		let fuse = new Fuse(glossary, {
+			keys: ["term", "title", "definition"],
+		});
 
-		return glossary;
+		return fuse.search(query).map((result) => result.item);
 	}
 }

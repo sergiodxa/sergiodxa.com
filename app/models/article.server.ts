@@ -3,6 +3,7 @@ import type { Database } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
 
 import { and, eq } from "drizzle-orm";
+import Fuse from "fuse.js";
 
 import { Post } from "~/models/post.server";
 import { Markdown } from "~/modules/md.server";
@@ -101,20 +102,13 @@ export class Article extends Post<ArticleMeta> {
 	static async search(services: Services, query: string) {
 		let articles = await Article.list(services);
 
-		let words = query
-			.trim()
-			.toLowerCase()
-			.split(/\s+/)
-			.filter((word) => word.length > 1);
+		query = query.trim().toLowerCase();
 
-		for (let word of words) {
-			articles = articles.filter((item) => {
-				let title = item.title.toLowerCase();
-				return title.includes(word);
-			});
-		}
+		let fuse = new Fuse(articles, {
+			keys: ["title", "content"],
+		});
 
-		return articles;
+		return fuse.search(query).map((result) => result.item);
 	}
 
 	static async findById(services: Services, id: UUID) {

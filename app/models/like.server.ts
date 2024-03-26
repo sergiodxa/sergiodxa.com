@@ -1,6 +1,8 @@
 import type { BaseMeta, PostAttributes } from "~/models/post.server";
 import type { Database, Tables } from "~/services/db.server";
 
+import Fuse from "fuse.js";
+
 import { Post } from "~/models/post.server";
 
 interface Services {
@@ -50,20 +52,13 @@ export class Like extends Post<LikeMeta> {
 	static async search({ db }: Services, query: string) {
 		let likes = await Like.list({ db });
 
-		let words = query
-			.trim()
-			.toLowerCase()
-			.split(/\s+/)
-			.filter((word) => word.length > 1);
+		query = query.trim().toLowerCase();
 
-		for (let word of words) {
-			likes = likes.filter((item) => {
-				let title = item.title.toLowerCase();
-				return title.includes(word);
-			});
-		}
+		let fuse = new Fuse(likes, {
+			keys: ["title"],
+		});
 
-		return likes;
+		return fuse.search(query).map((result) => result.item);
 	}
 
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {

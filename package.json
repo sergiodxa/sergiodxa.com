@@ -59,6 +59,7 @@
     "dotenv": "^16.4.1",
     "drizzle-orm": "^0.29.1",
     "front-matter": "^4.0.2",
+    "fuse.js": "^7.0.0",
     "htmlparser2": "^9.0.0",
     "i18next": "^23.7.19",
     "i18next-browser-languagedetector": "^7.1.0",

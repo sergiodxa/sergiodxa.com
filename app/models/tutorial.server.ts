@@ -3,6 +3,7 @@ import type { Database } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
 
 import { and, eq } from "drizzle-orm";
+import Fuse from "fuse.js";
 import * as semver from "semver";
 
 import { Markdown } from "~/modules/md.server";
@@ -157,14 +158,11 @@ export class Tutorial extends Post<TutorialMeta> {
 			});
 		}
 
-		for (let word of query.trim()) {
-			tutorials = tutorials.filter((item) => {
-				let title = item.title.toLowerCase();
-				return title.includes(word);
-			});
-		}
+		let fuse = new Fuse(tutorials, {
+			keys: ["title", "content"],
+		});
 
-		return tutorials;
+		return fuse.search(query).map((result) => result.item);
 	}
 
 	static async findById(services: Services, id: UUID) {
