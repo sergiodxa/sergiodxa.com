@@ -120,7 +120,7 @@
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.2.2",
 		"vite-tsconfig-paths": "^4.2.0",
-		"vitest": "^1.2.1",
+		"vitest": "^1.6.0",
 		"wrangler": "3.43.0"
 	},
 	"sideEffects": false
