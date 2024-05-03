@@ -3,6 +3,8 @@ import { useFetcher } from "@remix-run/react";
 import { decode } from "turbo-stream";
 import { Fence } from "~/components/md/fence";
 
+export const handle: SDX.Handle = { hydrate: true };
+
 export async function action({ request }: ActionFunctionArgs) {
 	try {
 		// biome-ignore lint/style/noNonNullAssertion: The request always has a body
