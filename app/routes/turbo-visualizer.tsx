@@ -1,0 +1,43 @@
+import { ActionFunctionArgs } from "@remix-run/cloudflare";
+import { useFetcher } from "@remix-run/react";
+import { decode } from "turbo-stream";
+import { Fence } from "~/components/md/fence";
+
+export async function action({ request }: ActionFunctionArgs) {
+	try {
+		// biome-ignore lint/style/noNonNullAssertion: The request always has a body
+		let decoded = await decode(request.body!);
+		await decoded.done;
+		return {
+			status: "success" as const,
+			value: await Promise.resolve(decoded.value),
+		};
+	} catch (error) {
+		console.error(error);
+		return { status: "failure" as const };
+	}
+}
+
+export default function Component() {
+	let { submit, data } = useFetcher<typeof action>();
+
+	return (
+		<main className="h-screen w-full font-mono p-8 grid grid-cols-3 gap-8">
+			<textarea
+				className="w-full h-full overflow-auto p-2 resize-none"
+				onChange={(event) => {
+					submit(event.currentTarget.value, {
+						method: "POST",
+						encType: "application/json",
+					});
+				}}
+			/>
+			<output
+				className="whitespace-pre-wrap w-full h-full overflow-auto col-span-2 p-2"
+				style={{ tabSize: 2 }}
+			>
+				<Fence language="json">{JSON.stringify(data, null, "\t")}</Fence>
+			</output>
+		</main>
+	);
+}
