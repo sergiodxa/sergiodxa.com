@@ -1,4 +1,4 @@
-import { json, redirect, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, json, redirect } from "@remix-run/cloudflare";
 import { Outlet } from "react-router";
 
 import { SessionStorage } from "~/modules/session.server";

@@ -3,7 +3,7 @@ import type { i18n } from "i18next";
 import { RemixBrowser } from "@remix-run/react";
 import { createInstance } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import { startTransition, StrictMode } from "react";
+import { StrictMode, startTransition } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { getInitialNamespaces } from "remix-i18next/client";

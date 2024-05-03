@@ -28,11 +28,15 @@ export class Airtable {
 
 	private BASE_URL = new URL("https://api.airtable.com/v0/");
 
-	constructor(
-		protected apiKey: string,
-		protected base: string,
-		protected tableId: string,
-	) {}
+	protected apiKey: string;
+	protected base: string;
+	protected tableId: string;
+
+	constructor(apiKey: string, base: string, tableId: string) {
+		this.apiKey = apiKey;
+		this.base = base;
+		this.tableId = tableId;
+	}
 
 	async bookmarks(offset?: string) {
 		let url = new URL(`${this.base}/${this.tableId}`, this.BASE_URL);

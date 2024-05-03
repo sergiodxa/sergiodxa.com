@@ -15,7 +15,6 @@
 				"noReExportAll": "error"
 			},
 			"style": {
-				"noDefaultExport": "error",
 				"noNegationElse": "error",
 				"useConst": "off",
 				"useExportType": "off",

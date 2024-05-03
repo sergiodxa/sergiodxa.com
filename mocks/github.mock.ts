@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { HttpResponse, http } from "msw";
+import { http, HttpResponse } from "msw";
 import { z } from "zod";
 
 async function existsFile(path: string) {

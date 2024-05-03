@@ -75,10 +75,8 @@ export namespace Cache {
 		): Promise<string> {
 			let cached = await this.read(key);
 			if (cached !== null) {
-				console.log("Cache Hit: %s", this.getKey(key));
 				return cached;
 			}
-			console.log("Cache Miss: %s", this.getKey(key));
 			let value = await fn();
 			await this.write(key, value, options);
 			return value;

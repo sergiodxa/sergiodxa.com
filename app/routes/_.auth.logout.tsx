@@ -1,7 +1,7 @@
 import {
-	json,
 	type ActionFunctionArgs,
 	type LoaderFunctionArgs,
+	json,
 } from "@remix-run/cloudflare";
 
 import { useT } from "~/helpers/use-i18n.hook";

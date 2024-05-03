@@ -8,10 +8,13 @@ const ResponseErrorSchema = z.object({
 });
 
 export class ConvertKit {
-	constructor(
-		protected key: string,
-		protected secret: string,
-	) {}
+	protected key: string;
+	protected secret: string;
+
+	constructor(key: string, secret: string) {
+		this.key = key;
+		this.secret = secret;
+	}
 
 	async account() {
 		let url = new URL("/v3/account", BASE_URL);

@@ -1,7 +1,7 @@
-import type { SelectionType } from "./get-selection";
 import type { ChangeEvent } from "react";
+import type { SelectionType } from "./get-selection";
 
-export type ChangeEventType = {};
+export type ChangeEventType = Record<string, never>;
 
 /**
  * Create a ChangeEvent object

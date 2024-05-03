@@ -37,7 +37,7 @@ export function Fence({ children, language, path }: FenceProps) {
 		return <FileTree content={children} />;
 	}
 
-	let content: string = "";
+	let content = "";
 	try {
 		content = Prism.highlight(children, Prism.languages[language], language);
 	} catch (error) {
@@ -60,6 +60,7 @@ export function Fence({ children, language, path }: FenceProps) {
 					<span className="text-xs leading-none">{path}</span>
 				</header>
 			)}
+			{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Required to pass highlighted code here */}
 			<code dangerouslySetInnerHTML={{ __html: content }} />
 		</pre>
 	);
@@ -81,8 +82,8 @@ function FileTree({ content }: { content: string }) {
 
 	return (
 		<ul className="file-tree">
-			{tree.map((node, index) => (
-				<FileNode key={index} node={node} />
+			{tree.map((node) => (
+				<FileNode key={node.name} node={node} />
 			))}
 		</ul>
 	);
@@ -95,8 +96,8 @@ function FileNode({ node }: { node: FileNode }) {
 		<li className="directory">
 			<span className="directory-name">{node.name}</span>
 			<ul className="directory-contents">
-				{node.children?.map((child, index) => (
-					<FileNode key={index} node={child} />
+				{node.children?.map((child) => (
+					<FileNode key={child.name} node={child} />
 				))}
 			</ul>
 		</li>

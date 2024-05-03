@@ -3,8 +3,8 @@ import type {
 	GroupProps,
 	InputProps,
 	LabelProps,
-	TextProps,
 	TextAreaProps,
+	TextProps,
 } from "react-aria-components";
 
 import { forwardRef } from "react";

@@ -1,7 +1,7 @@
 import type {
-	MetaFunction,
-	MetaDescriptor,
 	LoaderFunctionArgs,
+	MetaDescriptor,
+	MetaFunction,
 } from "@remix-run/cloudflare";
 
 import { useLoaderData } from "@remix-run/react";

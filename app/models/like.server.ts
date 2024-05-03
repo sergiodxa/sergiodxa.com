@@ -20,13 +20,6 @@ type InsertLike = Omit<Tables.InsertPost, "id" | "type"> & LikeMeta;
 export class Like extends Post<LikeMeta> {
 	override readonly type = "like" as const;
 
-	constructor(
-		services: Services,
-		input: Post<LikeMeta> | PostAttributes<LikeMeta>,
-	) {
-		super(services, input);
-	}
-
 	get title() {
 		return this.meta.title;
 	}
@@ -52,7 +45,7 @@ export class Like extends Post<LikeMeta> {
 	static async search({ db }: Services, query: string) {
 		let likes = await Like.list({ db });
 
-		query = query.trim().toLowerCase();
+		let trimmedQuery = query.trim().toLowerCase();
 
 		let fuse = new Fuse(likes, {
 			keys: ["title"],
@@ -60,7 +53,7 @@ export class Like extends Post<LikeMeta> {
 			findAllMatches: false,
 		});
 
-		return fuse.search(query);
+		return fuse.search(trimmedQuery);
 	}
 
 	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {

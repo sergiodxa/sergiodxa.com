@@ -3,7 +3,7 @@ import type {
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
-import { redirect, json } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import { Link, useSubmit } from "@remix-run/react";
 import { Button, Form, Input, Label, NumberField } from "react-aria-components";
 import { z } from "zod";

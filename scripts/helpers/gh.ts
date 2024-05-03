@@ -30,7 +30,7 @@ export async function pushFileToRepository(
 	repo: string,
 	path: string,
 	message: string,
-	content: Buffer
+	content: Buffer,
 ) {
 	await gh.request("PUT /repos/{owner}/{repo}/contents/{path}", {
 		owner: GITHUB_USERNAME,

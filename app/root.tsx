@@ -8,16 +8,16 @@ import type { ShouldRevalidateFunction } from "@remix-run/react";
 import type { ReactNode } from "react";
 
 import {
-	isRouteErrorResponse,
-	useRouteError,
 	Links,
 	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	isRouteErrorResponse,
 	useLoaderData,
 	useNavigate,
+	useRouteError,
 } from "@remix-run/react";
 import { RouterProvider } from "react-aria-components";
 import { useChangeLanguage } from "remix-i18next/react";
@@ -202,6 +202,7 @@ function Document({
 					<Scripts />
 				) : (
 					<script
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: This is needed to inline the JS code
 						dangerouslySetInnerHTML={{
 							__html: `
 	document.querySelectorAll("a").forEach(($anchor) => {

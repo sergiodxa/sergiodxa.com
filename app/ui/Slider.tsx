@@ -68,6 +68,7 @@ export function Slider<T extends number | number[]>({
 						<div className={trackStyles(renderProps)} />
 						{state.values.map((_, i) => (
 							<SliderThumb
+								// biome-ignore lint/suspicious/noArrayIndexKey: This is static and there's no other value
 								key={i}
 								index={i}
 								aria-label={thumbLabels?.[i]}

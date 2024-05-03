@@ -1,9 +1,9 @@
-import type { action } from "./route";
 import type { Actions } from "../components.editor/use-editor";
+import type { action } from "./route";
 
 import { useFetcher } from "@remix-run/react";
 import { Brush, ImagePlus } from "lucide-react";
-import { useEffect, type Dispatch } from "react";
+import { type Dispatch, useEffect } from "react";
 import { TooltipTrigger } from "react-aria-components";
 
 import { Button } from "~/ui/Button";

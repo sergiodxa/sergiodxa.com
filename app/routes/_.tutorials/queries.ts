@@ -30,17 +30,17 @@ export async function queryTutorials(
 
 			return JSON.stringify(
 				tutorials.map((tutorial) => {
-          if (tutorial instanceof Tutorial) {
-            return {
-              path: tutorial.pathname,
-              title: tutorial.title,
-            };
-          }
+					if (tutorial instanceof Tutorial) {
+						return {
+							path: tutorial.pathname,
+							title: tutorial.title,
+						};
+					}
 
-          return {
-            path: tutorial.item.pathname,
-            title: tutorial.item.title,
-          }
+					return {
+						path: tutorial.item.pathname,
+						title: tutorial.item.title,
+					};
 				}),
 			);
 		},

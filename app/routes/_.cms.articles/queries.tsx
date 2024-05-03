@@ -114,34 +114,30 @@ export async function moveToTutorial(context: AppLoadContext, id: UUID) {
 	let slugMeta = article.meta.find((meta) => meta.key === "slug");
 	if (!slugMeta) throw new Error("Slug meta not found");
 
-	try {
-		await db
-			.update(Tables.posts)
-			.set({ type: "tutorial" })
-			.where(eq(Tables.posts.id, id));
+	await db
+		.update(Tables.posts)
+		.set({ type: "tutorial" })
+		.where(eq(Tables.posts.id, id));
 
-		let result = await db.query.posts.findMany({
-			where: and(eq(Tables.posts.id, id), eq(Tables.posts.type, "article")),
-		});
+	let result = await db.query.posts.findMany({
+		where: and(eq(Tables.posts.id, id), eq(Tables.posts.type, "article")),
+	});
 
-		if (result.length > 0) throw new Error("Article not moved");
+	if (result.length > 0) throw new Error("Article not moved");
 
-		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-		await Promise.all([
-			cache.delete("tutorials:list"),
-			cache.delete("articles:list"),
-			cache.delete("feed:tutorials"),
-			cache.delete("feed:articles"),
-		]);
+	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+	await Promise.all([
+		cache.delete("tutorials:list"),
+		cache.delete("articles:list"),
+		cache.delete("feed:tutorials"),
+		cache.delete("feed:articles"),
+	]);
 
-		await redirects.add(
-			slugMeta.value,
-			`/articles/${slugMeta.value}`,
-			`/tutorials/${slugMeta.value}`,
-		);
-	} catch (error) {
-		console.log(error);
-	}
+	await redirects.add(
+		slugMeta.value,
+		`/articles/${slugMeta.value}`,
+		`/tutorials/${slugMeta.value}`,
+	);
 }
 
 function stripTitle(body: string) {

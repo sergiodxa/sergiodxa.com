@@ -72,8 +72,10 @@ export async function queryLastDaySearch(context: AppLoadContext) {
 			.map((key) => key.replace("articles:search:", "").replace("feed:", ""))
 			.sort((a, b) => a.localeCompare(b)),
 		tutorials: [...tutorials, ...feedTutorials]
-			.map((key) => {
-				key = key.replace("tutorials:search:", "").replace("feed:", "");
+			.map((initialKey) => {
+				let key = initialKey
+					.replace("tutorials:search:", "")
+					.replace("feed:", "");
 				if (!key.startsWith("tech:")) return key;
 				return key.replace("tech:", "");
 			})

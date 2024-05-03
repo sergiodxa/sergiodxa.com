@@ -1,8 +1,8 @@
+import type { TFunction } from "i18next";
+import type { ReactNode } from "react";
 /* eslint-disable jsx-a11y/anchor-has-content */
 /* eslint-disable jsx-a11y/no-redundant-roles */
 import type { sort } from "./queries";
-import type { TFunction } from "i18next";
-import type { ReactNode } from "react";
 
 import { Trans } from "react-i18next";
 
@@ -146,6 +146,7 @@ export function FeedList({ t, items }: Props) {
 					);
 				}
 
+				// biome-ignore lint/correctness/useJsxKeyInIterable: It's ok because it's null
 				return null;
 			})}
 		</ol>

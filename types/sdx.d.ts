@@ -3,9 +3,7 @@ import type { ExternalScriptsFunction } from "remix-utils/external-scripts";
 import type { Env } from "~/server/env";
 import type { Measurer } from "~/server/measure";
 
-interface HydrateFunction<LoaderData> {
-	(data: LoaderData): boolean;
-}
+type HydrateFunction<LoaderData> = (data: LoaderData) => boolean;
 
 declare global {
 	namespace SDX {

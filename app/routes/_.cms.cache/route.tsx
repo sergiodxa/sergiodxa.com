@@ -3,7 +3,7 @@ import type {
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
-import { redirect, json } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import { useId } from "react";
 import { z } from "zod";
 

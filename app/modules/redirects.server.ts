@@ -3,7 +3,10 @@ import type { AppLoadContext } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 export class Redirects {
-	constructor(protected loadContext: AppLoadContext) {}
+	protected loadContext: AppLoadContext;
+	constructor(loadContext: AppLoadContext) {
+		this.loadContext = loadContext;
+	}
 
 	async list() {
 		let { keys } = await this.loadContext.kv.redirects.list();

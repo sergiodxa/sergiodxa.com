@@ -1,21 +1,21 @@
-import type { Handler, Updater } from "./use-editor";
 import type { ReactNode } from "react";
+import type { Handler, Updater } from "./use-editor";
 
 import {
 	BoldIcon,
+	CodeIcon,
+	HeadingIcon,
+	ImageIcon,
 	ItalicIcon,
 	LinkIcon,
-	CodeIcon,
 	QuoteIcon,
-	ImageIcon,
-	HeadingIcon,
 } from "lucide-react";
 
 import { useT } from "~/helpers/use-i18n.hook";
 import { Button as UIButton } from "~/ui/Button";
 
 import { getSelection } from "./get-selection";
-import { useUpdate, useElement } from "./use-editor";
+import { useElement, useUpdate } from "./use-editor";
 
 export namespace Button {
 	type MenuItemProps = {
@@ -32,7 +32,8 @@ export namespace Button {
 				type="button"
 				variant="secondary"
 				onPress={() => {
-					let selection = getSelection(element.current!);
+					if (!element.current) return;
+					let selection = getSelection(element.current);
 					update({ selection, updater, handler });
 				}}
 			>

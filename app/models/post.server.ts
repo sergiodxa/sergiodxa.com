@@ -100,7 +100,7 @@ export class Post<Meta extends BaseMeta> {
 
 		return posts.map((post) => {
 			assertUUID(post.authorId);
-			return new this(
+			return new Post(
 				{ db },
 				{
 					id: post.id,
@@ -134,7 +134,7 @@ export class Post<Meta extends BaseMeta> {
 
 		assertUUID(post.authorId);
 
-		return new this(
+		return new Post(
 			{ db },
 			{
 				id: post.id,
@@ -261,10 +261,13 @@ function reduceMeta<Meta extends BaseMeta>(
 		if (meta.key in acc) {
 			let value = acc[meta.key];
 			if (Array.isArray(value)) {
+				// biome-ignore lint/performance/noAccumulatingSpread: It's fine here
 				return { ...acc, [meta.key]: [...value, meta.value] };
-			} else return { ...acc, [meta.key]: [value, meta.value] };
+			}
+			// biome-ignore lint/performance/noAccumulatingSpread: It's fine here
+			return { ...acc, [meta.key]: [value, meta.value] };
 		}
-
+		// biome-ignore lint/performance/noAccumulatingSpread: It's fine here
 		return { ...acc, [meta.key]: meta.value };
 	}, {} as Meta);
 }

@@ -70,7 +70,7 @@ export class SessionStorage {
 		request: Request,
 		returnTo = "/auth/login",
 	) {
-		let maybeUser = await this.readUser(context, request);
+		let maybeUser = await SessionStorage.readUser(context, request);
 		if (!maybeUser) throw redirect(returnTo);
 		return maybeUser;
 	}
