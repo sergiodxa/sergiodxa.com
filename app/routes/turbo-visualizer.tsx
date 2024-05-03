@@ -1,11 +1,12 @@
-import { ActionFunctionArgs } from "@remix-run/cloudflare";
+import type { ClientActionFunctionArgs } from "@remix-run/react";
 import { useFetcher } from "@remix-run/react";
 import { decode } from "turbo-stream";
 import { Fence } from "~/components/md/fence";
 
 export const handle: SDX.Handle = { hydrate: true };
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ClientActionFunctionArgs) {
+	console.log("decoding client-side");
 	try {
 		// biome-ignore lint/style/noNonNullAssertion: The request always has a body
 		let decoded = await decode(request.body!);
@@ -21,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Component() {
-	let { submit, data } = useFetcher<typeof action>();
+	let { submit, data } = useFetcher<typeof clientAction>();
 
 	return (
 		<main className="h-screen w-full font-mono p-8 grid grid-cols-3 gap-8">
