@@ -24,7 +24,7 @@ jobs:
       - run: bun run typecheck
 
   test:
-    name: Unit and Integration Tests
+    name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
