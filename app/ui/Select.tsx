@@ -1,9 +1,9 @@
-import type { DropdownSectionProps } from "./ListBox";
 import type {
 	SelectProps as AriaSelectProps,
 	ListBoxItemProps,
 	ValidationResult,
 } from "react-aria-components";
+import type { DropdownSectionProps } from "./ListBox";
 
 import { ChevronDown } from "lucide-react";
 import {

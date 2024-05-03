@@ -2,7 +2,7 @@ import type { RenderableTreeNode } from "@markdoc/markdoc";
 
 export function generateID(
 	children: RenderableTreeNode[],
-	attributes: Record<string, any>,
+	attributes: Record<string, unknown>,
 ) {
 	if (attributes.id && typeof attributes.id === "string") {
 		return attributes.id;

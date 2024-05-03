@@ -69,7 +69,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 						intent: INTENT.createLike,
 						errors: error.issues.reduce(
 							(errors, issue) => {
-								errors[issue.path[0]!] = issue.message;
+								let [path] = issue.path;
+								errors[path] = issue.message;
 								return errors;
 							},
 							{} as Record<string, string>,

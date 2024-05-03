@@ -1,11 +1,11 @@
-import type { loader } from "./route";
 import type { SerializeFrom } from "@remix-run/cloudflare";
+import type { loader } from "./route";
 
 import {
 	Await,
+	Link as RemixLink,
 	useAsyncValue,
 	useLoaderData,
-	Link as RemixLink,
 } from "@remix-run/react";
 import { Suspense } from "react";
 import { Trans } from "react-i18next";
@@ -17,7 +17,7 @@ import { useUser } from "~/helpers/use-user.hook";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
-import { TagGroup, Tag } from "~/ui/TagGroup";
+import { Tag, TagGroup } from "~/ui/TagGroup";
 import { cn } from "~/utils/cn";
 
 type LoaderData = SerializeFrom<typeof loader>;

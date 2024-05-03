@@ -51,6 +51,7 @@ export default async function handleRequest(
 				onError(error) {
 					console.error("renderToReadableStream error");
 					console.error(error);
+					// biome-ignore lint/style/noParameterAssign: It's ok
 					status = 500;
 				},
 			},

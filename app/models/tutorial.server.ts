@@ -1,6 +1,6 @@
-import type { BaseMeta, PostAttributes } from "./post.server";
 import type { Database } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
+import type { BaseMeta, PostAttributes } from "./post.server";
 
 import { and, eq } from "drizzle-orm";
 import Fuse from "fuse.js";
@@ -29,13 +29,6 @@ interface Services {
 // @ts-expect-error TS is an idiot
 export class Tutorial extends Post<TutorialMeta> {
 	override readonly type = "tutorial" as const;
-
-	constructor(
-		services: Services,
-		input: PostAttributes<TutorialMeta> | PostAttributes<TutorialMeta>,
-	) {
-		super(services, input);
-	}
 
 	get title() {
 		return this.meta.title;
@@ -115,13 +108,13 @@ export class Tutorial extends Post<TutorialMeta> {
 
 	static override async list(services: Services) {
 		let posts = await Post.list<TutorialMeta>(services, "tutorial");
-		return posts.map((post) => new this(services, post));
+		return posts.map((post) => new Tutorial(services, post));
 	}
 
-	static async search(services: Services, query = "") {
-		let tutorials = await this.list(services);
+	static async search(services: Services, searchQuery = "") {
+		let tutorials = await Tutorial.list(services);
 
-		query = query?.toLowerCase().trim(); // Normalize the query
+		let query = searchQuery?.toLowerCase().trim(); // Normalize the query
 
 		let techsInQuery = Tutorial.findTechnologiesInString(query);
 
@@ -137,7 +130,7 @@ export class Tutorial extends Post<TutorialMeta> {
 
 			tutorials = tutorials.filter((item) => {
 				for (let tagInTutorial of item.tags) {
-					let techInTutorial = this.getPackageNameAndVersion(tagInTutorial);
+					let techInTutorial = Tutorial.getPackageNameAndVersion(tagInTutorial);
 					if (techInQuery.name.includes("*")) {
 						if (
 							!techInTutorial.name.includes(techInQuery.name.replace("*", ""))
@@ -168,7 +161,7 @@ export class Tutorial extends Post<TutorialMeta> {
 
 	static async findById(services: Services, id: UUID) {
 		let post = await Post.show<TutorialMeta>(services, "tutorial", id);
-		return new this(services, post);
+		return new Tutorial(services, post);
 	}
 
 	static override async show(
@@ -190,7 +183,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			"tutorial",
 			result.postId,
 		);
-		return new this(services, post);
+		return new Tutorial(services, post);
 	}
 
 	static override async create(services: Services, input: InsertTutorial) {
@@ -199,7 +192,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			type: "tutorial",
 		});
 
-		return new this(services, post);
+		return new Tutorial(services, post);
 	}
 
 	static override update(services: Services, id: UUID, input: InsertTutorial) {
@@ -240,8 +233,6 @@ export class Tutorial extends Post<TutorialMeta> {
 				result.push(item);
 
 				if (result.length >= 3) break;
-
-				continue;
 			}
 		}
 
@@ -260,8 +251,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			.split(" ")
 			.filter((value) => value.includes("tech:"))
 			.map((value) => {
-				value = value.slice("tech:".length);
-				return Tutorial.getPackageNameAndVersion(value);
+				return Tutorial.getPackageNameAndVersion(value.slice("tech:".length));
 			});
 	}
 }

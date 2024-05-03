@@ -35,6 +35,7 @@ export class I18n {
 	public async saveCookie(request: Request): Promise<string>;
 	public async saveCookie(locale: string | Request) {
 		if (locale instanceof Request) {
+			// biome-ignore lint/style/noParameterAssign: It's ok
 			locale = await this.getLocale(locale);
 		}
 		return await this.cookie.serialize(locale);

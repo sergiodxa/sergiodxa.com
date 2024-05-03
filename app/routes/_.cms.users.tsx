@@ -1,4 +1,4 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
 import { useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
 import { eq } from "drizzle-orm";
 import {
@@ -17,7 +17,7 @@ import {
 import { z } from "zod";
 
 import { useT } from "~/helpers/use-i18n.hook";
-import { database, Tables } from "~/services/db.server";
+import { Tables, database } from "~/services/db.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
 	let db = database(context.db);

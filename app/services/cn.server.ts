@@ -27,11 +27,15 @@ export const NoteSchema = z.object({
 export class CollectedNotes {
 	private BASE_URL = new URL("https://collectednotes.com/");
 
-	constructor(
-		private email: string,
-		private token: string,
-		private site: string,
-	) {}
+	private email: string;
+	private token: string;
+	private site: string;
+
+	constructor(email: string, token: string, site: string) {
+		this.email = email;
+		this.token = token;
+		this.site = site;
+	}
 
 	async fetchNotes(page = 1, signal?: AbortSignal) {
 		let url = new URL(`sites/${this.site}/notes`, this.BASE_URL);

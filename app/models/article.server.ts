@@ -29,13 +29,6 @@ interface Services {
 export class Article extends Post<ArticleMeta> {
 	override readonly type = "article" as const;
 
-	constructor(
-		services: Services,
-		input: PostAttributes<ArticleMeta> | PostAttributes<ArticleMeta>,
-	) {
-		super(services, input);
-	}
-
 	get title() {
 		return this.meta.title;
 	}
@@ -96,13 +89,13 @@ export class Article extends Post<ArticleMeta> {
 
 	static override async list(services: Services) {
 		let posts = await Post.list<ArticleMeta>(services, "article");
-		return posts.map((post) => new this(services, post));
+		return posts.map((post) => new Article(services, post));
 	}
 
-	static async search(services: Services, query: string) {
+	static async search(services: Services, initialQuery: string) {
 		let articles = await Article.list(services);
 
-		query = query.trim().toLowerCase();
+		let query = initialQuery.trim().toLowerCase();
 
 		let fuse = new Fuse(articles, {
 			keys: ["title", "content"],
@@ -115,7 +108,7 @@ export class Article extends Post<ArticleMeta> {
 
 	static async findById(services: Services, id: UUID) {
 		let post = await Post.show<ArticleMeta>(services, "article", id);
-		return new this(services, post);
+		return new Article(services, post);
 	}
 
 	static override async show(
@@ -133,7 +126,7 @@ export class Article extends Post<ArticleMeta> {
 		assertUUID(result?.postId);
 
 		let post = await Post.show<ArticleMeta>(services, "article", result.postId);
-		return new this(services, post);
+		return new Article(services, post);
 	}
 
 	static override async create(services: Services, input: InsertArticle) {
@@ -142,6 +135,6 @@ export class Article extends Post<ArticleMeta> {
 			type: "article",
 		});
 
-		return new this(services, post);
+		return new Article(services, post);
 	}
 }

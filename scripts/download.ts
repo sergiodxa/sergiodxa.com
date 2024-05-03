@@ -66,7 +66,7 @@ async function migrateArticles() {
 			GITHUB_CONTENT_REPO,
 			`articles/${path}.md`,
 			`Upload "${note.title}" from Collected Notes`,
-			Buffer.from(markdown)
+			Buffer.from(markdown),
 		);
 		process.stdout.write(".");
 	}

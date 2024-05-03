@@ -1,5 +1,5 @@
-import type { User } from "./session.server";
 import type { AppLoadContext, SessionStorage } from "@remix-run/cloudflare";
+import type { User } from "./session.server";
 
 import { createCookieSessionStorage } from "@remix-run/cloudflare";
 import { and, eq } from "drizzle-orm";
@@ -7,7 +7,7 @@ import { Authenticator } from "remix-auth";
 import { GitHubStrategy } from "remix-auth-github";
 import { z } from "zod";
 
-import { database, Tables } from "~/services/db.server";
+import { Tables, database } from "~/services/db.server";
 import { GitHub } from "~/services/github.server";
 
 export class Auth {
@@ -45,67 +45,62 @@ export class Auth {
 					callbackURL: "/auth/github/callback",
 				},
 				async ({ profile }) => {
-					try {
-						let connection = await db.query.connections.findFirst({
-							with: {
-								user: {
-									columns: {
-										createdAt: false,
-										updatedAt: false,
-									},
+					let connection = await db.query.connections.findFirst({
+						with: {
+							user: {
+								columns: {
+									createdAt: false,
+									updatedAt: false,
 								},
 							},
-							where: and(
-								eq(Tables.connections.providerName, "github"),
-								eq(Tables.connections.providerId, profile._json.node_id),
-							),
-						});
+						},
+						where: and(
+							eq(Tables.connections.providerName, "github"),
+							eq(Tables.connections.providerId, profile._json.node_id),
+						),
+					});
 
-						let user = connection?.user;
+					let user = connection?.user;
 
-						if (user) {
-							return {
-								...user,
-								githubId: profile._json.node_id,
-								isSponsor: await gh.isSponsoringMe(profile._json.node_id),
-							};
-						}
-
-						let result = await db
-							.insert(Tables.users)
-							.values({
-								role: "guess",
-								email: profile._json.email,
-								avatar: z.string().url().parse(profile._json.avatar_url),
-								username: profile._json.login,
-								displayName: profile._json.name,
-							})
-							.returning()
-							.onConflictDoNothing({ target: Tables.users.email });
-
-						user = result.at(0);
-						if (!user) throw new Error("User not found");
-
-						await db.insert(Tables.connections).values({
-							userId: user.id,
-							providerName: "github",
-							providerId: profile._json.node_id,
-						});
-
+					if (user) {
 						return {
-							id: user.id,
-							role: user.role,
-							email: user.email,
-							avatar: user.avatar,
-							username: user.username,
-							displayName: user.displayName,
+							...user,
 							githubId: profile._json.node_id,
 							isSponsor: await gh.isSponsoringMe(profile._json.node_id),
 						};
-					} catch (exception) {
-						console.log(exception);
-						throw exception;
 					}
+
+					let result = await db
+						.insert(Tables.users)
+						.values({
+							role: "guess",
+							email: profile._json.email,
+							avatar: z.string().url().parse(profile._json.avatar_url),
+							username: profile._json.login,
+							displayName: profile._json.name,
+						})
+						.returning()
+						.onConflictDoNothing({ target: Tables.users.email });
+
+					user = result.at(0);
+					if (!user) throw new Error("User not found");
+
+					await db.insert(Tables.connections).values({
+						userId: user.id,
+						providerName: "github",
+						providerId: profile._json.node_id,
+					});
+
+					return {
+						id: user.id,
+						role: user.role,
+						email: user.email,
+						avatar: user.avatar,
+						username: user.username,
+						displayName: user.displayName,
+						githubId: profile._json.node_id,
+						isSponsor: await gh.isSponsoringMe(profile._json.node_id),
+					};
 				},
 			),
 		);

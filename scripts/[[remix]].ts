@@ -54,7 +54,7 @@ export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 		if (!remixHandler) {
 			remixHandler = createRequestHandler(
 				build,
-				env.CF_PAGES ? "production" : "development"
+				env.CF_PAGES ? "production" : "development",
 			);
 		}
 
@@ -67,7 +67,7 @@ export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 			bookmarks: new BookmarksRepo(
 				env.AIRTABLE_API_KEY,
 				env.AIRTABLE_BASE,
-				env.AIRTABLE_TABLE_ID
+				env.AIRTABLE_TABLE_ID,
 			),
 			github: new GithubRepository(env.GITHUB_TOKEN),
 			tutorials: new KVTutorialRepository(ctx.env.tutorials),
@@ -89,7 +89,7 @@ export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 				ctx.env.auth,
 				env,
 				hostname,
-				new GitHubService(ctx.env.gh, env.GITHUB_TOKEN)
+				new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
 			),
 			bookmarks: new BookmarksService(repos, ctx.env.airtable),
 			gh: new GitHubService(ctx.env.gh, env.GITHUB_TOKEN),
@@ -115,7 +115,6 @@ export const onRequest: PagesFunction<RuntimeEnv> = async (ctx) => {
 		return response;
 	} catch (error) {
 		Sentry.captureException(error);
-		if (error instanceof z.ZodError) console.log(error.issues);
-		throw error;
+		if (error instanceof z.ZodError) throw error;
 	}
 };

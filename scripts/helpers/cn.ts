@@ -1,6 +1,6 @@
-import { collectedNotes, type Note } from "collected-notes";
+import { type Note, collectedNotes } from "collected-notes";
 
-import { CN_EMAIL, CN_TOKEN, CN_SITE } from "./env";
+import { CN_EMAIL, CN_SITE, CN_TOKEN } from "./env";
 
 const cn = collectedNotes(CN_EMAIL, CN_TOKEN);
 
@@ -16,7 +16,6 @@ export async function downloadAllArticles() {
 
 		if (moreNotes.length === 40) {
 			page += 1;
-			continue;
 		} else loadMore = false;
 	}
 

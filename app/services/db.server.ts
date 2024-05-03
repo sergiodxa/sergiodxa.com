@@ -2,7 +2,7 @@ import type { UUID } from "~/utils/uuid";
 
 import { relations } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 import { generateUUID } from "~/utils/uuid";
 

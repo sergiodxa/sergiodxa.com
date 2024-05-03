@@ -1,8 +1,8 @@
 import type { PopoverProps as AriaPopoverProps } from "react-aria-components";
 
 import {
-	OverlayArrow,
 	Popover as AriaPopover,
+	OverlayArrow,
 	composeRenderProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
@@ -40,6 +40,7 @@ export function Popover({
 		>
 			{showArrow && (
 				<OverlayArrow className="group">
+					{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
 					<svg
 						width={12}
 						height={12}

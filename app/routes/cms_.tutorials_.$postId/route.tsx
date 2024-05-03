@@ -1,9 +1,9 @@
-import type { action as editorAction } from "../components.editor/route";
 import type {
 	ActionFunctionArgs,
 	LinksFunction,
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
+import type { action as editorAction } from "../components.editor/route";
 
 import { json, redirectDocument } from "@remix-run/cloudflare";
 import { useFetcher, useLoaderData } from "@remix-run/react";
@@ -93,7 +93,6 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 		.safeParse(formData);
 
 	if (!result.success) {
-		console.log(result.error);
 		return json(null, { status: 400 });
 	}
 
@@ -110,7 +109,6 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 			let content = await prettify(body.content);
 			return json({ intent, content });
 		} catch (error) {
-			console.log(error);
 			return json({ intent, content: body.content });
 		}
 	}

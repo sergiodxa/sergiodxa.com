@@ -17,7 +17,10 @@ interface Channel {
 export class RSS {
 	private itemSet = new Set<Item>();
 
-	constructor(readonly channel: Channel) {}
+	readonly channel: Channel;
+	constructor(channel: Channel) {
+		this.channel = channel;
+	}
 
 	get items() {
 		return Array.from(this.itemSet);

@@ -1,7 +1,7 @@
-import type { Actions } from "./use-editor";
 import type { RenderableTreeNode } from "@markdoc/markdoc";
 import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 import type { Dispatch, RefObject } from "react";
+import type { Actions } from "./use-editor";
 
 import { json } from "@remix-run/cloudflare";
 import { useFetcher } from "@remix-run/react";

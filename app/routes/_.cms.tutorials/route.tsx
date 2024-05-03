@@ -3,7 +3,7 @@ import type {
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
-import { redirect, json } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import { z } from "zod";
 
 import { Tutorial } from "~/models/tutorial.server";

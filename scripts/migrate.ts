@@ -1,12 +1,12 @@
-import type { Content } from ".prisma/client";
 import type { LoaderFunction } from "@remix-run/cloudflare";
 import type { NoteVisibility } from "collected-notes";
 import type { PublicUser } from "~/models/user.server";
+import type { Content } from ".prisma/client";
 
-import { ContentType, Visibility } from ".prisma/client";
 import { redirect } from "@remix-run/cloudflare";
 import matter from "gray-matter";
 import { parameterize } from "inflected";
+import { ContentType, Visibility } from ".prisma/client";
 
 import { getBookmarks } from "~/services/airtable.server";
 import { adminAuthorizer } from "~/services/auth.server";
@@ -34,7 +34,7 @@ async function migrateArticles(user: PublicUser) {
 				.map((_, index) => index + 1)
 				.map((page) => {
 					return cn.latestNotes(site, page);
-				})
+				}),
 		)
 	).flat();
 

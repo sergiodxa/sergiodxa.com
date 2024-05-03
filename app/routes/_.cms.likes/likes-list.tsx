@@ -1,6 +1,6 @@
-import type { loader } from "./route";
 import type { SerializeFrom } from "@remix-run/cloudflare";
 import type { UUID } from "~/utils/uuid";
+import type { loader } from "./route";
 
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Button } from "react-aria-components";

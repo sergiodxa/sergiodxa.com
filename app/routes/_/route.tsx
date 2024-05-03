@@ -92,14 +92,14 @@ function Header() {
 			</nav>
 
 			<div className="flex flex-grow flex-col items-center justify-between gap-3 md:justify-end lg:flex-row">
-				{!user?.isSponsor ? (
+				{user?.isSponsor ? null : (
 					<Link
 						href="https://github.com/sponsors/sergiodxa"
 						className="hidden lg:block"
 					>
 						{t("sponsor")}
 					</Link>
-				) : null}
+				)}
 
 				<Form role="search">
 					<SearchField

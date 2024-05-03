@@ -10,6 +10,5 @@ export async function measure<Result>(
 		return result;
 	} finally {
 		let end = Date.now();
-		console.log(`${key} took ${end - start}ms`);
 	}
 }

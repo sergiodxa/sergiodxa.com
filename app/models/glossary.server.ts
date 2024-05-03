@@ -23,13 +23,6 @@ interface Services {
 export class Glossary extends Post<GlossaryMeta> {
 	override readonly type = "glossary" as const;
 
-	constructor(
-		services: Services,
-		input: PostAttributes<GlossaryMeta> | PostAttributes<GlossaryMeta>,
-	) {
-		super(services, input);
-	}
-
 	get slug() {
 		return this.meta.slug;
 	}
@@ -63,16 +56,16 @@ export class Glossary extends Post<GlossaryMeta> {
 
 	static override async list(services: Services) {
 		let posts = await Post.list<GlossaryMeta>(services, "glossary");
-		return posts.map((post) => new this(services, post));
+		return posts.map((post) => new Glossary(services, post));
 	}
 
 	static override async show(services: Services, id: UUID) {
 		let post = await Post.show<GlossaryMeta>(services, "glossary", id);
-		return new this(services, post);
+		return new Glossary(services, post);
 	}
 
 	static override async create(services: Services, input: InsertGlossary) {
-		return new this(
+		return new Glossary(
 			services,
 			await Post.create<GlossaryMeta>(services, { ...input, type: "glossary" }),
 		);
@@ -88,7 +81,7 @@ export class Glossary extends Post<GlossaryMeta> {
 	static async search(services: Services, query: string) {
 		let glossary = await Glossary.list(services);
 
-		query = query.trim().toLowerCase();
+		let trimmedQuery = query.trim().toLowerCase();
 
 		let fuse = new Fuse(glossary, {
 			keys: ["term", "title", "definition"],
@@ -96,6 +89,6 @@ export class Glossary extends Post<GlossaryMeta> {
 			findAllMatches: false,
 		});
 
-		return fuse.search(query);
+		return fuse.search(trimmedQuery);
 	}
 }

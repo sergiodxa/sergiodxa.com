@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === "development") logDevReady(build);
 let remix = createRequestHandler(build, build.mode);
 
 export async function onRequest(
-	ctx: EventContext<RuntimeEnv, any, Record<string, unknown>>,
+	ctx: EventContext<RuntimeEnv, string, Record<string, unknown>>,
 ) {
 	let url = new URL(ctx.request.url);
 

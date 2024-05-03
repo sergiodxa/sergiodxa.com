@@ -59,7 +59,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
 			if (exception instanceof Error) {
 				return json({ error: exception.message }, 400);
 			}
-			console.log(exception);
 			throw exception;
 		}
 	}

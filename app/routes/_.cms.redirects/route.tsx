@@ -3,7 +3,7 @@ import type {
 	LoaderFunctionArgs,
 } from "@remix-run/cloudflare";
 
-import { redirect, json } from "@remix-run/cloudflare";
+import { json, redirect } from "@remix-run/cloudflare";
 import { Form } from "@remix-run/react";
 import { useId } from "react";
 

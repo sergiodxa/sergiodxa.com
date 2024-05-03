@@ -48,7 +48,17 @@ export default function Component() {
 			<article className="isolate -mx-5 flex aspect-video w-full max-w-md flex-col items-center justify-center gap-6 bg-white p-10 shadow-lg sm:rounded-3xl">
 				<h2 className="sr-only">Subscribe</h2>
 
-				{!actionData ? (
+				{actionData ? (
+					actionData.state === "active" ? (
+						<p className="text-2xl font-medium text-green-500 sm:text-3xl">
+							You're subscribed!
+						</p>
+					) : (
+						<p className="text-2xl font-medium text-blue-500 sm:text-3xl">
+							Confirm your subscription.
+						</p>
+					)
+				) : (
 					<Form method="post" className="contents">
 						<TextField
 							name="email"
@@ -73,14 +83,6 @@ export default function Component() {
 							Subscribe for Free
 						</Button>
 					</Form>
-				) : actionData.state == "active" ? (
-					<p className="text-2xl font-medium text-green-500 sm:text-3xl">
-						You're subscribed!
-					</p>
-				) : (
-					<p className="text-2xl font-medium text-blue-500 sm:text-3xl">
-						Confirm your subscription.
-					</p>
 				)}
 			</article>
 

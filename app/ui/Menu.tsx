@@ -1,10 +1,10 @@
-import type { DropdownSectionProps } from "./ListBox";
-import type { PopoverProps } from "./Popover";
 import type {
 	MenuProps as AriaMenuProps,
 	MenuItemProps,
 	SeparatorProps,
 } from "react-aria-components";
+import type { DropdownSectionProps } from "./ListBox";
+import type { PopoverProps } from "./Popover";
 
 import { Check } from "lucide-react";
 import {

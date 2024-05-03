@@ -1,10 +1,10 @@
-import type { SelectionType } from "./get-selection";
 import type { Dispatch, RefObject } from "react";
+import type { SelectionType } from "./get-selection";
 
 import {
-	useCallback,
-	createRef,
 	createContext,
+	createRef,
+	useCallback,
 	useContext,
 	useReducer,
 } from "react";
@@ -35,6 +35,7 @@ const context = createContext<{
 	element: RefObject<HTMLTextAreaElement>;
 	state: EditorState;
 	dispatch: Dispatch<Actions>;
+	// biome-ignore lint/suspicious/noEmptyBlockStatements: This is a fallback so it's ok
 }>({ element: createRef(), state: initialState, dispatch() {} });
 
 export function useEditor(
@@ -74,7 +75,9 @@ export function useState() {
 }
 
 export function useElement() {
-	return useContext(context).element!;
+	let { element } = useContext(context);
+	if (!element) throw new Error("Element not found");
+	return element;
 }
 
 export function useUpdate() {
