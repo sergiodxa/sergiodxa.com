@@ -6,7 +6,6 @@ import { Fence } from "~/components/md/fence";
 export const handle: SDX.Handle = { hydrate: true };
 
 export async function clientAction({ request }: ClientActionFunctionArgs) {
-	console.log("decoding client-side");
 	try {
 		// biome-ignore lint/style/noNonNullAssertion: The request always has a body
 		let decoded = await decode(request.body!);
@@ -27,7 +26,7 @@ export default function Component() {
 	return (
 		<main className="h-screen w-full font-mono p-8 grid grid-cols-3 gap-8">
 			<textarea
-				className="w-full h-full overflow-auto p-2 resize-none"
+				className="w-full h-full overflow-auto p-2 resize-none bg-slate-50 dark:bg-slate-950 rounded-lg"
 				onChange={(event) => {
 					submit(event.currentTarget.value, {
 						method: "POST",
