@@ -5,23 +5,28 @@ import { Auth } from "~/modules/auth.server";
 import { SessionStorage } from "~/modules/session.server";
 
 export async function loader({ request, params, context }: LoaderFunctionArgs) {
-	let provider = z.enum(["github"]).parse(params.provider);
+	try {
+		let provider = z.enum(["github"]).parse(params.provider);
 
-	let auth = new Auth(context);
+		let auth = new Auth(new URL(request.url), context);
 
-	let user = await auth.authenticate(provider, request);
+		let user = await auth.authenticate(provider, request);
 
-	if (!user) throw redirect("/auth/login");
+		if (!user) throw redirect("/auth/login");
 
-	let sessionStorage = new SessionStorage(context);
+		let sessionStorage = new SessionStorage(context);
 
-	let session = await sessionStorage.read(request.headers.get("cookie"));
-	session.set("user", user);
+		let session = await sessionStorage.read(request.headers.get("cookie"));
+		session.set("user", user);
 
-	let headers = new Headers();
+		let headers = new Headers();
 
-	headers.append("set-cookie", await sessionStorage.commit(session));
-	headers.append("set-cookie", await auth.clear(request));
+		headers.append("set-cookie", await sessionStorage.commit(session));
+		headers.append("set-cookie", await auth.clear(request));
 
-	throw redirect("/", { headers });
+		throw redirect("/", { headers });
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
 }

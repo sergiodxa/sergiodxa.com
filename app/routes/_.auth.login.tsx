@@ -18,7 +18,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
-	let auth = new Auth(context);
+	let auth = new Auth(new URL(request.url), context);
 
 	return await auth.authenticate("github", request, {
 		successRedirect: "/auth/github/callback",
