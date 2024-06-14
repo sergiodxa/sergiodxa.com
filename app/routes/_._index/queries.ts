@@ -278,7 +278,7 @@ export function sort(
 	items: Array<ArticleItem | BookmarkItem | TutorialItem | GlossaryItem>,
 ) {
 	return items.sort((a, b) => {
-		if (a.score !== b.score) return b.score - a.score;
+		if (a.score !== b.score) return a.score - b.score;
 		return b.payload.createdAt - a.payload.createdAt;
 	});
 }
