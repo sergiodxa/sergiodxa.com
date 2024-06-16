@@ -137,4 +137,11 @@ export class Article extends Post<ArticleMeta> {
 
 		return new Article(services, post);
 	}
+
+	static override update(services: Services, id: UUID, input: InsertArticle) {
+		return Post.update<ArticleMeta>(services, id, {
+			...input,
+			type: "article",
+		});
+	}
 }
