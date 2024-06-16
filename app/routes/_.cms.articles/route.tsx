@@ -4,20 +4,19 @@ import type {
 } from "@remix-run/cloudflare";
 
 import { json, redirect } from "@remix-run/cloudflare";
-import { Link, useSubmit } from "@remix-run/react";
-import { Button, Form, Input, Label, NumberField } from "react-aria-components";
 import { z } from "zod";
 
-import { useT } from "~/helpers/use-i18n.hook";
-import { Article } from "~/models/article.server";
 import { I18n } from "~/modules/i18n.server";
 import { Logger } from "~/modules/logger.server";
 import { SessionStorage } from "~/modules/session.server";
 import { database } from "~/services/db.server";
+import { Button } from "~/ui/Button";
+import { Form } from "~/ui/Form";
 import { assertUUID } from "~/utils/uuid";
 
-import { ArticleList } from "./article-list";
-import { importArticles, moveToTutorial, resetArticles } from "./queries";
+import { Article } from "~/models/article.server";
+import { ArticlesList } from "./article-list";
+import { deleteArticle } from "./queries";
 import { INTENT } from "./types";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -55,24 +54,21 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (user.role !== "admin") throw redirect("/");
 
 	let formData = await request.formData();
-	let intent = z
-		.enum([INTENT.import, INTENT.reset, INTENT.moveToTutorial])
-		.parse(formData.get("intent"));
+	let intent = z.enum([INTENT.delete]).parse(formData.get("intent"));
 
-	if (intent === INTENT.import) {
-		let page = z.coerce.number().parse(formData.get("page"));
-		await importArticles(context, user, page);
+	try {
+		if (intent === INTENT.delete) {
+			let id = formData.get("id");
+			assertUUID(id);
+			await deleteArticle(context, id);
+		}
+
+		throw redirect("/cms/articles");
+	} catch (exception) {
+		if (exception instanceof Response) throw exception;
+		if (exception instanceof Error) console.error(exception);
+		throw redirect("/cms/articles");
 	}
-
-	if (intent === INTENT.reset) await resetArticles(context);
-
-	if (intent === INTENT.moveToTutorial) {
-		let id = formData.get("id");
-		assertUUID(id);
-		await moveToTutorial(context, id);
-	}
-
-	throw redirect("/cms/articles");
 }
 
 export default function Component() {
@@ -82,73 +78,15 @@ export default function Component() {
 				<h2 className="text-3xl font-bold">Articles</h2>
 
 				<div className="flex items-center gap-4">
-					<Link
-						to="/cms/articles/new"
-						className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900 no-underline visited:text-blue-900"
-					>
-						Write Article
-					</Link>
-
-					<ImportArticles />
-					<ResetArticles />
+					<Form method="get" action="/cms/articles/new">
+						<Button type="submit" variant="primary">
+							Write Article
+						</Button>
+					</Form>
 				</div>
 			</header>
 
-			<ArticleList />
+			<ArticlesList />
 		</div>
-	);
-}
-
-function ImportArticles() {
-	let submit = useSubmit();
-	let t = useT("cms.articles.import");
-
-	return (
-		<Form
-			method="post"
-			className="flex items-center gap-1"
-			onSubmit={(event) => {
-				event.preventDefault();
-				submit(event.currentTarget);
-			}}
-		>
-			<input type="hidden" name="intent" value={INTENT.import} />
-			<NumberField name="page">
-				<Label className="sr-only">Page</Label>
-				<Input
-					name="page"
-					className="w-full rounded-md border-2 border-blue-600 bg-white px-4 py-2 text-base"
-				/>
-			</NumberField>
-			<Button
-				type="submit"
-				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-			>
-				{t("cta")}
-			</Button>
-		</Form>
-	);
-}
-
-function ResetArticles() {
-	let submit = useSubmit();
-	let t = useT("cms.articles.reset");
-
-	return (
-		<Form
-			method="post"
-			onSubmit={(event) => {
-				event.preventDefault();
-				submit(event.currentTarget);
-			}}
-		>
-			<input type="hidden" name="intent" value={INTENT.reset} />
-			<Button
-				type="submit"
-				className="block flex-shrink-0 rounded-md border-2 border-blue-600 bg-blue-100 px-4 py-2 text-center text-base font-medium text-blue-900"
-			>
-				{t("cta")}
-			</Button>
-		</Form>
 	);
 }

@@ -1,103 +1,46 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
-import type { User } from "~/modules/session.server";
 import type { UUID } from "~/utils/uuid";
 
-import { and, eq } from "drizzle-orm";
-import fm from "front-matter";
 import { z } from "zod";
 
+import { and, eq } from "drizzle-orm";
 import { Article } from "~/models/article.server";
 import { Cache } from "~/modules/cache.server";
-import { Logger } from "~/modules/logger.server";
-import { Markdown } from "~/modules/md.server";
 import { Redirects } from "~/modules/redirects.server";
-import { CollectedNotes } from "~/services/cn.server";
 import { Tables, database } from "~/services/db.server";
 
-const AttributesSchema = z
-	.object({
-		title: z.string(),
-		date: z.date(),
-		description: z.string(),
-		lang: z.string(),
-		tags: z.string(),
-		path: z.string(),
-		canonical_url: z.string().url(),
-		next: z.object({
-			title: z.string(),
-			path: z.string(),
-			description: z.string(),
-		}),
-		translate_from: z.object({
-			url: z.string().url(),
-			lang: z.string(),
-			title: z.string(),
-		}),
-		translated_to: z.object({ lang: z.string(), path: z.string() }).array(),
+export const MarkdownSchema = z
+	.string()
+	.transform((content) => {
+		if (content.startsWith("# ")) {
+			let [title, ...body] = content.split("\n");
+
+			let plain = body.join("\n").trimStart();
+
+			return {
+				attributes: { title: title.slice(1).trim() },
+				body: plain,
+			};
+		}
+
+		let [title, ...body] = content.trim().split("\n");
+		let plain = body.join("\n").trimStart();
+
+		return {
+			attributes: { title: title.slice(1).trim() },
+			body: plain,
+		};
 	})
-	.partial();
-
-const FrontMatterSchema = z.object({
-	attributes: AttributesSchema,
-	body: z.string(),
-});
-
-export async function importArticles(
-	context: AppLoadContext,
-	user: User,
-	page: number,
-) {
-	let logger = new Logger(context);
-
-	let cn = new CollectedNotes(
-		context.env.CN_EMAIL,
-		context.env.CN_TOKEN,
-		context.env.CN_SITE,
+	.pipe(
+		z.object({
+			attributes: z.object({ title: z.string().min(1) }),
+			body: z.string(),
+		}),
 	);
 
-	let articles = await cn.fetchNotes(page);
-
+export async function deleteArticle(context: AppLoadContext, id: UUID) {
 	let db = database(context.db);
-
-	for await (let article of articles) {
-		try {
-			let { body, attributes } = FrontMatterSchema.parse(fm(article.body));
-
-			body = stripTitle(body);
-
-			let plainBody = await Markdown.plain(body);
-
-			await Article.create(
-				{ db },
-				{
-					title: attributes.title ?? article.title,
-					slug: attributes.path ?? article.path,
-					locale: attributes.lang ?? "en",
-					content: body,
-					excerpt: extractExcerpt({
-						body: plainBody.toString().replace("\n", " "),
-						headline: article.headline,
-						description: attributes.description,
-					}),
-					authorId: user.id,
-					createdAt: attributes.date ?? new Date(article.created_at),
-					updatedAt: new Date(article.updated_at),
-					canonical_url: attributes.canonical_url,
-				},
-			);
-		} catch (exception) {
-			if (exception instanceof Error) {
-				void logger.info(
-					`error importing ${article.title}: ${exception.message}`,
-				);
-			}
-		}
-	}
-}
-
-export async function resetArticles(context: AppLoadContext) {
-	let db = database(context.db);
-	await db.delete(Tables.posts).where(eq(Tables.posts.type, "article"));
+	await Article.destroy({ db }, id);
 }
 
 export async function moveToTutorial(context: AppLoadContext, id: UUID) {
@@ -138,22 +81,4 @@ export async function moveToTutorial(context: AppLoadContext, id: UUID) {
 		`/articles/${slugMeta.value}`,
 		`/tutorials/${slugMeta.value}`,
 	);
-}
-
-function stripTitle(body: string) {
-	if (!body.startsWith("# ")) return body;
-	let [, ...rest] = body.split("\n");
-	return rest.join("\n").trim();
-}
-
-function extractExcerpt(input: {
-	body: string;
-	headline: string;
-	description?: string;
-}) {
-	if (input.description) return input.description;
-	if (!input.headline.includes("title: \n")) {
-		return `${input.headline.slice(0, -3)}…`;
-	}
-	return `${input.body.slice(0, 139)}…`.replaceAll("\n", " ");
 }
