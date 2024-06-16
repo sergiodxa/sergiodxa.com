@@ -11,19 +11,22 @@ import { Tables, database } from "~/services/db.server";
 export async function queryStats(context: AppLoadContext) {
 	let db = database(context.db);
 
-	let [articles, likes, tutorials] = await Promise.all(
-		["article" as const, "like" as const, "tutorial" as const].map(
-			async (type) => {
-				let results = await db
-					.select({ value: count() })
-					.from(Tables.posts)
-					.where(eq(Tables.posts.type, type));
-				return results.at(0)?.value ?? 0;
-			},
-		),
+	let [articles, likes, tutorials, glossary] = await Promise.all(
+		[
+			"article" as const,
+			"like" as const,
+			"tutorial" as const,
+			"glossary" as const,
+		].map(async (type) => {
+			let results = await db
+				.select({ value: count() })
+				.from(Tables.posts)
+				.where(eq(Tables.posts.type, type));
+			return results.at(0)?.value ?? 0;
+		}),
 	);
 
-	return { articles, likes, tutorials };
+	return { articles, likes, tutorials, glossary };
 }
 
 export async function createQuickLike(

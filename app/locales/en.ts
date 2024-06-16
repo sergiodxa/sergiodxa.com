@@ -225,6 +225,7 @@ export default {
 					articles: "Total Articles",
 					likes: "Total Likes",
 					tutorials: "Total Tutorials",
+					glossary: "Total Glossary Terms",
 				},
 				viewAll: "View all",
 			},

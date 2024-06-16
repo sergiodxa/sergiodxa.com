@@ -22,7 +22,12 @@ export function Stats() {
 			path: "tutorials",
 			stat: loaderData.stats.tutorials,
 		},
-	];
+		{
+			name: t("total.glossary"),
+			path: "glossary",
+			stat: loaderData.stats.glossary,
+		},
+	] satisfies Array<{ name: string; path: string; stat: number }>;
 
 	return (
 		<div className="flex flex-col gap-5">
@@ -30,7 +35,7 @@ export function Stats() {
 				{t("title")}
 			</Heading>
 
-			<dl className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+			<dl className="grid grid-cols-1 gap-5 sm:grid-cols-4">
 				{stats.map((item) => (
 					<div
 						key={item.name}
