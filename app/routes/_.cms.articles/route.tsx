@@ -16,7 +16,7 @@ import { assertUUID } from "~/utils/uuid";
 
 import { Article } from "~/models/article.server";
 import { ArticlesList } from "./article-list";
-import { deleteArticle } from "./queries";
+import { deleteArticle, moveToTutorial } from "./queries";
 import { INTENT } from "./types";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -54,13 +54,21 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (user.role !== "admin") throw redirect("/");
 
 	let formData = await request.formData();
-	let intent = z.enum([INTENT.delete]).parse(formData.get("intent"));
+	let intent = z
+		.enum([INTENT.delete, INTENT.moveToTutorial])
+		.parse(formData.get("intent"));
 
 	try {
 		if (intent === INTENT.delete) {
 			let id = formData.get("id");
 			assertUUID(id);
 			await deleteArticle(context, id);
+		}
+
+		if (intent === INTENT.moveToTutorial) {
+			let id = formData.get("id");
+			assertUUID(id);
+			await moveToTutorial(context, id);
 		}
 
 		throw redirect("/cms/articles");

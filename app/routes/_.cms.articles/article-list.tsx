@@ -1,9 +1,8 @@
 import type { SerializeFrom } from "@remix-run/cloudflare";
 import type { UUID } from "~/utils/uuid";
-import type { loader } from "./route";
+import type { action, loader } from "./route";
 
 import { useFetcher, useLoaderData } from "@remix-run/react";
-import { useId } from "react";
 import { Trans } from "react-i18next";
 
 import { useT } from "~/helpers/use-i18n.hook";
@@ -28,7 +27,7 @@ type ItemProps = SerializeFrom<typeof loader>["articles"][number];
 
 function Item(props: ItemProps) {
 	let t = useT("cms.articles.list.item");
-	let id = useId();
+	let fetcher = useFetcher<typeof action>();
 
 	return (
 		<li className="flex items-center justify-between gap-3 gap-x-6 py-5">
@@ -56,6 +55,18 @@ function Item(props: ItemProps) {
 						{t("edit")}
 					</Button>
 				</Form>
+
+				<fetcher.Form method="post">
+					<input type="hidden" name="id" value={props.id} />
+					<Button
+						type="submit"
+						name="intent"
+						value={INTENT.moveToTutorial}
+						variant="secondary"
+					>
+						{t("moveToTutorial")}
+					</Button>
+				</fetcher.Form>
 
 				<DeleteButton id={props.id} />
 			</div>
