@@ -154,6 +154,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			keys: ["title", "content"],
 			includeScore: true,
 			findAllMatches: false,
+			useExtendedSearch: true,
 		});
 
 		return fuse.search(query);

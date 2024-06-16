@@ -51,6 +51,7 @@ export class Like extends Post<LikeMeta> {
 			keys: ["title"],
 			includeScore: true,
 			findAllMatches: false,
+			useExtendedSearch: true,
 		});
 
 		return fuse.search(trimmedQuery);

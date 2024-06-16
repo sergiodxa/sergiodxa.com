@@ -87,6 +87,7 @@ export class Glossary extends Post<GlossaryMeta> {
 			keys: ["term", "title", "definition"],
 			includeScore: true,
 			findAllMatches: false,
+			useExtendedSearch: true,
 		});
 
 		return fuse.search(trimmedQuery);
