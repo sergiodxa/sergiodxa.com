@@ -2,7 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { useId } from "react";
-import { ulid } from "ulidx";
+import { monotonicFactory } from "ulidx";
 import { v7 } from "uuid";
 
 export function loader() {
@@ -10,7 +10,7 @@ export function loader() {
 		uuidv4: crypto.randomUUID(),
 		uuidv7: v7(),
 		cuid: createId(),
-		ulid: ulid(),
+		ulid: monotonicFactory()(),
 	});
 }
 
