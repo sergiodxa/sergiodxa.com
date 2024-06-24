@@ -3,22 +3,24 @@ import { json } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { useId } from "react";
 import { ulid } from "ulidx";
+import { v7 } from "uuid";
 
 export function loader() {
 	return json({
-		uuid: crypto.randomUUID(),
+		uuidv4: crypto.randomUUID(),
+		uuidv7: v7(),
 		cuid: createId(),
 		ulid: ulid(),
 	});
 }
 
 export default function Component() {
-	let { uuid, cuid, ulid } = useLoaderData<typeof loader>();
-	let id = useId();
+	let { uuidv4, uuidv7, cuid, ulid } = useLoaderData<typeof loader>();
 
 	return (
 		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-6 font-mono">
-			<Identifier label="UUID" value={uuid} />
+			<Identifier label="UUID v4" value={uuidv4} />
+			<Identifier label="UUID v7" value={uuidv7} />
 			<Identifier label="CUID" value={cuid} />
 			<Identifier label="ULID" value={ulid} />
 		</main>
