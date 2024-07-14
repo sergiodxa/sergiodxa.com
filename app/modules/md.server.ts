@@ -6,10 +6,13 @@ import {
 import { remark } from "remark";
 import strip from "strip-markdown";
 
-import { fence } from "~/components/md/fence";
+import { fence } from "~/components/md/fence.server";
 
 export namespace Markdown {
-	export function parse(content: string, options: Omit<Config, "nodes"> = {}) {
+	export async function parse(
+		content: string,
+		options: Omit<Config, "nodes"> = {},
+	) {
 		return transform(markdocParse(content), { ...options, nodes: { fence } });
 	}
 

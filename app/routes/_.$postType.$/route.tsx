@@ -55,13 +55,14 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	}
 
 	if (postType === "tutorials") {
-		let data = await cache.fetch(
-			`tutorials:${slug}`,
-			async () => JSON.stringify(await queryTutorial(context, request, slug)),
-			{ ttl: 60 * 5 },
-		);
+		return json(await queryTutorial(context, request, slug));
+		// 	let data = await cache.fetch(
+		// 		`tutorials:${slug}`,
+		// 		async () => JSON.stringify(await queryTutorial(context, request, slug)),
+		// 		{ ttl: 60 * 5 },
+		// 	);
 
-		return json(JSON.parse(data) as Awaited<ReturnType<typeof queryTutorial>>);
+		// 	return json(JSON.parse(data) as Awaited<ReturnType<typeof queryTutorial>>);
 	}
 
 	throw new Error("Invalid post type");

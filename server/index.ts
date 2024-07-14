@@ -8,6 +8,7 @@ import {
 import * as build from "@remix-run/dev/server-build";
 import * as Sentry from "@sentry/remix";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
+import { loadWasm } from "shiki/core";
 
 import { EnvSchema } from "./env";
 import { Measurer } from "./measure";
@@ -15,6 +16,12 @@ import { Measurer } from "./measure";
 if (process.env.NODE_ENV === "development") logDevReady(build);
 
 let remix = createRequestHandler(build, build.mode);
+
+let initialized = false;
+if (!initialized) {
+	await loadWasm(import("shiki/onig.wasm"));
+	initialized = true;
+}
 
 export async function onRequest(
 	ctx: EventContext<RuntimeEnv, string, Record<string, unknown>>,

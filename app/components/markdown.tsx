@@ -10,5 +10,9 @@ type Props = {
 };
 
 export function MarkdownView({ content }: Props) {
-	return <>{renderers.react(content, React, { components: { Fence } })}</>;
+	try {
+		return <>{renderers.react(content, React, { components: { Fence } })}</>;
+	} catch {
+		return <div>error</div>;
+	}
 }

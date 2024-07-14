@@ -22,7 +22,7 @@ export async function queryArticle(
 
 		return {
 			postType: "articles" as const,
-			article: { title: article.title, body: article.renderable },
+			article: { title: article.title, body: await article.renderable },
 			meta: [
 				{
 					title: t("article.meta.title", {
@@ -101,7 +101,7 @@ export async function queryTutorial(
 				slug: tutorial.slug,
 				tags: tutorial.tags,
 				title: tutorial.title,
-				content: tutorial.renderable,
+				content: await tutorial.renderable,
 			},
 			recommendations,
 			meta: [

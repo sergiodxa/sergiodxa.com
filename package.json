@@ -73,6 +73,7 @@
 		"remix-auth-oauth2": "^2.1.0",
 		"remix-i18next": "^6.0.1",
 		"remix-utils": "^7.1.0",
+		"shiki": "^1.10.3",
 		"spin-delay": "^1.2.0",
 		"strip-markdown": "^6.0.0",
 		"tailwind-merge": "^2.2.1",
