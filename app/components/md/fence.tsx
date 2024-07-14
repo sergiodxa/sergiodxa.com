@@ -1,4 +1,6 @@
+import { type Schema, Tag } from "@markdoc/markdoc";
 import Prism from "prismjs";
+import { z } from "zod";
 
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-cshtml";
@@ -21,37 +23,12 @@ import "prismjs/plugins/line-numbers/prism-line-numbers";
 import Icon from "~/components/icon";
 
 type FenceProps = {
-	children: string;
+	content: string;
 	language: string;
 	path?: string;
 };
 
-export function Fence({ children, language, path }: FenceProps) {
-	if (language === "tsx") language = "ts";
-	if (language === "dotenv") language = "plain";
-	if (language === "erb") language = "html";
-	if (language === "mdx") language = "md";
-	if (!language) language = "plain";
-
-	if (language === "file-tree") {
-		return <FileTree content={children} />;
-	}
-
-	let content = "";
-	try {
-		content = Prism.highlight(children, Prism.languages[language], language);
-	} catch (error) {
-		if (error instanceof Error && error.message.includes("has no grammar")) {
-			try {
-				content = Prism.highlight(children, Prism.languages.plain, "plain");
-			} catch {
-				// ignore any error here
-			}
-		}
-
-		// ignore other errors
-	}
-
+export function Fence({ content, language, path }: FenceProps) {
 	return (
 		<pre className={`language-${language}`}>
 			{path && (
@@ -66,9 +43,42 @@ export function Fence({ children, language, path }: FenceProps) {
 	);
 }
 
-export const fence = {
-	render: "Fence",
+export const fence: Schema = {
 	attributes: { language: { type: String }, path: { type: String } },
+	transform(node) {
+		let { content, language, path } = z
+			.object({
+				content: z.string(),
+				language: z.string(),
+				path: z.string().optional(),
+			})
+			.parse(node.attributes);
+
+		if (language === "tsx") language = "ts";
+		if (language === "dotenv") language = "plain";
+		if (language === "erb") language = "html";
+		if (language === "mdx") language = "md";
+		if (!language) language = "plain";
+
+		// if (language === "file-tree") {
+		// 	return <FileTree content={content} />;
+		// }
+
+		try {
+			content = Prism.highlight(content, Prism.languages[language], language);
+		} catch (error) {
+			if (error instanceof Error && error.message.includes("has no grammar")) {
+				try {
+					content = Prism.highlight(content, Prism.languages.plain, "plain");
+				} catch {
+					// ignore any error here
+				}
+			}
+			// ignore other errors
+		}
+
+		return new Tag("Fence", { language, path, content });
+	},
 };
 
 type FileNode = {
