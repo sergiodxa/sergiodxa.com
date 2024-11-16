@@ -6,7 +6,6 @@ import {
 	redirect,
 } from "@remix-run/cloudflare";
 import * as build from "@remix-run/dev/server-build";
-import * as Sentry from "@sentry/remix";
 import { getClientIPAddress } from "remix-utils/get-client-ip-address";
 
 import { EnvSchema } from "./env";
@@ -25,25 +24,6 @@ export async function onRequest(
 	if (url.hostname.includes("www.")) {
 		url.hostname = url.hostname.slice(4);
 		return redirect(url.href, 302);
-	}
-
-	// Initialize Sentry if DSN is configured
-	if (ctx.env.DSN) {
-		Sentry.init({
-			dsn: ctx.env.DSN,
-			tracesSampleRate: 1.0,
-			allowUrls: ["*.sergiodxa.com"],
-			attachStacktrace: true,
-			beforeSend(event) {
-				if (event.request?.url?.includes("sentry")) return null;
-				event.user = {};
-
-				let ip = getClientIPAddress(ctx.request.headers);
-				if (ip) event.user.ip_address = ip;
-
-				return event;
-			},
-		});
 	}
 
 	let env = EnvSchema.parse(ctx.env);

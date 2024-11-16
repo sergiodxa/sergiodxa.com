@@ -41,7 +41,7 @@ export function ErrorBoundary() {
 		title =
 			error.status === 404
 				? "Content not found"
-				: error.statusText ?? "Something went wrong";
+				: (error.statusText ?? "Something went wrong");
 	} else if (error instanceof Error) {
 		title = error.message;
 	}
@@ -101,7 +101,7 @@ function Header() {
 					</Link>
 				)}
 
-				<Form role="search">
+				<Form>
 					<SearchField
 						label="Search"
 						name="q"

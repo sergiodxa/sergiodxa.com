@@ -10,7 +10,7 @@ type Props = {
 
 export function SearchForm({ t, defaultValue = "" }: Props) {
 	return (
-		<Form role="search" className="flex flex-col items-start gap-2">
+		<Form className="flex flex-col items-start gap-2">
 			<SearchField name="q" className="contents" defaultValue={defaultValue}>
 				<Label className="block text-sm font-medium text-gray-700">
 					{t("search.label")}

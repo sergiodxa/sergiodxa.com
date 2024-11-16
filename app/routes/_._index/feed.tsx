@@ -146,7 +146,6 @@ export function FeedList({ t, items }: Props) {
 					);
 				}
 
-				// biome-ignore lint/correctness/useJsxKeyInIterable: It's ok because it's null
 				return null;
 			})}
 		</ol>
