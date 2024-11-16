@@ -1,6 +1,13 @@
 name = "sergiodxa"
-compatibility_date = "2023-06-22"
-node_compat = true
+
+# Update the compatibility date to the date you want to lock to
+compatibility_date = "2024-10-11"
+
+# This is needed for AsyncLocalStorage to work
+compatibility_flags = ["nodejs_compat_v2"]
+
+# Set the development port to be 3000
+dev.port = 3000
 
 kv_namespaces = [
   { binding = "cache", id = "597a3ce0108c42798aeac0044a566e31", preview_id = "cache" },
@@ -16,13 +23,4 @@ r2_buckets = [
 binding = "DB"
 database_name = "db"
 database_id = "f6bb2533-9284-4427-83e6-ea12c6630026"
-
-# [[services]]
-# binding = "SVG_GENERATOR"
-# service = "svg-generator"
-# environment = "production"
-
-# [[services]]
-# binding = "SVG_TO_PNG"
-# service = "svg-to-png"
-# environment = "production"
+migrations_dir = "./db/migrations"
