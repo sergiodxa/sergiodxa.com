@@ -91,7 +91,6 @@ export function TableHeader<T extends object>(props: TableHeaderProps<T>) {
 			{...props}
 			className={twMerge(
 				"sticky top-0 z-10 rounded-t-lg border-b bg-gray-100/60 backdrop-blur-md supports-[-moz-appearance:none]:bg-gray-100 dark:border-b-zinc-700 dark:bg-zinc-700/60 dark:supports-[-moz-appearance:none]:bg-zinc-700 forced-colors:bg-[Canvas]",
-				props.className,
 			)}
 		>
 			{/* Add extra columns for drag and drop and selection. */}
