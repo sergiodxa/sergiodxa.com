@@ -38,7 +38,7 @@ export default function Component() {
 				className="whitespace-pre-wrap w-full h-full overflow-auto col-span-2 p-2"
 				style={{ tabSize: 2 }}
 			>
-				<Fence language="json">{JSON.stringify(data, null, "\t")}</Fence>
+				<Fence language="json" content={JSON.stringify(data, null, "\t")} />
 			</output>
 		</main>
 	);
