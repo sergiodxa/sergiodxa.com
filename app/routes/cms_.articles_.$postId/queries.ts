@@ -3,7 +3,6 @@ import type { Options } from "prettier";
 
 import * as acornPlugin from "prettier/plugins/acorn";
 import * as babelPlugin from "prettier/plugins/babel";
-import * as estreePlugin from "prettier/plugins/estree";
 import * as graphqlPlugin from "prettier/plugins/graphql";
 import * as htmlPlugin from "prettier/plugins/html";
 import * as markdownPlugin from "prettier/plugins/markdown";
@@ -40,7 +39,6 @@ export async function prettify(content: string) {
 		plugins: [
 			acornPlugin,
 			babelPlugin,
-			estreePlugin,
 			graphqlPlugin,
 			htmlPlugin,
 			markdownPlugin,
