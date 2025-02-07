@@ -1,7 +1,6 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { UUID } from "~/utils/uuid";
 
-import * as cheerio from "cheerio";
 import { count, eq } from "drizzle-orm";
 
 import { Like } from "~/models/like.server";
@@ -50,6 +49,7 @@ export async function createQuickLike(
 
 	let html = await response.text();
 
+	let cheerio = await import("cheerio");
 	let $ = cheerio.load(html);
 
 	let title = $("h1").text().trim();
