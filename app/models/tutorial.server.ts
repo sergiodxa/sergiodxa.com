@@ -1,6 +1,6 @@
 import type { Database } from "~/services/db.server";
 import type { UUID } from "~/utils/uuid";
-import type { BaseMeta, PostAttributes } from "./post.server";
+import type { BaseMeta } from "./post.server";
 
 import { and, eq } from "drizzle-orm";
 import Fuse from "fuse.js";
