@@ -31,5 +31,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          preCommands: |
-            bun run db:migrate ${{ secrets.CLOUDFLARE_DATABASE_NAME }} --remote
+          # preCommands: |
+          #   bun run db:migrate ${{ secrets.CLOUDFLARE_DATABASE_NAME }} --remote
