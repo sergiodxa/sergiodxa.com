@@ -129,7 +129,7 @@ export class GitHub {
 								sponsorEntity: z.union([
 									z.object({
 										id: z.string(),
-										name: z.string(),
+										name: z.string().nullable(),
 										login: z.string(),
 										avatarUrl: z.string(),
 										url: z.string(),
