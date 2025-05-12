@@ -1,9 +1,10 @@
 import { createId } from "@paralleldrive/cuid2";
 import { json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRevalidator } from "@remix-run/react";
 import { useId } from "react";
 import { monotonicFactory } from "ulidx";
 import { v7 } from "uuid";
+import { Button } from "~/ui/Button";
 
 export function loader() {
 	return json({
@@ -16,6 +17,7 @@ export function loader() {
 
 export default function Component() {
 	let { uuidv4, uuidv7, cuid, ulid } = useLoaderData<typeof loader>();
+	let revalidator = useRevalidator();
 
 	return (
 		<main className="flex min-h-screen w-full flex-col items-center justify-center gap-6 font-mono">
@@ -23,6 +25,7 @@ export default function Component() {
 			<Identifier label="UUID v7" value={uuidv7} />
 			<Identifier label="CUID" value={cuid} />
 			<Identifier label="ULID" value={ulid} />
+			<Button onPress={() => revalidator.revalidate()}>Reload</Button>
 		</main>
 	);
 }
