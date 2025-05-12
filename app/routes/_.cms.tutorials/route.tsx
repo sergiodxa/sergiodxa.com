@@ -15,9 +15,7 @@ import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { assertUUID } from "~/utils/uuid";
 
-import { ImportTutorials } from "./import-tutorials";
-import { deleteTutorial, importTutorials, resetTutorials } from "./queries";
-import { ResetTutorials } from "./reset-tutorials";
+import { deleteTutorial } from "./queries";
 import { TutorialList } from "./tutorial-list";
 import { INTENT } from "./types";
 
@@ -57,13 +55,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	if (user.role !== "admin") throw redirect("/");
 
 	let formData = await request.formData();
-	let intent = z
-		.enum([INTENT.import, INTENT.reset, INTENT.delete])
-		.parse(formData.get("intent"));
+	let intent = z.enum([INTENT.delete]).parse(formData.get("intent"));
 
 	try {
-		if (intent === INTENT.import) await importTutorials(context, user);
-		if (intent === INTENT.reset) await resetTutorials(context);
 		if (intent === INTENT.delete) {
 			let id = formData.get("id");
 			assertUUID(id);
@@ -90,9 +84,6 @@ export default function Component() {
 							Write Tutorial
 						</Button>
 					</Form>
-
-					<ImportTutorials />
-					<ResetTutorials />
 				</div>
 			</header>
 
