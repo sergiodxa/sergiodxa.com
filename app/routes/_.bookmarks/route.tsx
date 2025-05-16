@@ -1,56 +1,39 @@
-import type {
-	LoaderFunctionArgs,
-	MetaDescriptor,
-	MetaFunction,
-} from "@remix-run/cloudflare";
-
-import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils/json-hash";
-
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
-import { useT } from "~/helpers/use-i18n.hook";
-import { I18n } from "~/modules/i18n.server";
-import { Logger } from "~/modules/logger.server";
+import { ok } from "~/helpers/response";
+import { getI18nextInstance } from "~/middleware/i18next";
 import { Link } from "~/ui/Link";
-
+import type { Route } from "./+types/route";
 import { queryBookmarks } from "./query";
 
-export function loader({ request, context }: LoaderFunctionArgs) {
-	return context.time("routes/bookmarks#loader", async () => {
-		void new Logger(context).http(request);
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
-		let likes = await queryBookmarks(context);
+export async function loader({ request }: Route.LoaderArgs) {
+	let likes = await queryBookmarks();
+	let { t } = getI18nextInstance();
 
-		return jsonHash({
-			likes,
-			async meta(): Promise<MetaDescriptor[]> {
-				let t = await new I18n().getFixedT(request);
-
-				return [
-					{ title: t("bookmarks.meta.title") },
-					{
-						tagName: "link",
-						rel: "alternate",
-						type: "application/rss+xml",
-						href: "/bookmarks.rss",
-					},
-					{
-						tagName: "link",
-						rel: "canonical",
-						href: new URL("/bookmarks", request.url).toString(),
-					},
-				];
+	return ok({
+		likes,
+		meta: [
+			{ title: t("bookmarks.meta.title") },
+			{
+				tagName: "link",
+				rel: "alternate",
+				type: "application/rss+xml",
+				href: "/bookmarks.rss",
 			},
-		});
+			{
+				tagName: "link",
+				rel: "canonical",
+				href: new URL("/bookmarks", request.url).toString(),
+			},
+		],
 	});
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
-
-export default function Component() {
-	let { likes } = useLoaderData<typeof loader>();
-	let t = useT("bookmarks");
+export default function Component({ loaderData }: Route.ComponentProps) {
+	let { t } = useTranslation("translation", { keyPrefix: "bookmarks" });
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
@@ -60,7 +43,7 @@ export default function Component() {
 				<Subscribe t={t} />
 
 				<ul className="space-y-2">
-					{likes.map((like) => {
+					{loaderData.likes.map((like) => {
 						return (
 							<li key={like.url} className="list-inside list-disc">
 								<Link href={like.url} rel="nofollow noreferer">

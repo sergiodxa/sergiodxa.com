@@ -1,9 +1,7 @@
-import type { Database } from "~/services/db.server";
-import type { UUID } from "~/utils/uuid";
-
 import { and, desc, eq } from "drizzle-orm";
-
-import { Tables } from "~/services/db.server";
+import type { Database } from "~/db";
+import * as schema from "~/db/schema";
+import type { UUID } from "~/utils/uuid";
 import { assertUUID, generateUUID } from "~/utils/uuid";
 
 export interface BaseMeta {
@@ -34,7 +32,7 @@ export class Post<Meta extends BaseMeta> {
 	// Meta
 	public meta: Meta;
 
-	private authorPromise?: Promise<Tables.SelectUser>;
+	private authorPromise?: Promise<schema.SelectUser>;
 
 	constructor(
 		protected services: Services,
@@ -52,7 +50,7 @@ export class Post<Meta extends BaseMeta> {
 		if (this.authorPromise) return this.authorPromise;
 		this.authorPromise = this.services.db.query.users
 			.findFirst({
-				where: eq(Tables.users.id, this.authorId),
+				where: eq(schema.users.id, this.authorId),
 			})
 			.then((author) => {
 				if (author) return author;
@@ -88,12 +86,12 @@ export class Post<Meta extends BaseMeta> {
 
 	static async list<Meta extends BaseMeta>(
 		{ db }: Services,
-		type?: Tables.SelectPost["type"],
+		type?: schema.SelectPost["type"],
 	) {
 		let posts = await db.query.posts.findMany({
 			with: { meta: true },
-			orderBy: desc(Tables.posts.createdAt),
-			where: type ? eq(Tables.posts.type, type) : undefined,
+			orderBy: desc(schema.posts.createdAt),
+			where: type ? eq(schema.posts.type, type) : undefined,
 		});
 
 		if (!posts) throw new Error("There are no post types.");
@@ -120,12 +118,12 @@ export class Post<Meta extends BaseMeta> {
 
 	static async show<Meta extends BaseMeta>(
 		{ db }: Services,
-		type: Tables.SelectPost["type"],
+		type: schema.SelectPost["type"],
 		id: UUID,
 	) {
 		let post = await db.query.posts.findFirst({
 			with: { meta: true },
-			where: and(eq(Tables.posts.type, type), eq(Tables.posts.id, id)),
+			where: and(eq(schema.posts.type, type), eq(schema.posts.id, id)),
 		});
 
 		if (!post) {
@@ -153,8 +151,8 @@ export class Post<Meta extends BaseMeta> {
 
 	static async destroy({ db }: Services, id: UUID) {
 		let result = await db
-			.delete(Tables.posts)
-			.where(eq(Tables.posts.id, id))
+			.delete(schema.posts)
+			.where(eq(schema.posts.id, id))
 			.execute();
 
 		if (!result.success && result.error) throw new Error(result.error);
@@ -168,12 +166,12 @@ export class Post<Meta extends BaseMeta> {
 			createdAt,
 			updatedAt,
 			...meta
-		}: Omit<Tables.InsertPost, "id"> & Meta,
+		}: Omit<schema.InsertPost, "id"> & Meta,
 	) {
 		let id = generateUUID();
 
 		let result = await db
-			.insert(Tables.posts)
+			.insert(schema.posts)
 			.values({ id, type, authorId, createdAt, updatedAt })
 			.execute();
 
@@ -197,19 +195,19 @@ export class Post<Meta extends BaseMeta> {
 			createdAt,
 			updatedAt,
 			...meta
-		}: Omit<Tables.InsertPost, "id"> & Meta,
+		}: Omit<schema.InsertPost, "id"> & Meta,
 	) {
 		let result = await db
-			.update(Tables.posts)
+			.update(schema.posts)
 			.set({ type, authorId, createdAt, updatedAt })
-			.where(eq(Tables.posts.id, id))
+			.where(eq(schema.posts.id, id))
 			.execute();
 
 		if (!result.success && result.error) throw new Error(result.error);
 
 		await db
-			.delete(Tables.postMeta)
-			.where(eq(Tables.postMeta.postId, id))
+			.delete(schema.postMeta)
+			.where(eq(schema.postMeta.postId, id))
 			.execute();
 
 		await Promise.all(
@@ -232,7 +230,7 @@ async function createPostMeta(
 
 	if (typeof value === "string") {
 		return void (await db
-			.insert(Tables.postMeta)
+			.insert(schema.postMeta)
 			.values({ postId: id, key, value })
 			.execute());
 	}
@@ -255,7 +253,7 @@ async function createPostMeta(
 }
 
 function reduceMeta<Meta extends BaseMeta>(
-	meta: Tables.SelectPostMeta[],
+	meta: schema.SelectPostMeta[],
 ): Meta {
 	return meta.reduce((acc, meta) => {
 		if (meta.key in acc) {

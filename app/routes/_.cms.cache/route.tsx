@@ -1,42 +1,22 @@
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
 import { useId } from "react";
+import { href, redirect } from "react-router";
 import { z } from "zod";
-
-import { Cache } from "~/modules/cache.server";
-import { Logger } from "~/modules/logger.server";
-import { SessionStorage } from "~/modules/session.server";
+import { ok } from "~/helpers/response";
+import { getCache } from "~/middleware/cache";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
-
-import { CacheKeyList } from "./list";
+import type { Route } from "./+types/route";
+import { CacheKeyList } from "./components/list";
 import { INTENT } from "./types";
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-
+export async function loader(_: Route.LoaderArgs) {
+	let cache = getCache();
 	let keys = await cache.list();
-
-	return json({ keys });
+	return ok({ keys });
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-
+export async function action({ request }: Route.ActionArgs) {
+	let cache = getCache();
 	let formData = await request.formData();
 
 	if (formData.get("intent") === INTENT.clear) {
@@ -49,10 +29,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
 		await Promise.all(keys.map((key) => cache.delete(key)));
 	}
 
-	return redirect("/cms/cache");
+	return redirect(href("/cms/cache"));
 }
 
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
 	let id = useId();
 
 	return (
@@ -85,7 +65,7 @@ export default function Component() {
 			</header>
 
 			<Form method="post" id={id}>
-				<CacheKeyList />
+				<CacheKeyList keys={loaderData.keys} />
 			</Form>
 		</div>
 	);

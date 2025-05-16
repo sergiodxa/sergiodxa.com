@@ -1,10 +1,9 @@
-import type { BaseMeta, PostAttributes } from "~/models/post.server";
-import type { Database, Tables } from "~/services/db.server";
-import type { UUID } from "~/utils/uuid";
-
 import Fuse from "fuse.js";
-
+import type { Database } from "~/db";
+import type * as schema from "~/db/schema";
+import type { BaseMeta } from "~/models/post.server";
 import { Post } from "~/models/post.server";
+import type { UUID } from "~/utils/uuid";
 
 interface GlossaryMeta extends BaseMeta {
 	slug: string;
@@ -13,7 +12,7 @@ interface GlossaryMeta extends BaseMeta {
 	definition: string;
 }
 
-type InsertGlossary = Omit<Tables.InsertPost, "id" | "type"> & GlossaryMeta;
+type InsertGlossary = Omit<schema.InsertPost, "id" | "type"> & GlossaryMeta;
 
 interface Services {
 	db: Database;

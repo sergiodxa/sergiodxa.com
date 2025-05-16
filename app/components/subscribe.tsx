@@ -4,7 +4,9 @@ import { Trans } from "react-i18next";
 
 import { Link } from "~/ui/Link";
 
-type SubscribeProps = { t: TFunction };
+type SubscribeProps = {
+	t: TFunction<"translation", "tutorials" | "bookmarks" | "home" | "articles">;
+};
 
 export function Subscribe({ t }: SubscribeProps) {
 	return (

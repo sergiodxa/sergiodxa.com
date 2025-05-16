@@ -1,30 +1,23 @@
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect, redirectDocument } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
 import { parameterize } from "inflected";
+import { redirect, redirectDocument } from "react-router";
+import { href } from "react-router";
 import { z } from "zod";
-
+import { ok } from "~/helpers/response";
+import { getCache } from "~/middleware/cache";
+import { getDB } from "~/middleware/drizzle";
+import { requireUser } from "~/middleware/session";
 import { Glossary } from "~/models/glossary.server";
-import { Cache } from "~/modules/cache.server";
-import { SessionStorage } from "~/modules/session.server";
-import { database } from "~/services/db.server";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { TextField } from "~/ui/TextField";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
-
+import type { Route } from "./+types/route";
 import { INTENT } from "./types";
 
-export async function loader({ request, params, context }: LoaderFunctionArgs) {
-	await SessionStorage.requireUser(context, request);
-
+export async function loader({ params }: Route.LoaderArgs) {
 	if (params.id === "new") {
-		return json({
+		return ok({
 			mode: INTENT.create,
 			glossary: {
 				id: null,
@@ -36,12 +29,12 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 		});
 	}
 
-	let db = database(context.db);
+	let db = getDB();
 	assertUUID(params.id);
 
 	let glossary = await Glossary.show({ db }, params.id);
 
-	return json({
+	return ok({
 		mode: INTENT.update,
 		glossary: {
 			id: glossary.id,
@@ -53,9 +46,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	});
 }
 
-export async function action({ request, params, context }: ActionFunctionArgs) {
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-
+export async function action({ request, params, context }: Route.ActionArgs) {
 	let formData = await request.formData();
 
 	let intent = formData.get("intent");
@@ -73,21 +64,23 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 
 		let slug = parameterize(term);
 
-		let db = database(context.db);
+		let db = getDB();
+		let user = requireUser();
 
 		await Glossary.create(
 			{ db },
 			{ authorId: user.id, slug, term, title, definition },
 		);
 
-		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+		let cache = getCache();
 		let cacheKey = await cache.list("feed:glossary:");
+
 		await Promise.all([
 			cache.delete("feed:glossary"),
 			await Promise.all(cacheKey.map((key) => cache.delete(key))),
 		]);
 
-		throw redirectDocument(`/glossary#${slug}`);
+		return redirectDocument(`${href("/glossary")}#${slug}`);
 	}
 
 	if (intent === INTENT.update) {
@@ -102,10 +95,12 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 			)
 			.parse(formData);
 
-		let db = database(context.db);
+		let db = getDB();
 
 		let id = params.id;
 		assertUUID(id);
+
+		let user = requireUser();
 
 		await Glossary.update({ db }, id, {
 			authorId: user.id,
@@ -115,22 +110,21 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 			slug,
 		});
 
-		let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+		let cache = getCache();
 		let cacheKey = await cache.list("feed:glossary:");
+
 		await Promise.all([
 			cache.delete("feed:glossary"),
 			await Promise.all(cacheKey.map((key) => cache.delete(key))),
 		]);
 
-		throw redirectDocument(`/glossary#${slug}`);
+		return redirectDocument(`${href("/glossary")}#${slug}`);
 	}
 
-	throw redirect("/glossary");
+	return redirect(href("/glossary"));
 }
 
-export default function Component() {
-	let { mode, glossary } = useLoaderData<typeof loader>();
-
+export default function Component({ loaderData }: Route.ComponentProps) {
 	return (
 		<>
 			<header className="flex justify-between">
@@ -138,25 +132,33 @@ export default function Component() {
 			</header>
 
 			<Form method="post" className="max-w-xs">
-				<input type="hidden" name="intent" value={mode} />
+				<input type="hidden" name="intent" value={loaderData.mode} />
 				<TextField
 					label="Term"
 					name="term"
 					isRequired
-					defaultValue={glossary.term}
+					defaultValue={loaderData.glossary.term}
 				/>
 
-				{mode === INTENT.update && (
-					<TextField label="Slug" name="slug" defaultValue={glossary.slug} />
+				{loaderData.mode === INTENT.update && (
+					<TextField
+						label="Slug"
+						name="slug"
+						defaultValue={loaderData.glossary.slug}
+					/>
 				)}
 
-				<TextField label="Title" name="title" defaultValue={glossary.title} />
+				<TextField
+					label="Title"
+					name="title"
+					defaultValue={loaderData.glossary.title}
+				/>
 				<TextField
 					type="textarea"
 					label="Definition"
 					name="definition"
 					isRequired
-					defaultValue={glossary.definition}
+					defaultValue={loaderData.glossary.definition}
 				/>
 
 				<Button type="submit" variant="primary">

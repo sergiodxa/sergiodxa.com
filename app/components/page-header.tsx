@@ -1,8 +1,12 @@
 import type { TFunction } from "i18next";
-
 import { Trans } from "react-i18next";
 
-type Props = { t: TFunction };
+type Props = {
+	t: TFunction<
+		"translation",
+		"articles" | "tutorials" | "glossary" | "bookmarks"
+	>;
+};
 
 export function PageHeader({ t }: Props) {
 	return (

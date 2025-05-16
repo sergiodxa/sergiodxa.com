@@ -1,6 +1,4 @@
-import type { AppLoadContext } from "@remix-run/cloudflare";
 import type { Options } from "prettier";
-
 import * as acornPlugin from "prettier/plugins/acorn";
 import * as babelPlugin from "prettier/plugins/babel";
 import * as graphqlPlugin from "prettier/plugins/graphql";
@@ -10,11 +8,10 @@ import * as postcssPlugin from "prettier/plugins/postcss";
 import * as typescriptPlugin from "prettier/plugins/typescript";
 import * as yamlPlugin from "prettier/plugins/yaml";
 import { format } from "prettier/standalone";
+import { getCache } from "~/middleware/cache";
 
-import { Cache } from "~/modules/cache.server";
-
-export async function clearCache(context: AppLoadContext) {
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
+export async function clearCache() {
+	let cache = getCache();
 
 	let cacheKeys = await Promise.all([
 		cache.list("tutorials:search:"),

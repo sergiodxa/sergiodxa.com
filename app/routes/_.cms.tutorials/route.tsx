@@ -1,37 +1,23 @@
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
+import { href, redirect } from "react-router";
 import { z } from "zod";
-
+import { ok } from "~/helpers/response";
+import { getDB } from "~/middleware/drizzle";
+import { getLocale } from "~/middleware/i18next";
 import { Tutorial } from "~/models/tutorial.server";
-import { I18n } from "~/modules/i18n.server";
-import { Logger } from "~/modules/logger.server";
-import { SessionStorage } from "~/modules/session.server";
-import { database } from "~/services/db.server";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { assertUUID } from "~/utils/uuid";
-
+import type { Route } from "./+types/route";
+import { TutorialList } from "./components/tutorial-list";
 import { deleteTutorial } from "./queries";
-import { TutorialList } from "./tutorial-list";
 import { INTENT } from "./types";
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
-	let db = database(context.db);
-
+export async function loader(_: Route.LoaderArgs) {
+	let db = getDB();
 	let tutorials = await Tutorial.list({ db });
+	let locale = getLocale();
 
-	let locale = await new I18n().getLocale(request);
-
-	return json({
+	return ok({
 		tutorials: tutorials.map((tutorial) => {
 			return {
 				id: tutorial.id,
@@ -48,12 +34,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	});
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
+export async function action({ request }: Route.ActionArgs) {
 	let formData = await request.formData();
 	let intent = z.enum([INTENT.delete]).parse(formData.get("intent"));
 
@@ -61,18 +42,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
 		if (intent === INTENT.delete) {
 			let id = formData.get("id");
 			assertUUID(id);
-			await deleteTutorial(context, id);
+			await deleteTutorial(id);
 		}
 
-		throw redirect("/cms/tutorials");
+		return redirect(href("/cms/tutorials"));
 	} catch (exception) {
 		if (exception instanceof Response) throw exception;
 		if (exception instanceof Error) console.error(exception);
-		throw redirect("/cms/tutorials");
+		return redirect(href("/cms/tutorials"));
 	}
 }
 
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
 	return (
 		<div className="flex flex-col gap-8 pb-10">
 			<header className="flex justify-between gap-4 px-5">
@@ -87,7 +68,7 @@ export default function Component() {
 				</div>
 			</header>
 
-			<TutorialList />
+			<TutorialList tutorials={loaderData.tutorials} />
 		</div>
 	);
 }

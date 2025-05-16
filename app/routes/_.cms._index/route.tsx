@@ -1,45 +1,41 @@
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
-import { useActionData, useNavigation } from "@remix-run/react";
+import { href, redirect } from "react-router";
 import { z } from "zod";
-
-import { SessionStorage } from "~/modules/session.server";
-import { GitHub } from "~/services/github.server";
-import { Button } from "~/ui/Button";
-import { Form } from "~/ui/Form";
+import { badRequest, ok } from "~/helpers/response";
+import { getBindings } from "~/middleware/bindings";
+import { requireUser } from "~/middleware/session";
+import { GitHub } from "~/modules/github.server";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
-
-import { CreateLike } from "./create-like";
-import { LastDaySearch } from "./last-day-search";
+import type { Route } from "./+types/route";
+import { CreateLike } from "./components/create-like";
+import { DumpDatabase } from "./components/dump-database";
+import { LastDaySearch } from "./components/last-day-search";
+import { Stats } from "./components/stats";
 import { createQuickLike, queryLastDaySearch, queryStats } from "./queries";
-import { Stats } from "./stats";
 import { INTENT } from "./types";
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
+export async function loader(_: Route.LoaderArgs) {
+	let user = requireUser();
+	if (user.role !== "admin") throw redirect(href("/"));
 
 	let [stats, lastDaySearch] = await Promise.all([
-		queryStats(context),
-		queryLastDaySearch(context),
+		queryStats(),
+		queryLastDaySearch(),
 	]);
 
-	let gh = new GitHub(context.env.GH_APP_ID, context.env.GH_APP_PEM);
+	let bindings = getBindings();
+
+	let gh = new GitHub(bindings.env.GH_APP_ID, bindings.env.GH_APP_PEM);
 	let result = await gh.sponsors();
 	let sponsors = result.node.sponsorshipsAsMaintainer.nodes.map(
 		(n) => n.sponsorEntity,
 	);
 
-	return json({ stats, lastDaySearch, sponsors });
+	return ok({ stats, lastDaySearch, sponsors });
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
+export async function action({ request }: Route.ActionArgs) {
+	let user = requireUser();
 	if (user.role !== "admin") throw redirect("/");
 
 	let formData = await request.formData();
@@ -59,32 +55,29 @@ export async function action({ request, context }: ActionFunctionArgs) {
 				)
 				.parse(formData);
 
-			await createQuickLike(context, url, user.id);
+			await createQuickLike(url, user.id);
 			throw redirect("/cms");
 		} catch (error) {
 			if (error instanceof Response) throw error;
 			if (error instanceof z.ZodError) {
-				return json(
-					{
-						intent: INTENT.createLike,
-						errors: error.issues.reduce(
-							(errors, issue) => {
-								let [path] = issue.path;
-								errors[path] = issue.message;
-								return errors;
-							},
-							{} as Record<string, string>,
-						),
-					},
-					{ status: 400 },
-				);
+				return badRequest({
+					intent: INTENT.createLike,
+					errors: error.issues.reduce(
+						(errors, issue) => {
+							let [path] = issue.path;
+							if (path) errors[path] = issue.message;
+							return errors;
+						},
+						{} as Record<string, string>,
+					),
+				});
 			}
 
 			if (error instanceof Error) {
-				return json(
-					{ intent: INTENT.createLike, errors: { url: error.message } },
-					{ status: 400 },
-				);
+				return badRequest({
+					intent: INTENT.createLike,
+					errors: { url: error.message },
+				});
 			}
 
 			throw error;
@@ -93,69 +86,38 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
 	if (formData.get("intent") === INTENT.dump) {
 		try {
-			let dump = await context.db.dump();
+			let bindings = getBindings();
+			let dump = await bindings.db.dump();
 			let date = new Date();
-			await context.fs.backups.put(`${date.toISOString()}.sql`, dump);
-			return json({ intent: INTENT.dump, success: true });
+			await bindings.fs.backups.put(`${date.toISOString()}.sql`, dump);
+			return ok({ intent: INTENT.dump });
 		} catch (error) {
 			let intent = "Failed to dump database.";
 			if (error instanceof Error) intent = error.message;
-			return json({ intent: INTENT.dump, errors: { intent } }, { status: 400 });
+			return badRequest({ intent: INTENT.dump, errors: { intent } });
 		}
 	}
 
-	throw redirect("/cms");
+	throw redirect(href("/cms"));
 }
 
-export default function Component() {
+export default function Component({
+	loaderData,
+	actionData,
+}: Route.ComponentProps) {
 	return (
 		<div className="flex flex-col gap-8">
-			<Stats />
+			<Stats stats={loaderData.stats} />
 			<div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
 				<div className="flex flex-col gap-5">
-					<CreateLike />
-					<DumpDatabase />
+					<CreateLike actionData={actionData} />
+					<DumpDatabase actionData={actionData} />
 				</div>
 
 				<div className="col-span-2">
-					<LastDaySearch />
+					<LastDaySearch result={loaderData.lastDaySearch} />
 				</div>
 			</div>
 		</div>
-	);
-}
-
-function DumpDatabase() {
-	let actionData = useActionData<typeof action>();
-	let navigation = useNavigation();
-
-	let errors =
-		actionData?.intent === INTENT.dump && "errors" in actionData
-			? actionData.errors
-			: undefined;
-
-	let success = actionData?.intent === INTENT.dump && "success" in actionData;
-
-	let isPending = navigation.formData?.get("intent") === INTENT.dump;
-
-	return (
-		<Form method="post" errors={errors}>
-			{errors && (
-				<p className="text-sm text-red-600 forced-colors:text-[Mark]">
-					{errors?.intent}
-				</p>
-			)}
-			{success && (
-				<p className="text-sm text-green-600 forced-colors:text-[Mark]">
-					Database dumped successfully
-				</p>
-			)}
-			<Button type="submit" name="intent" value={INTENT.dump}>
-				Dump copy of the database
-			</Button>
-			{isPending && (
-				<p className="text-sm text-gray-600">Dumping database...</p>
-			)}
-		</Form>
 	);
 }

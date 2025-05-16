@@ -1,159 +1,61 @@
-import type {
-	LinksFunction,
-	LoaderFunctionArgs,
-	MetaDescriptor,
-	MetaFunction,
-} from "@remix-run/cloudflare";
-import type { ShouldRevalidateFunction } from "@remix-run/react";
-import type { ReactNode } from "react";
-
+import { useTranslation } from "react-i18next";
 import {
 	Links,
-	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
 	isRouteErrorResponse,
-	useLoaderData,
-	useNavigate,
-	useRouteError,
-} from "@remix-run/react";
-import { RouterProvider } from "react-aria-components";
+} from "react-router";
 import { useChangeLanguage } from "remix-i18next/react";
-import { jsonHash } from "remix-utils/json-hash";
-import { useShouldHydrate } from "remix-utils/use-should-hydrate";
-
 import sansFont from "~/fonts/sans.woff2";
-import { useDirection, useLocale } from "~/helpers/use-i18n.hook";
-import { I18n } from "~/modules/i18n.server";
-import { NoJS } from "~/modules/no-js.server";
-import { SessionStorage } from "~/modules/session.server";
-import globalStylesUrl from "~/styles/global.css";
-import tailwindUrl from "~/styles/tailwind.css";
-import { removeTrailingSlash } from "~/utils/remove-trailing-slash";
+import { getLocale, i18nextMiddleware } from "~/middleware/i18next";
+import { noWWWMiddleware } from "~/middleware/no-www";
+import styles from "~/styles.css?url";
+import type { Route } from "./+types/root";
+import { cacheMiddleware } from "./middleware/cache";
+import { contextStorageMiddleware } from "./middleware/context-storage";
+import { drizzleMiddleware } from "./middleware/drizzle";
+import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
+import { getUser, sessionMiddleware } from "./middleware/session";
 
-export const links: LinksFunction = () => [
+export const unstable_middleware = [
+	noWWWMiddleware,
+	noTrailingSlashMiddleware,
+	contextStorageMiddleware,
+	i18nextMiddleware,
+	sessionMiddleware,
+	drizzleMiddleware,
+	cacheMiddleware,
+];
+
+export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://static.cloudflareinsights.com" },
 	{ rel: "preload", href: sansFont, as: "font" },
-	{ rel: "preload", as: "style", href: "/fonts/sans" },
-	{ rel: "preload", as: "style", href: tailwindUrl },
-	{ rel: "preload", as: "style", href: globalStylesUrl },
-	{ rel: "stylesheet", href: "/fonts/sans" },
-	{ rel: "stylesheet", href: tailwindUrl },
-	{ rel: "stylesheet", href: globalStylesUrl },
+	{ rel: "preload", as: "style", href: styles },
+	{ rel: "stylesheet", href: styles },
 	{
 		rel: "preload",
 		href: "https://static.cloudflareinsights.com/beacon.min.js",
 		as: "script",
 	},
+	{ rel: "alternate", type: "application/rss+xml", href: "/rss" },
+	{ rel: "me authn", href: "https://github.com/sergiodxa" },
 ];
 
-export function loader({ request, context }: LoaderFunctionArgs) {
-	return context.time("root#loader", async () => {
-		removeTrailingSlash(new URL(request.url));
-
-		let i18n = new I18n();
-		let locale = await i18n.getLocale(request);
-
-		let noJS = await new NoJS().validate(request);
-
-		let headers = new Headers();
-		headers.append("set-cookie", await i18n.saveCookie(locale));
-		await new NoJS().save(noJS, headers);
-
-		return jsonHash(
-			{
-				url: request.url,
-				noJS,
-				locale,
-				async meta(): Promise<MetaDescriptor[]> {
-					let t = await i18n.getFixedT(locale);
-					return [{ title: t("header.title") }];
-				},
-				async user() {
-					return await SessionStorage.readUser(context, request);
-				},
-			},
-			{ headers },
-		);
-	});
+export async function loader(_: Route.LoaderArgs) {
+	return { locale: getLocale(), user: getUser() };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
-
-export const shouldRevalidate: ShouldRevalidateFunction = ({
-	defaultShouldRevalidate,
-	formData,
-}) => {
-	if (formData) return false;
-	return defaultShouldRevalidate;
-};
-
-export const handle: SDX.Handle = { i18n: "translation", hydrate: false };
-
-export default function App() {
-	let { locale, noJS, url } = useLoaderData<typeof loader>();
-	useChangeLanguage(locale);
-
-	let navigate = useNavigate();
-
-	let noJSURL = new URL(url);
-	noJSURL.searchParams.set("no-js", "true");
+export function Layout({ children }: { children: React.ReactNode }) {
+	let { i18n } = useTranslation();
 
 	return (
-		<Document locale={locale}>
-			{noJS ? null : (
-				<noscript>
-					<meta httpEquiv="refresh" content={`0; url=${noJSURL.toString()}`} />
-				</noscript>
-			)}
-			<RouterProvider navigate={navigate}>
-				<Outlet />
-			</RouterProvider>
-		</Document>
-	);
-}
-
-export function ErrorBoundary() {
-	let locale = useLocale();
-	let error = useRouteError();
-
-	if (process.env.NODE_ENV === "development") console.error(error);
-
-	if (isRouteErrorResponse(error)) {
-		return (
-			<Document locale={locale} title={error.statusText}>
-				{error.statusText}
-			</Document>
-		);
-	}
-
-	return (
-		<Document locale={locale} title="Error!">
-			Unexpected error
-		</Document>
-	);
-}
-
-function Document({
-	children,
-	title,
-	locale,
-}: {
-	children: ReactNode;
-	title?: string;
-	locale: string;
-}) {
-	let shouldHydrate = useShouldHydrate();
-	let dir = useDirection();
-
-	return (
-		<html lang={locale} dir={dir} className="h-full">
+		<html lang={i18n.language} dir={i18n.dir(i18n.language)} className="h-full">
 			<head>
 				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width,initial-scale=1" />
-				{title ? <title>{title}</title> : null}
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<Meta />
 				<meta name="apple-mobile-web-app-capable" content="yes" />
 				<meta
 					name="apple-mobile-web-app-status-bar-style"
@@ -161,7 +63,7 @@ function Document({
 				/>
 				<meta name="apple-mobile-web-app-title" content="Sergio Xalambrí" />
 				<meta name="mobile-web-app-capable" content="yes" />
-				<meta name="og:locale" content={locale} />
+				<meta name="og:locale" content={i18n.language} />
 				<meta name="og:site_name" content="Sergio Xalambrí" />
 				<meta name="og:type" content="website" />
 				<meta name="theme-color" content="#c0c0c0" />
@@ -171,7 +73,7 @@ function Document({
 				<meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 				<meta name="author" content="Sergio Xalambrí" />
 				<meta name="HandheldFriendly" content="True" />
-				<meta name="language" content={locale} />
+				<meta name="language" content={i18n.language} />
 				<meta name="MobileOptimized" content="320" />
 				<meta name="pagename" content="Sergio Xalambrí" />
 				<meta name="title" content="Sergio Xalambrí" />
@@ -180,46 +82,12 @@ function Document({
 					name="viewport"
 					content="width=device-width, initial-scale=1, viewport-fit=cover"
 				/>
-				<Meta />
 				<Links />
-				<link rel="alternate" type="application/rss+xml" href="/rss" />
-				{/* <link rel="alternate" type="application/json" href="/feed.json" /> */}
-				{/* <link rel="alternate" type="application/mf2+html" href="/feed.html" /> */}
-				<link href="https://github.com/sergiodxa" rel="me authn" />
-				<link
-					rel="webmention"
-					href="https://webmention.io/sergiodxa.com/webmention"
-				/>
-				<link
-					rel="pingback"
-					href="https://webmention.io/sergiodxa.com/xmlrpc"
-				/>
 			</head>
 			<body className="min-h-full bg-white font-sans text-black dark:bg-zinc-900 dark:text-zinc-50">
 				{children}
 				<ScrollRestoration />
-				{shouldHydrate || process.env.NODE_ENV === "development" ? (
-					<Scripts />
-				) : (
-					<script
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: This is needed to inline the JS code
-						dangerouslySetInnerHTML={{
-							__html: `
-	document.querySelectorAll("a").forEach(($anchor) => {
-		if ($anchor.origin !== location.origin) return;
-		function listener() {
-			let $link = document.createElement("link");
-			$link.setAttribute("rel", "prefetch");
-			$link.setAttribute("href", $anchor.href);
-			document.body.appendChild($link);
-		}
-		$anchor.addEventListener("mouseenter", listener, { once: true });
-	});
-`,
-						}}
-					/>
-				)}
-				<LiveReload />
+				<Scripts />
 				{process.env.NODE_ENV === "production" ? (
 					<script
 						defer
@@ -229,5 +97,39 @@ function Document({
 				) : null}
 			</body>
 		</html>
+	);
+}
+
+export default function Component({ loaderData }: Route.ComponentProps) {
+	useChangeLanguage(loaderData.locale);
+	return <Outlet />;
+}
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+	let message = "Oops!";
+	let details = "An unexpected error occurred.";
+	let stack: string | undefined;
+
+	if (isRouteErrorResponse(error)) {
+		message = error.status === 404 ? "404" : "Error";
+		details =
+			error.status === 404
+				? "The requested page could not be found."
+				: error.statusText || details;
+	} else if (import.meta.env.DEV && error && error instanceof Error) {
+		details = error.message;
+		stack = error.stack;
+	}
+
+	return (
+		<main className="pt-16 p-4 container mx-auto">
+			<h1>{message}</h1>
+			<p>{details}</p>
+			{stack && (
+				<pre className="w-full p-4 overflow-x-auto">
+					<code>{stack}</code>
+				</pre>
+			)}
+		</main>
 	);
 }

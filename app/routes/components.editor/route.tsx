@@ -1,47 +1,35 @@
 import type { RenderableTreeNode } from "@markdoc/markdoc";
-import type { ActionFunctionArgs } from "@remix-run/cloudflare";
 import type { Dispatch, RefObject } from "react";
-import type { Actions } from "./use-editor";
-
-import { json } from "@remix-run/cloudflare";
-import { useFetcher } from "@remix-run/react";
 import { useEffect, useMemo, useRef } from "react";
+import { useFetcher } from "react-router";
 import { z } from "zod";
-
 import { MarkdownView } from "~/components/markdown";
-import { Markdown } from "~/modules/md.server";
+import { ok } from "~/helpers/response";
 import { Toolbar } from "~/ui/Toolbar";
+import { Markdown } from "~/utils/markdown";
 import { Schemas } from "~/utils/schemas";
-
+import type { Route } from "./+types/route";
 import { Button } from "./buttons";
+import type { Actions } from "./use-editor";
 import { Provider, useEditor } from "./use-editor";
 
-export const handle: SDX.Handle = { hydrate: true };
-
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
 	try {
-		let markdown = await context.time("parseFormData", async () => {
-			let { content } = await Schemas.formData()
-				.pipe(z.object({ content: z.string() }))
-				.promise()
-				.parse(request.formData());
-			return content;
-		});
+		let { content } = await Schemas.formData()
+			.pipe(z.object({ content: z.string() }))
+			.promise()
+			.parse(request.formData());
 
-		let content = await context.time("parseMarkdown", async () =>
-			Markdown.parse(markdown),
-		);
-
-		return json({ content });
+		return ok({ content: Markdown.parse(content) });
 	} catch {
-		return json({ content: null });
+		return ok({ content: null });
 	}
 }
 
 type TextboxProps = {
 	value: string;
 	dispatch: Dispatch<Actions>;
-	fieldRef: RefObject<HTMLTextAreaElement>;
+	fieldRef: RefObject<HTMLTextAreaElement | null>;
 };
 
 export function Textbox(props: TextboxProps) {

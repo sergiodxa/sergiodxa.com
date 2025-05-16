@@ -1,13 +1,11 @@
-import type { BaseMeta, PostAttributes } from "~/models/post.server";
-import type { Database } from "~/services/db.server";
-import type { UUID } from "~/utils/uuid";
-
 import { and, eq } from "drizzle-orm";
 import Fuse from "fuse.js";
-
+import type { Database } from "~/db";
+import * as schema from "~/db/schema";
+import type { BaseMeta } from "~/models/post.server";
 import { Post } from "~/models/post.server";
-import { Markdown } from "~/modules/md.server";
-import { Tables } from "~/services/db.server";
+import { Markdown } from "~/utils/markdown";
+import type { UUID } from "~/utils/uuid";
 import { assertUUID } from "~/utils/uuid";
 
 interface ArticleMeta extends BaseMeta {
@@ -19,7 +17,7 @@ interface ArticleMeta extends BaseMeta {
 	canonical_url?: string;
 }
 
-type InsertArticle = Omit<Tables.InsertPost, "id" | "type"> & ArticleMeta;
+type InsertArticle = Omit<schema.InsertPost, "id" | "type"> & ArticleMeta;
 
 interface Services {
 	db: Database;
@@ -57,17 +55,9 @@ export class Article extends Post<ArticleMeta> {
 		return `/articles/${this.slug}`;
 	}
 
-	private wordCountPromise?: Promise<number>;
-
 	get wordCount() {
-		if (this.wordCountPromise) return this.wordCountPromise;
-
 		let titleLength = this.title.split(/\s+/).length;
-		this.wordCountPromise = Markdown.plain(this.content).then((content) => {
-			return content.toString().split(/\s+/).length + titleLength;
-		});
-
-		return this.wordCountPromise;
+		return Markdown.plain(this.content).split(/\s+/).length + titleLength;
 	}
 
 	get renderable() {
@@ -114,13 +104,13 @@ export class Article extends Post<ArticleMeta> {
 
 	static override async show(
 		services: Services,
-		slug: Tables.SelectPostMeta["value"],
+		slug: schema.SelectPostMeta["value"],
 	) {
 		let result = await services.db.query.postMeta.findFirst({
 			columns: { postId: true },
 			where: and(
-				eq(Tables.postMeta.key, "slug"),
-				eq(Tables.postMeta.value, slug),
+				eq(schema.postMeta.key, "slug"),
+				eq(schema.postMeta.value, slug),
 			),
 		});
 

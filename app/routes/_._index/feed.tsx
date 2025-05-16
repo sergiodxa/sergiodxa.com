@@ -1,18 +1,14 @@
 import type { TFunction } from "i18next";
+import { BookIcon, BookmarkIcon, PencilIcon } from "lucide-react";
 import type { ReactNode } from "react";
-/* eslint-disable jsx-a11y/anchor-has-content */
-/* eslint-disable jsx-a11y/no-redundant-roles */
-import type { sort } from "./queries";
-
-import { Trans } from "react-i18next";
-
+import { Trans, useTranslation } from "react-i18next";
 import Icon from "~/components/icon";
-import { useLocale } from "~/helpers/use-i18n.hook";
 import { Link } from "~/ui/Link";
 import { cn } from "~/utils/cn";
+import type { sort } from "./queries";
 
 type Props = {
-	t: TFunction;
+	t: TFunction<"translation", "home">;
 	items: ReturnType<typeof sort>;
 };
 
@@ -38,13 +34,7 @@ export function FeedList({ t, items }: Props) {
 									}}
 								/>
 							}
-							icon={
-								<Icon
-									icon="pencil"
-									className="h-5 w-5 text-white"
-									aria-hidden="true"
-								/>
-							}
+							icon={<PencilIcon className="size-5 text-white" aria-hidden />}
 							iconColor="bg-amber-500"
 							createdAt={new Date(item.payload.createdAt)}
 						/>
@@ -69,13 +59,7 @@ export function FeedList({ t, items }: Props) {
 									}}
 								/>
 							}
-							icon={
-								<Icon
-									icon="pencil"
-									className="h-5 w-5 text-white"
-									aria-hidden="true"
-								/>
-							}
+							icon={<PencilIcon className="size-5 text-white" aria-hidden />}
 							iconColor="bg-amber-500"
 							createdAt={new Date(item.payload.createdAt)}
 						/>
@@ -102,13 +86,7 @@ export function FeedList({ t, items }: Props) {
 									}}
 								/>
 							}
-							icon={
-								<Icon
-									icon="bookmark"
-									className="h-5 w-5 text-white"
-									aria-hidden="true"
-								/>
-							}
+							icon={<BookmarkIcon className="size-5 text-white" aria-hidden />}
 							iconColor="bg-blue-400"
 							createdAt={new Date(item.payload.createdAt)}
 						/>
@@ -133,13 +111,7 @@ export function FeedList({ t, items }: Props) {
 									}}
 								/>
 							}
-							icon={
-								<Icon
-									icon="book"
-									className="h-5 w-5 text-white"
-									aria-hidden="true"
-								/>
-							}
+							icon={<BookIcon className="size-5 text-white" aria-hidden />}
 							iconColor="bg-blue-400"
 							createdAt={new Date(item.payload.createdAt)}
 						/>
@@ -169,7 +141,7 @@ function Item({
 	icon,
 	createdAt,
 }: FeedItemProps) {
-	let locale = useLocale();
+	let { i18n } = useTranslation("translation");
 
 	return (
 		<li className="h-entry">
@@ -177,7 +149,7 @@ function Item({
 				{index !== size ? (
 					<span
 						className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-white dark:bg-zinc-900"
-						aria-hidden="true"
+						aria-hidden
 					/>
 				) : null}
 				<div className="relative flex space-x-3">
@@ -196,7 +168,7 @@ function Item({
 
 						<div className="whitespace-nowrap text-right text-sm tabular-nums text-zinc-500">
 							<time dateTime={createdAt.toISOString()}>
-								{createdAt.toLocaleDateString(locale, {
+								{createdAt.toLocaleDateString(i18n.language, {
 									month: "short",
 									day: "2-digit",
 									year: "2-digit",

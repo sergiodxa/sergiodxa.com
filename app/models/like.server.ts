@@ -1,8 +1,7 @@
-import type { BaseMeta, PostAttributes } from "~/models/post.server";
-import type { Database, Tables } from "~/services/db.server";
-
 import Fuse from "fuse.js";
-
+import type { Database } from "~/db";
+import type * as schema from "~/db/schema";
+import type { BaseMeta } from "~/models/post.server";
 import { Post } from "~/models/post.server";
 
 interface Services {
@@ -14,7 +13,7 @@ interface LikeMeta extends BaseMeta {
 	url: string;
 }
 
-type InsertLike = Omit<Tables.InsertPost, "id" | "type"> & LikeMeta;
+type InsertLike = Omit<schema.InsertPost, "id" | "type"> & LikeMeta;
 
 // @ts-expect-error TS is an idiot
 export class Like extends Post<LikeMeta> {
@@ -57,7 +56,7 @@ export class Like extends Post<LikeMeta> {
 		return fuse.search(trimmedQuery);
 	}
 
-	static override async show({ db }: Services, id: Tables.SelectPost["id"]) {
+	static override async show({ db }: Services, id: schema.SelectPost["id"]) {
 		let post = await Post.show<LikeMeta>({ db }, "like", id);
 		return new Like({ db }, post);
 	}
@@ -76,7 +75,7 @@ export class Like extends Post<LikeMeta> {
 
 	static override async update(
 		services: Services,
-		id: Tables.SelectPost["id"],
+		id: schema.SelectPost["id"],
 		input: InsertLike,
 	) {
 		return Post.update<LikeMeta>(services, id, {

@@ -1,3 +1,6 @@
+// app/locales/es.ts
+import type en from "./en";
+
 export default {
 	header: { title: "Sergio Xalambrí" },
 
@@ -6,6 +9,8 @@ export default {
 		articles: "Artículos",
 		bookmarks: "Bookmarks",
 		tutorials: "Tutoriales",
+		glossary: "Glosario",
+		cms: "Dashboard",
 		sponsor: "Apoyame en GitHub",
 		login: "Acceso",
 		logout: "Cerrar sesión",
@@ -15,7 +20,20 @@ export default {
 		header: {
 			title: "Sergio Xalambrí",
 			description:
-				"Soy un desarrolladores web de Buenos Aires, Argentina. Trabajo en <strong>Daffy</strong> como desarrollador web.",
+				"Web Developer de Buenos Aires con más de 10 años de experiencia. Trabajo en <strong>Daffy</strong> y mantengo varias librerías open source relacionadas con React Router y OAuth2.",
+		},
+
+		subscribe: {
+			cta: "Suscribite a mi contenido usando <rss>RSS</rss>.",
+		},
+
+		search: {
+			label: "Buscar",
+			placeholder: "Remix, SWR, Next, Rails…",
+			button: {
+				progress: "Buscando…",
+				default: "Buscar",
+			},
 		},
 
 		feed: {
@@ -28,26 +46,26 @@ export default {
 
 			bookmark:
 				"Leí <link:bookmark>{{title}}</link:bookmark> y lo guardé como bookmark",
+
+			glossary:
+				"Agregué la definición de <link:glossary>{{title}}</link:glossary> al glosario",
 		},
 	},
 
 	articles: {
-		404: "404 No encontrado",
-		empty:
-			"La URL /articles?page={{page}} no se pudo encontrar en el servidor.",
 		title: "Artículos",
 
 		meta: {
-			title: {
-				default: "Artículos de sergiodxa",
-				search:
-					"Resultados de búsqueda para '{{term}}' en el blog de sergiodxa",
-			},
+			title: "Artículos de sergiodxa",
 		},
 
 		header: {
 			title: "Artículos",
 			description: "Estos son mis artículos.",
+		},
+
+		subscribe: {
+			cta: "Suscribite a mis artículos usando <rss>RSS</rss>.",
 		},
 
 		description: {
@@ -57,13 +75,14 @@ export default {
 		},
 
 		search: {
-			title: "Buscador",
+			label: "Buscar",
 			placeholder: "Remix, SWR, Next, Rails…",
 			button: {
 				progress: "Buscando…",
 				default: "Buscar",
 			},
 		},
+
 		nav: {
 			prev: "Artículos anteriores",
 			next: "Siguientes artículos",
@@ -73,11 +92,15 @@ export default {
 	article: { meta: { title: "{{note}} por sergiodxa" } },
 
 	bookmarks: {
-		meta: { title: "Bookmarks de sergiodxa" },
+		meta: { title: "Bookmarks of sergiodxa" },
 
 		header: {
 			title: "Bookmarks",
 			description: "Links que leí y me gustaron.",
+		},
+
+		subscribe: {
+			cta: "Suscribite a mis bookmarks usando <rss>RSS</rss>.",
 		},
 	},
 
@@ -165,4 +188,140 @@ export default {
 			heading: "Encabezado",
 		},
 	},
-};
+
+	glossary: {
+		title: "Glosario",
+
+		header: {
+			title: "Glosario",
+			description: "Mi definición de algunos términos.",
+		},
+	},
+
+	support: {
+		title: "¿Te gusta mi contenido?",
+		cta: "Patrocíname en GitHub",
+	},
+
+	notFound: {
+		title: "404 No Encontrado",
+	},
+
+	cms: {
+		layout: {
+			nav: {
+				label: "Dashboard",
+				items: {
+					dashboard: "Dashboard",
+					articles: "Artículos",
+					likes: "Links",
+					tutorials: "Tutoriales",
+					glossary: "Glosario",
+					cache: "Claves de caché",
+					redirects: "Redirecciones",
+				},
+			},
+		},
+
+		_index: {
+			stats: {
+				title: "Estadísticas",
+				total: {
+					articles: "Total Artículos",
+					likes: "Total Links",
+					tutorials: "Total Tutoriales",
+					glossary: "Total Glosario",
+				},
+				viewAll: "Ver todo",
+			},
+
+			quickAction: {
+				like: {
+					title: "Agregar un nuevo link",
+					label: "URL",
+					cta: "Crear Link",
+				},
+			},
+
+			lastDaySearch: {
+				title: "Búsquedas: Últimas 24hs",
+			},
+		},
+
+		users: {
+			search: { label: "¿Qué estás buscando?", cta: "Buscar" },
+			table: {
+				header: {
+					name: "Nombre",
+					role: "Rol",
+					email: "Correo Electrónico",
+					createdAt: "Fecha de Creación",
+					updatedAt: "Última Actualización",
+				},
+			},
+		},
+
+		likes: {
+			search: { label: "¿Qué estás buscando?", cta: "Buscar" },
+			import: { cta: "Importar Marcadores" },
+			list: {
+				item: {
+					publishedOn: "Publicado el {{date}}",
+					edit: "Editar Like",
+					delete: { cta: "Eliminar", pending: "Eliminando" },
+				},
+			},
+		},
+
+		articles: {
+			search: { label: "¿Qué estás buscando?", cta: "Buscar" },
+			import: { cta: "Importar Artículos" },
+			reset: { cta: "Restablecer Artículos" },
+			list: {
+				item: {
+					publishedOn: "Publicado el {{date}}",
+					edit: "Editar Artículo",
+					moveToTutorial: "Mover a Tutorial",
+				},
+			},
+		},
+
+		tutorials: {
+			search: { label: "¿Qué estás buscando?", cta: "Buscar" },
+			import: { cta: "Importar Tutoriales" },
+			reset: { cta: "Restablecer Tutoriales" },
+			list: {
+				item: {
+					publishedOn: "Publicado el {{date}}",
+					edit: "Editar Tutorial",
+					delete: { cta: "Eliminar", pending: "Eliminando" },
+				},
+			},
+		},
+	},
+
+	rss: {
+		title: "Sergio Xalambrí",
+		description:
+			"La lista completa de artículos, bookmarks, tutoriales y términos del glosario de @sergiodxa.",
+		cta: "Leer en la web",
+
+		tutorials: {
+			title: "Tutoriales por Sergio Xalambrí",
+			description: "La lista completa de tutoriales escritos por @sergiodxa.",
+			cta: "Leer en la web",
+		},
+
+		articles: {
+			title: "Artículos por Sergio Xalambrí",
+			description: "La lista completa de artículos escritos por @sergiodxa.",
+			cta: "Leer en la web",
+		},
+
+		bookmarks: {
+			title: "Bookmarks por Sergio Xalambrí",
+			description: "La lista completa de bookmarks guardados por @sergiodxa.",
+			cta: "Leer en la web",
+		},
+	},
+} satisfies typeof en;

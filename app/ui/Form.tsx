@@ -1,10 +1,10 @@
-import type { FormProps as RemixFormProps } from "@remix-run/react";
+import type { FormProps as RemixFormProps } from "react-router";
 
-import { Form as RemixForm } from "@remix-run/react";
 import { FormValidationContext } from "react-aria-components";
+import { Form as RemixForm } from "react-router";
 import { twMerge } from "tailwind-merge";
 
-type ValidationErrors = Parameters<
+export type ValidationErrors = Parameters<
 	typeof FormValidationContext.Provider
 >[0]["value"];
 

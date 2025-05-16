@@ -1,40 +1,23 @@
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
-import { Form } from "@remix-run/react";
 import { useId } from "react";
+import { Form } from "react-router";
+import { z } from "zod";
+import { ok } from "~/helpers/response";
+import { getBindings } from "~/middleware/bindings";
+import type { Route } from "./+types/route";
+import { RedirectsList } from "./components/list";
 
-import { Logger } from "~/modules/logger.server";
-import { Redirects } from "~/modules/redirects.server";
-import { SessionStorage } from "~/modules/session.server";
+export async function loader(_: Route.LoaderArgs) {
+	let bindings = getBindings();
+	let { keys } = await bindings.kv.redirects.list();
+	let list = z
+		.object({ from: z.string(), to: z.string() })
+		.array()
+		.parse(keys.map((key) => key.metadata));
 
-import { RedirectsList } from "./list";
-
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
-	let redirects = new Redirects(context);
-	let list = await redirects.list();
-
-	return json({ list });
+	return ok({ list });
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-	void new Logger(context).http(request);
-
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-
-	return redirect("/cms/cache");
-}
-
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
 	let id = useId();
 
 	return (
@@ -47,7 +30,7 @@ export default function Component() {
 			</header>
 
 			<Form method="post" id={id}>
-				<RedirectsList />
+				<RedirectsList list={loaderData.list} />
 			</Form>
 		</div>
 	);

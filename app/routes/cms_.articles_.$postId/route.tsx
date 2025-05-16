@@ -1,46 +1,34 @@
-import type {
-	ActionFunctionArgs,
-	LinksFunction,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-import type { action as editorAction } from "../components.editor/route";
-
-import { json, redirectDocument } from "@remix-run/cloudflare";
-import { useFetcher, useLoaderData } from "@remix-run/react";
-import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
-import light from "prism-theme-github/themes/prism-theme-github-light.css";
+import dark from "prism-theme-github/themes/prism-theme-github-copilot.css?url";
+import light from "prism-theme-github/themes/prism-theme-github-light.css?url";
 import { useEffect, useMemo, useRef } from "react";
+import { redirectDocument, useFetcher } from "react-router";
 import { z } from "zod";
-
-import { useValue } from "~/helpers/use-value.hook";
-import { SessionStorage } from "~/modules/session.server";
-import { database } from "~/services/db.server";
+import { badRequest, ok } from "~/helpers/response";
+import { useValue } from "~/hooks/use-value";
+import { getDB } from "~/middleware/drizzle";
+import { requireUser } from "~/middleware/session";
+import { Article } from "~/models/article.server";
 import { Form } from "~/ui/Form";
 import { Schemas } from "~/utils/schemas";
 import { assertUUID } from "~/utils/uuid";
-
+import type { action as editorAction } from "../components.editor/route";
 import { Preview } from "../components.editor/route";
 import { Provider, useEditor } from "../components.editor/use-editor";
-
-import { Article } from "~/models/article.server";
-import { Actions } from "./actions";
-import { Controls } from "./controls";
-import { Editor } from "./editor";
+import type { Route } from "./+types/route";
+import { Actions } from "./components/actions";
+import { Controls } from "./components/controls";
+import { Editor } from "./components/editor";
+import { QuickActions } from "./components/quick-actions";
 import { clearCache, prettify } from "./queries";
-import { QuickActions } from "./quick-actions";
 
-export const links: LinksFunction = () => [
+export const links: Route.LinksFunction = () => [
 	{ rel: "stylesheet", href: light, media: "(prefers-color-scheme: light)" },
 	{ rel: "stylesheet", href: dark, media: "(prefers-color-scheme: dark)" },
 ];
 
-export const handle: SDX.Handle = { hydrate: true };
-
-export async function loader({ request, params, context }: LoaderFunctionArgs) {
-	await SessionStorage.requireUser(context, request);
-
+export async function loader({ params }: Route.LoaderArgs) {
 	if (params.postId === "new") {
-		return json({
+		return ok({
 			mode: "write" as const,
 			article: {
 				id: null,
@@ -56,9 +44,9 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	let postId = z.string().uuid().parse(params.postId);
 	assertUUID(postId);
 
-	let article = await Article.findById({ db: database(context.db) }, postId);
+	let article = await Article.findById({ db: getDB() }, postId);
 
-	return json({
+	return ok({
 		mode: "update" as const,
 		article: {
 			id: postId,
@@ -70,10 +58,7 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 	});
 }
 
-export async function action({ request, params, context }: ActionFunctionArgs) {
-	let { id: authorId } = await SessionStorage.requireUser(context, request);
-	assertUUID(authorId);
-
+export async function action({ request, params, context }: Route.ActionArgs) {
 	let formData = await request.formData();
 
 	let result = Schemas.formData()
@@ -87,13 +72,11 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 		)
 		.safeParse(formData);
 
-	if (!result.success) {
-		return json(null, { status: 400 });
-	}
+	if (!result.success) return badRequest(null);
 
 	let body = result.data;
 
-	let db = database(context.db);
+	let db = getDB();
 
 	let intent = z
 		.enum(["write", "update", "prettify"])
@@ -102,15 +85,18 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 	if (intent === "prettify") {
 		try {
 			let content = await prettify(body.content);
-			return json({ intent, content });
+			return ok({ intent, content });
 		} catch (error) {
-			return json({ intent, content: body.content });
+			return ok({ intent, content: body.content });
 		}
 	}
 
+	let { id: authorId } = requireUser();
+	assertUUID(authorId);
+
 	if (intent === "write") {
 		await Article.create({ db }, { ...body, authorId, locale: "en" });
-		await clearCache(context);
+		await clearCache();
 	}
 
 	if (intent === "update") {
@@ -120,12 +106,10 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
 		await Article.update({ db }, postId, { ...body, authorId, locale: "en" });
 	}
 
-	throw redirectDocument(`/articles/${body.slug}`);
+	return redirectDocument(`/articles/${body.slug}`);
 }
 
-export default function Component() {
-	let loaderData = useLoaderData<typeof loader>();
-
+export default function Component({ loaderData }: Route.ComponentProps) {
 	let [title] = useValue(
 		loaderData.article.id
 			? Symbol.for(`article:${loaderData.article.id}:title`)
@@ -156,10 +140,10 @@ export default function Component() {
 	return (
 		<Provider value={providerValue}>
 			<Form method="post" className="h-screen p-4">
-				<Actions />
+				<Actions mode={loaderData.mode} />
 
 				<div className="flex h-full w-full flex-grow flex-row gap-4 overflow-hidden">
-					<Controls />
+					<Controls article={loaderData.article} />
 
 					<Editor
 						value={stateValue}

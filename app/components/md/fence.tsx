@@ -60,15 +60,13 @@ export const fence: Schema = {
 		if (language === "mdx") language = "md";
 		if (!language) language = "plain";
 
-		// if (language === "file-tree") {
-		// 	return <FileTree content={content} />;
-		// }
-
 		try {
+			// @ts-expect-error Prism doesn't have types for all languages
 			content = Prism.highlight(content, Prism.languages[language], language);
 		} catch (error) {
 			if (error instanceof Error && error.message.includes("has no grammar")) {
 				try {
+					// @ts-expect-error Prism doesn't have types for all languages
 					content = Prism.highlight(content, Prism.languages.plain, "plain");
 				} catch {
 					// ignore any error here
@@ -80,36 +78,3 @@ export const fence: Schema = {
 		return new Tag("Fence", { language, path, content });
 	},
 };
-
-type FileNode = {
-	type: "file" | "directory";
-	name: string;
-	children?: FileNode[];
-};
-
-function FileTree({ content }: { content: string }) {
-	let tree = JSON.parse(content) as FileNode[];
-
-	return (
-		<ul className="file-tree">
-			{tree.map((node) => (
-				<FileNode key={node.name} node={node} />
-			))}
-		</ul>
-	);
-}
-
-function FileNode({ node }: { node: FileNode }) {
-	if (node.type === "file") return <li className="file">{node.name}</li>;
-
-	return (
-		<li className="directory">
-			<span className="directory-name">{node.name}</span>
-			<ul className="directory-contents">
-				{node.children?.map((child) => (
-					<FileNode key={child.name} node={child} />
-				))}
-			</ul>
-		</li>
-	);
-}

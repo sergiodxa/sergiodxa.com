@@ -1,36 +1,44 @@
-import type { AppLoadContext } from "@remix-run/cloudflare";
-import type { UUID } from "~/utils/uuid";
-
 import { z } from "zod";
-
+import { getDB } from "~/middleware/drizzle";
 import { Tutorial } from "~/models/tutorial.server";
-import { database } from "~/services/db.server";
+import type { UUID } from "~/utils/uuid";
 
 export const MarkdownSchema = z
 	.string()
 	.transform((content) => {
 		if (content.startsWith("# ")) {
-			let [title, ...body] = content.split("\n");
+			let [title, ...body] = z
+				.string()
+				.array()
+				.min(1)
+				.parse(content.split("\n"));
 
 			let plain = body.join("\n").trimStart();
 
 			return {
 				attributes: {
-					title: title.slice(1).trim(),
+					// biome-ignore lint/style/noNonNullAssertion: I check this exists
+					title: title!.slice(1).trim(),
 					tags: [],
 				},
 				body: plain,
 			};
 		}
 
-		let [tags, ...rest] = content.split("\n");
-		let [title, ...body] = rest.join("\n").trim().split("\n");
+		let [tags] = z.string().array().min(1).parse(content.split("\n"));
+		let [title, ...body] = z
+			.string()
+			.array()
+			.min(1)
+			.parse(content.trim().split("\n"));
 		let plain = body.join("\n").trimStart();
 
 		return {
 			attributes: {
-				title: title.slice(1).trim(),
-				tags: tags
+				// biome-ignore lint/style/noNonNullAssertion: I check this exists
+				title: title!.slice(1).trim(),
+				// biome-ignore lint/style/noNonNullAssertion: I check this exists
+				tags: tags!
 					.split("#")
 					.map((tag) => tag.trim())
 					.filter(Boolean),
@@ -48,15 +56,7 @@ export const MarkdownSchema = z
 		}),
 	);
 
-export async function deleteTutorial(context: AppLoadContext, id: UUID) {
-	let db = database(context.db);
+export async function deleteTutorial(id: UUID) {
+	let db = getDB();
 	await Tutorial.destroy({ db }, id);
-}
-
-function extractExcerpt(body: string) {
-	return `${body.slice(0, 139)}…`.replaceAll("\n", " ");
-}
-
-function pathToSlug(path: string) {
-	return path.split("/").slice(2).join("/").slice(0, -3);
 }

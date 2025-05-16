@@ -16,7 +16,7 @@ export namespace Schemas {
 			for (let key of formData.keys()) {
 				let value = formData.getAll(key);
 				if (isEmpty(value)) continue;
-				if (value.length === 1) entries.push([key, value[0]]);
+				if (value.length === 1 && value[0]) entries.push([key, value[0]]);
 				else entries.push([key, value]);
 			}
 
@@ -39,7 +39,7 @@ export namespace Schemas {
 			for (let key of searchParams.keys()) {
 				let value = searchParams.getAll(key);
 				if (isEmpty(value)) continue;
-				if (value.length === 1) entries.push([key, value[0]]);
+				if (value.length === 1 && value[0]) entries.push([key, value[0]]);
 				else entries.push([key, value]);
 			}
 

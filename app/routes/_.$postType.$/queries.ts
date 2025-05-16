@@ -1,22 +1,16 @@
-import type { AppLoadContext, MetaDescriptor } from "@remix-run/cloudflare";
-
+import type { MetaDescriptor } from "react-router";
+import { getDB } from "~/middleware/drizzle";
+import { getI18nextInstance, getLocale } from "~/middleware/i18next";
 import { Article } from "~/models/article.server";
 import { Tutorial } from "~/models/tutorial.server";
-import { I18n } from "~/modules/i18n.server";
-import { database } from "~/services/db.server";
 
-export async function queryArticle(
-	context: AppLoadContext,
-	request: Request,
-	slug: string,
-) {
-	let db = database(context.db);
+export async function queryArticle(request: Request, slug: string) {
+	let db = getDB();
 
 	try {
 		let article = await Article.show({ db }, slug);
 
-		let locale = await new I18n().getLocale(request);
-		let t = await new I18n().getFixedT(locale);
+		let i18n = getI18nextInstance();
 
 		let author = await article.author;
 
@@ -25,7 +19,7 @@ export async function queryArticle(
 			article: { title: article.title, body: article.renderable },
 			meta: [
 				{
-					title: t("article.meta.title", {
+					title: i18n.t("article.meta.title", {
 						note: article.title,
 						interpolation: { escapeValue: false },
 					}),
@@ -49,7 +43,7 @@ export async function queryArticle(
 							name: author.displayName,
 							url: new URL("/about", request.url).toString(),
 						},
-						wordCount: await article.wordCount,
+						wordCount: article.wordCount,
 						datePublished: article.createdAt.toISOString(),
 						dateModified: article.updatedAt.toISOString(),
 					},
@@ -62,17 +56,13 @@ export async function queryArticle(
 	}
 }
 
-export async function queryTutorial(
-	context: AppLoadContext,
-	request: Request,
-	slug: string,
-) {
-	let db = database(context.db);
+export async function queryTutorial(request: Request, slug: string) {
+	let db = getDB();
 
 	try {
 		let tutorial = await Tutorial.show({ db }, slug);
 
-		let [recommendations, author, wordCount] = await Promise.all([
+		let [recommendations, author] = await Promise.all([
 			tutorial.recommendations({ db }).then((tutorials) => {
 				return tutorials.map((tutorial) => {
 					return {
@@ -83,13 +73,12 @@ export async function queryTutorial(
 				});
 			}),
 			tutorial.author,
-			tutorial.wordCount,
 		]);
 
-		let locale = await new I18n().getLocale(request);
-		let t = await new I18n().getFixedT(locale);
+		let locale = getLocale();
+		let i18n = getI18nextInstance();
 
-		let title = t("tutorial.document.title", {
+		let title = i18n.t("tutorial.document.title", {
 			title: tutorial.title,
 			interpolation: { escapeValue: false },
 		});
@@ -132,7 +121,7 @@ export async function queryTutorial(
 							name: author.displayName,
 							url: new URL("/about", request.url).toString(),
 						},
-						wordCount,
+						wordCount: tutorial.wordCount,
 						datePublished: tutorial.createdAt.toISOString(),
 						dateModified: tutorial.updatedAt.toISOString(),
 					},

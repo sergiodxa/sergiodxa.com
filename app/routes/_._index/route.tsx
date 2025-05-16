@@ -1,12 +1,9 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
-
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
-import { useT } from "~/helpers/use-i18n.hook";
-import { Logger } from "~/modules/logger.server";
-
+import { ok } from "~/helpers/response";
+import type { Route } from "./+types/route";
 import { FeedList } from "./feed";
 import {
 	queryArticles,
@@ -16,38 +13,33 @@ import {
 	sort,
 } from "./queries";
 
-export function loader({ request, context }: LoaderFunctionArgs) {
-	return context.time("routes/index#loader", async () => {
-		void new Logger(context).http(request);
-
-		let headers = new Headers({
-			"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
-		});
-
-		let url = new URL(request.url);
-		let query = z
-			.string()
-			.transform((v) => v.toLowerCase())
-			.nullable()
-			.parse(url.searchParams.get("q"));
-
-		let [articles, bookmarks, tutorials, glossary] = await Promise.all([
-			queryArticles(context, query),
-			queryBookmarks(context, query),
-			queryTutorials(context, query),
-			queryGlossary(context, query),
-		]);
-
-		return json(
-			{ items: sort([...articles, ...bookmarks, ...tutorials, ...glossary]) },
-			{ headers },
-		);
+export async function loader({ request }: Route.LoaderArgs) {
+	let headers = new Headers({
+		"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
 	});
+
+	let url = new URL(request.url);
+	let query = z
+		.string()
+		.transform((v) => v.toLowerCase())
+		.nullable()
+		.parse(url.searchParams.get("q"));
+
+	let [articles, bookmarks, tutorials, glossary] = await Promise.all([
+		queryArticles(query),
+		queryBookmarks(query),
+		queryTutorials(query),
+		queryGlossary(query),
+	]);
+
+	return ok(
+		{ items: sort([...articles, ...bookmarks, ...tutorials, ...glossary]) },
+		{ headers },
+	);
 }
 
-export default function Index() {
-	let { items } = useLoaderData<typeof loader>();
-	let t = useT("home");
+export default function Component({ loaderData }: Route.ComponentProps) {
+	let { t } = useTranslation("translation", { keyPrefix: "home" });
 
 	return (
 		<main className="mx-auto flex max-w-screen-sm flex-col gap-8">
@@ -56,7 +48,7 @@ export default function Index() {
 			<div className="flex flex-col gap-y-4">
 				<Subscribe t={t} />
 
-				<FeedList t={t} items={items} />
+				<FeedList t={t} items={loaderData.items} />
 			</div>
 		</main>
 	);

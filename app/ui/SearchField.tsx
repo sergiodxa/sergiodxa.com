@@ -29,21 +29,18 @@ export function SearchField({
 			{...props}
 			className={composeTailwindRenderProps(
 				props.className,
-				"group flex min-w-[40px] flex-col gap-1",
+				"group flex min-w-10 flex-col gap-1",
 			)}
 		>
 			{label && <Label>{label}</Label>}
 			<FieldGroup>
 				<SearchIcon
 					aria-hidden
-					className="ml-2 h-4 w-4 text-gray-500 group-disabled:text-gray-200 dark:text-zinc-400 dark:group-disabled:text-zinc-600 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
+					className="ml-2 size-4 text-gray-500 group-disabled:text-gray-200 dark:text-zinc-400 dark:group-disabled:text-zinc-600 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
 				/>
-				<Input
-					className="[&::-webkit-search-cancel-button]:hidden"
-					placeholder={placeholder}
-				/>
+				<Input placeholder={placeholder} className="border-none outline-none" />
 				<Button variant="icon" className="mr-1 w-6 group-empty:invisible">
-					<XIcon aria-hidden className="h-4 w-4" />
+					<XIcon aria-hidden className="size-4" />
 				</Button>
 			</FieldGroup>
 			{description && <Description>{description}</Description>}

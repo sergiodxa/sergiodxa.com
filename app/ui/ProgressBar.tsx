@@ -26,7 +26,7 @@ export function ProgressBar({ label, ...props }: ProgressBarProps) {
 							{valueText}
 						</span>
 					</div>
-					<div className="relative h-2 w-64 overflow-hidden rounded-full bg-gray-300 outline outline-1 -outline-offset-1 outline-transparent dark:bg-zinc-700">
+					<div className="relative h-2 w-64 overflow-hidden rounded-full bg-gray-300 outline-1 -outline-offset-1 outline-transparent dark:bg-zinc-700">
 						<div
 							className={`absolute top-0 h-full rounded-full bg-blue-600 dark:bg-blue-500 forced-colors:bg-[Highlight] ${
 								isIndeterminate
