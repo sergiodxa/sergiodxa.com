@@ -81,8 +81,9 @@ export class Tutorial extends Post<TutorialMeta> {
 		let result: Tutorial[] = [];
 
 		for (let item of list) {
-			console.debug(this.tags);
+			console.debug("tags", this.tags);
 			for (let tag of Tutorial.shuffle(this.tags)) {
+				console.debug("tag", tag);
 				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
 
 				let match = Tutorial.shuffle(item.tags).find((itemTag) => {
@@ -169,7 +170,6 @@ export class Tutorial extends Post<TutorialMeta> {
 			),
 		});
 
-		console.log(result);
 		assertUUID(result?.postId);
 
 		let post = await Post.show<TutorialMeta>(
@@ -177,6 +177,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			"tutorial",
 			result.postId,
 		);
+
 		return new Tutorial(services, post);
 	}
 
@@ -205,6 +206,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			[result[i], result[j]] = [result[j], result[i]];
 		}
 
+		console.debug("shuffle", { result });
 		return result;
 	}
 
@@ -237,6 +239,8 @@ export class Tutorial extends Post<TutorialMeta> {
 				if (result.length >= 3) break;
 			}
 		}
+
+		console.debug("dedupeBySlug", { result });
 
 		return result;
 	}
