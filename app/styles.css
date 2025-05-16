@@ -2,15 +2,15 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 @layer base {
-  @font-face {
-    font-family: "Mona Sans";
-    font-display: swap;
-    font-weight: 100 900;
-    src: local("Mona Sans"), url("./fonts/sans.woff2") format("woff2");
-  }
+	@font-face {
+		font-family: "Mona Sans";
+		font-display: swap;
+		font-weight: 100 900;
+		src: local("Mona Sans"), url("./fonts/sans.woff2") format("woff2");
+	}
 }
