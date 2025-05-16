@@ -81,9 +81,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		let result: Tutorial[] = [];
 
 		for (let item of list) {
-			console.debug("tags", this.tags);
 			for (let tag of Tutorial.shuffle(this.tags)) {
-				console.debug("tag", tag);
 				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
 
 				let match = Tutorial.shuffle(item.tags).find((itemTag) => {
@@ -206,12 +204,11 @@ export class Tutorial extends Post<TutorialMeta> {
 			[result[i], result[j]] = [result[j], result[i]];
 		}
 
-		console.debug("shuffle", { result });
 		return result;
 	}
 
 	private static getPackageNameAndVersion(tag: string) {
-		if (!tag) return { name: "", version: "" };
+		if (!tag || tag === "@") return { name: "", version: "" };
 
 		if (!tag.startsWith("@")) {
 			let [name, version] = z
@@ -239,8 +236,6 @@ export class Tutorial extends Post<TutorialMeta> {
 				if (result.length >= 3) break;
 			}
 		}
-
-		console.debug("dedupeBySlug", { result });
 
 		return result;
 	}
