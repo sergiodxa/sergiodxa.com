@@ -40,5 +40,8 @@
 			"bucket_name": "backups",
 			"preview_bucket_name": "backups"
 		}
-	]
+	],
+	"triggers": {
+		"crons": ["* * * * *"]
+	}
 }
