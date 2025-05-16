@@ -32,11 +32,15 @@ const initialState: EditorState = {
 };
 
 const context = createContext<{
-	element: RefObject<HTMLTextAreaElement>;
+	element: RefObject<HTMLTextAreaElement | null>;
 	state: EditorState;
 	dispatch: Dispatch<Actions>;
-	// biome-ignore lint/suspicious/noEmptyBlockStatements: This is a fallback so it's ok
-}>({ element: createRef(), state: initialState, dispatch() {} });
+}>({
+	element: createRef<HTMLTextAreaElement>(),
+	state: initialState,
+	// biome-ignore lint/suspicious/noEmptyBlockStatements: Needed
+	dispatch() {},
+});
 
 export function useEditor(
 	element: HTMLTextAreaElement | null,

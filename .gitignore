@@ -1,16 +1,12 @@
-# Dependencies
-node_modules
-
-# dotfiles
-.cache
-.output
-.env
-
-# Built files
-/public/build
-/functions
-.dev.vars
-.DS_Store
-/coverage
-/dist
+# Folders
+/node_modules
+/.cache
+/.react-router
 /.wrangler
+/coverage
+/build
+
+# Files
+.DS_Store
+.dev.vars
+worker-configuration.d.ts

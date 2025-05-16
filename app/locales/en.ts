@@ -17,7 +17,7 @@ export default {
 		header: {
 			title: "Sergio Xalambrí",
 			description:
-				"I'm a web developer from Buenos Aires, Argentina. I work at <strong>Daffy</strong> as a Web Developer.",
+				"Web Developer from Buenos Aires with 10+ years of experience. I work at <strong>Daffy</strong> and maintain several open-source libraries around React Router and OAuth2.",
 		},
 
 		subscribe: {
@@ -292,6 +292,31 @@ export default {
 					delete: { cta: "Delete", pending: "Deleting" },
 				},
 			},
+		},
+	},
+
+	rss: {
+		title: "Sergio Xalambrí",
+		description:
+			"The complete list of articles, bookmarks, tutorials, and glossary terms of @sergiodxa.",
+		cta: "Read it on the web",
+
+		tutorials: {
+			title: "Tutorials by Sergio Xalambrí",
+			description: "The complete list of tutorials wrote by @sergiodxa.",
+			cta: "Read it on the web",
+		},
+
+		articles: {
+			title: "Articles by Sergio Xalambrí",
+			description: "The complete list of articles wrote by @sergiodxa.",
+			cta: "Read it on the web",
+		},
+
+		bookmarks: {
+			title: "Bookmarks by Sergio Xalambrí",
+			description: "The complete list of bookmarks saved by @sergiodxa.",
+			cta: "Read it on the web",
 		},
 	},
 };

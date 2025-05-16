@@ -1,55 +1,57 @@
-import type { AppLoadContext } from "@remix-run/cloudflare";
-
-import { z } from "zod";
-
+import { getDB } from "~/middleware/drizzle";
+import { getI18nextInstance } from "~/middleware/i18next";
 import { Tutorial } from "~/models/tutorial.server";
-import { Cache } from "~/modules/cache.server";
-import { database } from "~/services/db.server";
-import { isEmpty } from "~/utils/arrays";
+import type { Route } from "./+types/route";
 
-const SearchResultSchema = z.object({
-	path: z.string(),
-	title: z.string(),
-});
+export async function queryTutorials(query: string | null) {
+	let db = getDB();
 
-export async function queryTutorials(
-	context: AppLoadContext,
-	query: string | null,
-) {
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-	let db = database(context.db);
+	let tutorials = query
+		? await Tutorial.search({ db }, query)
+		: await Tutorial.list({ db });
 
-	let key = query ? `tutorials:search:${query}` : "tutorials:list";
+	return tutorials.map((tutorial) => {
+		if (tutorial instanceof Tutorial) {
+			return {
+				path: tutorial.pathname,
+				title: tutorial.title,
+			};
+		}
 
-	let result = await cache.fetch(
-		key,
-		async () => {
-			let tutorials = query
-				? await Tutorial.search({ db }, query)
-				: await Tutorial.list({ db });
+		return {
+			path: tutorial.item.pathname,
+			title: tutorial.item.title,
+		};
+	});
+}
 
-			return JSON.stringify(
-				tutorials.map((tutorial) => {
-					if (tutorial instanceof Tutorial) {
-						return {
-							path: tutorial.pathname,
-							title: tutorial.title,
-						};
-					}
+export function getMeta(url: URL, query: string) {
+	let { t } = getI18nextInstance();
 
-					return {
-						path: tutorial.item.pathname,
-						title: tutorial.item.title,
-					};
-				}),
-			);
-		},
-		{ ttl: 60 * 60 * 24 },
-	);
+	let meta: Route.MetaDescriptors = [];
 
-	let data = SearchResultSchema.array().parse(JSON.parse(result));
+	if (query === "") {
+		meta.push({ title: t("tutorials.meta.title.default") });
+	} else {
+		meta.push({
+			title: t("tutorials.meta.title.search", {
+				query: decodeURIComponent(query),
+			}),
+		});
+	}
 
-	if (isEmpty(data)) context.waitUntil(cache.delete(key));
+	meta.push({
+		tagName: "link",
+		rel: "alternate",
+		type: "application/rss+xml",
+		href: "/tutorials.rss",
+	});
 
-	return data;
+	meta.push({
+		tagName: "link",
+		rel: "canonical",
+		href: new URL("/tutorials", url).toString(),
+	});
+
+	return meta;
 }

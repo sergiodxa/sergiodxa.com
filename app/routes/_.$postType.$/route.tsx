@@ -1,28 +1,35 @@
-import type {
-	LinksFunction,
-	LoaderFunctionArgs,
-	MetaFunction,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
-import dark from "prism-theme-github/themes/prism-theme-github-copilot.css";
-import light from "prism-theme-github/themes/prism-theme-github-light.css";
+import dark from "prism-theme-github/themes/prism-theme-github-copilot.css?url";
+import light from "prism-theme-github/themes/prism-theme-github-light.css?url";
+import { redirect } from "react-router";
 import { z } from "zod";
-
-import { Cache } from "~/modules/cache.server";
-import { Redirects } from "~/modules/redirects.server";
-
-import { ArticleView } from "./article-view";
+import { ok } from "~/helpers/response";
+import { getBindings } from "~/middleware/bindings";
+import type { Route } from "./+types/route";
+import { ArticleView } from "./components/article-view";
+import { TutorialView } from "./components/tutorial-view";
 import { queryArticle, queryTutorial } from "./queries";
-import { TutorialView } from "./tutorial-view";
 
-export const links: LinksFunction = () => [
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
+
+export const links: Route.LinksFunction = () => [
 	{ rel: "stylesheet", href: light, media: "(prefers-color-scheme: light)" },
 	{ rel: "stylesheet", href: dark, media: "(prefers-color-scheme: dark)" },
 ];
 
-export async function loader({ request, params, context }: LoaderFunctionArgs) {
+export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
+	async function redirectsMiddleware({ params }, next) {
+		let bindings = getBindings();
+		let redirectConfig = await z
+			.object({ from: z.string(), to: z.string() })
+			.nullish()
+			.promise()
+			.parse(bindings.kv.redirects.get(params.postType, "json"));
+		if (!redirectConfig) return await next();
+		throw redirect(redirectConfig.to);
+	},
+];
+
+export async function loader({ request, params }: Route.LoaderArgs) {
 	let result = z
 		.object({ postType: z.enum(["articles", "tutorials"]), slug: z.string() })
 		.safeParse({ postType: params.postType, slug: params["*"] });
@@ -31,47 +38,23 @@ export async function loader({ request, params, context }: LoaderFunctionArgs) {
 		throw new Error("Invalid post type", { cause: result.error });
 	}
 
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-
 	let { postType, slug } = result.data;
 
-	if (postType === "articles") {
-		try {
-			let redirects = new Redirects(context);
-			let articleRedirect = await redirects.show(slug);
-			if (articleRedirect) throw redirect(articleRedirect.to);
-		} catch (error) {
-			if (error instanceof Response) throw error;
-			console.error(error);
-		}
-
-		let data = await cache.fetch(
-			`articles:${slug}`,
-			async () => JSON.stringify(await queryArticle(context, request, slug)),
-			{ ttl: 60 * 5 },
-		);
-
-		return json(JSON.parse(data) as Awaited<ReturnType<typeof queryArticle>>);
-	}
-
-	if (postType === "tutorials") {
-		let data = await cache.fetch(
-			`tutorials:${slug}`,
-			async () => JSON.stringify(await queryTutorial(context, request, slug)),
-			{ ttl: 60 * 5 },
-		);
-
-		return json(JSON.parse(data) as Awaited<ReturnType<typeof queryTutorial>>);
-	}
+	if (postType === "articles") return ok(await queryArticle(request, slug));
+	if (postType === "tutorials") return ok(await queryTutorial(request, slug));
 
 	throw new Error("Invalid post type");
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
+export default function Component({ loaderData }: Route.ComponentProps) {
+	if (loaderData.postType === "articles") {
+		return <ArticleView post={loaderData} />;
+	}
 
-export default function Component() {
-	let { postType } = useLoaderData<typeof loader>();
-	if (postType === "articles") return <ArticleView />;
-	if (postType === "tutorials") return <TutorialView />;
-	throw new Error(`Invalid post type: ${postType ?? "Missing"}`);
+	if (loaderData.postType === "tutorials") {
+		return <TutorialView post={loaderData} />;
+	}
+
+	// @ts-expect-error - postType should be never, but you never know
+	throw new Error(`Invalid post type: ${loaderData.postType ?? "Missing"}`);
 }

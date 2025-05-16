@@ -1,9 +1,9 @@
-import { useT } from "~/helpers/use-i18n.hook";
+import { useTranslation } from "react-i18next";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 
 export function Support() {
-	let t = useT("support");
+	let { t } = useTranslation("translation", { keyPrefix: "support" });
 
 	return (
 		<aside>

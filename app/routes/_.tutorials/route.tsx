@@ -1,93 +1,49 @@
-import type {
-	LoaderFunctionArgs,
-	MetaDescriptor,
-	MetaFunction,
-} from "@remix-run/cloudflare";
-
-import { useLoaderData } from "@remix-run/react";
-import { jsonHash } from "remix-utils/json-hash";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
-
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
-import { useT } from "~/helpers/use-i18n.hook";
-import { useUser } from "~/helpers/use-user.hook";
-import { I18n } from "~/modules/i18n.server";
-import { Logger } from "~/modules/logger.server";
+import { ok } from "~/helpers/response";
+import { useUser } from "~/hooks/use-user";
 import { Button } from "~/ui/Button";
 import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
+import type { Route } from "./+types/route";
+import { getMeta, queryTutorials } from "./queries";
 
-import { queryTutorials } from "./queries";
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
-export function loader({ request, context }: LoaderFunctionArgs) {
-	return context.time("routes/tutorials#loader", async () => {
-		void new Logger(context).http(request);
+export async function loader({ request }: Route.LoaderArgs) {
+	let url = new URL(request.url);
 
-		let url = new URL(request.url);
+	let query =
+		z
+			.string()
+			.transform((v) => v.toLowerCase().trim())
+			.nullable()
+			.parse(url.searchParams.get("q")) ?? "";
 
-		let query =
-			z
-				.string()
-				.transform((v) => v.toLowerCase().trim())
-				.nullable()
-				.parse(url.searchParams.get("q")) ?? "";
+	let tutorials = await queryTutorials(query);
 
-		let tutorials = await queryTutorials(context, query);
-
-		let headers = new Headers({
-			"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
-		});
-
-		return jsonHash(
-			{
-				tutorials: tutorials.map((tutorial) => {
-					return {
-						path: tutorial.path,
-						title: tutorial.title,
-					};
-				}),
-				async meta(): Promise<MetaDescriptor[]> {
-					let t = await new I18n().getFixedT(request);
-
-					let meta: MetaDescriptor[] = [];
-
-					if (query === "") {
-						meta.push({ title: t("tutorials.meta.title.default") });
-					} else {
-						meta.push({
-							title: t("tutorials.meta.title.search", {
-								query: decodeURIComponent(query),
-							}),
-						});
-					}
-
-					meta.push({
-						tagName: "link",
-						rel: "alternate",
-						type: "application/rss+xml",
-						href: "/tutorials.rss",
-					});
-
-					meta.push({
-						tagName: "link",
-						rel: "canonical",
-						href: new URL("/tutorials", url).toString(),
-					});
-
-					return meta;
-				},
-			},
-			{ headers },
-		);
+	let headers = new Headers({
+		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
+
+	return ok(
+		{
+			tutorials: tutorials.map((tutorial) => {
+				return {
+					path: tutorial.path,
+					title: tutorial.title,
+				};
+			}),
+			meta: getMeta(url, query),
+		},
+		{ headers },
+	);
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
-
-export default function Component() {
-	let t = useT("tutorials");
-
+export default function Component({ loaderData }: Route.ComponentProps) {
+	let { t } = useTranslation("translation", { keyPrefix: "tutorials" });
 	let user = useUser();
 
 	return (
@@ -106,23 +62,16 @@ export default function Component() {
 			<div className="flex flex-col gap-y-4">
 				<Subscribe t={t} />
 
-				<List />
+				<ul className="h-feed space-y-2">
+					{loaderData.tutorials.map((tutorial) => (
+						<li key={tutorial.path} className="h-entry list-inside list-disc">
+							<Link href={tutorial.path} prefetch="intent" className="u-url">
+								{tutorial.title}
+							</Link>
+						</li>
+					))}
+				</ul>
 			</div>
 		</main>
-	);
-}
-
-function List() {
-	let { tutorials } = useLoaderData<typeof loader>();
-	return (
-		<ul className="h-feed space-y-2">
-			{tutorials.map((tutorial) => (
-				<li key={tutorial.path} className="h-entry list-inside list-disc">
-					<Link href={tutorial.path} prefetch="intent" className="u-url">
-						{tutorial.title}
-					</Link>
-				</li>
-			))}
-		</ul>
 	);
 }

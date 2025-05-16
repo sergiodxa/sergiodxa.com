@@ -1,14 +1,12 @@
-import type { AppLoadContext } from "@remix-run/cloudflare";
+import { count, eq } from "drizzle-orm";
+import { posts } from "~/db/schema";
+import { getBindings } from "~/middleware/bindings";
+import { getDB } from "~/middleware/drizzle";
+import { Like } from "~/models/like.server";
 import type { UUID } from "~/utils/uuid";
 
-import { count, eq } from "drizzle-orm";
-
-import { Like } from "~/models/like.server";
-import { Cache } from "~/modules/cache.server";
-import { Tables, database } from "~/services/db.server";
-
-export async function queryStats(context: AppLoadContext) {
-	let db = database(context.db);
+export async function queryStats() {
+	let db = getDB();
 
 	let [articles, likes, tutorials, glossary] = await Promise.all(
 		[
@@ -19,8 +17,8 @@ export async function queryStats(context: AppLoadContext) {
 		].map(async (type) => {
 			let results = await db
 				.select({ value: count() })
-				.from(Tables.posts)
-				.where(eq(Tables.posts.type, type));
+				.from(posts)
+				.where(eq(posts.type, type));
 			return results.at(0)?.value ?? 0;
 		}),
 	);
@@ -28,12 +26,8 @@ export async function queryStats(context: AppLoadContext) {
 	return { articles, likes, tutorials, glossary };
 }
 
-export async function createQuickLike(
-	context: AppLoadContext,
-	url: URL,
-	userId: UUID,
-) {
-	let db = database(context.db);
+export async function createQuickLike(url: URL, userId: UUID) {
+	let db = getDB();
 
 	let likes = await Like.list({ db });
 
@@ -60,14 +54,12 @@ export async function createQuickLike(
 	await Like.create({ db }, { title, url: url.toString(), authorId: userId });
 }
 
-export async function queryLastDaySearch(context: AppLoadContext) {
-	let cache = new Cache.KVStore(context.kv.cache, context.waitUntil);
-
+export async function queryLastDaySearch() {
 	let [articles, tutorials, feedArticles, feedTutorials] = await Promise.all([
-		cache.list("articles:search:"),
-		cache.list("tutorials:search:"),
-		cache.list("feed:articles:search:"),
-		cache.list("feed:tutorials:search:"),
+		listCache("articles:search:"),
+		listCache("tutorials:search:"),
+		listCache("feed:articles:search:"),
+		listCache("feed:tutorials:search:"),
 	]);
 
 	return {
@@ -84,4 +76,10 @@ export async function queryLastDaySearch(context: AppLoadContext) {
 			})
 			.sort((a, b) => a.localeCompare(b)),
 	};
+}
+
+async function listCache(prefix?: string, limit = 1000) {
+	let bindings = getBindings();
+	let list = await bindings.kv.cache.list({ prefix, limit });
+	return list.keys.map((key) => key.name);
 }

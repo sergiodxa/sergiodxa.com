@@ -1,15 +1,13 @@
-import type { Database } from "~/services/db.server";
-import type { UUID } from "~/utils/uuid";
-import type { BaseMeta } from "./post.server";
-
 import { and, eq } from "drizzle-orm";
 import Fuse from "fuse.js";
 import * as semver from "semver";
-
-import { Markdown } from "~/modules/md.server";
-import { Tables } from "~/services/db.server";
+import { z } from "zod";
+import type { Database } from "~/db";
+import * as schema from "~/db/schema";
+import { Markdown } from "~/utils/markdown";
+import type { UUID } from "~/utils/uuid";
 import { assertUUID } from "~/utils/uuid";
-
+import type { BaseMeta } from "./post.server";
 import { Post } from "./post.server";
 
 interface TutorialMeta extends BaseMeta {
@@ -20,7 +18,7 @@ interface TutorialMeta extends BaseMeta {
 	tags?: string | string[];
 }
 
-type InsertTutorial = Omit<Tables.InsertPost, "id" | "type"> & TutorialMeta;
+type InsertTutorial = Omit<schema.InsertPost, "id" | "type"> & TutorialMeta;
 
 interface Services {
 	db: Database;
@@ -59,16 +57,9 @@ export class Tutorial extends Post<TutorialMeta> {
 		return Markdown.parse(this.content);
 	}
 
-	private wordCountPromise?: Promise<number>;
 	get wordCount() {
-		if (this.wordCountPromise) return this.wordCountPromise;
-
 		let titleLength = this.title.split(/\s+/).length;
-		this.wordCountPromise = Markdown.plain(this.content).then((content) => {
-			return content.toString().split(/\s+/).length + titleLength;
-		});
-
-		return this.wordCountPromise;
+		return Markdown.plain(this.content).split(/\s+/).length + titleLength;
 	}
 
 	override toJSON() {
@@ -167,13 +158,13 @@ export class Tutorial extends Post<TutorialMeta> {
 
 	static override async show(
 		services: Services,
-		slug: Tables.SelectPostMeta["value"],
+		slug: schema.SelectPostMeta["value"],
 	) {
 		let result = await services.db.query.postMeta.findFirst({
 			columns: { postId: true },
 			where: and(
-				eq(Tables.postMeta.key, "slug"),
-				eq(Tables.postMeta.value, slug),
+				eq(schema.postMeta.key, "slug"),
+				eq(schema.postMeta.value, slug),
 			),
 		});
 
@@ -208,6 +199,7 @@ export class Tutorial extends Post<TutorialMeta> {
 
 		for (let i = result.length - 1; i > 0; i--) {
 			let j = Math.floor(Math.random() * (i + 1));
+			// @ts-expect-error This will work
 			[result[i], result[j]] = [result[j], result[i]];
 		}
 
@@ -216,11 +208,15 @@ export class Tutorial extends Post<TutorialMeta> {
 
 	private static getPackageNameAndVersion(tag: string) {
 		if (!tag.startsWith("@")) {
-			let [name, version] = tag.split("@");
+			let [name, version] = z
+				.tuple([z.string(), z.string()])
+				.parse(tag.split("@"));
 			return { name, version };
 		}
 
-		let [, name, version] = tag.split("@");
+		let [, name, version] = z
+			.tuple([z.unknown(), z.string(), z.string()])
+			.parse(tag.split("@"));
 		return { name: `@${name}`, version };
 	}
 

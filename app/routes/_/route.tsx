@@ -1,22 +1,19 @@
-import type { LinksFunction } from "@remix-run/cloudflare";
-
+import { useTranslation } from "react-i18next";
 import {
 	Outlet,
 	isRouteErrorResponse,
 	useRouteError,
 	useSearchParams,
 	useSubmit,
-} from "@remix-run/react";
-
-import { useT } from "~/helpers/use-i18n.hook";
-import { useUser } from "~/helpers/use-user.hook";
+} from "react-router";
+import { useUser } from "~/hooks/use-user";
 import { Form } from "~/ui/Form";
 import { Link } from "~/ui/Link";
 import { SearchField } from "~/ui/SearchField";
-
+import type { Route } from "./+types/route";
 import avatarHref from "./avatar.png";
 
-export const links: LinksFunction = () => [
+export const links: Route.LinksFunction = () => [
 	{ rel: "preload", as: "image", href: avatarHref },
 ];
 
@@ -63,7 +60,7 @@ function Header() {
 	let submit = useSubmit();
 	let [searchParams] = useSearchParams();
 	let user = useUser();
-	let t = useT("nav");
+	let { t } = useTranslation("translation", { keyPrefix: "nav" });
 
 	let navigation = [
 		{ name: t("home"), to: "/" },

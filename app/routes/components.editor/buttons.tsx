@@ -1,6 +1,3 @@
-import type { ReactNode } from "react";
-import type { Handler, Updater } from "./use-editor";
-
 import {
 	BoldIcon,
 	CodeIcon,
@@ -10,11 +7,11 @@ import {
 	LinkIcon,
 	QuoteIcon,
 } from "lucide-react";
-
-import { useT } from "~/helpers/use-i18n.hook";
+import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Button as UIButton } from "~/ui/Button";
-
 import { getSelection } from "./get-selection";
+import type { Handler, Updater } from "./use-editor";
 import { useElement, useUpdate } from "./use-editor";
 
 export namespace Button {
@@ -43,7 +40,7 @@ export namespace Button {
 	}
 
 	export function Bold() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `**${selected}**`}
@@ -56,7 +53,7 @@ export namespace Button {
 	}
 
 	export function Italic() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `_${selected}_`}
@@ -69,7 +66,7 @@ export namespace Button {
 	}
 
 	export function Link() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => {
@@ -84,7 +81,7 @@ export namespace Button {
 	}
 
 	export function Code() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `\`${selected}\``}
@@ -97,7 +94,7 @@ export namespace Button {
 	}
 
 	export function Quote() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `> ${selected}`}
@@ -110,7 +107,7 @@ export namespace Button {
 	}
 
 	export function Image() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `![${selected}](https://)`}
@@ -123,7 +120,7 @@ export namespace Button {
 	}
 
 	export function Heading() {
-		let t = useT("editor");
+		let { t } = useTranslation("translation", { keyPrefix: "editor" });
 		return (
 			<MenuItem
 				updater={(selected) => `## ${selected}`}

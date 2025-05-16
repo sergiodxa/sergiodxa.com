@@ -1,9 +1,8 @@
-import { NavLink } from "@remix-run/react";
-
-import { useT } from "~/helpers/use-i18n.hook";
+import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router";
 
 export function Navigation() {
-	let t = useT("cms.layout.nav");
+	let { t } = useTranslation("translation", { keyPrefix: "cms.layout.nav" });
 
 	let navigation = [
 		{ name: t("items.dashboard"), to: "" },

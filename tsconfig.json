@@ -1,33 +1,6 @@
 {
-	"include": [
-		"types/*.d.ts",
-		"app/**/*.ts",
-		"app/**/*.tsx",
-		"server/**/*.ts",
-		"test/**/*.ts",
-		"test/**/*.tsx"
-	],
-	"exclude": ["scripts/migrate.ts"],
-	"compilerOptions": {
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
-		"isolatedModules": true,
-		"esModuleInterop": true,
-		"jsx": "react-jsx",
-		"moduleResolution": "Bundler",
-		"resolveJsonModule": true,
-		"strict": true,
-		"module": "ESNext",
-		"target": "ESNext",
-		"allowJs": true,
-		"forceConsistentCasingInFileNames": true,
-		"baseUrl": ".",
-		"skipLibCheck": true,
-		"noImplicitOverride": true,
-		"paths": {
-			"~/*": ["./app/*"],
-			"~/server/*": ["./server/*"],
-			"~/test/*": ["./test/*"]
-		},
-		"noEmit": true
-	}
+	"extends": "@total-typescript/tsconfig/bundler/dom/app",
+	"files": [],
+	"references": [{ "path": "./tsconfig.cloudflare.json" }],
+	"compilerOptions": {}
 }

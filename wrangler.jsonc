@@ -1,0 +1,44 @@
+{
+	"$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+	"name": "blog",
+	"main": "./app/entry.worker.ts",
+	"compatibility_date": "2025-04-07",
+	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": true,
+	"dev": { "port": 3000 },
+	"placement": { "mode": "off" },
+	"observability": { "enabled": true },
+	"assets": { "directory": "./build/client" },
+	"kv_namespaces": [
+		{
+			"binding": "CACHE",
+			"id": "597a3ce0108c42798aeac0044a566e31",
+			"preview_id": "cache"
+		},
+		{
+			"binding": "AUTH",
+			"id": "fda5fdfe90e74e2b82dd0ccd49346c27",
+			"preview_id": "auth@sergiodxa.com"
+		},
+		{
+			"binding": "REDIRECTS",
+			"id": "2bcc558cadce40dcb9c73f047c26be6c",
+			"preview_id": "redirects"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "db",
+			"database_id": "f6bb2533-9284-4427-83e6-ea12c6630026",
+			"migrations_dir": "./db/migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BACKUPS",
+			"bucket_name": "backups",
+			"preview_bucket_name": "backups"
+		}
+	]
+}

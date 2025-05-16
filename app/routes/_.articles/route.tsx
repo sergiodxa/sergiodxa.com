@@ -1,35 +1,27 @@
-import {
-	type LoaderFunctionArgs,
-	type MetaDescriptor,
-	type MetaFunction,
-	json,
-} from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
-
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
-import { useT } from "~/helpers/use-i18n.hook";
-import { I18n } from "~/modules/i18n.server";
-import { Logger } from "~/modules/logger.server";
+import { internalServerError, ok } from "~/helpers/response";
+import { getI18nextInstance } from "~/middleware/i18next";
 import { Link } from "~/ui/Link";
-
+import type { Route } from "./+types/route";
 import { queryArticles } from "./queries";
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	void new Logger(context).http(request);
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
+export async function loader({ request }: Route.LoaderArgs) {
 	let url = new URL(request.url);
 
 	let headers = new Headers({
 		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
 	});
 
-	let t = await new I18n().getFixedT(request);
+	let { t } = getI18nextInstance();
 
 	try {
-		let articles = await queryArticles(context);
+		let articles = await queryArticles();
 
-		return json(
+		return ok(
 			{
 				articles,
 				meta: [
@@ -45,23 +37,20 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 						rel: "canonical",
 						href: new URL("/articles", url).toString(),
 					},
-				] satisfies MetaDescriptor[],
+				] satisfies Route.MetaDescriptors,
 			},
 			{ headers },
 		);
 	} catch (error) {
 		if (error instanceof Error) {
-			throw json({ message: error.message }, 500);
+			throw internalServerError({ message: error.message });
 		}
 		throw error;
 	}
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta ?? [];
-
-export default function Articles() {
-	let { articles } = useLoaderData<typeof loader>();
-	let t = useT("articles");
+export default function Articles({ loaderData }: Route.ComponentProps) {
+	let { t } = useTranslation("translation", { keyPrefix: "articles" });
 
 	return (
 		<main className="mx-auto max-w-screen-sm space-y-2">
@@ -71,7 +60,7 @@ export default function Articles() {
 				<Subscribe t={t} />
 
 				<ul className="space-y-2">
-					{articles.map((article) => (
+					{loaderData.articles.map((article) => (
 						<li key={article.path} className="list-inside list-disc">
 							<Link href={article.path} prefetch="intent">
 								{article.title}

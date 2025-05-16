@@ -1,9 +1,9 @@
-import type { LinkProps as RemixLinkProps } from "@remix-run/react";
 import type { LinkProps as AriaLinkProps } from "react-aria-components";
+import type { LinkProps as RemixLinkProps } from "react-router";
 
-import { PrefetchPageLinks } from "@remix-run/react";
 import { useState } from "react";
 import { Link as AriaLink, composeRenderProps } from "react-aria-components";
+import { PrefetchPageLinks } from "react-router";
 import { tv } from "tailwind-variants";
 
 import { focusRing } from "./utils";

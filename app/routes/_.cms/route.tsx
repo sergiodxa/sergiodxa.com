@@ -1,17 +1,15 @@
-import { type LoaderFunctionArgs, json, redirect } from "@remix-run/cloudflare";
-import { Outlet } from "react-router";
-
-import { SessionStorage } from "~/modules/session.server";
-
+import { Outlet, href, redirect } from "react-router";
+import { getUser } from "~/middleware/session";
+import type { Route } from "./+types/route";
 import { Navigation } from "./nav";
 
-export const handle: SDX.Handle = { hydrate: true };
-
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	let user = await SessionStorage.requireUser(context, request, "/auth/login");
-	if (user.role !== "admin") throw redirect("/");
-	return json({ user });
-}
+export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
+	(_, next) => {
+		let user = getUser();
+		if (user?.role === "admin") return next();
+		return redirect(href("/"));
+	},
+];
 
 export default function Component() {
 	return (

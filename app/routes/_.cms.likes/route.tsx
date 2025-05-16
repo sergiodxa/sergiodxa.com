@@ -1,32 +1,24 @@
 import type { ValidationErrors } from "@react-types/shared";
-import type {
-	ActionFunctionArgs,
-	LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
-
-import { json, redirect } from "@remix-run/cloudflare";
-
+import { badRequest, ok } from "~/helpers/response";
+import { getDB } from "~/middleware/drizzle";
+import { getLocale } from "~/middleware/i18next";
 import { Like } from "~/models/like.server";
-import { I18n } from "~/modules/i18n.server";
-import { SessionStorage } from "~/modules/session.server";
-import { database } from "~/services/db.server";
 import { assertUUID } from "~/utils/uuid";
-
-import { LikesList } from "./likes-list";
+import type { Route } from "./+types/route";
+import { LikesList } from "./components/likes-list";
 import { deleteLike } from "./queries";
 import { INTENT } from "./types";
 
-export const handle: SDX.Handle = { hydrate: true };
+export async function loader(_: Route.LoaderArgs) {
+	let likes = await Like.list({ db: getDB() });
+	let locale = getLocale();
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	await SessionStorage.requireUser(context, request, "/auth/login");
-	let likes = await Like.list({ db: database(context.db) });
-	let locale = await new I18n().getLocale(request);
-
-	return json({
+	return ok({
 		likes: likes.map((like) => {
 			return {
-				...like.toJSON(),
+				id: like.id,
+				title: like.title,
+				url: like.url,
 				createdAt: like.createdAt.toLocaleString(locale, {
 					dateStyle: "medium",
 				}),
@@ -38,35 +30,34 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	});
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
 	let formData = await request.formData();
-
 	let intent = formData.get("intent");
 
 	if (!intent) {
-		return json<ValidationErrors>({ error: "Missing intent" }, 400);
+		return badRequest<ValidationErrors>({ error: "Missing intent" });
 	}
 
 	if (intent === INTENT.delete) {
 		let id = formData.get("id");
 		assertUUID(id);
 
-		await deleteLike(context, id);
+		await deleteLike(id);
 
-		return json(null);
+		return ok(null);
 	}
 
-	return json<ValidationErrors>({ intent: `Invalid intent ${intent}` }, 400);
+	return badRequest<ValidationErrors>({ intent: `Invalid intent ${intent}` });
 }
 
-export default function Component() {
+export default function Component({ loaderData }: Route.ComponentProps) {
 	return (
 		<>
 			<header className="flex justify-between">
 				<h2 className="text-3xl font-bold">Likes</h2>
 			</header>
 
-			<LikesList />
+			<LikesList likes={loaderData.likes} />
 		</>
 	);
 }
