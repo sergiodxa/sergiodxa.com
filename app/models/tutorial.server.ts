@@ -212,7 +212,10 @@ export class Tutorial extends Post<TutorialMeta> {
 
 		if (!tag.startsWith("@")) {
 			let result = z.tuple([z.string(), z.string()]).safeParse(tag.split("@"));
-			if (result.error) return { name: "", version: "" };
+			if (result.error) {
+				console.error(result.error);
+				return { name: "", version: "" };
+			}
 			return { name: result.data[0], version: result.data[1] };
 		}
 
@@ -220,7 +223,10 @@ export class Tutorial extends Post<TutorialMeta> {
 			.tuple([z.string(), z.string(), z.string()])
 			.safeParse(tag.split("@"));
 
-		if (result.error) return { name: "", version: "" };
+		if (result.error) {
+			console.error(result.error);
+			return { name: "", version: "" };
+		}
 		return { name: `@${result.data[1]}`, version: result.data[2] };
 	}
 
