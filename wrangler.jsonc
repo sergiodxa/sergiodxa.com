@@ -6,7 +6,7 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"workers_dev": true,
 	"dev": { "port": 3000 },
-	"placement": { "mode": "off" },
+	"placement": { "mode": "smart" },
 	"observability": { "enabled": true },
 	"assets": { "directory": "./build/client" },
 	"kv_namespaces": [
