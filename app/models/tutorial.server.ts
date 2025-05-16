@@ -211,19 +211,17 @@ export class Tutorial extends Post<TutorialMeta> {
 		if (!tag || tag === "@") return { name: "", version: "" };
 
 		if (!tag.startsWith("@")) {
-			let [name, version] = z
-				.tuple([z.string(), z.string()])
-				.parse(tag.split("@"));
-			return { name, version };
+			let result = z.tuple([z.string(), z.string()]).safeParse(tag.split("@"));
+			if (result.error) return { name: "", version: "" };
+			return { name: result.data[0], version: result.data[1] };
 		}
 
-		console.info(tag, { tag, splitted: tag.split("@") });
-
-		let [, name, version] = z
+		let result = z
 			.tuple([z.string(), z.string(), z.string()])
-			.parse(tag.split("@"));
+			.safeParse(tag.split("@"));
 
-		return { name: `@${name}`, version };
+		if (result.error) return { name: "", version: "" };
+		return { name: `@${result.data[1]}`, version: result.data[2] };
 	}
 
 	private static dedupeBySlug<Value extends { slug: string }>(
