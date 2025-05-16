@@ -81,6 +81,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		let result: Tutorial[] = [];
 
 		for (let item of list) {
+			console.debug(this.tags);
 			for (let tag of Tutorial.shuffle(this.tags)) {
 				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
 
@@ -210,8 +211,6 @@ export class Tutorial extends Post<TutorialMeta> {
 	private static getPackageNameAndVersion(tag: string) {
 		if (!tag) return { name: "", version: "" };
 
-		console.debug({ tag });
-
 		if (!tag.startsWith("@")) {
 			let [name, version] = z
 				.tuple([z.string(), z.string()])
@@ -222,6 +221,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		let [, name, version] = z
 			.tuple([z.string(), z.string(), z.string()])
 			.parse(tag.split("@"));
+
 		return { name: `@${name}`, version };
 	}
 
