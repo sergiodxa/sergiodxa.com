@@ -217,6 +217,8 @@ export class Tutorial extends Post<TutorialMeta> {
 			return { name, version };
 		}
 
+		console.info(tag, { tag, splitted: tag.split("@") });
+
 		let [, name, version] = z
 			.tuple([z.string(), z.string(), z.string()])
 			.parse(tag.split("@"));
