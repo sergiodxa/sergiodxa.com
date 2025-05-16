@@ -207,6 +207,8 @@ export class Tutorial extends Post<TutorialMeta> {
 	}
 
 	private static getPackageNameAndVersion(tag: string) {
+		if (!tag) return { name: "", version: "" };
+
 		if (!tag.startsWith("@")) {
 			let [name, version] = z
 				.tuple([z.string(), z.string()])
