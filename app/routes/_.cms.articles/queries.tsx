@@ -83,15 +83,8 @@ export async function moveToTutorial(id: UUID) {
 		cache.delete("feed:articles"),
 	]);
 
-	let from = href("/:postType/*", {
-		postType: "articles",
-		"*": slugMeta.value,
-	});
-
-	let to = href("/:postType/*", {
-		postType: "tutorials",
-		"*": slugMeta.value,
-	});
+	let from = `/articles/${slugMeta.value}`;
+	let to = `/tutorials/${slugMeta.value}`;
 
 	await bindings.kv.redirects.put(
 		slugMeta.value,

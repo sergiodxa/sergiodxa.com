@@ -67,12 +67,16 @@ export async function action({ request, params, context }: Route.ActionArgs) {
 				content: z.string(),
 				title: z.string().max(140),
 				slug: z.string(),
-				excerpt: z.string(),
+				excerpt: z
+					.string()
+					.nullish()
+					.default("")
+					.transform((v) => v ?? ""),
 			}),
 		)
 		.safeParse(formData);
 
-	if (!result.success) return badRequest(null);
+	if (!result.success) return badRequest({ error: result.error.issues });
 
 	let body = result.data;
 

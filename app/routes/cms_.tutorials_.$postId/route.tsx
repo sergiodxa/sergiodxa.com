@@ -71,7 +71,11 @@ export async function action({ request, params }: Route.ActionArgs) {
 				content: z.string(),
 				title: z.string().max(140),
 				slug: z.string(),
-				excerpt: z.string(),
+				excerpt: z
+					.string()
+					.nullish()
+					.default("")
+					.transform((v) => v ?? ""),
 				tags: z
 					.string()
 					.optional()
@@ -80,7 +84,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 		)
 		.safeParse(formData);
 
-	if (!result.success) return badRequest(null);
+	if (!result.success) return badRequest({ error: result.error.issues });
 
 	let body = result.data;
 
@@ -111,9 +115,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 		await Tutorial.update({ db }, postId, { ...body, authorId });
 	}
 
-	return redirectDocument(
-		href("/:postType/*", { postType: "tutorials", "*": body.slug }),
-	);
+	return redirectDocument(`/tutorials/${body.slug}`);
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {

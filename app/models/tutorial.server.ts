@@ -168,6 +168,7 @@ export class Tutorial extends Post<TutorialMeta> {
 			),
 		});
 
+		console.log(result);
 		assertUUID(result?.postId);
 
 		let post = await Post.show<TutorialMeta>(
@@ -217,7 +218,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		}
 
 		let [, name, version] = z
-			.tuple([z.unknown(), z.string(), z.string()])
+			.tuple([z.string(), z.string(), z.string()])
 			.parse(tag.split("@"));
 		return { name: `@${name}`, version };
 	}
