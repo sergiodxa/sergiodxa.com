@@ -25,7 +25,10 @@ export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
 			.promise()
 			.parse(bindings.kv.redirects.get(params["*"], "json"));
 		if (!redirectConfig) return await next();
-		throw redirect(redirectConfig.to);
+		if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
+			throw redirect(redirectConfig.to);
+		}
+		return await next();
 	},
 ];
 
