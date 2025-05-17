@@ -10,12 +10,4 @@ export default {
 		let context = new Map([[CloudflareContext, { env, ctx }]]);
 		return await handler(request, context);
 	},
-
-	async scheduled(
-		_controller: ScheduledController,
-		_env: Cloudflare.Env,
-		_ctx: ExecutionContext,
-	) {
-		await fetch("https://blog.sergiodxa-cloudflare.workers.dev/glossary");
-	},
 };
