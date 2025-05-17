@@ -7,7 +7,7 @@ const handler = createRequestHandler(build);
 
 export default {
 	async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext) {
-		let context = new Map([[CloudflareContext, { env, ctx }]]);
+		let context = new Map([[CloudflareContext, { env, ctx, cf: request.cf }]]);
 		return await handler(request, context);
 	},
 };

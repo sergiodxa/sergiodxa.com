@@ -5,12 +5,14 @@ import { getContext } from "./context-storage";
 export const CloudflareContext = unstable_createContext<{
 	env: Cloudflare.Env;
 	ctx: ExecutionContext;
+	cf?: RequestInitCfProperties;
 }>();
 
 export function getBindings() {
-	let { env, ctx } = getContext().get(CloudflareContext);
+	let { env, ctx, cf } = getContext().get(CloudflareContext);
 
 	return {
+		cf,
 		fs: { backups: env.BACKUPS },
 		db: env.DB,
 		kv: {
