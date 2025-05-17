@@ -1,0 +1,6 @@
+Allow: /
+
+Disallow: /cms
+Disallow: /auth/login$
+Disallow: /auth/logout$
+Disallow: /write$
