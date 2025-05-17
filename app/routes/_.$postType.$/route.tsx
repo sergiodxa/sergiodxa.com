@@ -23,7 +23,7 @@ export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
 			.object({ from: z.string(), to: z.string() })
 			.nullish()
 			.promise()
-			.parse(bindings.kv.redirects.get(params.postType, "json"));
+			.parse(bindings.kv.redirects.get(params["*"], "json"));
 		if (!redirectConfig) return await next();
 		throw redirect(redirectConfig.to);
 	},
