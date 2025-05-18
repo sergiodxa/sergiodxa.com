@@ -105,9 +105,9 @@ function Recommendations() {
 					"md:grid-cols-3": recommendations.length >= 3,
 				})}
 			>
-				{recommendations.map(({ title, slug, tag }) => {
+				{recommendations.map(({ title, slug, matchedTag }) => {
 					let searchParams = new URLSearchParams();
-					searchParams.set("q", `tech:${tag}`);
+					searchParams.set("q", `tech:${matchedTag}`);
 
 					let to = `/tutorials?${searchParams.toString()}`;
 
@@ -122,7 +122,7 @@ function Recommendations() {
 								parent="p"
 								className="py-0.5 text-sm font-medium"
 								i18nKey="reason"
-								values={{ tag }}
+								values={{ tag: matchedTag }}
 								components={{
 									anchor: <Link href={to} />,
 								}}
