@@ -21,6 +21,15 @@ permissions:
   packages: read
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+
   typecheck:
     name: Typechecker
     runs-on: ubuntu-latest
