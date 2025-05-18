@@ -4,7 +4,6 @@ import { isRouteErrorResponse, redirect } from "react-router";
 import { z } from "zod";
 import { notFound, ok } from "~/helpers/response";
 import { getBindings } from "~/middleware/bindings";
-import { measure } from "~/middleware/server-timing";
 import type { Route } from "./+types/route";
 import { ArticleView } from "./components/article-view";
 import { TutorialView } from "./components/tutorial-view";
