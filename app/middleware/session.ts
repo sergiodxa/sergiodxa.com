@@ -1,13 +1,13 @@
 import { env } from "cloudflare:workers";
 import { createWorkersKVSessionStorage } from "@react-router/cloudflare";
 import { createCookie, href, redirect } from "react-router";
-import { unstable_createSessionMiddleware } from "remix-utils/middleware/session";
 import { z } from "zod";
+import { unstable_createSessionMiddleware } from "~/vendor/remix-utils/session";
 import { getContext } from "./context-storage";
 
 export const UserSchema = z.object({
 	id: z.string().uuid(),
-	role: z.enum(["admin", "guess"]),
+	role: z.enum(["admin", "guest"]),
 	email: z.string().email().max(320),
 	avatar: z.string().url().max(2048),
 	username: z.string().min(1).max(39),
