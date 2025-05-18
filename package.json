@@ -17,6 +17,7 @@
 		"check:quality:fix": "biome check . --write --unsafe"
 	},
 	"dependencies": {
+		"@edgefirst-dev/server-timing": "^0.0.1",
 		"@markdoc/markdoc": "^0.5.2",
 		"@octokit/auth-app": "^7.2.1",
 		"@octokit/core": "^6.1.5",
