@@ -17,7 +17,7 @@ import { cacheMiddleware } from "./middleware/cache";
 import { contextStorageMiddleware } from "./middleware/context-storage";
 import { drizzleMiddleware } from "./middleware/drizzle";
 import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
-import { measure, serverTimingMiddleware } from "./middleware/server-timing";
+import { serverTimingMiddleware } from "./middleware/server-timing";
 import { getUser, sessionMiddleware } from "./middleware/session";
 
 export const unstable_middleware = [
@@ -25,21 +25,9 @@ export const unstable_middleware = [
 	noTrailingSlashMiddleware,
 	contextStorageMiddleware,
 	serverTimingMiddleware,
-	(...args: Parameters<typeof i18nextMiddleware>) => {
-		return measure("i18nextMiddleware", "i18nextMiddleware", async () =>
-			i18nextMiddleware(...args),
-		);
-	},
-	(...args: Parameters<typeof sessionMiddleware>) => {
-		return measure("sessionMiddleware", "sessionMiddleware", async () =>
-			sessionMiddleware(...args),
-		);
-	},
-	(...args: Parameters<typeof drizzleMiddleware>) => {
-		return measure("drizzleMiddleware", "drizzleMiddleware", async () =>
-			drizzleMiddleware(...args),
-		);
-	},
+	i18nextMiddleware,
+	sessionMiddleware,
+	drizzleMiddleware,
 	cacheMiddleware,
 ];
 
