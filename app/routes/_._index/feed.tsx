@@ -2,14 +2,13 @@ import type { TFunction } from "i18next";
 import { BookIcon, BookmarkIcon, PencilIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import Icon from "~/components/icon";
 import { Link } from "~/ui/Link";
 import { cn } from "~/utils/cn";
-import type { sort } from "./queries";
+import type { FeedItem } from "./types";
 
 type Props = {
 	t: TFunction<"translation", "home">;
-	items: ReturnType<typeof sort>;
+	items: FeedItem[];
 };
 
 export function FeedList({ t, items }: Props) {

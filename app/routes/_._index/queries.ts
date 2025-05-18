@@ -1,155 +1,127 @@
+import Fuse, { type FuseResult } from "fuse.js";
 import { getDB } from "~/middleware/drizzle";
-import { Article } from "~/models/article.server";
-import { Glossary } from "~/models/glossary.server";
-import { Like } from "~/models/like.server";
-import { Tutorial } from "~/models/tutorial.server";
+import { measure } from "~/middleware/server-timing";
+import { Markdown } from "~/utils/markdown";
+import type { UUID } from "~/utils/uuid";
+import type { FeedItem } from "./types";
 
-type ArticleItem = Awaited<ReturnType<typeof queryArticles>>[number];
-type BookmarkItem = Awaited<ReturnType<typeof queryBookmarks>>[number];
-type TutorialItem = Awaited<ReturnType<typeof queryTutorials>>[number];
-type GlossaryItem = Awaited<ReturnType<typeof queryGlossary>>[number];
+type Post = Awaited<ReturnType<typeof findAllPosts>>[number];
+type FuseItem = Awaited<ReturnType<typeof toFuseItem>>;
 
-export async function queryArticles(query: string | null) {
+export async function queryFeed(query = ""): Promise<FeedItem[]> {
+	let posts = await findAllPosts();
+
+	if (!query) return posts.map((it) => toFeedItem({ item: toFuseItem(it) }));
+
+	return new Fuse(posts.map(toFuseItem), {
+		keys: ["title", "content"],
+		includeScore: true,
+		findAllMatches: false,
+		useExtendedSearch: true,
+		isCaseSensitive: false,
+	})
+		.search(query.trim().toLowerCase())
+		.sort(sortResult)
+		.map(toFeedItem);
+}
+
+function findAllPosts() {
 	let db = getDB();
-
-	if (query) {
-		let articles = await Article.search({ db }, query);
-		return articles.map(({ item, score = 0 }) => {
-			return {
-				id: item.id,
-				type: "article",
-				payload: {
-					title: item.title,
-					link: item.pathname,
-					createdAt: new Date(item.createdAt).getTime(),
-				},
-				score,
-			};
-		});
-	}
-
-	let articles = await Article.list({ db });
-	return articles.map((item) => {
-		return {
-			id: item.id,
-			type: "article",
-			payload: {
-				title: item.title,
-				link: item.pathname,
-				createdAt: new Date(item.createdAt).getTime(),
+	return measure("_._index", "_._index.tsx#queryFeed", () => {
+		return db.query.posts.findMany({
+			with: { meta: true },
+			orderBy(fields, operators) {
+				return operators.desc(fields.createdAt);
 			},
-			score: 0,
-		};
+		});
 	});
 }
 
-export async function queryBookmarks(query: string | null) {
-	let db = getDB();
-
-	if (query) {
-		let likes = await Like.search({ db }, query);
-		return likes.map(({ item, score = 0 }) => {
-			return {
-				id: item.id,
-				type: "bookmark",
-				payload: {
-					title: item.title,
-					link: item.url.toString(),
-					createdAt: new Date(item.createdAt).getTime(),
-				},
-				score,
-			};
-		});
+function getLink(post: Post) {
+	if (post.type === "article") {
+		let slug = post.meta.find((it) => it.key === "slug")?.value;
+		if (!slug) throw new Error(`The article ${post.id} has no slug`);
+		return `/articles/${slug}`;
 	}
 
-	let likes = await Like.list({ db });
-	return likes.map((item) => {
-		return {
-			id: item.id,
-			type: "bookmark",
-			payload: {
-				title: item.title,
-				link: item.url.toString(),
-				createdAt: new Date(item.createdAt).getTime(),
-			},
-			score: 0,
-		};
-	});
-}
-
-export async function queryTutorials(query: string | null) {
-	let db = getDB();
-
-	if (query) {
-		let tutorials = await Tutorial.search({ db }, query);
-		return tutorials.map(({ item, score = 0 }) => {
-			return {
-				id: item.id,
-				type: "tutorial",
-				payload: {
-					title: item.title,
-					link: item.pathname,
-					createdAt: new Date(item.createdAt).getTime(),
-				},
-				score,
-			};
-		});
+	if (post.type === "tutorial") {
+		let slug = post.meta.find((it) => it.key === "slug")?.value;
+		if (!slug) throw new Error(`The tutorial ${post.id} has no slug`);
+		return `/tutorials/${slug}`;
 	}
 
-	let tutorials = await Tutorial.list({ db });
-	return tutorials.map((item) => {
-		return {
-			id: item.id,
-			type: "tutorial",
-			payload: {
-				title: item.title,
-				link: item.pathname,
-				createdAt: new Date(item.createdAt).getTime(),
-			},
-			score: 0,
-		};
-	});
-}
-
-export async function queryGlossary(query: string | null) {
-	let db = getDB();
-
-	if (query) {
-		let glossary = await Glossary.search({ db }, query);
-		return glossary.map(({ item, score = 0 }) => {
-			return {
-				id: item.id,
-				type: "glossary",
-				payload: {
-					title: item.term,
-					link: item.pathname,
-					createdAt: new Date(item.createdAt).getTime(),
-				},
-				score,
-			};
-		});
+	if (post.type === "glossary") {
+		let slug = post.meta.find((it) => it.key === "slug")?.value;
+		if (!slug) throw new Error(`The glossary ${post.id} has no slug`);
+		return `/glossary#${slug}`;
 	}
 
-	let glossary = await Glossary.list({ db });
-	return glossary.map((item) => {
-		return {
-			id: item.id,
-			type: "glossary",
-			payload: {
-				title: item.term,
-				link: item.pathname,
-				createdAt: new Date(item.createdAt).getTime(),
-			},
-			score: 0,
-		};
-	});
+	if (post.type === "like") {
+		let url = post.meta.find((it) => it.key === "url")?.value;
+		if (!url) throw new Error(`The like ${post.id} has no url`);
+		return url;
+	}
+
+	throw new Error(`Failed to get post link. Invalid post type ${post.type}`);
 }
 
-export function sort(
-	items: Array<ArticleItem | BookmarkItem | TutorialItem | GlossaryItem>,
-) {
-	return items.sort((a, b) => {
-		if (a.score !== b.score) return a.score - b.score;
-		return b.payload.createdAt - a.payload.createdAt;
-	});
+function getTitle(post: Post) {
+	if (post.type === "glossary") {
+		return post.meta.find((it) => it.key === "term")?.value ?? "";
+	}
+
+	return post.meta.find((it) => it.key === "title")?.value ?? "";
+}
+
+function getContent(post: Post) {
+	if (post.type === "article" || post.type === "tutorial") {
+		return Markdown.plain(
+			post.meta.find((it) => it.key === "content")?.value ?? "",
+		);
+	}
+
+	if (post.type === "glossary") {
+		return post.meta.find((it) => it.key === "definition")?.value ?? "";
+	}
+
+	return "";
+}
+
+function sortResult(a: FuseResult<FuseItem>, b: FuseResult<FuseItem>) {
+	if (a.score !== b.score) return (a.score ?? 0) - (b.score ?? 0);
+	return b.item.createdAt.getTime() - a.item.createdAt.getTime();
+}
+
+function toFuseItem(post: Post) {
+	return {
+		id: post.id,
+		type: post.type,
+		link: getLink(post),
+		title: getTitle(post),
+		content: getContent(post),
+		createdAt: post.createdAt,
+	};
+}
+
+function toFeedItem({
+	item,
+}: {
+	item: {
+		id: UUID;
+		type: "like" | "tutorial" | "article" | "comment" | "glossary";
+		link: string;
+		title: string;
+		content: string;
+		createdAt: Date;
+	};
+}): FeedItem {
+	return {
+		id: item.id,
+		type: item.type,
+		payload: {
+			title: item.title,
+			link: item.link,
+			createdAt: item.createdAt,
+		},
+	};
 }

@@ -3,16 +3,9 @@ import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
 import { ok } from "~/helpers/response";
-import { measure } from "~/middleware/server-timing";
 import type { Route } from "./+types/route";
 import { FeedList } from "./feed";
-import {
-	queryArticles,
-	queryBookmarks,
-	queryGlossary,
-	queryTutorials,
-	sort,
-} from "./queries";
+import { queryFeed } from "./queries";
 
 export async function loader({ request }: Route.LoaderArgs) {
 	let headers = new Headers({
@@ -26,25 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 		.nullable()
 		.parse(url.searchParams.get("q"));
 
-	let [articles, bookmarks, tutorials, glossary] = await Promise.all([
-		measure("_._index", "_._index.tsx#queryArticles", () =>
-			queryArticles(query),
-		),
-		measure("_._index", "_._index.tsx#queryBookmarks", () =>
-			queryBookmarks(query),
-		),
-		measure("_._index", "_._index.tsx#queryTutorials", () =>
-			queryTutorials(query),
-		),
-		measure("_._index", "_._index.tsx#queryGlossary", () =>
-			queryGlossary(query),
-		),
-	]);
-
-	return ok(
-		{ items: sort([...articles, ...bookmarks, ...tutorials, ...glossary]) },
-		{ headers },
-	);
+	return ok({ items: await queryFeed(query ?? "") }, { headers });
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
