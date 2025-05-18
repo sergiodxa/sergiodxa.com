@@ -1,4 +1,3 @@
-import Fuse, { type FuseResult } from "fuse.js";
 import { getDB } from "~/middleware/drizzle";
 import { measure } from "~/middleware/server-timing";
 import { Markdown } from "~/utils/markdown";
@@ -6,32 +5,72 @@ import type { UUID } from "~/utils/uuid";
 import type { FeedItem } from "./types";
 
 type Post = Awaited<ReturnType<typeof findAllPosts>>[number];
-type FuseItem = Awaited<ReturnType<typeof toFuseItem>>;
 
 export async function queryFeed(query = ""): Promise<FeedItem[]> {
-	let posts = await findAllPosts();
-
-	if (!query) return posts.map((it) => toFeedItem({ item: toFuseItem(it) }));
-
-	return new Fuse(posts.map(toFuseItem), {
-		keys: ["title", "content"],
-		includeScore: true,
-		findAllMatches: false,
-		useExtendedSearch: true,
-		isCaseSensitive: false,
-	})
-		.search(query.trim().toLowerCase())
-		.sort(sortResult)
-		.map(toFeedItem);
+	let posts = await findAllPosts(query);
+	return posts.map((it) => toFeedItem({ item: toFuseItem(it) }));
 }
 
-function findAllPosts() {
+function findAllPosts(query = "") {
 	let db = getDB();
 	return measure("_._index", "_._index.tsx#findAllPosts", () => {
 		return db.query.posts.findMany({
 			with: { meta: true },
+			where(fields, operators) {
+				const { sql, and } = operators;
+
+				if (!query) return undefined;
+
+				const exactMatch = query.match(/^"(.*)"$/)?.[1];
+				const terms = exactMatch ? [exactMatch] : query.trim().split(/\s+/);
+
+				const makeLike = (key: string) =>
+					and(
+						sql`post_meta.key = ${key}`,
+						...terms.map((term) => sql`post_meta.value LIKE ${`%${term}%`}`),
+					);
+
+				return sql`
+      EXISTS (
+        SELECT 1 FROM post_meta
+        WHERE post_meta.post_id = ${fields.id}
+        AND (
+          (
+            ${fields.type} IN ('article', 'tutorial', 'like') AND (${makeLike("title")})
+          )
+          OR (
+            ${fields.type} = 'glossary' AND (
+              ${makeLike("term")} OR ${makeLike("definition")}
+            )
+          )
+          OR (
+            ${fields.type} IN ('article', 'tutorial') AND ${makeLike("content")}
+          )
+        )
+      )
+    `;
+			},
 			orderBy(fields, operators) {
-				return operators.desc(fields.createdAt);
+				const { sql } = operators;
+
+				// +3 if appears in title/term, +2 in definition, +1 in content
+				return sql`
+(
+  SELECT
+    MAX(
+      CASE
+        WHEN post_meta.key = 'title' AND post_meta.value LIKE ${`%${query}%`} THEN 3
+        WHEN post_meta.key = 'term' AND post_meta.value LIKE ${`%${query}%`} THEN 3
+        WHEN post_meta.key = 'definition' AND post_meta.value LIKE ${`%${query}%`} THEN 2
+        WHEN post_meta.key = 'content' AND post_meta.value LIKE ${`%${query}%`} THEN 1
+        ELSE 0
+      END
+    )
+  FROM post_meta
+  WHERE post_meta.post_id = ${fields.id}
+) DESC,
+${fields.createdAt} DESC
+        `;
 			},
 		});
 	});
@@ -85,11 +124,6 @@ function getContent(post: Post) {
 	}
 
 	return "";
-}
-
-function sortResult(a: FuseResult<FuseItem>, b: FuseResult<FuseItem>) {
-	if (a.score !== b.score) return (a.score ?? 0) - (b.score ?? 0);
-	return b.item.createdAt.getTime() - a.item.createdAt.getTime();
 }
 
 function toFuseItem(post: Post) {
