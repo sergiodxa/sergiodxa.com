@@ -19,25 +19,13 @@ export const links: Route.LinksFunction = () => [
 
 export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
 	async function redirectsMiddleware({ params }, next) {
-		let bindings = await measure(
-			"_.$postType.$",
-			"_.$postType.$.tsx#redirectsMiddleware#getBindings",
-			() => Promise.resolve(getBindings()),
-		);
-
-		let data = await measure(
-			"_$postType.$",
-			"_.$postType.$.tsx#redirectsMiddleware#kv.redirects.get",
-			() => bindings.kv.redirects.get(params["*"], "json"),
-		);
-
-		let redirectConfig = z
+		let redirectConfig = await z
 			.object({ from: z.string(), to: z.string() })
 			.nullish()
-			.parse(data);
+			.promise()
+			.parse(getBindings().kv.redirects.get(params["*"], "json"));
 
-		if (!redirectConfig) return await next();
-		if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
+		if (redirectConfig?.from === `/${params.postType}/${params["*"]}`) {
 			throw redirect(redirectConfig.to);
 		}
 
