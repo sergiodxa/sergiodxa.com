@@ -1,8 +1,8 @@
 import { env } from "cloudflare:workers";
 import { createWorkersKVSessionStorage } from "@react-router/cloudflare";
 import { createCookie, href, redirect } from "react-router";
+import { unstable_createSessionMiddleware } from "remix-utils/middleware/session";
 import { z } from "zod";
-import { unstable_createSessionMiddleware } from "~/vendor/remix-utils/session";
 import { getContext } from "./context-storage";
 
 export const UserSchema = z.object({
@@ -18,13 +18,11 @@ export const UserSchema = z.object({
 
 export type User = z.infer<typeof UserSchema>;
 
-export const SessionDataSchema = z.object({
-	user: UserSchema.optional(),
-});
+export const SessionDataSchema = z.object({ user: UserSchema.optional() });
 
 export type SessionData = z.output<typeof SessionDataSchema>;
 
-const cookie = createCookie("sdx:session", {
+export const cookie = createCookie("sdx:session", {
 	path: "/",
 	maxAge: 60 * 60 * 24 * 365, // 1 year
 	httpOnly: true,
@@ -39,7 +37,15 @@ const sessionStorage = createWorkersKVSessionStorage<SessionData>({
 });
 
 const [sessionMiddleware, getSessionFromContext] =
-	unstable_createSessionMiddleware(sessionStorage);
+	unstable_createSessionMiddleware(sessionStorage, (prev, next) => {
+		// Check if the session data changed (only user id)
+		if (prev.user?.id !== next.user?.id) return true;
+		// A user logged out
+		if (prev.user && !next.user) return true;
+		// A user logged in
+		if (!prev.user && next.user) return true;
+		return false;
+	});
 
 export function getSession() {
 	let context = getContext();
