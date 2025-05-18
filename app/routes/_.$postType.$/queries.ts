@@ -85,7 +85,7 @@ export async function queryTutorial(request: Request, slug: string) {
 							return {
 								title: tutorial.title,
 								slug: tutorial.slug,
-								tag: tutorial.tags.at(0),
+								tag: tutorial.matchedTag,
 							};
 						});
 					}),

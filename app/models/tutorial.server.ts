@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import Fuse from "fuse.js";
 import * as semver from "semver";
 import { z } from "zod";
@@ -74,29 +74,52 @@ export class Tutorial extends Post<TutorialMeta> {
 		};
 	}
 
-	async recommendations(services: Services, limit = 3) {
-		let list = await Tutorial.list(services);
-
-		let result: Tutorial[] = [];
-
-		for (let item of list) {
-			// Skip the current item if it's the same as the one we're checking
-			if (item.slug === this.slug) continue;
-
-			for (let tag of Tutorial.shuffle(this.tags)) {
-				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
-
-				let match = Tutorial.shuffle(item.tags).find((itemTag) => {
-					let item = Tutorial.getPackageNameAndVersion(itemTag);
-					if (item.name !== name) return false;
-					return semver.gte(version, item.version);
-				});
-
-				if (match) result.push(item);
-			}
-		}
-
-		return Tutorial.shuffle(Tutorial.dedupeBySlug(result)).slice(0, limit);
+	async recommendations(services: Services) {
+		return await measure("Tutorial", "Tutorial.recommendations", async () => {
+			const { results } = await services.db.run(sql`
+        WITH current AS (
+          SELECT pm.post_id, p.type, pm_tags.value AS tag
+          FROM post_meta pm
+          JOIN post_meta pm_tags ON pm.post_id = pm_tags.post_id AND pm_tags.key = 'tags'
+          JOIN posts p ON pm.post_id = p.id
+          WHERE pm.key = 'slug' AND pm.value = ${this.slug}
+        )
+        SELECT
+          p.id,
+          slug_meta.value AS slug,
+          title_meta.value AS title,
+          tags_meta.value AS matchedTag
+        FROM posts p
+        JOIN post_meta tags_meta
+          ON p.id = tags_meta.post_id AND tags_meta.key = 'tags'
+        JOIN post_meta slug_meta
+          ON p.id = slug_meta.post_id AND slug_meta.key = 'slug'
+        JOIN post_meta title_meta
+          ON p.id = title_meta.post_id AND title_meta.key = 'title'
+        WHERE
+          p.type = (SELECT type FROM current)
+          AND p.id != (SELECT post_id FROM current)
+          AND EXISTS (
+            SELECT 1
+            FROM current c
+            WHERE
+              SUBSTR(tags_meta.value, 1, INSTR(tags_meta.value, '@') - 1) =
+                SUBSTR(c.tag, 1, INSTR(c.tag, '@') - 1)
+              AND tags_meta.value >= c.tag
+          )
+        LIMIT 3;
+      `);
+			return z
+				.object({
+					id: z.string().uuid(),
+					slug: z.string(),
+					title: z.string(),
+					matchedTag: z.string(),
+				})
+				.array()
+				.max(3)
+				.parse(results);
+		});
 	}
 
 	static override async list(services: Services) {
@@ -164,21 +187,33 @@ export class Tutorial extends Post<TutorialMeta> {
 	) {
 		let result = await measure("tutorial", "Tutorial.show", () => {
 			return services.db.query.postMeta.findFirst({
-				columns: { postId: true },
 				where: and(
 					eq(schema.postMeta.key, "slug"),
 					eq(schema.postMeta.value, slug),
 				),
+				with: { post: { with: { meta: true } } },
 			});
 		});
 
-		assertUUID(result?.postId);
+		if (!result) throw new Error(`Couldn't find tutorial with slug ${slug}`);
 
-		let post = await Post.show<TutorialMeta>(
-			services,
-			"tutorial",
-			result.postId,
-		);
+		let id = result.postId;
+		let authorId = result.post.authorId;
+
+		assertUUID(id);
+		assertUUID(authorId);
+
+		let post = new Post(services, {
+			id,
+			authorId,
+			type: result.post.type,
+			createdAt: result.post.createdAt,
+			updatedAt: result.post.updatedAt,
+			meta: result.post.meta.reduce((acc, item) => {
+				acc[item.key] = item.value;
+				return acc;
+			}, {} as TutorialMeta),
+		});
 
 		return new Tutorial(services, post);
 	}
