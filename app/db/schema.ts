@@ -10,9 +10,9 @@ export let users = sqliteTable("users", {
 	createdAt,
 	updatedAt,
 	// Attributes
-	role: text("role", { enum: ["guess", "admin"] })
+	role: text("role", { enum: ["guest", "admin"] })
 		.notNull()
-		.default("guess"),
+		.default("guest"),
 	email: text("email", { mode: "text", length: 320 }).notNull(),
 	avatar: text("avatar", { mode: "text", length: 2048 }).notNull(),
 	username: text("username", { mode: "text", length: 39 }).notNull(),
