@@ -107,19 +107,6 @@ export class Article extends Post<ArticleMeta> {
 		services: Services,
 		slug: schema.SelectPostMeta["value"],
 	) {
-		// let result = await services.db.query.postMeta.findFirst({
-		// 	columns: { postId: true },
-		// 	where: and(
-		// 		eq(schema.postMeta.key, "slug"),
-		// 		eq(schema.postMeta.value, slug),
-		// 	),
-		// });
-
-		// assertUUID(result?.postId);
-
-		// let post = await Post.show<ArticleMeta>(services, "article", result.postId);
-		// return new Article(services, post);
-
 		let result = await measure("article", "Article.show", () => {
 			return services.db.query.postMeta.findFirst({
 				where: and(
