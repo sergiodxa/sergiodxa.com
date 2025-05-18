@@ -17,12 +17,6 @@ export async function queryArticle(request: Request, slug: string) {
 
 		let i18n = getI18nextInstance();
 
-		let author = await measure(
-			"_.$postType.$",
-			"_.$postType.$.tsx#queryArticle#article.author",
-			() => article.author,
-		);
-
 		return {
 			postType: "articles" as const,
 			article: { title: article.title, body: article.renderable },
@@ -49,7 +43,7 @@ export async function queryArticle(request: Request, slug: string) {
 						description: article.excerpt,
 						author: {
 							"@type": "Person",
-							name: author.displayName,
+							name: "Sergio Xalambrí",
 							url: new URL("/about", request.url).toString(),
 						},
 						wordCount: article.wordCount,
@@ -125,7 +119,7 @@ export async function queryTutorial(request: Request, slug: string) {
 						description: tutorial.excerpt,
 						author: {
 							"@type": "Person",
-							name: (await tutorial.author).displayName,
+							name: "Sergio Xalambrí",
 							url: new URL("/about", request.url).toString(),
 						},
 						wordCount: tutorial.wordCount,
