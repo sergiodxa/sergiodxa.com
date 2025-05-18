@@ -77,11 +77,12 @@ export class Tutorial extends Post<TutorialMeta> {
 	async recommendations(services: Services, limit = 3) {
 		let list = await Tutorial.list(services);
 
-		list = list.filter((item) => !item.slug.includes(this.slug));
-
 		let result: Tutorial[] = [];
 
 		for (let item of list) {
+			// Skip the current item if it's the same as the one we're checking
+			if (item.slug === this.slug) continue;
+
 			for (let tag of Tutorial.shuffle(this.tags)) {
 				let { name, version } = Tutorial.getPackageNameAndVersion(tag);
 
