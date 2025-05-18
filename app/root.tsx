@@ -17,6 +17,7 @@ import { cacheMiddleware } from "./middleware/cache";
 import { contextStorageMiddleware } from "./middleware/context-storage";
 import { drizzleMiddleware } from "./middleware/drizzle";
 import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
+import { rollingCookieMiddleware } from "./middleware/rolling-cookie";
 import { serverTimingMiddleware } from "./middleware/server-timing";
 import { getUser, sessionMiddleware } from "./middleware/session";
 
@@ -24,6 +25,7 @@ export const unstable_middleware = [
 	noWWWMiddleware,
 	noTrailingSlashMiddleware,
 	contextStorageMiddleware,
+	rollingCookieMiddleware,
 	serverTimingMiddleware,
 	i18nextMiddleware,
 	sessionMiddleware,
