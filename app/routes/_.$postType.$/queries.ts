@@ -69,32 +69,16 @@ export async function queryTutorial(request: Request, slug: string) {
 	let db = getDB();
 
 	try {
-		let tutorial = await measure(
-			"_.$postType.$",
-			"_.$postType.$.tsx#queryTutorial#Tutorial.show",
-			() => Tutorial.show({ db }, slug),
-		);
-
-		let [recommendations, author] = await Promise.all([
+		let [tutorial, recommendations] = await Promise.all([
 			measure(
 				"_.$postType.$",
-				"_.$postType.$.tsx#queryTutorial#Tutorial.recommendations",
-				() =>
-					tutorial.recommendations({ db }).then((tutorials) => {
-						return tutorials.map((tutorial) => {
-							return {
-								id: tutorial.id,
-								title: tutorial.title,
-								slug: tutorial.slug,
-								tag: tutorial.matchedTag,
-							};
-						});
-					}),
+				"_.$postType.$.tsx#queryTutorial#Tutorial.show",
+				() => Tutorial.show({ db }, slug),
 			),
 			measure(
 				"_.$postType.$",
-				"_.$postType.$.tsx#queryTutorial#tutorial.author",
-				() => tutorial.author,
+				"_.$postType.$.tsx#queryTutorial#Tutorial.recommendations",
+				() => Tutorial.recommendations({ db }, slug),
 			),
 		]);
 
@@ -141,7 +125,7 @@ export async function queryTutorial(request: Request, slug: string) {
 						description: tutorial.excerpt,
 						author: {
 							"@type": "Person",
-							name: author.displayName,
+							name: (await tutorial.author).displayName,
 							url: new URL("/about", request.url).toString(),
 						},
 						wordCount: tutorial.wordCount,

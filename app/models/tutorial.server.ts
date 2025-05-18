@@ -74,15 +74,15 @@ export class Tutorial extends Post<TutorialMeta> {
 		};
 	}
 
-	async recommendations(services: Services) {
-		return await measure("Tutorial", "Tutorial.recommendations", async () => {
+	static recommendations(services: Services, slug: string) {
+		return measure("Tutorial", "Tutorial.recommendations", async () => {
 			const { results } = await services.db.run(sql`
         WITH current AS (
           SELECT pm.post_id, p.type, pm_tags.value AS tag
           FROM post_meta pm
           JOIN post_meta pm_tags ON pm.post_id = pm_tags.post_id AND pm_tags.key = 'tags'
           JOIN posts p ON pm.post_id = p.id
-          WHERE pm.key = 'slug' AND pm.value = ${this.slug}
+          WHERE pm.key = 'slug' AND pm.value = ${slug}
         )
         SELECT
           p.id,
@@ -120,6 +120,10 @@ export class Tutorial extends Post<TutorialMeta> {
 				.max(3)
 				.parse(results);
 		});
+	}
+
+	async recommendations(services: Services) {
+		return Tutorial.recommendations(services, this.slug);
 	}
 
 	static override async list(services: Services) {
@@ -234,18 +238,6 @@ export class Tutorial extends Post<TutorialMeta> {
 		});
 	}
 
-	private static shuffle<Value>(list: Value[]) {
-		let result = [...list];
-
-		for (let i = result.length - 1; i > 0; i--) {
-			let j = Math.floor(Math.random() * (i + 1));
-			// @ts-expect-error This will work
-			[result[i], result[j]] = [result[j], result[i]];
-		}
-
-		return result;
-	}
-
 	private static getPackageNameAndVersion(tag: string) {
 		if (!tag || tag === "@") return { name: "", version: "" };
 
@@ -267,22 +259,6 @@ export class Tutorial extends Post<TutorialMeta> {
 			return { name: "", version: "" };
 		}
 		return { name: `@${result.data[1]}`, version: result.data[2] };
-	}
-
-	private static dedupeBySlug<Value extends { slug: string }>(
-		items: Value[],
-	): Value[] {
-		let result: Value[] = [];
-
-		for (let item of items) {
-			if (!result.find((resultItem) => resultItem.slug === item.slug)) {
-				result.push(item);
-
-				if (result.length >= 3) break;
-			}
-		}
-
-		return result;
 	}
 
 	/**
