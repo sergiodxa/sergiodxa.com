@@ -3,6 +3,7 @@ import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
 import { ok } from "~/helpers/response";
+import { measure } from "~/middleware/server-timing";
 import type { Route } from "./+types/route";
 import { FeedList } from "./feed";
 import {
@@ -26,10 +27,18 @@ export async function loader({ request }: Route.LoaderArgs) {
 		.parse(url.searchParams.get("q"));
 
 	let [articles, bookmarks, tutorials, glossary] = await Promise.all([
-		queryArticles(query),
-		queryBookmarks(query),
-		queryTutorials(query),
-		queryGlossary(query),
+		measure("_._index", "_._index.tsx#queryArticles", () =>
+			queryArticles(query),
+		),
+		measure("_._index", "_._index.tsx#queryBookmarks", () =>
+			queryBookmarks(query),
+		),
+		measure("_._index", "_._index.tsx#queryTutorials", () =>
+			queryTutorials(query),
+		),
+		measure("_._index", "_._index.tsx#queryGlossary", () =>
+			queryGlossary(query),
+		),
 	]);
 
 	return ok(

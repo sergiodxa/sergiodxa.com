@@ -17,7 +17,7 @@ import { cacheMiddleware } from "./middleware/cache";
 import { contextStorageMiddleware } from "./middleware/context-storage";
 import { drizzleMiddleware } from "./middleware/drizzle";
 import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
-import { measure, serverTimingMiddleware } from "./middleware/server-timing";
+import { serverTimingMiddleware } from "./middleware/server-timing";
 import { getUser, sessionMiddleware } from "./middleware/session";
 
 export const unstable_middleware = [
@@ -46,9 +46,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function loader(_: Route.LoaderArgs) {
-	return measure("root", "root loader", async () => {
-		return { locale: getLocale(), user: getUser() };
-	});
+	return { locale: getLocale(), user: getUser() };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

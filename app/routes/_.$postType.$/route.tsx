@@ -4,6 +4,7 @@ import { isRouteErrorResponse, redirect } from "react-router";
 import { z } from "zod";
 import { notFound, ok } from "~/helpers/response";
 import { getBindings } from "~/middleware/bindings";
+import { measure } from "~/middleware/server-timing";
 import type { Route } from "./+types/route";
 import { ArticleView } from "./components/article-view";
 import { TutorialView } from "./components/tutorial-view";
@@ -17,18 +18,27 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
-	async function redirectsMiddleware({ params }, next) {
-		let bindings = getBindings();
-		let redirectConfig = await z
-			.object({ from: z.string(), to: z.string() })
-			.nullish()
-			.promise()
-			.parse(bindings.kv.redirects.get(params["*"], "json"));
-		if (!redirectConfig) return await next();
-		if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
-			throw redirect(redirectConfig.to);
-		}
-		return await next();
+	function redirectsMiddleware({ params }, next) {
+		return measure(
+			"_.$postType.$",
+			"_.$postType.$.tsx#redirectsMiddleware",
+			async () => {
+				let bindings = getBindings();
+
+				let redirectConfig = await z
+					.object({ from: z.string(), to: z.string() })
+					.nullish()
+					.promise()
+					.parse(bindings.kv.redirects.get(params["*"], "json"));
+
+				if (!redirectConfig) return await next();
+				if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
+					throw redirect(redirectConfig.to);
+				}
+
+				return await next();
+			},
+		);
 	},
 ];
 
@@ -41,8 +51,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 	let { postType, slug } = result.data;
 
-	if (postType === "articles") return ok(await queryArticle(request, slug));
-	if (postType === "tutorials") return ok(await queryTutorial(request, slug));
+	if (postType === "articles") {
+		return ok(
+			await measure("_.$postType.$", "_.$postType.$.tsx#queryArticle", () =>
+				queryArticle(request, slug),
+			),
+		);
+	}
+
+	if (postType === "tutorials") {
+		return ok(
+			await measure("_.$postType.$", "_.$postType.$.tsx#queryTutorial", () =>
+				queryTutorial(request, slug),
+			),
+		);
+	}
 
 	throw new Error("Invalid post type");
 }
