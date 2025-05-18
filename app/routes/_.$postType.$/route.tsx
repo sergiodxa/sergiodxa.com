@@ -54,21 +54,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 	let { postType, slug } = result.data;
 
-	if (postType === "articles") {
-		return ok(
-			await measure("_.$postType.$", "_.$postType.$.tsx#queryArticle", () =>
-				queryArticle(request, slug),
-			),
-		);
-	}
-
-	if (postType === "tutorials") {
-		return ok(
-			await measure("_.$postType.$", "_.$postType.$.tsx#queryTutorial", () =>
-				queryTutorial(request, slug),
-			),
-		);
-	}
+	if (postType === "articles") return ok(await queryArticle(request, slug));
+	if (postType === "tutorials") return ok(await queryTutorial(request, slug));
 
 	throw new Error("Invalid post type");
 }

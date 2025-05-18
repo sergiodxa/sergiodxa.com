@@ -1,25 +1,24 @@
 import type { MetaDescriptor } from "react-router";
-import { getDB } from "~/middleware/drizzle";
 import { getI18nextInstance, getLocale } from "~/middleware/i18next";
-import { measure } from "~/middleware/server-timing";
-import { Article } from "~/models/article.server";
-import { Tutorial } from "~/models/tutorial.server";
+import { findArticleBySlug } from "~/models/article";
+import {
+	findTutorialBySlug,
+	findTutorialRecommendationsBySlug,
+} from "~/models/tutorial";
+import { Markdown } from "~/utils/markdown";
 
 export async function queryArticle(request: Request, slug: string) {
-	let db = getDB();
-
 	try {
-		let article = await measure(
-			"_.$postType.$",
-			"_.$postType.$.tsx#queryArticle#Article.show",
-			() => Article.show({ db }, slug),
-		);
+		let article = await findArticleBySlug(slug);
 
 		let i18n = getI18nextInstance();
 
 		return {
 			postType: "articles" as const,
-			article: { title: article.title, body: article.renderable },
+			article: {
+				title: article.title,
+				body: Markdown.parse(`# ${article.title}\n${article.content}`),
+			},
 			meta: [
 				{
 					title: i18n.t("article.meta.title", {
@@ -33,7 +32,7 @@ export async function queryArticle(request: Request, slug: string) {
 					rel: "canonical",
 					href:
 						article.canonicalUrl ??
-						new URL(article.pathname, request.url).toString(),
+						new URL(`/articles/${article.slug}`, request.url).toString(),
 				},
 				{
 					"script:ld+json": {
@@ -43,10 +42,10 @@ export async function queryArticle(request: Request, slug: string) {
 						description: article.excerpt,
 						author: {
 							"@type": "Person",
-							name: "Sergio Xalambrí",
+							name: article.author.displayName,
 							url: new URL("/about", request.url).toString(),
 						},
-						wordCount: article.wordCount,
+						wordCount: countWords(article.title, article.content),
 						datePublished: article.createdAt.toISOString(),
 						dateModified: article.updatedAt.toISOString(),
 					},
@@ -60,20 +59,10 @@ export async function queryArticle(request: Request, slug: string) {
 }
 
 export async function queryTutorial(request: Request, slug: string) {
-	let db = getDB();
-
 	try {
 		let [tutorial, recommendations] = await Promise.all([
-			measure(
-				"_.$postType.$",
-				"_.$postType.$.tsx#queryTutorial#Tutorial.show",
-				() => Tutorial.show({ db }, slug),
-			),
-			measure(
-				"_.$postType.$",
-				"_.$postType.$.tsx#queryTutorial#Tutorial.recommendations",
-				() => Tutorial.recommendations({ db }, slug),
-			),
+			findTutorialBySlug(slug),
+			findTutorialRecommendationsBySlug(slug),
 		]);
 
 		let locale = getLocale();
@@ -91,7 +80,7 @@ export async function queryTutorial(request: Request, slug: string) {
 				slug: tutorial.slug,
 				tags: tutorial.tags,
 				title: tutorial.title,
-				content: tutorial.renderable,
+				content: Markdown.parse(tutorial.content),
 			},
 			recommendations,
 			meta: [
@@ -109,7 +98,7 @@ export async function queryTutorial(request: Request, slug: string) {
 				{
 					tagName: "link",
 					rel: "canonical",
-					href: new URL(tutorial.pathname, request.url).toString(),
+					href: new URL(`/tutorials/${tutorial.slug}`, request.url).toString(),
 				},
 				{
 					"script:ld+json": {
@@ -119,10 +108,10 @@ export async function queryTutorial(request: Request, slug: string) {
 						description: tutorial.excerpt,
 						author: {
 							"@type": "Person",
-							name: "Sergio Xalambrí",
+							name: tutorial.author.displayName,
 							url: new URL("/about", request.url).toString(),
 						},
-						wordCount: tutorial.wordCount,
+						wordCount: countWords(tutorial.title, tutorial.content),
 						datePublished: tutorial.createdAt.toISOString(),
 						dateModified: tutorial.updatedAt.toISOString(),
 					},
@@ -133,4 +122,9 @@ export async function queryTutorial(request: Request, slug: string) {
 		console.error(error);
 		throw new Error("Tutorial not found");
 	}
+}
+
+function countWords(title: string, content: string) {
+	let titleLength = title.split(/\s+/).length;
+	return Markdown.plain(content).split(/\s+/).length + titleLength;
 }
