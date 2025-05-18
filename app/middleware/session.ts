@@ -4,6 +4,7 @@ import { createCookie, href, redirect } from "react-router";
 import { unstable_createSessionMiddleware } from "remix-utils/middleware/session";
 import { z } from "zod";
 import { getContext } from "./context-storage";
+import { measure } from "./server-timing";
 
 export const UserSchema = z.object({
 	id: z.string().uuid(),
@@ -70,7 +71,9 @@ export async function logout() {
 	session.unset("user"); // unset just in case
 	return redirect(href("/"), {
 		headers: {
-			"Set-Cookie": await sessionStorage.destroySession(session),
+			"Set-Cookie": await measure("session.destroy", "session.destroy", () => {
+				return sessionStorage.destroySession(session);
+			}),
 			"Clear-Site-Data": '"*"',
 		},
 	});

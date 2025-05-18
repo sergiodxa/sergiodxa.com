@@ -89,11 +89,13 @@ export class Post<Meta extends BaseMeta> {
 		{ db }: Services,
 		type?: schema.SelectPost["type"],
 	) {
-		let posts = await db.query.posts.findMany({
-			with: { meta: true },
-			orderBy: desc(schema.posts.createdAt),
-			where: type ? eq(schema.posts.type, type) : undefined,
-		});
+		let posts = await measure("Post.list", "Post.list", () =>
+			db.query.posts.findMany({
+				with: { meta: true },
+				orderBy: desc(schema.posts.createdAt),
+				where: type ? eq(schema.posts.type, type) : undefined,
+			}),
+		);
 
 		if (!posts) throw new Error("There are no post types.");
 
@@ -151,10 +153,9 @@ export class Post<Meta extends BaseMeta> {
 	}
 
 	static async destroy({ db }: Services, id: UUID) {
-		let result = await db
-			.delete(schema.posts)
-			.where(eq(schema.posts.id, id))
-			.execute();
+		let result = await measure("Post.destroy", "Post.destroy", () =>
+			db.delete(schema.posts).where(eq(schema.posts.id, id)).execute(),
+		);
 
 		if (!result.success && result.error) throw new Error(result.error);
 	}
@@ -171,20 +172,26 @@ export class Post<Meta extends BaseMeta> {
 	) {
 		let id = generateUUID();
 
-		let result = await db
-			.insert(schema.posts)
-			.values({ id, type, authorId, createdAt, updatedAt })
-			.execute();
+		let result = await measure("Post.create", "Post.create", () =>
+			db
+				.insert(schema.posts)
+				.values({ id, type, authorId, createdAt, updatedAt })
+				.execute(),
+		);
 
 		if (!result.success && result.error) throw new Error(result.error);
 
-		await Promise.all(
-			Object.entries(meta).map(async ([key, value]) => {
-				return createPostMeta(db, id, key, value);
-			}),
+		await measure("Post.create#meta", "Post.create#meta", () =>
+			Promise.all(
+				Object.entries(meta).map(async ([key, value]) => {
+					return createPostMeta(db, id, key, value);
+				}),
+			),
 		);
 
-		return await Post.show<Meta>({ db }, type, id);
+		return await measure("Post.show", "Post.create#show", () =>
+			Post.show<Meta>({ db }, type, id),
+		);
 	}
 
 	static async update<Meta extends BaseMeta>(
@@ -198,26 +205,34 @@ export class Post<Meta extends BaseMeta> {
 			...meta
 		}: Omit<schema.InsertPost, "id"> & Meta,
 	) {
-		let result = await db
-			.update(schema.posts)
-			.set({ type, authorId, createdAt, updatedAt })
-			.where(eq(schema.posts.id, id))
-			.execute();
+		let result = await measure("Post.update", "Post.update", () =>
+			db
+				.update(schema.posts)
+				.set({ type, authorId, createdAt, updatedAt })
+				.where(eq(schema.posts.id, id))
+				.execute(),
+		);
 
 		if (!result.success && result.error) throw new Error(result.error);
 
-		await db
-			.delete(schema.postMeta)
-			.where(eq(schema.postMeta.postId, id))
-			.execute();
-
-		await Promise.all(
-			Object.entries(meta).map(async ([key, value]) => {
-				return createPostMeta(db, id, key, value);
-			}),
+		await measure("Post.update#meta", "Post.update#meta", () =>
+			db
+				.delete(schema.postMeta)
+				.where(eq(schema.postMeta.postId, id))
+				.execute(),
 		);
 
-		return await Post.show<Meta>({ db }, type, id);
+		await measure("Post.update#meta", "Post.update#meta", () =>
+			Promise.all(
+				Object.entries(meta).map(async ([key, value]) => {
+					return createPostMeta(db, id, key, value);
+				}),
+			),
+		);
+
+		return await measure("Post.show", "Post.update#show", () =>
+			Post.show<Meta>({ db }, type, id),
+		);
 	}
 }
 

@@ -79,12 +79,16 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static override async list(services: Services) {
-		let posts = await Post.list<ArticleMeta>(services, "article");
+		let posts = await measure("Article.list", "Article.list", () => {
+			return Post.list<ArticleMeta>(services, "article");
+		});
 		return posts.map((post) => new Article(services, post));
 	}
 
 	static async search(services: Services, initialQuery: string) {
-		let articles = await Article.list(services);
+		let articles = await measure("Article.search", "Article.search#list", () =>
+			Article.list(services),
+		);
 
 		let query = initialQuery.trim().toLowerCase();
 
@@ -99,7 +103,9 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static async findById(services: Services, id: UUID) {
-		let post = await Post.show<ArticleMeta>(services, "article", id);
+		let post = await measure("Article.findById", "Article.findById", () =>
+			Post.show<ArticleMeta>(services, "article", id),
+		);
 		return new Article(services, post);
 	}
 
@@ -141,9 +147,11 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static override async create(services: Services, input: InsertArticle) {
-		let post = await Post.create<ArticleMeta>(services, {
-			...input,
-			type: "article",
+		let post = await measure("Article.create", "Article.create", () => {
+			return Post.create<ArticleMeta>(services, {
+				...input,
+				type: "article",
+			});
 		});
 
 		return new Article(services, post);

@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
 import type { Database } from "~/db";
 import type * as schema from "~/db/schema";
+import { measure } from "~/middleware/server-timing";
 import type { BaseMeta } from "~/models/post.server";
 import { Post } from "~/models/post.server";
 import type { UUID } from "~/utils/uuid";
@@ -54,31 +55,43 @@ export class Glossary extends Post<GlossaryMeta> {
 	}
 
 	static override async list(services: Services) {
-		let posts = await Post.list<GlossaryMeta>(services, "glossary");
+		let posts = await measure("Glossary.list", "Glossary.list", () =>
+			Post.list<GlossaryMeta>(services, "glossary"),
+		);
 		return posts.map((post) => new Glossary(services, post));
 	}
 
 	static override async show(services: Services, id: UUID) {
-		let post = await Post.show<GlossaryMeta>(services, "glossary", id);
+		let post = await measure("Glossary.show", "Glossary.show", () =>
+			Post.show<GlossaryMeta>(services, "glossary", id),
+		);
 		return new Glossary(services, post);
 	}
 
 	static override async create(services: Services, input: InsertGlossary) {
 		return new Glossary(
 			services,
-			await Post.create<GlossaryMeta>(services, { ...input, type: "glossary" }),
+			await measure("Glossary.create", "Glossary.create", () =>
+				Post.create<GlossaryMeta>(services, { ...input, type: "glossary" }),
+			),
 		);
 	}
 
 	static override update(services: Services, id: UUID, input: InsertGlossary) {
-		return Post.update<GlossaryMeta>(services, id, {
-			...input,
-			type: "glossary",
-		});
+		return measure("Glossary.update", "Glossary.update", () =>
+			Post.update<GlossaryMeta>(services, id, {
+				...input,
+				type: "glossary",
+			}),
+		);
 	}
 
 	static async search(services: Services, query: string) {
-		let glossary = await Glossary.list(services);
+		let glossary = await measure(
+			"Glossary.search",
+			"Glossary.search#list",
+			() => Glossary.list(services),
+		);
 
 		let trimmedQuery = query.trim().toLowerCase();
 

@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
 import type { Database } from "~/db";
 import type * as schema from "~/db/schema";
+import { measure } from "~/middleware/server-timing";
 import type { BaseMeta } from "~/models/post.server";
 import { Post } from "~/models/post.server";
 
@@ -37,12 +38,16 @@ export class Like extends Post<LikeMeta> {
 	}
 
 	static override async list({ db }: Services) {
-		let posts = await Post.list<LikeMeta>({ db }, "like");
+		let posts = await measure("Like.list", "Like.list", () =>
+			Post.list<LikeMeta>({ db }, "like"),
+		);
 		return posts.map((post) => new Like({ db }, post));
 	}
 
 	static async search({ db }: Services, query: string) {
-		let likes = await Like.list({ db });
+		let likes = await measure("Like.search", "Like.search#list", () =>
+			Like.list({ db }),
+		);
 
 		let trimmedQuery = query.trim().toLowerCase();
 
@@ -57,7 +62,9 @@ export class Like extends Post<LikeMeta> {
 	}
 
 	static override async show({ db }: Services, id: schema.SelectPost["id"]) {
-		let post = await Post.show<LikeMeta>({ db }, "like", id);
+		let post = await measure("Like.show", "Like.show", () =>
+			Post.show<LikeMeta>({ db }, "like", id),
+		);
 		return new Like({ db }, post);
 	}
 
@@ -65,9 +72,8 @@ export class Like extends Post<LikeMeta> {
 		{ db }: Services,
 		{ title, url, ...input }: InsertLike,
 	) {
-		let post = await Post.create<LikeMeta>(
-			{ db },
-			{ ...input, type: "like", title, url },
+		let post = await measure("Like.create", "Like.create", () =>
+			Post.create<LikeMeta>({ db }, { ...input, type: "like", title, url }),
 		);
 
 		return new Like({ db }, post);
@@ -78,9 +84,11 @@ export class Like extends Post<LikeMeta> {
 		id: schema.SelectPost["id"],
 		input: InsertLike,
 	) {
-		return Post.update<LikeMeta>(services, id, {
-			...input,
-			type: "like",
-		});
+		return measure("Like.update", "Like.update", () =>
+			Post.update<LikeMeta>(services, id, {
+				...input,
+				type: "like",
+			}),
+		);
 	}
 }
