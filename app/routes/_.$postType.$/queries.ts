@@ -83,6 +83,7 @@ export async function queryTutorial(request: Request, slug: string) {
 					tutorial.recommendations({ db }).then((tutorials) => {
 						return tutorials.map((tutorial) => {
 							return {
+								id: tutorial.id,
 								title: tutorial.title,
 								slug: tutorial.slug,
 								tag: tutorial.matchedTag,
