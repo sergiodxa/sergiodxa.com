@@ -17,12 +17,14 @@ import { cacheMiddleware } from "./middleware/cache";
 import { contextStorageMiddleware } from "./middleware/context-storage";
 import { drizzleMiddleware } from "./middleware/drizzle";
 import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
+import { measure, serverTimingMiddleware } from "./middleware/server-timing";
 import { getUser, sessionMiddleware } from "./middleware/session";
 
 export const unstable_middleware = [
 	noWWWMiddleware,
 	noTrailingSlashMiddleware,
 	contextStorageMiddleware,
+	serverTimingMiddleware,
 	i18nextMiddleware,
 	sessionMiddleware,
 	drizzleMiddleware,
@@ -43,8 +45,10 @@ export const links: Route.LinksFunction = () => [
 	{ rel: "me authn", href: "https://github.com/sergiodxa" },
 ];
 
-export async function loader(_: Route.LoaderArgs) {
-	return { locale: getLocale(), user: getUser() };
+export function loader(_: Route.LoaderArgs) {
+	return measure("root", "root loader", async () => {
+		return { locale: getLocale(), user: getUser() };
+	});
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
