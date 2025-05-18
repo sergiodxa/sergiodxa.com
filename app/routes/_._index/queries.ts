@@ -27,7 +27,7 @@ export async function queryFeed(query = ""): Promise<FeedItem[]> {
 
 function findAllPosts() {
 	let db = getDB();
-	return measure("_._index", "_._index.tsx#queryFeed", () => {
+	return measure("_._index", "_._index.tsx#findAllPosts", () => {
 		return db.query.posts.findMany({
 			with: { meta: true },
 			orderBy(fields, operators) {
