@@ -14,23 +14,17 @@ export default async function handleRequest(
 ) {
 	let userAgent = request.headers.get("user-agent");
 
-	let stream = await measure(
-		"entry.server",
-		"entry.server.tsx#handleRequest#renderToReadableStream",
-		() => {
-			return renderToReadableStream(
-				<I18nextProvider i18n={getI18nextInstance()}>
-					<ServerRouter context={entryContext} url={request.url} />
-				</I18nextProvider>,
-				{
-					signal: request.signal,
-					onError(error) {
-						console.error(error);
-						// biome-ignore lint/style/noParameterAssign: It's ok
-						status = 500;
-					},
-				},
-			);
+	let stream = await renderToReadableStream(
+		<I18nextProvider i18n={getI18nextInstance()}>
+			<ServerRouter context={entryContext} url={request.url} />
+		</I18nextProvider>,
+		{
+			signal: request.signal,
+			onError(error) {
+				console.error(error);
+				// biome-ignore lint/style/noParameterAssign: It's ok
+				status = 500;
+			},
 		},
 	);
 
