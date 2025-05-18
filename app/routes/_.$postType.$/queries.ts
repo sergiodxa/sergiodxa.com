@@ -1,6 +1,7 @@
 import type { MetaDescriptor } from "react-router";
 import { getDB } from "~/middleware/drizzle";
 import { getI18nextInstance, getLocale } from "~/middleware/i18next";
+import { measure } from "~/middleware/server-timing";
 import { Article } from "~/models/article.server";
 import { Tutorial } from "~/models/tutorial.server";
 
@@ -8,11 +9,19 @@ export async function queryArticle(request: Request, slug: string) {
 	let db = getDB();
 
 	try {
-		let article = await Article.show({ db }, slug);
+		let article = await measure(
+			"_.$postType.$",
+			"_.$postType.$.tsx#queryArticle#Article.show",
+			() => Article.show({ db }, slug),
+		);
 
 		let i18n = getI18nextInstance();
 
-		let author = await article.author;
+		let author = await measure(
+			"_.$postType.$",
+			"_.$postType.$.tsx#queryArticle#article.author",
+			() => article.author,
+		);
 
 		return {
 			postType: "articles" as const,
@@ -60,19 +69,32 @@ export async function queryTutorial(request: Request, slug: string) {
 	let db = getDB();
 
 	try {
-		let tutorial = await Tutorial.show({ db }, slug);
+		let tutorial = await measure(
+			"_.$postType.$",
+			"_.$postType.$.tsx#queryTutorial#Tutorial.show",
+			() => Tutorial.show({ db }, slug),
+		);
 
 		let [recommendations, author] = await Promise.all([
-			tutorial.recommendations({ db }).then((tutorials) => {
-				return tutorials.map((tutorial) => {
-					return {
-						title: tutorial.title,
-						slug: tutorial.slug,
-						tag: tutorial.tags.at(0),
-					};
-				});
-			}),
-			tutorial.author,
+			measure(
+				"_.$postType.$",
+				"_.$postType.$.tsx#queryTutorial#Tutorial.recommendations",
+				() =>
+					tutorial.recommendations({ db }).then((tutorials) => {
+						return tutorials.map((tutorial) => {
+							return {
+								title: tutorial.title,
+								slug: tutorial.slug,
+								tag: tutorial.tags.at(0),
+							};
+						});
+					}),
+			),
+			measure(
+				"_.$postType.$",
+				"_.$postType.$.tsx#queryTutorial#tutorial.author",
+				() => tutorial.author,
+			),
 		]);
 
 		let locale = getLocale();

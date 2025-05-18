@@ -18,27 +18,30 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export const unstable_middleware: Route.unstable_MiddlewareFunction[] = [
-	function redirectsMiddleware({ params }, next) {
-		return measure(
+	async function redirectsMiddleware({ params }, next) {
+		let bindings = await measure(
 			"_.$postType.$",
-			"_.$postType.$.tsx#redirectsMiddleware",
-			async () => {
-				let bindings = getBindings();
-
-				let redirectConfig = await z
-					.object({ from: z.string(), to: z.string() })
-					.nullish()
-					.promise()
-					.parse(bindings.kv.redirects.get(params["*"], "json"));
-
-				if (!redirectConfig) return await next();
-				if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
-					throw redirect(redirectConfig.to);
-				}
-
-				return await next();
-			},
+			"_.$postType.$.tsx#redirectsMiddleware#getBindings",
+			() => Promise.resolve(getBindings()),
 		);
+
+		let data = await measure(
+			"_$postType.$",
+			"_.$postType.$.tsx#redirectsMiddleware#kv.redirects.get",
+			() => bindings.kv.redirects.get(params["*"], "json"),
+		);
+
+		let redirectConfig = z
+			.object({ from: z.string(), to: z.string() })
+			.nullish()
+			.parse(data);
+
+		if (!redirectConfig) return await next();
+		if (redirectConfig.from === `/${params.postType}/${params["*"]}`) {
+			throw redirect(redirectConfig.to);
+		}
+
+		return await next();
 	},
 ];
 
