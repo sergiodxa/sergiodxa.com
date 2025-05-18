@@ -1,6 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import type { Database } from "~/db";
 import * as schema from "~/db/schema";
+import { measure } from "~/middleware/server-timing";
 import type { UUID } from "~/utils/uuid";
 import { assertUUID, generateUUID } from "~/utils/uuid";
 
@@ -121,14 +122,14 @@ export class Post<Meta extends BaseMeta> {
 		type: schema.SelectPost["type"],
 		id: UUID,
 	) {
-		let post = await db.query.posts.findFirst({
-			with: { meta: true },
-			where: and(eq(schema.posts.type, type), eq(schema.posts.id, id)),
+		let post = await measure("post", "Post.show", () => {
+			return db.query.posts.findFirst({
+				with: { meta: true },
+				where: and(eq(schema.posts.type, type), eq(schema.posts.id, id)),
+			});
 		});
 
-		if (!post) {
-			throw new Error(`Couldn't find post with Id ${id}`);
-		}
+		if (!post) throw new Error(`Couldn't find post with Id ${id}`);
 
 		assertUUID(post.authorId);
 

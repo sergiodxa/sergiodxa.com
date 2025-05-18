@@ -4,6 +4,7 @@ import * as semver from "semver";
 import { z } from "zod";
 import type { Database } from "~/db";
 import * as schema from "~/db/schema";
+import { measure } from "~/middleware/server-timing";
 import { Markdown } from "~/utils/markdown";
 import type { UUID } from "~/utils/uuid";
 import { assertUUID } from "~/utils/uuid";
@@ -160,12 +161,14 @@ export class Tutorial extends Post<TutorialMeta> {
 		services: Services,
 		slug: schema.SelectPostMeta["value"],
 	) {
-		let result = await services.db.query.postMeta.findFirst({
-			columns: { postId: true },
-			where: and(
-				eq(schema.postMeta.key, "slug"),
-				eq(schema.postMeta.value, slug),
-			),
+		let result = await measure("tutorial", "Tutorial.show", () => {
+			return services.db.query.postMeta.findFirst({
+				columns: { postId: true },
+				where: and(
+					eq(schema.postMeta.key, "slug"),
+					eq(schema.postMeta.value, slug),
+				),
+			});
 		});
 
 		assertUUID(result?.postId);
