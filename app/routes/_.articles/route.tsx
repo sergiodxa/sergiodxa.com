@@ -1,3 +1,4 @@
+import { cacheHeader } from "pretty-cache-header";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
@@ -13,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 	let url = new URL(request.url);
 
 	let headers = new Headers({
-		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+		"cache-control": cacheHeader({ maxAge: "10s", sMaxage: "0s" }),
 	});
 
 	let { t } = getI18nextInstance();

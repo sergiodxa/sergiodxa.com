@@ -1,3 +1,4 @@
+import { cacheHeader } from "pretty-cache-header";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
@@ -12,7 +13,12 @@ export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
 export async function loader({ request }: Route.LoaderArgs) {
 	let headers = new Headers({
-		"cache-control": "max-age=60, s-maxage=120, stale-while-revalidate",
+		"cache-control": cacheHeader({
+			maxAge: "60s",
+			sMaxage: "120s",
+			staleIfError: "60s",
+			staleWhileRevalidate: "60s",
+		}),
 	});
 
 	let url = new URL(request.url);

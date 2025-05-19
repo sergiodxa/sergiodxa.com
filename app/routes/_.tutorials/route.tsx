@@ -1,3 +1,4 @@
+import { cacheHeader } from "pretty-cache-header";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
@@ -23,9 +24,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 			.parse(url.searchParams.get("q")) ?? "";
 
 	let tutorials = await queryTutorials(query);
-
 	let headers = new Headers({
-		"cache-control": "max-age=1, s-maxage=1, stale-while-revalidate",
+		"cache-control": cacheHeader({ maxAge: "10s", sMaxage: "0s" }),
 	});
 
 	return ok(
