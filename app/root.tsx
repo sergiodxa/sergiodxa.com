@@ -1,3 +1,4 @@
+import { RouterProvider } from "react-aria-components";
 import { useTranslation } from "react-i18next";
 import {
 	Links,
@@ -6,6 +7,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 	isRouteErrorResponse,
+	useNavigate,
 } from "react-router";
 import { useChangeLanguage } from "remix-i18next/react";
 import sansFont from "~/fonts/sans.woff2";
@@ -127,7 +129,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function Component({ loaderData }: Route.ComponentProps) {
 	useChangeLanguage(loaderData.locale);
-	return <Outlet />;
+	return (
+		<RouterProvider navigate={useNavigate}>
+			<Outlet />
+		</RouterProvider>
+	);
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
