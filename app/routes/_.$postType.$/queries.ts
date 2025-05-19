@@ -1,10 +1,8 @@
 import type { MetaDescriptor } from "react-router";
 import { getI18nextInstance, getLocale } from "~/middleware/i18next";
-import { findArticleBySlug } from "~/models/article";
-import {
-	findTutorialBySlug,
-	findTutorialRecommendationsBySlug,
-} from "~/models/tutorial";
+import findArticleBySlug from "~/services/find-article-by-slug";
+import findTutorialBySlug from "~/services/find-tutorial-by-slug";
+import findTutorialRecommendationsBySlug from "~/services/find-tutorial-recommendations-by-slug";
 import { Markdown } from "~/utils/markdown";
 
 export async function queryArticle(request: Request, slug: string) {

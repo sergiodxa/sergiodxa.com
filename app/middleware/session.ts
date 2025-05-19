@@ -71,7 +71,7 @@ export async function logout() {
 	session.unset("user"); // unset just in case
 	return redirect(href("/"), {
 		headers: {
-			"Set-Cookie": await measure("session.destroy", "session.destroy", () => {
+			"Set-Cookie": await measure("session.destroy", () => {
 				return sessionStorage.destroySession(session);
 			}),
 			"Clear-Site-Data": '"*"',

@@ -38,16 +38,14 @@ export class Like extends Post<LikeMeta> {
 	}
 
 	static override async list({ db }: Services) {
-		let posts = await measure("Like.list", "Like.list", () =>
+		let posts = await measure("Like.list", () =>
 			Post.list<LikeMeta>({ db }, "like"),
 		);
 		return posts.map((post) => new Like({ db }, post));
 	}
 
 	static async search({ db }: Services, query: string) {
-		let likes = await measure("Like.search", "Like.search#list", () =>
-			Like.list({ db }),
-		);
+		let likes = await measure("Like.search#list", () => Like.list({ db }));
 
 		let trimmedQuery = query.trim().toLowerCase();
 
@@ -62,7 +60,7 @@ export class Like extends Post<LikeMeta> {
 	}
 
 	static override async show({ db }: Services, id: schema.SelectPost["id"]) {
-		let post = await measure("Like.show", "Like.show", () =>
+		let post = await measure("Like.show", () =>
 			Post.show<LikeMeta>({ db }, "like", id),
 		);
 		return new Like({ db }, post);
@@ -72,7 +70,7 @@ export class Like extends Post<LikeMeta> {
 		{ db }: Services,
 		{ title, url, ...input }: InsertLike,
 	) {
-		let post = await measure("Like.create", "Like.create", () =>
+		let post = await measure("Like.create", () =>
 			Post.create<LikeMeta>({ db }, { ...input, type: "like", title, url }),
 		);
 
@@ -84,7 +82,7 @@ export class Like extends Post<LikeMeta> {
 		id: schema.SelectPost["id"],
 		input: InsertLike,
 	) {
-		return measure("Like.update", "Like.update", () =>
+		return measure("Like.update", () =>
 			Post.update<LikeMeta>(services, id, {
 				...input,
 				type: "like",

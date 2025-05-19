@@ -29,11 +29,7 @@ export default async function handleRequest(
 	);
 
 	if (userAgent && isbot(userAgent)) {
-		await measure(
-			"entry.server",
-			"entry.server#stream.allReady",
-			() => stream.allReady,
-		);
+		await measure("entry.server#stream.allReady", () => stream.allReady);
 	} else headers.set("Transfer-Encoding", "chunked");
 
 	headers.set("Content-Type", "text/html; charset=utf-8");

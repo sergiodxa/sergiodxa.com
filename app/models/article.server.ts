@@ -79,14 +79,14 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static override async list(services: Services) {
-		let posts = await measure("Article.list", "Article.list", () => {
+		let posts = await measure("Article.list", () => {
 			return Post.list<ArticleMeta>(services, "article");
 		});
 		return posts.map((post) => new Article(services, post));
 	}
 
 	static async search(services: Services, initialQuery: string) {
-		let articles = await measure("Article.search", "Article.search#list", () =>
+		let articles = await measure("Article.search#list", () =>
 			Article.list(services),
 		);
 
@@ -103,7 +103,7 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static async findById(services: Services, id: UUID) {
-		let post = await measure("Article.findById", "Article.findById", () =>
+		let post = await measure("Article.findById", () =>
 			Post.show<ArticleMeta>(services, "article", id),
 		);
 		return new Article(services, post);
@@ -113,7 +113,7 @@ export class Article extends Post<ArticleMeta> {
 		services: Services,
 		slug: schema.SelectPostMeta["value"],
 	) {
-		let result = await measure("article", "Article.show", () => {
+		let result = await measure("Article.show", () => {
 			return services.db.query.postMeta.findFirst({
 				where: and(
 					eq(schema.postMeta.key, "slug"),
@@ -147,7 +147,7 @@ export class Article extends Post<ArticleMeta> {
 	}
 
 	static override async create(services: Services, input: InsertArticle) {
-		let post = await measure("Article.create", "Article.create", () => {
+		let post = await measure("Article.create", () => {
 			return Post.create<ArticleMeta>(services, {
 				...input,
 				type: "article",

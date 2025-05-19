@@ -75,7 +75,7 @@ export class Tutorial extends Post<TutorialMeta> {
 	}
 
 	static recommendations(services: Services, slug: string) {
-		return measure("Tutorial", "Tutorial.recommendations", async () => {
+		return measure("Tutorial.recommendations", async () => {
 			const { results } = await services.db.run(sql`
         WITH current AS (
           SELECT pm.post_id, p.type, pm_tags.value AS tag
@@ -189,7 +189,7 @@ export class Tutorial extends Post<TutorialMeta> {
 		services: Services,
 		slug: schema.SelectPostMeta["value"],
 	) {
-		let result = await measure("tutorial", "Tutorial.show", () => {
+		let result = await measure("Tutorial.show", () => {
 			return services.db.query.postMeta.findFirst({
 				where: and(
 					eq(schema.postMeta.key, "slug"),

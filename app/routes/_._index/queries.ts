@@ -13,7 +13,7 @@ export async function queryFeed(query = ""): Promise<FeedItem[]> {
 
 function findAllPosts(query = "") {
 	let db = getDB();
-	return measure("_._index", "_._index.tsx#findAllPosts", () => {
+	return measure("_._index.tsx#findAllPosts", () => {
 		return db.query.posts.findMany({
 			with: { meta: true },
 			where(fields, operators) {

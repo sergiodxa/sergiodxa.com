@@ -89,7 +89,7 @@ export class Post<Meta extends BaseMeta> {
 		{ db }: Services,
 		type?: schema.SelectPost["type"],
 	) {
-		let posts = await measure("Post.list", "Post.list", () =>
+		let posts = await measure("Post.list", () =>
 			db.query.posts.findMany({
 				with: { meta: true },
 				orderBy: desc(schema.posts.createdAt),
@@ -124,7 +124,7 @@ export class Post<Meta extends BaseMeta> {
 		type: schema.SelectPost["type"],
 		id: UUID,
 	) {
-		let post = await measure("post", "Post.show", () => {
+		let post = await measure("Post.show", () => {
 			return db.query.posts.findFirst({
 				with: { meta: true },
 				where: and(eq(schema.posts.type, type), eq(schema.posts.id, id)),
@@ -153,7 +153,7 @@ export class Post<Meta extends BaseMeta> {
 	}
 
 	static async destroy({ db }: Services, id: UUID) {
-		let result = await measure("Post.destroy", "Post.destroy", () =>
+		let result = await measure("Post.destroy", () =>
 			db.delete(schema.posts).where(eq(schema.posts.id, id)).execute(),
 		);
 
@@ -172,7 +172,7 @@ export class Post<Meta extends BaseMeta> {
 	) {
 		let id = generateUUID();
 
-		let result = await measure("Post.create", "Post.create", () =>
+		let result = await measure("Post.create", () =>
 			db
 				.insert(schema.posts)
 				.values({ id, type, authorId, createdAt, updatedAt })
@@ -181,7 +181,7 @@ export class Post<Meta extends BaseMeta> {
 
 		if (!result.success && result.error) throw new Error(result.error);
 
-		await measure("Post.create#meta", "Post.create#meta", () =>
+		await measure("Post.create#meta", () =>
 			Promise.all(
 				Object.entries(meta).map(async ([key, value]) => {
 					return createPostMeta(db, id, key, value);
@@ -189,7 +189,7 @@ export class Post<Meta extends BaseMeta> {
 			),
 		);
 
-		return await measure("Post.show", "Post.create#show", () =>
+		return await measure("Post.create#show", () =>
 			Post.show<Meta>({ db }, type, id),
 		);
 	}
@@ -205,7 +205,7 @@ export class Post<Meta extends BaseMeta> {
 			...meta
 		}: Omit<schema.InsertPost, "id"> & Meta,
 	) {
-		let result = await measure("Post.update", "Post.update", () =>
+		let result = await measure("Post.update", () =>
 			db
 				.update(schema.posts)
 				.set({ type, authorId, createdAt, updatedAt })
@@ -215,14 +215,14 @@ export class Post<Meta extends BaseMeta> {
 
 		if (!result.success && result.error) throw new Error(result.error);
 
-		await measure("Post.update#meta", "Post.update#meta", () =>
+		await measure("Post.update#meta", () =>
 			db
 				.delete(schema.postMeta)
 				.where(eq(schema.postMeta.postId, id))
 				.execute(),
 		);
 
-		await measure("Post.update#meta", "Post.update#meta", () =>
+		await measure("Post.update#meta", () =>
 			Promise.all(
 				Object.entries(meta).map(async ([key, value]) => {
 					return createPostMeta(db, id, key, value);
@@ -230,7 +230,7 @@ export class Post<Meta extends BaseMeta> {
 			),
 		);
 
-		return await measure("Post.show", "Post.update#show", () =>
+		return await measure("Post.update#show", () =>
 			Post.show<Meta>({ db }, type, id),
 		);
 	}

@@ -11,10 +11,6 @@ export function getTimingCollector() {
 	return getTimingCollectorFromContext(getContext());
 }
 
-export function measure<T>(
-	name: string,
-	description: string,
-	fn: Timing.MeasureFunction<T>,
-) {
-	return getTimingCollector().measure(name, description, fn);
+export function measure<T>(description: string, fn: Timing.MeasureFunction<T>) {
+	return getTimingCollector().measure(description, description, fn);
 }

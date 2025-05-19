@@ -1,26 +1,25 @@
-import { and, eq } from "drizzle-orm";
-import * as schema from "~/db/schema";
-import { ArticleSchema } from "~/entities/article";
-import type { Article } from "~/entities/article";
+import { TutorialSchema } from "~/entities/tutorial";
+import type { Tutorial } from "~/entities/tutorial";
 import { getDB } from "~/middleware/drizzle";
 import { measure } from "~/middleware/server-timing";
 
-export async function findArticleBySlug(slug: Article["slug"]) {
+export default async function findTutorialBySlug(
+	slug: Tutorial["slug"],
+): Promise<Tutorial> {
 	let db = getDB();
 
-	let result = await measure("article", "Article.show", () => {
+	let result = await measure("findTutorialBySlug", () => {
 		return db.query.postMeta.findFirst({
-			where: and(
-				eq(schema.postMeta.key, "slug"),
-				eq(schema.postMeta.value, slug),
-			),
 			with: { post: { with: { meta: true, author: true } } },
+			where(fields, { and, eq }) {
+				return and(eq(fields.key, "slug"), eq(fields.value, slug));
+			},
 		});
 	});
 
-	if (!result) throw new Error(`Couldn't find article with slug ${slug}`);
+	if (!result) throw new Error(`Couldn't find tutorial with slug ${slug}`);
 
-	return ArticleSchema.parse({
+	return TutorialSchema.parse({
 		id: result.postId,
 		authorId: result.post.authorId,
 		type: result.post.type,
@@ -36,14 +35,10 @@ export async function findArticleBySlug(slug: Article["slug"]) {
 			createdAt: result.post.author.createdAt,
 			updatedAt: result.post.author.updatedAt,
 		},
-		// Meta
 		title: result.post.meta.find((m) => m.key === "title")?.value,
 		slug: result.post.meta.find((m) => m.key === "slug")?.value,
-		locale: result.post.meta.find((m) => m.key === "locale")?.value,
 		excerpt: result.post.meta.find((m) => m.key === "excerpt")?.value,
 		content: result.post.meta.find((m) => m.key === "content")?.value,
 		tags: result.post.meta.filter((m) => m.key === "tags").map((m) => m.value),
-		canonicalUrl: result.post.meta.find((m) => m.key === "canonical_url")
-			?.value,
 	});
 }
