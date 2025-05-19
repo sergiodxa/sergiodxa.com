@@ -1,4 +1,3 @@
-// app/locales/es.ts
 import type en from "./en";
 
 export default {
@@ -17,6 +16,13 @@ export default {
 	},
 
 	home: {
+		meta: {
+			title: {
+				default: "Sergio Xalambrí",
+				search: "Resultados de búsqueda para {{query}} por Sergio Xalambrí",
+			},
+		},
+
 		header: {
 			title: "Sergio Xalambrí",
 			description:
