@@ -14,6 +14,13 @@ export default {
 	},
 
 	home: {
+		meta: {
+			title: {
+				default: "Sergio Xalambrí",
+				search: 'Search results for "{{query}}" by Sergio Xalambrí',
+			},
+		},
+
 		header: {
 			title: "Sergio Xalambrí",
 			description:

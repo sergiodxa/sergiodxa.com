@@ -9,7 +9,11 @@ import {
 } from "react-router";
 import { useChangeLanguage } from "remix-i18next/react";
 import sansFont from "~/fonts/sans.woff2";
-import { getLocale, i18nextMiddleware } from "~/middleware/i18next";
+import {
+	getI18nextInstance,
+	getLocale,
+	i18nextMiddleware,
+} from "~/middleware/i18next";
 import { noWWWMiddleware } from "~/middleware/no-www";
 import styles from "~/styles.css?url";
 import type { Route } from "./+types/root";
@@ -20,6 +24,8 @@ import { noTrailingSlashMiddleware } from "./middleware/no-trailing-slash";
 import { rollingCookieMiddleware } from "./middleware/rolling-cookie";
 import { serverTimingMiddleware } from "./middleware/server-timing";
 import { getUser, sessionMiddleware } from "./middleware/session";
+
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
 export const unstable_middleware = [
 	noWWWMiddleware,
@@ -48,7 +54,14 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function loader(_: Route.LoaderArgs) {
-	return { locale: getLocale(), user: getUser() };
+	let { t } = getI18nextInstance();
+	return {
+		locale: getLocale(),
+		user: getUser(),
+		meta: [
+			{ title: t("home.meta.title.default") },
+		] satisfies Route.MetaDescriptors,
+	};
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -3,9 +3,12 @@ import { z } from "zod";
 import { PageHeader } from "~/components/page-header";
 import { Subscribe } from "~/components/subscribe";
 import { ok } from "~/helpers/response";
+import { getI18nextInstance } from "~/middleware/i18next";
 import type { Route } from "./+types/route";
 import { FeedList } from "./feed";
 import { queryFeed } from "./queries";
+
+export const meta: Route.MetaFunction = ({ data }) => data?.meta ?? [];
 
 export async function loader({ request }: Route.LoaderArgs) {
 	let headers = new Headers({
@@ -19,7 +22,21 @@ export async function loader({ request }: Route.LoaderArgs) {
 		.nullable()
 		.parse(url.searchParams.get("q"));
 
-	return ok({ items: await queryFeed(query ?? "") }, { headers });
+	let { t } = getI18nextInstance();
+
+	return ok(
+		{
+			items: await queryFeed(query ?? ""),
+			meta: [
+				{
+					title: query
+						? t("home.meta.title.search", { query })
+						: t("home.meta.title.default"),
+				},
+			] satisfies Route.MetaDescriptors,
+		},
+		{ headers },
+	);
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
