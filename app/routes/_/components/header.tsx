@@ -30,7 +30,9 @@ export function Header() {
 					{navigation.map((item) => {
 						return (
 							<li key={item.name}>
-								<Link href={item.to}>{item.name}</Link>
+								<Link href={item.to} prefetch="intent">
+									{item.name}
+								</Link>
 							</li>
 						);
 					})}
