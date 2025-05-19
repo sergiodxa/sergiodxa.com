@@ -51,7 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 	let result = await db
 		.insert(users)
 		.values({
-			role: "guess",
+			role: "guest",
 			email: profile.email,
 			avatar: z.string().url().parse(profile.avatar_url),
 			username: profile.login,
