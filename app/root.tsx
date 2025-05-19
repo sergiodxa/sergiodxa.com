@@ -12,11 +12,13 @@ import sansFont from "~/fonts/sans.woff2";
 import {
 	getI18nextInstance,
 	getLocale,
+	cookie as i18nCookie,
 	i18nextMiddleware,
 } from "~/middleware/i18next";
 import { noWWWMiddleware } from "~/middleware/no-www";
 import styles from "~/styles.css?url";
 import type { Route } from "./+types/root";
+import { ok } from "./helpers/response";
 import { cacheMiddleware } from "./middleware/cache";
 import { contextStorageMiddleware } from "./middleware/context-storage";
 import { drizzleMiddleware } from "./middleware/drizzle";
@@ -53,16 +55,21 @@ export const links: Route.LinksFunction = () => [
 	{ rel: "me authn", href: "https://github.com/sergiodxa" },
 ];
 
-export function loader(_: Route.LoaderArgs) {
+export async function loader(_: Route.LoaderArgs) {
 	let { t } = getI18nextInstance();
-	return {
-		locale: getLocale(),
-		user: getUser(),
-		meta: [
-			{ title: t("home.meta.title.default") },
-			{ name: "og:title", content: t("home.meta.title.default") },
-		] satisfies Route.MetaDescriptors,
-	};
+	let locale = getLocale();
+
+	return ok(
+		{
+			locale,
+			user: getUser(),
+			meta: [
+				{ title: t("home.meta.title.default") },
+				{ name: "og:title", content: t("home.meta.title.default") },
+			] satisfies Route.MetaDescriptors,
+		},
+		{ headers: { "Set-Cookie": await i18nCookie.serialize(locale) } },
+	);
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
