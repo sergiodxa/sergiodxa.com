@@ -130,7 +130,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function Component({ loaderData }: Route.ComponentProps) {
 	useChangeLanguage(loaderData.locale);
 	return (
-		<RouterProvider navigate={useNavigate}>
+		<RouterProvider navigate={useNavigate()}>
 			<Outlet />
 		</RouterProvider>
 	);
