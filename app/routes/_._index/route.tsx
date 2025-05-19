@@ -33,6 +33,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 						? t("home.meta.title.search", { query })
 						: t("home.meta.title.default"),
 				},
+				{
+					name: "og:title",
+					content: query
+						? t("home.meta.title.search", { query })
+						: t("home.meta.title.default"),
+				},
 			] satisfies Route.MetaDescriptors,
 		},
 		{ headers },

@@ -60,6 +60,7 @@ export function loader(_: Route.LoaderArgs) {
 		user: getUser(),
 		meta: [
 			{ title: t("home.meta.title.default") },
+			{ name: "og:title", content: t("home.meta.title.default") },
 		] satisfies Route.MetaDescriptors,
 	};
 }
