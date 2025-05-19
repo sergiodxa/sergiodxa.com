@@ -29,7 +29,9 @@ export function FeedList({ t, items }: Props) {
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
-										"link:article": <Link href={item.payload.link} />,
+										"link:article": (
+											<Link href={item.payload.link} prefetch="intent" />
+										),
 									}}
 								/>
 							}
@@ -54,7 +56,9 @@ export function FeedList({ t, items }: Props) {
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
-										"link:tutorial": <Link href={item.payload.link} />,
+										"link:tutorial": (
+											<Link href={item.payload.link} prefetch="intent" />
+										),
 									}}
 								/>
 							}
@@ -106,7 +110,9 @@ export function FeedList({ t, items }: Props) {
 									t={t}
 									values={{ title: item.payload.title }}
 									components={{
-										"link:glossary": <Link href={item.payload.link} />,
+										"link:glossary": (
+											<Link href={item.payload.link} prefetch="intent" />
+										),
 									}}
 								/>
 							}
