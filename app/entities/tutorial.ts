@@ -5,7 +5,7 @@ export const TutorialSchema = PostSchema.extend({
 	type: z.literal("tutorial"),
 	title: z.string(),
 	slug: z.string(),
-	excerpt: z.string(),
+	excerpt: z.string().optional(),
 	content: z.string(),
 	tags: z.union([z.string(), z.array(z.string())]).optional(),
 });

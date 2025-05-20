@@ -6,7 +6,7 @@ export const ArticleSchema = PostSchema.extend({
 	title: z.string(),
 	slug: z.string(),
 	locale: z.string(),
-	excerpt: z.string(),
+	excerpt: z.string().optional(),
 	content: z.string(),
 	tags: z.union([z.string(), z.array(z.string())]).optional(),
 	canonicalUrl: z.string().optional(),
