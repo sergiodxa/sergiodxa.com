@@ -9,14 +9,6 @@ import { authenticate } from "~/modules/auth.server";
 import { GitHub } from "~/modules/github.server";
 import type { Route } from "./+types/route";
 
-const GitHubUserSchema = z.object({
-	node_id: z.string(),
-	email: z.string().email(),
-	login: z.string(),
-	name: z.string(),
-	avatar_url: z.string().url(),
-});
-
 export async function loader({ request }: Route.LoaderArgs) {
 	let session = getSession();
 	if (session.has("user")) return redirect(href("/"));
