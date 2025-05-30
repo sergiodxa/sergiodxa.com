@@ -14,7 +14,9 @@
 		"rr:routes": "react-router routes",
 		"check:types": "tsc",
 		"check:quality": "biome check .",
-		"check:quality:fix": "biome check . --write --unsafe"
+		"check:quality:fix": "biome check . --write --unsafe",
+		"db:local:migrate": "wrangler d1 migrations apply --local",
+		"db:remote:migrate": "wrangler d1 migrations apply --remote"
 	},
 	"dependencies": {
 		"@edgefirst-dev/server-timing": "^0.0.1",
