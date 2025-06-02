@@ -42,7 +42,7 @@
 		"prism-theme-github": "^1.0.2",
 		"prismjs": "^1.30.0",
 		"react": "^19.1.0",
-		"react-aria-components": "^1.8.0",
+		"react-aria-components": "^1.9.0",
 		"react-dom": "^19.1.0",
 		"react-i18next": "^15.5.2",
 		"react-router": "^7.6.0",
