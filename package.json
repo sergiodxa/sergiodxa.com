@@ -27,7 +27,7 @@
 		"@react-router/cloudflare": "^7.6.2",
 		"@react-router/fs-routes": "^7.6.0",
 		"@react-router/serve": "^7.6.1",
-		"cheerio": "^1.0.0",
+		"cheerio": "^1.1.0",
 		"drizzle-orm": "^0.43.1",
 		"fuse.js": "^7.1.0",
 		"htmlparser2": "^10.0.0",
