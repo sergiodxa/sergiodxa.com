@@ -22,7 +22,7 @@
 		"@edgefirst-dev/server-timing": "^0.0.1",
 		"@markdoc/markdoc": "^0.5.2",
 		"@octokit/auth-app": "^7.2.1",
-		"@octokit/core": "^6.1.5",
+		"@octokit/core": "^7.0.2",
 		"@paralleldrive/cuid2": "^2.2.2",
 		"@react-router/cloudflare": "^7.6.2",
 		"@react-router/fs-routes": "^7.6.0",
