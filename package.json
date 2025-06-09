@@ -24,7 +24,7 @@
 		"@octokit/auth-app": "^7.2.1",
 		"@octokit/core": "^6.1.5",
 		"@paralleldrive/cuid2": "^2.2.2",
-		"@react-router/cloudflare": "^7.6.0",
+		"@react-router/cloudflare": "^7.6.2",
 		"@react-router/fs-routes": "^7.6.0",
 		"@react-router/serve": "^7.6.1",
 		"cheerio": "^1.0.0",
