@@ -1,4 +1,4 @@
-import type { MetaDescriptor } from "react-router";
+import { type MetaDescriptor, href } from "react-router";
 import { getI18nextInstance, getLocale } from "~/middleware/i18next";
 import findArticleBySlug from "~/services/find-article-by-slug";
 import findTutorialBySlug from "~/services/find-tutorial-by-slug";
@@ -30,7 +30,22 @@ export async function queryArticle(request: Request, slug: string) {
 					rel: "canonical",
 					href:
 						article.canonicalUrl ??
-						new URL(`/articles/${article.slug}`, request.url).toString(),
+						new URL(
+							href("/:postType/*", { postType: "articles", "*": article.slug }),
+							request.url,
+						).toString(),
+				},
+				{
+					tagName: "link",
+					rel: "alternate",
+					hrefLang: "en",
+					href: new URL(
+						href("/md/:postType/*", {
+							postType: "articles",
+							"*": article.slug,
+						}),
+						request.url,
+					).toString(),
 				},
 				{
 					"script:ld+json": {
@@ -96,7 +111,25 @@ export async function queryTutorial(request: Request, slug: string) {
 				{
 					tagName: "link",
 					rel: "canonical",
-					href: new URL(`/tutorials/${tutorial.slug}`, request.url).toString(),
+					href: new URL(
+						href("/:postType/*", {
+							postType: "tutorials",
+							"*": tutorial.slug,
+						}),
+						request.url,
+					).toString(),
+				},
+				{
+					tagName: "link",
+					rel: "alternate",
+					hrefLang: "en",
+					href: new URL(
+						href("/md/:postType/*", {
+							postType: "tutorials",
+							"*": tutorial.slug,
+						}),
+						request.url,
+					).toString(),
 				},
 				{
 					"script:ld+json": {
