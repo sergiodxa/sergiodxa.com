@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Await, Link as RemixLink, useAsyncValue } from "react-router";
+import { Await, Link as RemixLink, href, useAsyncValue } from "react-router";
 import { MarkdownView } from "~/components/markdown";
 import { Support } from "~/components/support";
 import { useUser } from "~/hooks/use-user";
@@ -23,15 +23,41 @@ export function TutorialView({ post }: { post: Post }) {
 		<article className="mx-auto flex max-w-screen-md flex-col gap-8 pb-14">
 			<div className="prose prose-blue mx-auto w-full max-w-prose space-y-8 sm:prose-lg dark:prose-invert">
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-					<Tags tags={post.tutorial.tags} />
+					<Tags
+						tags={
+							post.tutorial.tags
+								? Array.isArray(post.tutorial.tags)
+									? post.tutorial.tags
+									: [post.tutorial.tags]
+								: []
+						}
+					/>
 
 					{user?.role === "admin" && (
-						<Form method="get" action={`/cms/tutorials/${post.tutorial.id}`}>
+						<Form
+							method="get"
+							action={href("/cms/tutorials/:postId", {
+								postId: post.tutorial.id,
+							})}
+						>
 							<Button type="submit" variant="primary">
-								Edit
+								{t("header.edit")}
 							</Button>
 						</Form>
 					)}
+
+					<Form
+						method="get"
+						reloadDocument
+						action={href("/md/:postType/*", {
+							postType: "tutorials",
+							"*": post.tutorial.slug,
+						})}
+					>
+						<Button type="submit" variant="primary">
+							{t("header.markdown")}
+						</Button>
+					</Form>
 				</div>
 
 				<div>
@@ -109,11 +135,17 @@ function Recommendations() {
 					let searchParams = new URLSearchParams();
 					searchParams.set("q", `tech:${matchedTag}`);
 
-					let to = `/tutorials?${searchParams.toString()}`;
+					let to = `${href("/tutorials")}?${searchParams.toString()}`;
 
 					return (
 						<div key={slug} className="flex flex-col gap-2">
-							<Link href={`/tutorials/${slug}`} className="line-clamp-2 block">
+							<Link
+								href={href("/:postType/*", {
+									postType: "tutorials",
+									"*": slug,
+								})}
+								className="line-clamp-2 block"
+							>
 								<p className="text-xl font-semibold">{title}</p>
 							</Link>
 

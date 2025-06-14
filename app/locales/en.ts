@@ -171,6 +171,7 @@ export default {
 		header: {
 			eyebrown: "How to",
 			edit: "Edit Tutorial",
+			markdown: "View Markdown",
 		},
 		tags: "Used",
 		related: {
