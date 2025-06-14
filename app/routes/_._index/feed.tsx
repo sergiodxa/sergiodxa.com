@@ -69,7 +69,7 @@ export function FeedList({ t, items }: Props) {
 					);
 				}
 
-				if (item.type === "bookmark") {
+				if (item.type === "like") {
 					return (
 						<Item
 							key={item.id}
