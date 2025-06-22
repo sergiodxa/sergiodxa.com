@@ -119,7 +119,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					<script
 						defer
 						src="https://static.cloudflareinsights.com/beacon.min.js"
-						data-cf-beacon='{"token": "4ac2c9f7b33a46508599d50ab6b96fc9"}'
+						data-cf-beacon='{"token": "5ef19f0dee5344c796e17792dd7481e7"}'
 					/>
 				) : null}
 			</body>
