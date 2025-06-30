@@ -59,7 +59,7 @@
 		"zod": "^3.25.67"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.0.4",
+		"@biomejs/biome": "^2.0.6",
 		"@cloudflare/vite-plugin": "^1.7.4",
 		"@cloudflare/workers-types": "^4.20250620.0",
 		"@react-router/dev": "^7.6.2",
