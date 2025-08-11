@@ -10,7 +10,7 @@
         "@octokit/core": "^7.0.2",
         "@paralleldrive/cuid2": "^2.2.2",
         "@react-router/cloudflare": "^7.6.2",
-        "@react-router/fs-routes": "^7.6.2",
+        "@react-router/fs-routes": "^7.8.0",
         "cheerio": "^1.1.0",
         "drizzle-orm": "^0.44.2",
         "fuse.js": "^7.1.0",
@@ -454,7 +454,7 @@
 
     "@react-router/express": ["@react-router/express@7.6.2", "", { "dependencies": { "@react-router/node": "7.6.2" }, "peerDependencies": { "express": "^4.17.1 || ^5", "react-router": "7.6.2", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-b1XwP2ZknWG6yNl1aEAJ+yx0Alk85+iLk5y521MOhh2lCKPNyFOuX4Gw8hI3E4IXgDEPqiZ+lipmrIb7XkLNZQ=="],
 
-    "@react-router/fs-routes": ["@react-router/fs-routes@7.6.2", "", { "dependencies": { "minimatch": "^9.0.0" }, "peerDependencies": { "@react-router/dev": "^7.6.2", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-JfYQb9lyQHIpyLu1G9u9Q+loBHE2zgw8Z2tleiBrzzAKUp0x5LIo9a1w9NjpOU2JAiS3xeGN+dNQjSjeIOUTRg=="],
+    "@react-router/fs-routes": ["@react-router/fs-routes@7.8.0", "", { "dependencies": { "minimatch": "^9.0.0" }, "peerDependencies": { "@react-router/dev": "^7.8.0", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-jqQN+eglzh/uK8/zL62B+VDAQv31SGtF35TEZzJaLsA020M7/9Ch8cf7eBBV8UCHUv0gP33hJ5ebTbmQ282PNA=="],
 
     "@react-router/node": ["@react-router/node@7.6.2", "", { "dependencies": { "@mjackson/node-fetch-server": "^0.2.0", "source-map-support": "^0.5.21", "stream-slice": "^0.1.2", "undici": "^6.19.2" }, "peerDependencies": { "react-router": "7.6.2", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-KrxfnfJVU1b+020VKemkxpc7ssItsAL8MOJthcoGwPyKwrgovdwc+8NKJUqw3P7yk/Si0ZmVh9QYAzi9qF96dg=="],
 
