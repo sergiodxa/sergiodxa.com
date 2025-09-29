@@ -25,7 +25,7 @@
 		"@octokit/core": "^7.0.2",
 		"@paralleldrive/cuid2": "^2.2.2",
 		"@react-router/cloudflare": "^7.6.2",
-		"@react-router/fs-routes": "^7.6.2",
+		"@react-router/fs-routes": "^7.9.3",
 		"cheerio": "^1.1.0",
 		"drizzle-orm": "^0.44.2",
 		"fuse.js": "^7.1.0",
